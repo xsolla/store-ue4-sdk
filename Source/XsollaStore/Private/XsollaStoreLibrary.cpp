@@ -3,8 +3,9 @@
 
 #include "XsollaStoreLibrary.h"
 
-#include "Engine/Engine.h"
 #include "XsollaStore.h"
+
+#include "Engine/Engine.h"
 
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -19,4 +20,9 @@ UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldCo
 	}
 
 	return nullptr;
+}
+
+void UXsollaStoreLibrary::UpdateVirtualItems(UObject* WorldContextObject, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	UXsollaStoreLibrary::GetStoreController(WorldContextObject)->UpdateVirtualItems(SuccessCallback, ErrorCallback);
 }
