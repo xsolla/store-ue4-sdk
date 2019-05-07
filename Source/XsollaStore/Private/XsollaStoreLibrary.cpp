@@ -1,0 +1,22 @@
+// Copyright 2019 Xsolla Inc. All Rights Reserved.
+// @author Vladimir Alyamkin <ufna@ufna.ru>
+
+#include "XsollaStoreLibrary.h"
+
+#include "Engine/Engine.h"
+#include "XsollaStore.h"
+
+UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+}
+
+UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldContextObject)
+{
+	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		return FXsollaStoreModule::Get().GetStoreController(World);
+	}
+
+	return nullptr;
+}
