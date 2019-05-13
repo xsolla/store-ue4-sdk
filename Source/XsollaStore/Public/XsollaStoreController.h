@@ -8,7 +8,7 @@
 #include "XsollaStoreController.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnStoreError, const FString&, Code, const FString&, Description);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFetchTokenSuccess, const FString&, AccessToken);
 
 UCLASS()

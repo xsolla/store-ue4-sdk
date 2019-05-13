@@ -81,7 +81,8 @@ void UXsollaStoreController::FetchPaymentToken_HttpRequestComplete(FHttpRequestP
 bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreError ErrorCallback)
 {
 	FString ErrorStr;
-	FString ErrorCode = TEXT("204");
+	int32 ErrorCode = 0;
+	int32 StatusCode = 204;
 	FString ResponseStr = TEXT("invalid");
 
 	if (bSucceeded && HttpResponse.IsValid())
@@ -90,20 +91,20 @@ bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 
 		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
 		{
-			ErrorCode = FString::Printf(TEXT("%d"), HttpResponse->GetResponseCode());
+			StatusCode = HttpResponse->GetResponseCode();
 			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
 
-			// Example: {"error":{"code":"003-003","description":"The username is already taken"}}
+			// Example: {"statusCode":403,"errorCode":0,"errorMessage":"Token not found"}
 			TSharedPtr<FJsonObject> JsonObject;
 			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
 			if (FJsonSerializer::Deserialize(Reader, JsonObject))
 			{
-				static const FString ErrorFieldName = TEXT("error");
-				if (JsonObject->HasTypedField<EJson::Object>(ErrorFieldName))
+				static const FString ErrorFieldName = TEXT("errorMessage");
+				if (JsonObject->HasTypedField<EJson::String>(ErrorFieldName))
 				{
-					TSharedPtr<FJsonObject> ErrorObject = JsonObject.Get()->GetObjectField(ErrorFieldName);
-					ErrorCode = ErrorObject.Get()->GetStringField(TEXT("code"));
-					ErrorStr = ErrorObject.Get()->GetStringField(TEXT("description"));
+					StatusCode = JsonObject->GetNumberField(TEXT("statusCode"));
+					ErrorCode = JsonObject->GetNumberField(TEXT("errorCode"));
+					ErrorStr = JsonObject->GetStringField(ErrorFieldName);
 				}
 				else
 				{
@@ -124,7 +125,7 @@ bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 	if (!ErrorStr.IsEmpty())
 	{
 		UE_LOG(LogXsollaStore, Warning, TEXT("%s: request failed (%s): %s"), *VA_FUNC_LINE, *ErrorStr, *ResponseStr);
-		ErrorCallback.ExecuteIfBound(ErrorCode, ErrorStr);
+		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorStr);
 		return true;
 	}
 
