@@ -48,7 +48,11 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 
 void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 {
-	UE_LOG(LogXsollaStore, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
+	FString PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
+
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
+
+	FPlatformProcess::LaunchURL(*PaystationUrl, nullptr, nullptr);
 }
 
 void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
