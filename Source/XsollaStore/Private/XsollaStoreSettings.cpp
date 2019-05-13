@@ -6,4 +6,5 @@
 UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	bUsePlatformBrowser = false;
 }

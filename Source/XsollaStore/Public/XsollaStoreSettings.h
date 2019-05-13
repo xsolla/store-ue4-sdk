@@ -14,4 +14,8 @@ public:
 	/** Store ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere)
 	FString ProjectId;
+
+	/** If yes, external (system) browser will be launched to process payments */
+	UPROPERTY(Config, EditAnywhere)
+	bool bUsePlatformBrowser;
 };

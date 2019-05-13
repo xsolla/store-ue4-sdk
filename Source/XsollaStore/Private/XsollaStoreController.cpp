@@ -51,13 +51,22 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 {
 	FString PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
-	UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
-	auto MyBrowser = CreateWidget<UXsollaStoreBrowser>(GEngine->GameViewport->GetWorld(), UXsollaStoreBrowser::StaticClass());
-	MyBrowser->LoadWidget();
-	MyBrowser->GetBrowser()->LoadURL(PaystationUrl);
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	if (Settings->bUsePlatformBrowser)
+	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
-	//FPlatformProcess::LaunchURL(*PaystationUrl, nullptr, nullptr);
+		FPlatformProcess::LaunchURL(*PaystationUrl, nullptr, nullptr);
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
+
+		auto MyBrowser = CreateWidget<UXsollaStoreBrowser>(GEngine->GameViewport->GetWorld(), UXsollaStoreBrowser::StaticClass());
+		MyBrowser->LoadWidget();
+		MyBrowser->GetBrowser()->LoadURL(PaystationUrl);
+	}
 }
 
 void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
