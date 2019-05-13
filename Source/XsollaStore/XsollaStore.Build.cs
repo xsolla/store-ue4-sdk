@@ -15,6 +15,7 @@ public class XsollaStore : ModuleRules
                 "Core",
                 "HTTP",
                 "Json",
+                "UMG"
             }
             );
 
@@ -25,6 +26,9 @@ public class XsollaStore : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
+                "UMG",
+                "WebBrowser",
+                "WebBrowserWidget"
             }
             );
 

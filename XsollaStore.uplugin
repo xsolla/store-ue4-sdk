@@ -28,5 +28,11 @@
 				"Linux"
 			]
 		}
+	],
+	"Plugins": [ 
+		{
+			"Name": "WebBrowserWidget",
+			"Enabled": true
+		}
 	]
 }
