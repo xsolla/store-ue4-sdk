@@ -21,8 +21,3 @@ UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldCo
 
 	return nullptr;
 }
-
-void UXsollaStoreLibrary::UpdateVirtualItems(UObject* WorldContextObject, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	UXsollaStoreLibrary::GetStoreController(WorldContextObject)->UpdateVirtualItems(SuccessCallback, ErrorCallback);
-}

@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "XsollaStoreController.h"
-
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "XsollaStoreLibrary.generated.h"
+
+class UXsollaStoreController;
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreLibrary : public UBlueprintFunctionLibrary
@@ -18,8 +18,4 @@ public:
 	/** Direct access to Store controller */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
 	static UXsollaStoreController* GetStoreController(UObject* WorldContextObject);
-
-	/** Update list of virtual items */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback", WorldContext = "WorldContextObject"))
-	static void UpdateVirtualItems(UObject* WorldContextObject, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 };
