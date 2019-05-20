@@ -37,6 +37,10 @@ void FXsollaStoreModule::StartupModule()
 		auto StoreController = NewObject<UXsollaStoreController>(GetTransientPackage());
 		StoreController->SetFlags(RF_Standalone);
 
+		// Initialize module with project id provided by user
+		const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+		StoreController->Initialize(Settings->ProjectId);
+
 		XsollaStoreControllers.Add(World, StoreController);
 
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore Controller is created for: %s"), *VA_FUNC_LINE, *World->GetName());

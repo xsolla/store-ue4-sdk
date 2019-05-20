@@ -19,10 +19,14 @@ UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectI
 {
 }
 
+void UXsollaStoreController::Initialize(const FString& InProjectId)
+{
+	ProjectId = InProjectId;
+}
+
 void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/virtual_items"), *Settings->ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/virtual_items"), *ProjectId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 

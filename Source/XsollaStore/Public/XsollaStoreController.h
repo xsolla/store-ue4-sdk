@@ -17,6 +17,10 @@ class XSOLLASTORE_API UXsollaStoreController : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Initialize controller with provided project id (use to override project settings) */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	void Initialize(const FString& InProjectId);
+
 	/** Update list of virtual items */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -44,4 +48,7 @@ protected:
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
+
+	/** Cached Xsolla Store project id */
+	FString ProjectId;
 };
