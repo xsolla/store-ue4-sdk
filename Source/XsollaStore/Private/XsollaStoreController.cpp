@@ -10,6 +10,7 @@
 
 #include "Engine.h"
 #include "Json.h"
+#include "JsonObjectConverter.h"
 #include "Runtime/Launch/Resources/Version.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
@@ -35,6 +36,11 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+}
+
+TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
+{
+	return ItemsData.Items;
 }
 
 void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -77,6 +83,22 @@ void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequest
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize items list"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize items list"));
+		return;
+	}
+
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreItemsData::StaticStruct(), &ItemsData))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert items list to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert items list to struct"));
 		return;
 	}
 

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "XsollaStoreDataModel.h"
+
 #include "Http.h"
 
 #include "XsollaStoreController.generated.h"
@@ -24,6 +26,10 @@ public:
 	/** Update list of virtual items */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Get list of cached virtual items */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	TArray<FStoreItem> GetVirtualItems() const;
 
 	/**
 	 * Initiate item purchase session and fetch token for payment console
@@ -51,4 +57,7 @@ private:
 
 	/** Cached Xsolla Store project id */
 	FString ProjectId;
+
+	/** Cached items list */
+	FStoreItemsData ItemsData;
 };

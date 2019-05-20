@@ -15,6 +15,7 @@ public class XsollaStore : ModuleRules
                 "Core",
                 "HTTP",
                 "Json",
+                "JsonUtilities",
                 "UMG"
             }
             );
