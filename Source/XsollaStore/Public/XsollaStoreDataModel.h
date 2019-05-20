@@ -10,10 +10,10 @@ struct FStorePrice
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	float amount;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FString currency;
 
 public:
@@ -25,25 +25,25 @@ struct FStoreItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FString sku;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FString description;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FString long_description;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> groups;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	bool is_free;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FStorePrice> prices;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FString image_url;
 
 public:
@@ -56,7 +56,7 @@ struct FStoreItemsData
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FStoreItem> Items;
 
 public:
