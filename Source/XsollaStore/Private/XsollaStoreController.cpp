@@ -118,7 +118,16 @@ void UXsollaStoreController::FetchPaymentToken_HttpRequestComplete(FHttpRequestP
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
-	FString AccessToken;
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize payment token"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize payment token"));
+		return;
+	}
+
+	FString AccessToken = JsonObject->GetStringField(TEXT("token"));
 	SuccessCallback.ExecuteIfBound(AccessToken);
 }
 
