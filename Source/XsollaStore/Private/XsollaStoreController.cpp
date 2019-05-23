@@ -43,7 +43,7 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
 	return ItemsData.Items;
 }
 
-void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/payment/item/%s"), *ItemSKU);
 
@@ -51,6 +51,9 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("POST"));
+
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetContentAsString(FString::Printf(TEXT("{\"currency\":\"%s\"}"), *Currency));
 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
