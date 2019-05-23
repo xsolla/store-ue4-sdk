@@ -29,6 +29,9 @@ struct FStoreItem
 	FString sku;
 
 	UPROPERTY(BlueprintReadOnly)
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly)
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly)
