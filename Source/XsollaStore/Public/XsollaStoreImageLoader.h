@@ -29,6 +29,8 @@ protected:
 	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback);
 
 private:
+	FName GetCacheName(const FString& URL) const;
+
 	/** Internal brushes cache */
 	TMap<FString, TSharedPtr<FSlateDynamicImageBrush>> ImageBrushes;
 };
