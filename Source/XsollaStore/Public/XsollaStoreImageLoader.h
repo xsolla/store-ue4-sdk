@@ -9,10 +9,13 @@
 
 #include "XsollaStoreImageLoader.generated.h"
 
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
 
+/**
+ * Async image loading from web. Should be used for DEMO PUPPOSES ONLY.
+ */
 UCLASS()
-class XSOLLASTORE_API UXsollaStoreImageLoader : public UObject
+class UXsollaStoreImageLoader : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
@@ -24,4 +27,8 @@ public:
 protected:
 	/** */
 	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback);
+
+private:
+	/** Internal brushes cache */
+	TMap<FString, TSharedPtr<FSlateDynamicImageBrush>> ImageBrushes;
 };

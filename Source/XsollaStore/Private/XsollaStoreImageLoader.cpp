@@ -57,7 +57,9 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 
 				if (FSlateApplication::Get().GetRenderer()->GenerateDynamicImageResource(ResourceName, ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), *RawData))
 				{
-					SuccessCallback.ExecuteIfBound(FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
+					ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
+					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
+					SuccessCallback.ExecuteIfBound(*ImageBrush.Get());
 				}
 				else
 				{
