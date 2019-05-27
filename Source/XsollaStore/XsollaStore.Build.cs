@@ -29,7 +29,8 @@ public class XsollaStore : ModuleRules
                 "SlateCore",
                 "UMG",
                 "WebBrowser",
-                "WebBrowserWidget"
+                "WebBrowserWidget",
+                "ImageWrapper"
             }
             );
 

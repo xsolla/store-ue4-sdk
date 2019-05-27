@@ -4,6 +4,7 @@
 #include "XsollaStoreLibrary.h"
 
 #include "XsollaStore.h"
+#include "XsollaStoreController.h"
 
 #include "Engine/Engine.h"
 
@@ -20,4 +21,10 @@ UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldCo
 	}
 
 	return nullptr;
+}
+
+void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback)
+{
+	auto StoreController = UXsollaStoreLibrary::GetStoreController(WorldContextObject);
+	StoreController->GetImageLoader()->LoadImage(URL, SuccessCallback);
 }

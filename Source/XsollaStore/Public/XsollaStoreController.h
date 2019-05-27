@@ -9,6 +9,8 @@
 
 #include "XsollaStoreController.generated.h"
 
+class UXsollaStoreImageLoader;
+
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFetchTokenSuccess, const FString&, AccessToken);
@@ -61,4 +63,11 @@ private:
 
 	/** Cached items list */
 	FStoreItemsData ItemsData;
+
+public:
+	UXsollaStoreImageLoader* GetImageLoader() const;
+
+private:
+	UPROPERTY()
+	UXsollaStoreImageLoader* ImageLoader;
 };

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "XsollaStoreImageLoader.h"
+
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "XsollaStoreLibrary.generated.h"
@@ -18,4 +20,8 @@ public:
 	/** Direct access to Store controller */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
 	static UXsollaStoreController* GetStoreController(UObject* WorldContextObject);
+
+	/** Async load image from web */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
+	static void LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback);
 };

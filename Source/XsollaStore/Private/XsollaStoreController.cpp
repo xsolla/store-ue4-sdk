@@ -6,6 +6,7 @@
 #include "XsollaStore.h"
 #include "XsollaStoreBrowser.h"
 #include "XsollaStoreDefines.h"
+#include "XsollaStoreImageLoader.h"
 #include "XsollaStoreSettings.h"
 
 #include "Engine.h"
@@ -23,6 +24,12 @@ UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectI
 void UXsollaStoreController::Initialize(const FString& InProjectId)
 {
 	ProjectId = InProjectId;
+
+	// Check image loader is exsits, because initialization can be called multiple times
+	if (!ImageLoader)
+	{
+		ImageLoader = NewObject<UXsollaStoreImageLoader>();
+	}
 }
 
 void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -203,6 +210,11 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	HttpRequest->SetHeader(TEXT("sdk_v"), XSOLLA_STORE_VERSION);
 
 	return HttpRequest;
+}
+
+UXsollaStoreImageLoader* UXsollaStoreController::GetImageLoader() const
+{
+	return ImageLoader;
 }
 
 #undef LOCTEXT_NAMESPACE
