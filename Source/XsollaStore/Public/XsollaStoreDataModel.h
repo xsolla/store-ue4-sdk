@@ -6,7 +6,7 @@
 #include "XsollaStoreDataModel.generated.h"
 
 USTRUCT(BlueprintType)
-struct FStorePrice
+struct XSOLLASTORE_API FStorePrice
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FStoreItem
+struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
 
@@ -54,7 +54,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FStoreItemsData
+struct XSOLLASTORE_API FStoreItemsData
 {
 public:
 	GENERATED_BODY()

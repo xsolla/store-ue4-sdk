@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
  * Async image loading from web. Should be used for DEMO PUPPOSES ONLY.
  */
 UCLASS()
-class UXsollaStoreImageLoader : public UObject
+class XSOLLASTORE_API UXsollaStoreImageLoader : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
