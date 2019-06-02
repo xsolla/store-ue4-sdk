@@ -26,6 +26,6 @@ public:
 
 protected:
 	/** @TODO */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Store Browser")
 	UWebBrowser* WebBrowser;
 };

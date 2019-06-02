@@ -10,10 +10,10 @@ struct XSOLLASTORE_API FStorePrice
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	float amount;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	FString currency;
 
 public:
@@ -25,28 +25,28 @@ struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString sku;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString name;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString description;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString long_description;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FString> groups;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	bool is_free;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FStorePrice> prices;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
 public:
@@ -59,7 +59,7 @@ struct XSOLLASTORE_API FStoreItemsData
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
 public:
