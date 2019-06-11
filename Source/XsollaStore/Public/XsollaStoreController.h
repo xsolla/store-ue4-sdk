@@ -38,10 +38,12 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
-	 * @param Currency (optional) Desired payment currency.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use default value.
+	 * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use default value.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Open payment console for provided access token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")

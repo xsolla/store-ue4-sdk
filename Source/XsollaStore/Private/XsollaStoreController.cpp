@@ -50,8 +50,21 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
 	return ItemsData.Items;
 }
 
-void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	if (!Currency.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("currency"), Currency);
+	if (!Country.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("country"), Country);
+	if (!Locale.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("locale"), Locale);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/payment/item/%s"), *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
@@ -60,7 +73,7 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetContentAsString(FString::Printf(TEXT("{\"currency\":\"%s\"}"), *Currency));
+	HttpRequest->SetContentAsString(PostContent);
 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
