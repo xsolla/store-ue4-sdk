@@ -16,6 +16,12 @@ router.post('/', function(req, res, next) {
             case "user_validation":
                 console.log("We always trust user exists: " + req.body.user.email);
                 break;
+            case "payment":
+                throw notification_type + " is not supported yet"
+                break;
+            case "refund":
+                throw notification_type + " is not supported yet"
+                break;
             default:
                 throw "Unsupported notification_type";
         }
