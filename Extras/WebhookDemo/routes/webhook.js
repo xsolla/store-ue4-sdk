@@ -15,13 +15,13 @@ router.post('/', function(req, res, next) {
     try {
         console.log("Here we go again! " + notification_type);
 
-        res.statusCode = 200;
+        res.statusCode = 204;
         res.write('{"verified" : true}');
 
     } catch(err) {
         console.log(err);
 
-        res.statusCode = 422;
+        res.statusCode = 400;
         res.write('{"error":{"code":"422","description":"');
         res.write(err.toString());
         res.write('"}}');
