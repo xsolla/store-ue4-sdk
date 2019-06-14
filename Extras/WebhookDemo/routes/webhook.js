@@ -7,22 +7,27 @@ let router = express.Router();
 let jwt = require('jsonwebtoken');
 
 router.post('/', function(req, res, next) {
-    res.contentType("application/json");
-
-    let notification_type = req.body.notification_type;
-    if(!notification_type) return res.sendStatus(400);
-
     try {
-        console.log("Here we go again! " + notification_type);
+        let notification_type = req.body.notification_type;
+        if(!notification_type) throw "No notification_type data provided";
+        console.log("Processing: " + notification_type + ", payload: " + JSON.stringify(req.body));
+
+        switch (notification_type) {
+            case "user_validation":
+                console.log("We always trust user exists: " + req.body.user.email);
+                break;
+            default:
+                throw "Unsupported notification_type";
+        }
 
         res.statusCode = 204;
-        res.write('{"verified" : true}');
-
+        res.contentType("text/plain");
     } catch(err) {
         console.log(err);
 
         res.statusCode = 400;
-        res.write('{"error":{"code":"422","description":"');
+        res.contentType("application/json");
+        res.write('{"error":{"code":"' + res.statusCode  + '","description":"');
         res.write(err.toString());
         res.write('"}}');
     }
