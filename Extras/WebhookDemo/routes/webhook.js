@@ -25,7 +25,7 @@ router.post('/', function(req, res, next) {
         let serverSignature = "Signature " + sha1(JSON.stringify(req.body) + global.gConfig.store.secretKey);
         if(serverSignature != req.headers.authorization)
         {
-            requestError(res, "Invalid Signature. Signature provided in \"Authorization\" header does not match with expected", errorCodes.INVALID_SIGNATURE);
+            requestError(res, "Invalid signature.", errorCodes.INVALID_SIGNATURE);
             return;
         }
 
