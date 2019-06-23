@@ -25,7 +25,8 @@ router.post('/', function(req, res, next) {
         let serverSignature = "Signature " + sha1(JSON.stringify(req.body) + global.gConfig.store.secretKey);
         if(serverSignature != req.headers.authorization)
         {
-            throw "Invalid Signature. Signature provided in \"Authorization\" header does not match with expected"
+            requestError(res, "Invalid Signature. Signature provided in \"Authorization\" header does not match with expected", errorCodes.INVALID_SIGNATURE);
+            return;
         }
 
         // Route request to desired notification handler
