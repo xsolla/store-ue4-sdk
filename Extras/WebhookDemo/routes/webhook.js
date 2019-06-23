@@ -20,12 +20,20 @@ router.post('/', function(req, res, next) {
             throw "Invalid Signature. Signature provided in \"Authorization\" header does not match with expected"
         }
 
-        // @TODO Check user existence
-
         // Route request to desired notification handler
         switch (notification_type) {
             case "user_validation":
-                console.log("We always trust user exists: " + req.body.user.id);
+                // Check user existence
+                global.db.users.findOne({ id: req.body.user.id }, function (err, doc) {
+                    if(err)
+                        requestError(res, err);
+                    else if(!doc)
+                        requestError(res, "No user " + req.body.user.id + " found in test db");
+                    else {
+                        console.log(doc);
+                        endRequest(res);
+                    }
+                });
                 break;
             case "payment":
                 throw notification_type + " is not supported yet"
@@ -37,19 +45,27 @@ router.post('/', function(req, res, next) {
                 throw "Unsupported notification_type";
         }
 
-        res.statusCode = 204;
-        res.contentType("text/plain");
     } catch(err) {
-        console.log(err);
-
-        res.statusCode = 400;
-        res.contentType("application/json");
-        res.write('{"error":{"code":"' + res.statusCode  + '","description":"');
-        res.write(err.toString());
-        res.write('"}}');
+        requestError(res, err);
     }
-
-    res.end();
 });
+
+// Provide status code and finish request processing
+endRequest = function (res) {
+    res.statusCode = 204;
+    res.contentType("text/plain");
+    res.end();
+}
+
+requestError = function (res, err) {
+    console.log(err);
+
+    res.statusCode = 400;
+    res.contentType("application/json");
+    res.write('{"error":{"code":"' + res.statusCode  + '","description":"');
+    res.write(err.toString());
+    res.write('"}}');
+    res.end();
+}
 
 module.exports = router;
