@@ -16,6 +16,11 @@ const errorCodes = {
 }
 
 router.post('/', function(req, res, next) {
+    // Force connection will be closed
+    res.set({
+        'Connection': 'close'
+    });
+
     try {
         let notification_type = req.body.notification_type;
         if(!notification_type) throw "No notification_type data provided";
