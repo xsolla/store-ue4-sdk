@@ -43,9 +43,18 @@ router.post('/', function(req, res, next) {
                     }
                 });
                 break;
+
             case "payment":
-                throw notification_type + " is not supported yet"
+                global.db.purchases.insert({transaction: req.body.transaction.id, user: req.body.user.id, seen: false}, function (err, newDoc) {
+                    if(err)
+                        requestError(res, err);
+                    else {
+                        console.log(newDoc);
+                        endRequest(res);
+                    }
+                });
                 break;
+
             case "refund":
                 throw notification_type + " is not supported yet"
                 break;
