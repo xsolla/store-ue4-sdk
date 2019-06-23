@@ -32,7 +32,6 @@ router.post('/', function(req, res, next) {
         // Route request to desired notification handler
         switch (notification_type) {
             case "user_validation":
-                // Check user existence
                 global.db.users.findOne({ id: req.body.user.id }, function (err, doc) {
                     if(err)
                         requestError(res, err);
@@ -57,8 +56,10 @@ router.post('/', function(req, res, next) {
                 break;
 
             case "refund":
-                throw notification_type + " is not supported yet"
+                // Just say "all is okay" for demo purposes
+                endRequest(res);
                 break;
+
             default:
                 throw "Unsupported notification_type";
         }
