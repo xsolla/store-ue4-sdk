@@ -7,6 +7,14 @@ let sha1 = require('sha1');
 
 let jwt = require('jsonwebtoken');
 
+const errorCodes = {
+    INVALID_USER: 'INVALID_USER',
+    INVALID_PARAMETER: 'INVALID_PARAMETER',
+    INVALID_SIGNATURE: 'INVALID_SIGNATURE',
+    INCORRECT_AMOUNT: 'INCORRECT_AMOUNT',
+    INCORRECT_INVOICE: 'INCORRECT_INVOICE'
+}
+
 router.post('/', function(req, res, next) {
     try {
         let notification_type = req.body.notification_type;
@@ -28,7 +36,7 @@ router.post('/', function(req, res, next) {
                     if(err)
                         requestError(res, err);
                     else if(!doc)
-                        requestError(res, "No user " + req.body.user.id + " found in test db");
+                        requestError(res, "No user " + req.body.user.id + " found in test db", errorCodes.INVALID_USER);
                     else {
                         console.log(doc);
                         endRequest(res);
@@ -57,12 +65,12 @@ endRequest = function (res) {
     res.end();
 }
 
-requestError = function (res, err) {
+requestError = function (res, err, errorCode = errorCodes.INVALID_PARAMETER) {
     console.log(err);
 
     res.statusCode = 400;
     res.contentType("application/json");
-    res.write('{"error":{"code":"' + res.statusCode  + '","description":"');
+    res.write('{"error":{"code":"' + errorCode  + '","description":"');
     res.write(err.toString());
     res.write('"}}');
     res.end();
