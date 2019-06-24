@@ -15,9 +15,12 @@ global.db.users = new Datastore();
 global.db.purchases = new Datastore();
 
 // And fill the db with test data
-global.db.users.insert([{ id: "test_user_1" }, { id: "test_user_2" }], function (err, newDocs) {
-    // Two users were inserted in the database
-    // newDocs is an array with these documents, augmented with their _id
+global.db.users.insert([
+    { id: "ladora@directmail.top"},
+    { id: "test_user_1" },
+    { id: "test_user_2" }],
+    function (err, newDocs) {
+    console.log("Demo users were inserted in the database");
 });
 
 // Prepare router and launch the app
