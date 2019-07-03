@@ -16,7 +16,8 @@ global.db.purchases = new Datastore();
 
 // And fill the db with test data
 global.db.users.insert([
-    { id: "ladora@directmail.top"},
+    { id: "ladora@directmail.top" },
+    { id: "xsolla" },
     { id: "test_user_1" },
     { id: "test_user_2" }],
     function (err, newDocs) {
