@@ -37,16 +37,22 @@ router.post('/', function(req, res, next) {
         // Route request to desired notification handler
         switch (notification_type) {
             case "user_validation":
-                global.db.users.findOne({ id: req.body.user.id }, function (err, doc) {
-                    if(err)
-                        requestError(res, err);
-                    else if(!doc)
-                        requestError(res, "No user " + req.body.user.id + " found in test db", errorCodes.INVALID_USER);
-                    else {
-                        console.log(doc);
-                        endRequest(res);
-                    }
-                });
+                if(global.gConfig.store.validateUser) {
+                    global.db.users.findOne({ id: req.body.user.id }, function (err, doc) {
+                        if(err)
+                            requestError(res, err);
+                        else if(!doc)
+                            requestError(res, "No user " + req.body.user.id + " found in test db", errorCodes.INVALID_USER);
+                        else {
+                            console.log(doc);
+                            endRequest(res);
+                        }
+                    });
+                }
+                else {
+                    console.log("Don't validate user and trust him: " + req.body.user.id);
+                    endRequest(res);
+                }
                 break;
 
             case "payment":
