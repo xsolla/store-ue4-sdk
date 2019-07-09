@@ -127,6 +127,10 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+
+	// Just cleanup local cart
+	Cart.Items.Empty();
+	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -167,6 +171,35 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+
+	// Try to update item quantity
+	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	if (CartItem)
+	{
+		CartItem->quantity = Quantity;
+	}
+	else
+	{
+		auto StoreItem = ItemsData.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+			return InItem.sku == ItemSKU;
+		});
+
+		if (StoreItem)
+		{
+			FStoreItem Item(*StoreItem);
+			Item.quantity = Quantity;
+			Cart.Items.Add(Item);
+		}
+		else
+		{
+			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find provided SKU in local cache: %s"), *VA_FUNC_LINE, *ItemSKU);
+		}
+	}
+
+	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -182,6 +215,18 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+
+	// Try to update item quantity
+	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	if (CartItem)
+	{
+		Cart.Items.Remove(*CartItem);
+	}
+
+	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -280,10 +325,6 @@ void UXsollaStoreController::ClearCart_HttpRequestComplete(FHttpRequestPtr HttpR
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
-	// Just cleanup local cart
-	Cart.Items.Empty();
-	OnCartUpdate.Broadcast(Cart);
-
 	SuccessCallback.ExecuteIfBound();
 }
 
@@ -328,8 +369,6 @@ void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpR
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
-	OnCartUpdate.Broadcast(Cart);
-
 	SuccessCallback.ExecuteIfBound();
 }
 
@@ -342,8 +381,6 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	OnCartUpdate.Broadcast(Cart);
 
 	SuccessCallback.ExecuteIfBound();
 }

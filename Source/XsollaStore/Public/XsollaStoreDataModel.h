@@ -72,9 +72,29 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	int32 quantity;
+
 public:
 	FStoreItem()
-		: is_free(false){};
+		: is_free(false)
+		, quantity(0){};
+
+	FStoreItem(const FStoreItem& Item)
+		: sku(Item.sku)
+		, name(Item.name)
+		, description(Item.description)
+		, long_description(Item.long_description)
+		, groups(Item.groups)
+		, is_free(Item.is_free)
+		, prices(Item.prices)
+		, image_url(Item.image_url)
+		, quantity(Item.quantity){};
+
+	bool operator==(const FStoreItem& Item) const
+	{
+		return sku == Item.sku;
+	}
 };
 
 USTRUCT(BlueprintType)
