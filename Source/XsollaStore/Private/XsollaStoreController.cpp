@@ -430,6 +430,11 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
 	return ItemsData.Items;
 }
 
+FStoreItemsData UXsollaStoreController::GetItemsData() const
+{
+	return ItemsData;
+}
+
 FStoreCart UXsollaStoreController::GetCart() const
 {
 	return Cart;

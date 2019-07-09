@@ -95,6 +95,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItems() const;
 
+	/** Get cached items data */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FStoreItemsData GetItemsData() const;
+
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
