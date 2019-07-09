@@ -5,8 +5,10 @@
 
 #include "XsollaStore.h"
 #include "XsollaStoreBrowser.h"
+#include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreImageLoader.h"
+#include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
 #include "Engine.h"
@@ -24,6 +26,8 @@ UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectI
 void UXsollaStoreController::Initialize(const FString& InProjectId)
 {
 	ProjectId = InProjectId;
+
+	LoadData();
 
 	// Check image loader is exsits, because initialization can be called multiple times
 	if (!ImageLoader)
@@ -100,6 +104,31 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 		MyBrowser->LoadWidget();
 		MyBrowser->GetBrowser()->LoadURL(PaystationUrl);
 	}
+}
+
+FStoreCart UXsollaStoreController::GetCart() const
+{
+	return Cart;
+}
+
+void UXsollaStoreController::CreateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+}
+
+void UXsollaStoreController::ClearCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+}
+
+void UXsollaStoreController::UpdateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+}
+
+void UXsollaStoreController::AddToCart(const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+}
+
+void UXsollaStoreController::RemoveFromCart(const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
 }
 
 void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -206,6 +235,16 @@ bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 	}
 
 	return false;
+}
+
+void UXsollaStoreController::LoadData()
+{
+	Cart.cart_id = UXsollaStoreSave::Load();
+}
+
+void UXsollaStoreController::SaveData()
+{
+	UXsollaStoreSave::Save(Cart.cart_id);
 }
 
 TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString& Url)

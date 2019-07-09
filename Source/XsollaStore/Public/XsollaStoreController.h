@@ -12,6 +12,7 @@
 class UXsollaStoreImageLoader;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
+DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFetchTokenSuccess, const FString&, AccessToken);
 
@@ -49,12 +50,43 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken /** @TODO Add callbacks to control payment progress */);
 
+	/** Get cached cart data */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
+	FStoreCart GetCart() const;
+
+	/** Create new cart */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Remove all items from cart  */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void ClearCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Update cart content */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Add item to cart and change its quantity */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AddToCart(const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Remove item from cart */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RemoveFromCart(const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreError ErrorCallback);
+
+protected:
+	/** Load save game and extract data */
+	void LoadData();
+
+	/** Save cached data or reset one if necessary */
+	void SaveData();
 
 private:
 	/** Create http request and add Xsolla API meta */
@@ -63,8 +95,11 @@ private:
 	/** Cached Xsolla Store project id */
 	FString ProjectId;
 
-	/** Cached items list */
+	/** Cached virtual items list */
 	FStoreItemsData ItemsData;
+
+	/** Current cart */
+	FStoreCart Cart;
 
 public:
 	UXsollaStoreImageLoader* GetImageLoader() const;

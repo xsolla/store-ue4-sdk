@@ -21,6 +21,24 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCartPrice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	float amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	float amount_without_discount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	FString currency;
+
+public:
+	FStoreCartPrice(){};
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
@@ -64,4 +82,28 @@ public:
 
 public:
 	FStoreItemsData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCart
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	int32 cart_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	FStoreCartPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	TArray<FStoreItem> Items;
+
+public:
+	FStoreCart()
+		: cart_id(-1)
+		, is_free(false){};
 };
