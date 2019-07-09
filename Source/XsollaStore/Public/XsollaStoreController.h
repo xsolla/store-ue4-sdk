@@ -13,6 +13,7 @@ class UXsollaStoreImageLoader;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFetchTokenSuccess, const FString&, AccessToken);
 
@@ -102,6 +103,11 @@ public:
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
+
+public:
+	/** Event occured when the cart was changed or updated */
+	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
+	FOnCartUpdate OnCartUpdate;
 
 protected:
 	/** Cached Xsolla Store project id */

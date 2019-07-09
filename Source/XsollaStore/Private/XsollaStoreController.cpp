@@ -265,6 +265,8 @@ void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr Http
 	}
 
 	Cart = FStoreCart(JsonObject->GetNumberField(TEXT("id")));
+	OnCartUpdate.Broadcast(Cart);
+
 	SuccessCallback.ExecuteIfBound();
 }
 
@@ -280,6 +282,7 @@ void UXsollaStoreController::ClearCart_HttpRequestComplete(FHttpRequestPtr HttpR
 
 	// Just cleanup local cart
 	Cart.Items.Empty();
+	OnCartUpdate.Broadcast(Cart);
 
 	SuccessCallback.ExecuteIfBound();
 }
@@ -310,6 +313,8 @@ void UXsollaStoreController::UpdateCart_HttpRequestComplete(FHttpRequestPtr Http
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
+	OnCartUpdate.Broadcast(Cart);
+
 	SuccessCallback.ExecuteIfBound();
 }
 
@@ -322,6 +327,8 @@ void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpR
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	OnCartUpdate.Broadcast(Cart);
 
 	SuccessCallback.ExecuteIfBound();
 }
@@ -336,7 +343,7 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
-	// @TODO Should we check that no item with provided SKU exists in local cart?
+	OnCartUpdate.Broadcast(Cart);
 
 	SuccessCallback.ExecuteIfBound();
 }
@@ -398,6 +405,7 @@ bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 void UXsollaStoreController::LoadData()
 {
 	Cart.cart_id = UXsollaStoreSave::Load();
+	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreController::SaveData()
