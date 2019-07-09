@@ -43,6 +43,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/**
+	 * Initiate cart purchase session and fetch token for payment console
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use default value.
+	 * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use default value.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void FetchCartPaymentToken(const FString& AuthToken, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/** Open payment console for provided access token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken /** @TODO Add callbacks to control payment progress */);
