@@ -75,10 +75,15 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	int32 quantity;
 
+	/** TNumericLimits<int32>::Max() if no limit */
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	int32 purchase_limit;
+
 public:
 	FStoreItem()
 		: is_free(false)
-		, quantity(0){};
+		, quantity(0)
+		, purchase_limit(TNumericLimits<int32>::Max()){};
 
 	FStoreItem(const FStoreItem& Item)
 		: sku(Item.sku)
@@ -89,7 +94,8 @@ public:
 		, is_free(Item.is_free)
 		, prices(Item.prices)
 		, image_url(Item.image_url)
-		, quantity(Item.quantity){};
+		, quantity(Item.quantity)
+		, purchase_limit(Item.purchase_limit){};
 
 	bool operator==(const FStoreItem& Item) const
 	{

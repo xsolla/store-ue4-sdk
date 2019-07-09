@@ -187,7 +187,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 	if (CartItem)
 	{
-		CartItem->quantity = Quantity;
+		CartItem->quantity = FMath::Clamp(Quantity, 0, CartItem->purchase_limit);
 	}
 	else
 	{
@@ -198,7 +198,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 		if (StoreItem)
 		{
 			FStoreItem Item(*StoreItem);
-			Item.quantity = Quantity;
+			Item.quantity = FMath::Clamp(Quantity, 0, Item.purchase_limit);
 			Cart.Items.Add(Item);
 		}
 		else
