@@ -19,7 +19,8 @@ struct XSOLLASTORE_API FStorePrice
 	FString currency;
 
 public:
-	FStorePrice(){};
+	FStorePrice()
+		: amount(0.f){};
 };
 
 USTRUCT(BlueprintType)
@@ -37,7 +38,9 @@ struct XSOLLASTORE_API FStoreCartPrice
 	FString currency;
 
 public:
-	FStoreCartPrice(){};
+	FStoreCartPrice()
+		: amount(0.f)
+		, amount_without_discount(0.f){};
 };
 
 USTRUCT(BlueprintType)
@@ -70,7 +73,8 @@ struct XSOLLASTORE_API FStoreItem
 	FString image_url;
 
 public:
-	FStoreItem(){};
+	FStoreItem()
+		: is_free(false){};
 };
 
 USTRUCT(BlueprintType)
@@ -107,5 +111,9 @@ public:
 public:
 	FStoreCart()
 		: cart_id(INVALID_CART)
+		, is_free(false){};
+
+	FStoreCart(int32 CartId)
+		: cart_id(CartId)
 		, is_free(false){};
 };
