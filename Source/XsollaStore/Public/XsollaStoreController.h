@@ -30,10 +30,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Get list of cached virtual items */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	TArray<FStoreItem> GetVirtualItems() const;
-
 	/**
 	 * Initiate item purchase session and fetch token for payment console
 	 *
@@ -49,10 +45,6 @@ public:
 	/** Open payment console for provided access token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken /** @TODO Add callbacks to control payment progress */);
-
-	/** Get cached cart data */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
-	FStoreCart GetCart() const;
 
 	/** Create new cart */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -98,6 +90,16 @@ private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
 
+public:
+	/** Get list of cached virtual items */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	TArray<FStoreItem> GetVirtualItems() const;
+
+	/** Get cached cart data */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
+	FStoreCart GetCart() const;
+
+protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectId;
 

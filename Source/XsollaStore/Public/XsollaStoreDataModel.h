@@ -86,6 +86,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
+	/** All available categories for items */
+	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
+	TSet<FString> Groups;
+
 public:
 	FStoreItemsData(){};
 };

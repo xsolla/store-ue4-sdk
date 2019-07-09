@@ -49,11 +49,6 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 	HttpRequest->ProcessRequest();
 }
 
-TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
-{
-	return ItemsData.Items;
-}
-
 void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	// Prepare request payload
@@ -104,11 +99,6 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 		MyBrowser->LoadWidget();
 		MyBrowser->GetBrowser()->LoadURL(PaystationUrl);
 	}
-}
-
-FStoreCart UXsollaStoreController::GetCart() const
-{
-	return Cart;
 }
 
 void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -215,6 +205,15 @@ void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequest
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
 		return;
+	}
+
+	// Update categories now
+	for (auto& Item : ItemsData.Items)
+	{
+		for (auto& ItemGroup : Item.groups)
+		{
+			ItemsData.Groups.Add(ItemGroup);
+		}
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
@@ -424,6 +423,16 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	HttpRequest->SetHeader(TEXT("sdk_v"), XSOLLA_STORE_VERSION);
 
 	return HttpRequest;
+}
+
+TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
+{
+	return ItemsData.Items;
+}
+
+FStoreCart UXsollaStoreController::GetCart() const
+{
+	return Cart;
 }
 
 UXsollaStoreImageLoader* UXsollaStoreController::GetImageLoader() const
