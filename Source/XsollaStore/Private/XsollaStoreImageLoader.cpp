@@ -20,12 +20,12 @@ UXsollaStoreImageLoader::UXsollaStoreImageLoader(const FObjectInitializer& Objec
 
 void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback)
 {
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
+	UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
 
 	const FString ResourceId = GetCacheName(URL).ToString();
 	if (ImageBrushes.Contains(ResourceId))
 	{
-		UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
+		UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
 		SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get());
 	}
 	else
