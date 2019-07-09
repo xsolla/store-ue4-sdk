@@ -146,4 +146,34 @@ public:
 	FStoreCart(int32 CartId)
 		: cart_id(CartId)
 		, is_free(false){};
+
+	// Check we have the same set if items
+	bool operator==(const FStoreCart& Cart) const
+	{
+		if (cart_id == Cart.cart_id)
+		{
+			if (Items.Num() == Cart.Items.Num())
+			{
+				int32 ItemsCount = Items.Num();
+				for (int32 i = 0; i < ItemsCount; ++i)
+				{
+					if (Items[i].sku == Cart.Items[i].sku)
+					{
+						if (Items[i].quantity != Cart.Items[i].quantity)
+						{
+							return false;
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		return false;
+	}
 };

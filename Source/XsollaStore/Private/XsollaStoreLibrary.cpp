@@ -5,6 +5,7 @@
 
 #include "XsollaStore.h"
 #include "XsollaStoreController.h"
+#include "XsollaStoreDataModel.h"
 
 #include "Engine/Engine.h"
 
@@ -27,4 +28,9 @@ void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FS
 {
 	auto StoreController = UXsollaStoreLibrary::GetStoreController(WorldContextObject);
 	StoreController->GetImageLoader()->LoadImage(URL, SuccessCallback);
+}
+
+bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B)
+{
+	return A == B;
 }
