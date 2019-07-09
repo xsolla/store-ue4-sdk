@@ -119,6 +119,9 @@ protected:
 	/** Current cart */
 	FStoreCart Cart;
 
+	/** Cached auth token (used for silent cart update) */
+	FString CachedAuthToken;
+
 public:
 	UXsollaStoreImageLoader* GetImageLoader() const;
 

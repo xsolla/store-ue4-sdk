@@ -103,6 +103,8 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 
 void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	const FString Url = TEXT("https://store.xsolla.com/api/v1/cart");
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
@@ -117,6 +119,8 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 
 void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/clear"), Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
@@ -135,6 +139,8 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 
 void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d"), Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
@@ -149,6 +155,8 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 
 void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
@@ -204,6 +212,8 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/item/%s"), Cart.cart_id, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
@@ -363,6 +373,7 @@ void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpR
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		UpdateCart(CachedAuthToken, SuccessCallback, ErrorCallback);
 		return;
 	}
 
@@ -376,6 +387,7 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		UpdateCart(CachedAuthToken, SuccessCallback, ErrorCallback);
 		return;
 	}
 
