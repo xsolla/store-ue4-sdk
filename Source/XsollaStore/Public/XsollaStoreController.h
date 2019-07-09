@@ -91,9 +91,9 @@ private:
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
 
 public:
-	/** Get list of cached virtual items */
+	/** Get list of cached virtual items filtered by Category */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	TArray<FStoreItem> GetVirtualItems() const;
+	TArray<FStoreItem> GetVirtualItems(const FString& GroupFilter) const;
 
 	/** Get cached items data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")

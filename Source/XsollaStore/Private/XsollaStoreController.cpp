@@ -425,9 +425,18 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	return HttpRequest;
 }
 
-TArray<FStoreItem> UXsollaStoreController::GetVirtualItems() const
+TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupFilter) const
 {
-	return ItemsData.Items;
+	if (GroupFilter.IsEmpty())
+	{
+		return ItemsData.Items;
+	}
+	else
+	{
+		return std::move(ItemsData.Items.FilterByPredicate([GroupFilter](const FStoreItem& InStoreItem) {
+			return InStoreItem.groups.Contains(GroupFilter);
+		}));
+	}
 }
 
 FStoreItemsData UXsollaStoreController::GetItemsData() const
