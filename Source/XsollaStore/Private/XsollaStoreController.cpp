@@ -355,6 +355,8 @@ void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr Http
 	Cart = FStoreCart(JsonObject->GetNumberField(TEXT("id")));
 	OnCartUpdate.Broadcast(Cart);
 
+	SaveData();
+
 	SuccessCallback.ExecuteIfBound();
 }
 
