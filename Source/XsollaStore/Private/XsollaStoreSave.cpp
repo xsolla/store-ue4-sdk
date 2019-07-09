@@ -3,6 +3,8 @@
 
 #include "XsollaStoreSave.h"
 
+#include "XsollaStoreDefines.h"
+
 #include "Kismet/GameplayStatics.h"
 
 const FString UXsollaStoreSave::SaveSlotName = "XsollaStoreSaveSlot";
@@ -13,7 +15,7 @@ int32 UXsollaStoreSave::Load()
 	auto SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(UXsollaStoreSave::SaveSlotName, UXsollaStoreSave::UserIndex));
 	if (!SaveInstance)
 	{
-		return -1;
+		return INVALID_CART;
 	}
 
 	return SaveInstance->StoreCartId;

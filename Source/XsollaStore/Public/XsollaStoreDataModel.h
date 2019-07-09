@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "XsollaStoreDefines.h"
+
 #include "XsollaStoreDataModel.generated.h"
 
 USTRUCT(BlueprintType)
@@ -104,6 +106,6 @@ public:
 
 public:
 	FStoreCart()
-		: cart_id(-1)
+		: cart_id(INVALID_CART)
 		, is_free(false){};
 };

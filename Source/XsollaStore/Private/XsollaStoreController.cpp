@@ -28,6 +28,10 @@ void UXsollaStoreController::Initialize(const FString& InProjectId)
 	ProjectId = InProjectId;
 
 	LoadData();
+	if (Cart.cart_id == INVALID_CART)
+	{
+		CreateCart(FOnStoreCartUpdate(), FOnStoreError());
+	}
 
 	// Check image loader is exsits, because initialization can be called multiple times
 	if (!ImageLoader)
@@ -113,22 +117,85 @@ FStoreCart UXsollaStoreController::GetCart() const
 
 void UXsollaStoreController::CreateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	const FString Url = TEXT("https://store.xsolla.com/api/v1/cart");
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("POST"));
+	//HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CreateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreController::ClearCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/clear"), Cart.cart_id);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("PUT"));
+	//HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreController::UpdateCart(const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d"), Cart.cart_id);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("GET"));
+	//HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreController::AddToCart(const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/item/%s"), Cart.cart_id, *ItemSKU);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("PUT"));
+
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetContentAsString(PostContent);
+
+	//HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreController::RemoveFromCart(const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/item/%s"), Cart.cart_id, *ItemSKU);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("DELETE"));
+
+	//HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -181,6 +248,26 @@ void UXsollaStoreController::FetchPaymentToken_HttpRequestComplete(FHttpRequestP
 
 	FString AccessToken = JsonObject->GetStringField(TEXT("token"));
 	SuccessCallback.ExecuteIfBound(AccessToken);
+}
+
+void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+}
+
+void UXsollaStoreController::ClearCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+}
+
+void UXsollaStoreController::UpdateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+}
+
+void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+}
+
+void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
 }
 
 bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreError ErrorCallback)
