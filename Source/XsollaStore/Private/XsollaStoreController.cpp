@@ -259,14 +259,13 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 
-	// Try to update item quantity
-	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	if (CartItem)
+	for (int32 i = Cart.Items.Num() - 1; i >= 0; --i)
 	{
-		Cart.Items.Remove(*CartItem);
+		if (Cart.Items[i].sku == ItemSKU)
+		{
+			Cart.Items.RemoveAt(i);
+			break;
+		}
 	}
 
 	OnCartUpdate.Broadcast(Cart);
