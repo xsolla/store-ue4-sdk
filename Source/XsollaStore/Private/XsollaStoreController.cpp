@@ -524,9 +524,9 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupF
 	}
 	else
 	{
-		return std::move(ItemsData.Items.FilterByPredicate([GroupFilter](const FStoreItem& InStoreItem) {
+		return ItemsData.Items.FilterByPredicate([GroupFilter](const FStoreItem& InStoreItem) {
 			return InStoreItem.groups.Contains(GroupFilter);
-		}));
+		});
 	}
 }
 
