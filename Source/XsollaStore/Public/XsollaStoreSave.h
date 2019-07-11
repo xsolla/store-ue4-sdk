@@ -5,7 +5,29 @@
 
 #include "GameFramework/SaveGame.h"
 
+#include "XsollaStoreDefines.h"
+
 #include "XsollaStoreSave.generated.h"
+
+USTRUCT(Blueprintable)
+struct XSOLLASTORE_API FXsollaStoreSaveData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	int32 CartId;
+
+	UPROPERTY()
+	FString CartCurrency;
+
+	FXsollaStoreSaveData()
+		: CartId(INVALID_CART)
+		, CartCurrency(TEXT("USD")){};
+
+	FXsollaStoreSaveData(int32 InCartId, const FString& InCartCurrency)
+		: CartId(InCartId)
+		, CartCurrency(InCartCurrency){};
+};
 
 UCLASS()
 class UXsollaStoreSave : public USaveGame
@@ -13,8 +35,8 @@ class UXsollaStoreSave : public USaveGame
 	GENERATED_BODY()
 
 public:
-	static int32 Load();
-	static void Save(const int32& InCartId);
+	static FXsollaStoreSaveData Load();
+	static void Save(const FXsollaStoreSaveData& InCartData);
 
 public:
 	static const FString SaveSlotName;
@@ -24,5 +46,5 @@ public:
 
 protected:
 	UPROPERTY()
-	int32 StoreCartId;
+	FXsollaStoreSaveData CartData;
 };

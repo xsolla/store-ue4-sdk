@@ -28,6 +28,9 @@ UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectI
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/XsollaStore/Browser/W_StoreBrowser.W_StoreBrowser_C"));
 	BrowserWidgetClass = BrowserWidgetFinder.Class;
+
+	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68
+	CachedCartCurrency = TEXT("USD");
 }
 
 void UXsollaStoreController::Initialize(const FString& InProjectId)
@@ -229,7 +232,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 	ProcessNextCartRequest();
 
 	// Try to update item quantity
-	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {
 		return InItem.sku == ItemSKU;
 	});
 
@@ -245,8 +248,11 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 		if (StoreItem)
 		{
-			FStoreItem Item(*StoreItem);
+			FStoreCartItem Item(*StoreItem);
 			Item.quantity = FMath::Clamp(Quantity, 0, Item.purchase_limit);
+
+			// @TODO Predict price locally before cart sync https://github.com/xsolla/store-ue4-sdk/issues/68
+
 			Cart.Items.Add(Item);
 		}
 		else
@@ -515,13 +521,17 @@ bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 
 void UXsollaStoreController::LoadData()
 {
-	Cart.cart_id = UXsollaStoreSave::Load();
+	auto CartData = UXsollaStoreSave::Load();
+
+	CachedCartCurrency = CartData.CartCurrency;
+	Cart.cart_id = CartData.CartId;
+
 	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreController::SaveData()
 {
-	UXsollaStoreSave::Save(Cart.cart_id);
+	UXsollaStoreSave::Save(FXsollaStoreSaveData(Cart.cart_id, CachedCartCurrency));
 }
 
 TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString& Url)

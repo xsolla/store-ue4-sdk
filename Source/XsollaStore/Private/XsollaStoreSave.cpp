@@ -10,18 +10,18 @@
 const FString UXsollaStoreSave::SaveSlotName = "XsollaStoreSaveSlot";
 const int32 UXsollaStoreSave::UserIndex = 0;
 
-int32 UXsollaStoreSave::Load()
+FXsollaStoreSaveData UXsollaStoreSave::Load()
 {
 	auto SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(UXsollaStoreSave::SaveSlotName, UXsollaStoreSave::UserIndex));
 	if (!SaveInstance)
 	{
-		return INVALID_CART;
+		return FXsollaStoreSaveData();
 	}
 
-	return SaveInstance->StoreCartId;
+	return SaveInstance->CartData;
 }
 
-void UXsollaStoreSave::Save(const int32& InCartId)
+void UXsollaStoreSave::Save(const FXsollaStoreSaveData& InCartData)
 {
 	auto SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(UXsollaStoreSave::SaveSlotName, UXsollaStoreSave::UserIndex));
 	if (!SaveInstance)
@@ -29,7 +29,7 @@ void UXsollaStoreSave::Save(const int32& InCartId)
 		SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::CreateSaveGameObject(UXsollaStoreSave::StaticClass()));
 	}
 
-	SaveInstance->StoreCartId = InCartId;
+	SaveInstance->CartData = InCartData;
 
 	UGameplayStatics::SaveGameToSlot(SaveInstance, UXsollaStoreSave::SaveSlotName, 0);
 }

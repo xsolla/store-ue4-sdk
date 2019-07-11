@@ -147,6 +147,9 @@ protected:
 	/** Current cart */
 	FStoreCart Cart;
 
+	/** Cached cart desired currency (used for silent cart update) */
+	FString CachedCartCurrency;
+
 	/** Cached auth token (used for silent cart update) */
 	FString CachedAuthToken;
 

@@ -15,17 +15,12 @@ struct XSOLLASTORE_API FStorePrice
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	float amount;
 
-	/** Used for cart equations only */
-	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount_without_discount;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	FString currency;
 
 public:
 	FStorePrice()
-		: amount(0.f)
-		, amount_without_discount(0.f){};
+		: amount(0.f){};
 };
 
 USTRUCT(BlueprintType)
@@ -57,9 +52,6 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	int32 quantity;
-
 	/** TNumericLimits<int32>::Max() if no limit */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	int32 purchase_limit;
@@ -67,7 +59,6 @@ struct XSOLLASTORE_API FStoreItem
 public:
 	FStoreItem()
 		: is_free(false)
-		, quantity(0)
 		, purchase_limit(TNumericLimits<int32>::Max()){};
 
 	FStoreItem(const FStoreItem& Item)
@@ -79,7 +70,6 @@ public:
 		, is_free(Item.is_free)
 		, prices(Item.prices)
 		, image_url(Item.image_url)
-		, quantity(Item.quantity)
 		, purchase_limit(Item.purchase_limit){};
 
 	bool operator==(const FStoreItem& Item) const
@@ -106,6 +96,78 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCartPrice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	float amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	float amount_without_discount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Price")
+	FString currency;
+
+public:
+	FStoreCartPrice()
+		: amount(0.f)
+		, amount_without_discount(0.f){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCartItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FStoreCartPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	int32 quantity;
+
+	/** TNumericLimits<int32>::Max() if no limit */
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	int32 purchase_limit;
+
+public:
+	FStoreCartItem()
+		: is_free(false)
+		, quantity(0)
+		, purchase_limit(TNumericLimits<int32>::Max()){};
+
+	FStoreCartItem(const FStoreItem& Item)
+		: sku(Item.sku)
+		, name(Item.name)
+		, is_free(Item.is_free)
+		, image_url(Item.image_url)
+		, quantity(0)
+		, purchase_limit(Item.purchase_limit){};
+
+	bool operator==(const FStoreCartItem& Item) const
+	{
+		return sku == Item.sku;
+	}
+
+	/*bool operator==(const FStoreItem& Item) const
+	{
+		return sku == Item.sku;
+	}*/
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreCart
 {
 public:
@@ -115,13 +177,13 @@ public:
 	int32 cart_id;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	FStorePrice price;
+	FStoreCartPrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
 	bool is_free;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	TArray<FStoreItem> Items;
+	TArray<FStoreCartItem> Items;
 
 public:
 	FStoreCart()
