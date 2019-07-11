@@ -32,5 +32,5 @@ public:
 
 	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
-	static FString FormatPrice(UObject* WorldContextObject, float Amount, const FString& Currency);
+	static FString FormatPrice(UObject* WorldContextObject, float Amount, const FString& Currency = TEXT("USD"));
 };
