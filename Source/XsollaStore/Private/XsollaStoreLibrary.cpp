@@ -5,6 +5,7 @@
 
 #include "XsollaStore.h"
 #include "XsollaStoreController.h"
+#include "XsollaStoreCurrencyFormat.h"
 #include "XsollaStoreDataModel.h"
 
 #include "Engine/Engine.h"
@@ -33,4 +34,18 @@ void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FS
 bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B)
 {
 	return A == B;
+}
+
+FString UXsollaStoreLibrary::FormatPrice(UObject* WorldContextObject, float Amount, const FString& Currency)
+{
+	UDataTable* CurrencyLibrary = UXsollaStoreLibrary::GetStoreController(WorldContextObject)->GetCurrencyLibrary();
+	check(CurrencyLibrary);
+
+	auto Row = CurrencyLibrary->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
+	if (Row)
+	{
+		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *FString::SanitizeFloat(Amount, Row->fractionSize));
+	}
+
+	return FString();
 }

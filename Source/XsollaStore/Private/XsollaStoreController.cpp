@@ -12,6 +12,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Engine.h"
+#include "Engine/DataTable.h"
 #include "Json.h"
 #include "JsonObjectConverter.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -22,6 +23,9 @@
 UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/XsollaStore/Data/currency-format.currency-format'"));
+	CurrencyLibrary = CurrencyLibraryObj.Object;
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/XsollaStore/Browser/W_StoreBrowser.W_StoreBrowser_C"));
 	BrowserWidgetClass = BrowserWidgetFinder.Class;
 }
@@ -598,6 +602,11 @@ FStoreCart UXsollaStoreController::GetCart() const
 FString UXsollaStoreController::GetPendingPaystationUrl() const
 {
 	return PengindPaystationUrl;
+}
+
+UDataTable* UXsollaStoreController::GetCurrencyLibrary() const
+{
+	return CurrencyLibrary;
 }
 
 UXsollaStoreImageLoader* UXsollaStoreController::GetImageLoader() const

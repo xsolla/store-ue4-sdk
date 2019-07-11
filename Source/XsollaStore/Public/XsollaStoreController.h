@@ -10,7 +10,9 @@
 #include "XsollaStoreController.generated.h"
 
 class UXsollaStoreImageLoader;
+
 class UUserWidget;
+class UDataTable;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
@@ -126,6 +128,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
 
+	/** Get currency-format data table */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	UDataTable* GetCurrencyLibrary() const;
+
 public:
 	/** Event occured when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -146,6 +152,9 @@ protected:
 
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
+
+	UPROPERTY(BlueprintReadOnly)
+	UDataTable* CurrencyLibrary;
 
 public:
 	UXsollaStoreImageLoader* GetImageLoader() const;

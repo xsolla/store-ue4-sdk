@@ -29,4 +29,8 @@ public:
 	/** Returns true if cart A is equal to cart B (A == B) */
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (StoreCart)", CompactNodeTitle = "===", ScriptMethod = "Equals", ScriptOperator = "==", Keywords = "== equal"), Category = "Xsolla|Store|Cart")
 	static bool Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B);
+
+	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
+	static FString FormatPrice(UObject* WorldContextObject, float Amount, const FString& Currency);
 };
