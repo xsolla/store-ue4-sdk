@@ -4,23 +4,26 @@
 #include "XsollaStoreController.h"
 
 #include "XsollaStore.h"
-#include "XsollaStoreBrowser.h"
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreImageLoader.h"
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
+#include "Blueprint/UserWidget.h"
 #include "Engine.h"
 #include "Json.h"
 #include "JsonObjectConverter.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "UObject/ConstructorHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
 UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/XsollaStore/Browser/W_StoreBrowser.W_StoreBrowser_C"));
+	BrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
 void UXsollaStoreController::Initialize(const FString& InProjectId)
@@ -128,9 +131,9 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
-		auto MyBrowser = CreateWidget<UXsollaStoreBrowser>(GEngine->GameViewport->GetWorld(), UXsollaStoreBrowser::StaticClass());
-		MyBrowser->LoadWidget();
-		MyBrowser->GetBrowser()->LoadURL(PaystationUrl);
+		PengindPaystationUrl = PaystationUrl;
+		auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
+		MyBrowser->AddToViewport(MAX_int32);
 	}
 }
 
@@ -590,6 +593,11 @@ FStoreItemsData UXsollaStoreController::GetItemsData() const
 FStoreCart UXsollaStoreController::GetCart() const
 {
 	return Cart;
+}
+
+FString UXsollaStoreController::GetPendingPaystationUrl() const
+{
+	return PengindPaystationUrl;
 }
 
 UXsollaStoreImageLoader* UXsollaStoreController::GetImageLoader() const

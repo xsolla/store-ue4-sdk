@@ -10,6 +10,7 @@
 #include "XsollaStoreController.generated.h"
 
 class UXsollaStoreImageLoader;
+class UUserWidget;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
@@ -121,6 +122,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
 
+	/** Get pending paystation url to be opened in browser */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FString GetPendingPaystationUrl() const;
+
 public:
 	/** Event occured when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -139,10 +144,16 @@ protected:
 	/** Cached auth token (used for silent cart update) */
 	FString CachedAuthToken;
 
+	/** Pending paystation url to be opened in browser */
+	FString PengindPaystationUrl;
+
 public:
 	UXsollaStoreImageLoader* GetImageLoader() const;
 
 private:
 	UPROPERTY()
 	UXsollaStoreImageLoader* ImageLoader;
+
+	UPROPERTY()
+	TSubclassOf<UUserWidget> BrowserWidgetClass;
 };
