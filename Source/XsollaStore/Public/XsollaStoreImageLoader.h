@@ -10,6 +10,7 @@
 #include "XsollaStoreImageLoader.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
+DECLARE_DYNAMIC_DELEGATE(FOnImageLoadFailed);
 
 /**
  * Async image loading from web. Should be used for DEMO PUPPOSES ONLY.
@@ -21,12 +22,12 @@ class XSOLLASTORE_API UXsollaStoreImageLoader : public UObject
 
 public:
 	/** */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback"))
-	void LoadImage(FString URL, const FOnImageLoaded& SuccessCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
 protected:
 	/** */
-	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback);
+	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback);
 
 private:
 	FName GetCacheName(const FString& URL) const;

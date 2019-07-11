@@ -18,7 +18,7 @@ UXsollaStoreImageLoader::UXsollaStoreImageLoader(const FObjectInitializer& Objec
 {
 }
 
-void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback)
+void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
 	UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
 
@@ -32,7 +32,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	{
 		TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 		HttpRequest->SetURL(URL);
 		HttpRequest->SetVerb(TEXT("GET"));
 
@@ -40,7 +40,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	}
 }
 
-void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback)
+void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
 {
 	if (bSucceeded && HttpResponse.IsValid())
 	{
@@ -69,6 +69,7 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
 
 					SuccessCallback.ExecuteIfBound(*ImageBrush.Get());
+					return;
 				}
 				else
 				{
@@ -89,6 +90,8 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to download image"), *VA_FUNC_LINE);
 	}
+
+	ErrorCallback.ExecuteIfBound();
 }
 
 FName UXsollaStoreImageLoader::GetCacheName(const FString& URL) const

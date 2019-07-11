@@ -24,10 +24,10 @@ UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldCo
 	return nullptr;
 }
 
-void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback)
+void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
 	auto StoreController = UXsollaStoreLibrary::GetStoreController(WorldContextObject);
-	StoreController->GetImageLoader()->LoadImage(URL, SuccessCallback);
+	StoreController->GetImageLoader()->LoadImage(URL, SuccessCallback, ErrorCallback);
 }
 
 bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B)
