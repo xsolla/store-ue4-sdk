@@ -102,6 +102,12 @@ private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
 
+	/** Try to execute next request in queue */
+	void ProcessNextCartRequest();
+
+	/** Queue to store cart change requests */
+	TArray<TSharedRef<IHttpRequest>> CartRequestsQueue;
+
 public:
 	/** Get list of cached virtual items filtered by Category */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")

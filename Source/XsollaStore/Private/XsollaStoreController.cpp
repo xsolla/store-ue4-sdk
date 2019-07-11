@@ -147,7 +147,9 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CreateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+
+	CartRequestsQueue.Add(HttpRequest);
+	ProcessNextCartRequest();
 }
 
 void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -163,7 +165,9 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+
+	CartRequestsQueue.Add(HttpRequest);
+	ProcessNextCartRequest();
 
 	// Just cleanup local cart
 	Cart.Items.Empty();
@@ -183,7 +187,9 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+
+	CartRequestsQueue.Add(HttpRequest);
+	ProcessNextCartRequest();
 }
 
 void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -211,7 +217,9 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+
+	CartRequestsQueue.Add(HttpRequest);
+	ProcessNextCartRequest();
 
 	// Try to update item quantity
 	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
@@ -257,7 +265,9 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+
+	CartRequestsQueue.Add(HttpRequest);
+	ProcessNextCartRequest();
 
 	for (int32 i = Cart.Items.Num() - 1; i >= 0; --i)
 	{
@@ -336,6 +346,7 @@ void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr Http
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		ProcessNextCartRequest();
 		return;
 	}
 
@@ -363,6 +374,7 @@ void UXsollaStoreController::ClearCart_HttpRequestComplete(FHttpRequestPtr HttpR
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		ProcessNextCartRequest();
 		return;
 	}
 
@@ -370,12 +382,15 @@ void UXsollaStoreController::ClearCart_HttpRequestComplete(FHttpRequestPtr HttpR
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound();
+
+	ProcessNextCartRequest();
 }
 
 void UXsollaStoreController::UpdateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
+		ProcessNextCartRequest();
 		return;
 	}
 
@@ -401,6 +416,8 @@ void UXsollaStoreController::UpdateCart_HttpRequestComplete(FHttpRequestPtr Http
 	OnCartUpdate.Broadcast(Cart);
 
 	SuccessCallback.ExecuteIfBound();
+
+	ProcessNextCartRequest();
 }
 
 void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -415,6 +432,8 @@ void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpR
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound();
+
+	ProcessNextCartRequest();
 }
 
 void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -429,6 +448,8 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound();
+
+	ProcessNextCartRequest();
 }
 
 bool UXsollaStoreController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreError ErrorCallback)
@@ -514,6 +535,37 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	HttpRequest->SetHeader(TEXT("sdk_v"), XSOLLA_STORE_VERSION);
 
 	return HttpRequest;
+}
+
+void UXsollaStoreController::ProcessNextCartRequest()
+{
+	// Cleanup finished requests firts
+	int32 CartRequestsNum = CartRequestsQueue.Num();
+	for (int32 i = CartRequestsNum - 1; i >= 0; --i)
+	{
+		if (CartRequestsQueue[i].Get().GetStatus() == EHttpRequestStatus::Succeeded ||
+			CartRequestsQueue[i].Get().GetStatus() == EHttpRequestStatus::Failed ||
+			CartRequestsQueue[i].Get().GetStatus() == EHttpRequestStatus::Failed_ConnectionError)
+		{
+			CartRequestsQueue.RemoveAt(i);
+		}
+	}
+
+	// Check we have request in progress
+	bool bRequestInProcess = false;
+	for (int32 i = 0; i < CartRequestsQueue.Num(); ++i)
+	{
+		if (CartRequestsQueue[i].Get().GetStatus() == EHttpRequestStatus::Processing)
+		{
+			bRequestInProcess = true;
+		}
+	}
+
+	// Launch next one if we have it
+	if (!bRequestInProcess && CartRequestsQueue.Num() > 0)
+	{
+		CartRequestsQueue[0].Get().ProcessRequest();
+	}
 }
 
 TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupFilter) const
