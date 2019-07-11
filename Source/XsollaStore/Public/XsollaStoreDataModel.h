@@ -15,22 +15,7 @@ struct XSOLLASTORE_API FStorePrice
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	float amount;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	FString currency;
-
-public:
-	FStorePrice()
-		: amount(0.f){};
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreCartPrice
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount;
-
+	/** Used for cart equations only */
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	float amount_without_discount;
 
@@ -38,7 +23,7 @@ struct XSOLLASTORE_API FStoreCartPrice
 	FString currency;
 
 public:
-	FStoreCartPrice()
+	FStorePrice()
 		: amount(0.f)
 		, amount_without_discount(0.f){};
 };
@@ -130,7 +115,7 @@ public:
 	int32 cart_id;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	FStoreCartPrice price;
+	FStorePrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
 	bool is_free;

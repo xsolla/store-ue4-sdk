@@ -9,6 +9,7 @@
 #include "XsollaStoreDataModel.h"
 
 #include "Engine/Engine.h"
+#include "Kismet/KismetTextLibrary.h"
 
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -44,7 +45,8 @@ FString UXsollaStoreLibrary::FormatPrice(UObject* WorldContextObject, float Amou
 	auto Row = CurrencyLibrary->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
 	if (Row)
 	{
-		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *FString::SanitizeFloat(Amount, Row->fractionSize));
+		FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven, false, true, 1, 324, Row->fractionSize, Row->fractionSize).ToString();
+		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
 	}
 
 	return FString();
