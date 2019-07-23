@@ -23,10 +23,10 @@
 UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/XsollaStore/Data/currency-format.currency-format'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Data/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/XsollaStore/Browser/W_StoreBrowser.W_StoreBrowser_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_StoreBrowser.W_StoreBrowser_C"));
 	BrowserWidgetClass = BrowserWidgetFinder.Class;
 
 	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68
