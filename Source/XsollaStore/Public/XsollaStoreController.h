@@ -116,6 +116,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItems(const FString& GroupFilter) const;
 
+	/** Get list of cached virtual items without any Category provided */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	TArray<FStoreItem> GetVirtualItemsWithoutGroup() const;
+
 	/** Get cached items data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FStoreItemsData GetItemsData() const;

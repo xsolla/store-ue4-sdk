@@ -599,6 +599,13 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupF
 	}
 }
 
+TArray<FStoreItem> UXsollaStoreController::GetVirtualItemsWithoutGroup() const
+{
+	return ItemsData.Items.FilterByPredicate([](const FStoreItem& InStoreItem) {
+		return InStoreItem.groups.Num() == 0;
+	});
+}
+
 FStoreItemsData UXsollaStoreController::GetItemsData() const
 {
 	return ItemsData;
