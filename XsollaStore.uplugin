@@ -16,6 +16,19 @@
 	"Installed": false,
 	"Modules": [
 		{
+			"Name": "XsollaLogin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		},
+		{
 			"Name": "XsollaStore",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

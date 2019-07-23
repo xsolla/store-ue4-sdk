@@ -1,0 +1,6 @@
+{
+    "login": {
+        "dump_payload" : false,
+        "secret" : ""
+    }
+}
