@@ -22,8 +22,8 @@ void FXsollaLoginModule::StartupModule()
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaLogin",
-			LOCTEXT("RuntimeSettingsName", "Xsolla Login SDK"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login SDK"),
+			LOCTEXT("RuntimeSettingsName", "Xsolla Login"),
+			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login"),
 			XsollaLoginSettings);
 	}
 

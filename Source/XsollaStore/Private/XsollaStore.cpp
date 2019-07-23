@@ -22,8 +22,8 @@ void FXsollaStoreModule::StartupModule()
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaStore",
-			LOCTEXT("RuntimeSettingsName", "Xsolla Store SDK"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Store SDK"),
+			LOCTEXT("RuntimeSettingsName", "Xsolla Store"),
+			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Store"),
 			XsollaStoreSettings);
 	}
 
