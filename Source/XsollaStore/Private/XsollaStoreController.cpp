@@ -74,7 +74,7 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/payment/item/%s"), *ItemSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -107,7 +107,7 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/payment/cart/%d"), Cart.cart_id);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/cart/%d"), *ProjectId, Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -148,7 +148,7 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = TEXT("https://store.xsolla.com/api/v1/cart");
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart"), *ProjectId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -166,7 +166,7 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/clear"), Cart.cart_id);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/clear"), *ProjectId, Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -188,7 +188,7 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d"), Cart.cart_id);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d"), *ProjectId, Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -214,7 +214,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/item/%s"), Cart.cart_id, *ItemSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -268,7 +268,7 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/cart/%d/item/%s"), Cart.cart_id, *ItemSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
