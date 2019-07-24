@@ -46,4 +46,8 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
+
+	/** Demo Login ID */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
+	FString DemoLoginProjectID;
 };

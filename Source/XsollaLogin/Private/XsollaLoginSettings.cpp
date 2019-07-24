@@ -7,4 +7,5 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	UserDataStorage = EUserDataStorage::Xsolla;
+	DemoLoginProjectID = TEXT("e6dfaac6-78a8-11e9-9244-42010aa80004");
 }

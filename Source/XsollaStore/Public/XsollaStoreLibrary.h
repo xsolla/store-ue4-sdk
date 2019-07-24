@@ -22,6 +22,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
 	static UXsollaStoreController* GetStoreController(UObject* WorldContextObject);
 
+	/** Direct access to store SDK settings */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
+	static UXsollaStoreSettings* GetStoreSettings();
+
 	/** Async load image from web */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "ErrorCallback"))
 	static void LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);

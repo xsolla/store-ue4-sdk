@@ -12,10 +12,14 @@ class XSOLLASTORE_API UXsollaStoreSettings : public UObject
 
 public:
 	/** Store ID from Publisher Account. Required. */
-	UPROPERTY(Config, EditAnywhere, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	FString ProjectId;
 
 	/** If yes, external (system) browser will be launched to process payments */
-	UPROPERTY(Config, EditAnywhere, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool bUsePlatformBrowser;
+
+	/** Demo Store ID */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
+	FString DemoProjectId;
 };
