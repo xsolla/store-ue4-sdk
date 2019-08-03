@@ -36,6 +36,7 @@ void FXsollaStoreModule::StartupModule()
 	FWorldDelegates::OnPostWorldInitialization.AddLambda([this](UWorld* World, const UWorld::InitializationValues IVS) {
 		auto StoreController = NewObject<UXsollaStoreController>(GetTransientPackage());
 		StoreController->SetFlags(RF_Standalone);
+		StoreController->AddToRoot();
 
 		// Initialize module with project id provided by user
 		const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
@@ -60,6 +61,11 @@ void FXsollaStoreModule::ShutdownModule()
 	{
 		// If we're in exit purge, this object has already been destroyed
 		XsollaStoreSettings->RemoveFromRoot();
+
+		for(auto StoreController : XsollaStoreControllers)
+		{
+			StoreController.Value->RemoveFromRoot();
+		}
 	}
 	else
 	{
