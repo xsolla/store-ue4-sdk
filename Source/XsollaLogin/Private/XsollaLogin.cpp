@@ -36,6 +36,7 @@ void FXsollaLoginModule::StartupModule()
 	FWorldDelegates::OnPostWorldInitialization.AddLambda([this](UWorld* World, const UWorld::InitializationValues IVS) {
 		auto LoginController = NewObject<UXsollaLoginController>(GetTransientPackage());
 		LoginController->SetFlags(RF_Standalone);
+		LoginController->AddToRoot();
 		LoginController->LoadSavedData();
 
 		// Initialize module with project id provided by user
@@ -61,6 +62,11 @@ void FXsollaLoginModule::ShutdownModule()
 	{
 		// If we're in exit purge, this object has already been destroyed
 		XsollaLoginSettings->RemoveFromRoot();
+
+		for(auto LoginController : XsollaLoginControllers)
+		{
+			LoginController.Value->RemoveFromRoot();
+		}
 	}
 	else
 	{
