@@ -135,6 +135,12 @@ struct XSOLLASTORE_API FStoreCartItem
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	bool is_free;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
@@ -231,4 +237,17 @@ public:
 
 		return false;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreInventory
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Data")
+	TArray<FStoreCartItem> Items;
+
+public:
+	FStoreInventory(){};
 };

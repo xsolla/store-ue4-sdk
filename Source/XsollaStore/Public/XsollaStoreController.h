@@ -140,6 +140,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
 
+	/** Get cached inventory data */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
+	FStoreInventory GetInventory() const;
+
 	/** Get pending paystation url to be opened in browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
@@ -162,6 +166,9 @@ protected:
 
 	/** Current cart */
 	FStoreCart Cart;
+
+	/** User inventory */
+	FStoreInventory Inventory;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
