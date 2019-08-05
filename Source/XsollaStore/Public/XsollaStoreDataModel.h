@@ -7,6 +7,14 @@
 
 #include "XsollaStoreDataModel.generated.h"
 
+UENUM(BlueprintType)
+enum class EXsollaOrderStatus : uint8
+{
+	Unknown,
+	New,
+	Paid
+};
+
 USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStorePrice
 {
