@@ -63,7 +63,7 @@ void UXsollaStoreController::UpdateInventory(const FString& AuthToken, const FOn
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/user/inventory/items"));
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/user/inventory/items"), *ProjectId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
@@ -378,7 +378,12 @@ void UXsollaStoreController::UpdateInventory_HttpRequestComplete(FHttpRequestPtr
 		return;
 	}
 
-	// @TODO
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &Inventory))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
@@ -709,6 +714,11 @@ FStoreItemsData UXsollaStoreController::GetItemsData() const
 FStoreCart UXsollaStoreController::GetCart() const
 {
 	return Cart;
+}
+
+FStoreInventory UXsollaStoreController::GetInventory() const
+{
+	return Inventory;
 }
 
 FString UXsollaStoreController::GetPendingPaystationUrl() const
