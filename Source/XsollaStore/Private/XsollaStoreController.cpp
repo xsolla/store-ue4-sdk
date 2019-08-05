@@ -144,6 +144,19 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 	}
 }
 
+void UXsollaStoreController::CheckOrder(int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/order/%d"), *ProjectId, OrderId);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetVerb(TEXT("GET"));
+
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
@@ -352,7 +365,48 @@ void UXsollaStoreController::FetchPaymentToken_HttpRequestComplete(FHttpRequestP
 	}
 
 	FString AccessToken = JsonObject->GetStringField(TEXT("token"));
-	SuccessCallback.ExecuteIfBound(AccessToken);
+	int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+
+	SuccessCallback.ExecuteIfBound(AccessToken, OrderId);
+}
+
+void UXsollaStoreController::CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+	FString Status = JsonObject->GetStringField(TEXT("status"));
+	EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
+
+	if (Status == TEXT("new"))
+	{
+		OrderStatus = EXsollaOrderStatus::New;
+	}
+	else if (Status == TEXT("paid"))
+	{
+		OrderStatus = EXsollaOrderStatus::Paid;
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Status, OrderId);
+	}
+
+	SuccessCallback.ExecuteIfBound(OrderId, OrderStatus);
 }
 
 void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)

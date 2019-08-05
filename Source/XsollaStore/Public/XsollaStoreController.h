@@ -18,7 +18,8 @@ DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFetchTokenSuccess, const FString&, AccessToken);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreController : public UObject
@@ -61,6 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken /** @TODO Add callbacks to control payment progress */);
 
+	/** Check pending order status */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	void CheckOrder(int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/** Create new cart */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -84,6 +89,7 @@ public:
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
+	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void ClearCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -160,6 +166,7 @@ protected:
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
 
+	/** Loaded currency library asset */
 	UPROPERTY(BlueprintReadOnly)
 	UDataTable* CurrencyLibrary;
 
