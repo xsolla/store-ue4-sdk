@@ -15,6 +15,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	FString ProjectId;
 
+	/** Set to true to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
+	bool bSandbox;
+
+	/** Is sandbox mode can be used in Shipping build? Use carefully! */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool bEnableSandboxInShipping;
+
 	/** If yes, external (system) browser will be launched to process payments */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool bUsePlatformBrowser;
