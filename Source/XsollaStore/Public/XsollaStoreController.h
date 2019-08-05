@@ -64,11 +64,11 @@ public:
 
 	/** Open payment console for provided access token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	void LaunchPaymentConsole(const FString& AccessToken /** @TODO Add callbacks to control payment progress */);
+	void LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget);
 
 	/** Check pending order status */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	void CheckOrder(int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CheckOrder(const FString& AuthToken, int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Create new cart */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
