@@ -6,6 +6,8 @@
 UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	bSandbox = true;
+	bEnableSandboxInShipping = false;
 	bUsePlatformBrowser = false;
 	DemoProjectId = TEXT("44056");
 }
