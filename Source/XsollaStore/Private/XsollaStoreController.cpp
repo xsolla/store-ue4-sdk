@@ -140,9 +140,9 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
+void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget)
 {
-	FString PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
+	FString PaystationUrl = FString::Printf(TEXT("https://sandbox-secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bUsePlatformBrowser)
@@ -158,17 +158,23 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken)
 		PengindPaystationUrl = PaystationUrl;
 		auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
 		MyBrowser->AddToViewport(MAX_int32);
+
+		BrowserWidget = MyBrowser;
 	}
 }
 
-void UXsollaStoreController::CheckOrder(int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::CheckOrder(const FString& AuthToken, int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
+	CachedAuthToken = AuthToken;
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/order/%d"), *ProjectId, OrderId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
+
+	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
