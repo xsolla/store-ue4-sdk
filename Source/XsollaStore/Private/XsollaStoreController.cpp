@@ -672,10 +672,10 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	HttpRequest->SetURL(Url + MetaUrl);
 
 	// Xsolla meta
-	HttpRequest->SetHeader(TEXT("engine"), TEXT("ue4"));
-	HttpRequest->SetHeader(TEXT("engine_v"), ENGINE_VERSION_STRING);
-	HttpRequest->SetHeader(TEXT("sdk"), TEXT("store"));
-	HttpRequest->SetHeader(TEXT("sdk_v"), XSOLLA_STORE_VERSION);
+	HttpRequest->SetHeader(TEXT("X_ENGINE"), TEXT("UE4"));
+	HttpRequest->SetHeader(TEXT("X_ENGINE_V"), ENGINE_VERSION_STRING);
+	HttpRequest->SetHeader(TEXT("X_SDK"), TEXT("STORE"));
+	HttpRequest->SetHeader(TEXT("X_SDK_V"), XSOLLA_STORE_VERSION);
 
 	return HttpRequest;
 }
