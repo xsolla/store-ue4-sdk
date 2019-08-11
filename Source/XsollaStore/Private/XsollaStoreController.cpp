@@ -61,23 +61,13 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 
 void UXsollaStoreController::UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	if (!Locale.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("locale"), Locale);
-
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/groups"), *ProjectId);
+	const FString UsedLocale = Locale.IsEmpty() ? Locale : TEXT("en");
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
-
-	HttpRequest->SetContentAsString(PostContent);
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
