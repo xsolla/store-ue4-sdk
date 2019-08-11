@@ -61,7 +61,7 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 
 void UXsollaStoreController::UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? Locale : TEXT("en");
+	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
