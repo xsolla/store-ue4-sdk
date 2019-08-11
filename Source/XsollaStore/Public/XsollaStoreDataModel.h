@@ -87,6 +87,41 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGroup
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	FString id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	FString external_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	int32 level;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	int32 order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	TArray<FString> children;
+
+public:
+	FStoreGroup()
+		: level(0)
+		, order(1){};
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItemsData
 {
 public:
@@ -95,9 +130,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
-	/** All available categories for items */
+	/** All category ids that used by items (calculated locally!) */
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TSet<FString> Groups;
+	TSet<FString> GroupIds;
+
+	/** All available item group infos */
+	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
+	TArray<FStoreGroup> Groups;
 
 public:
 	FStoreItemsData(){};
