@@ -92,7 +92,7 @@ struct XSOLLASTORE_API FStoreGroup
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString id;
+	int32 id;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
 	FString external_id;
@@ -112,12 +112,17 @@ struct XSOLLASTORE_API FStoreGroup
 	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
 	int32 order;
 
+	// https://github.com/xsolla/store-ue4-sdk/issues/103
+	//UPROPERTY(BlueprintReadOnly, Category = "Item Group")
+	//TArray<int32> children;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	TArray<FString> children;
+	FString parent_external_id;
 
 public:
 	FStoreGroup()
-		: level(0)
+		: id(-1)
+		, level(0)
 		, order(1){};
 };
 
