@@ -27,7 +27,7 @@ Target OS:
 
 ## Integration Flow
 
-1. Register an [Xsolla Publisher Account](https://publisher.xsolla.com).
+1. Register an [Xsolla Publisher Account](https://publisher.xsolla.com/signup?integration_type=SDKCart).
 2. [Create](#creating-a-project) a project in your Publisher Account.
 3. [Set up](#setting-up-login) Login in your Publisher Account.
 4. [Install and set up](#installing-and-setting-up-the-plugin) the plugin for the Unreal Engine project.
@@ -35,7 +35,7 @@ Target OS:
 
 ### Creating a Project
 
-1. Log in to [Publisher Account](http://publisher.xsolla.com).
+1. Log in to [Publisher Account](http://publisher.xsolla.com/signup?integration_type=SDKCart).
 2. Go to **Projects** and click **Create new project**.
 3. In setup mode, add **Project name** and click **Create**.
 4. Go to **Project settings** > **Integration settings** and check that **Tokenless integration** is disabled.
