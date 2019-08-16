@@ -1,5 +1,3 @@
-# xsolla-ue4-demo
-
 # Xsolla Store SDK for Unreal Engine 4
 
 Xsolla UE4 SDK is used to integrate [Xsolla Login API](https://developers.xsolla.com/api/v2/login/) and [Xsolla Store API](https://developers.xsolla.com/api/v2/store/) methods with apps based on the [Unreal Engine](https://www.unrealengine.com/).
@@ -16,7 +14,7 @@ Target OS:
 * Windows 32-bit
 * Windows 64-bit
 
-**Info:** The integration demo is available in the **Content** folder. It includes authorization interface and events processing already set up. **ДОПОЛНИТЬ ПРО МАГАЗИН** You can use it as an example.
+**Info:** The integration demo is available in the **Content** folder. It includes authorization interface and events processing already set up. **@TODO ДОПОЛНИТЬ ПРО МАГАЗИН** You can use it as an example.
 
 ## System Requirements
 
@@ -51,7 +49,7 @@ Target OS:
 
 ### Setting up Store
 
-**НАСТРОЙКА СТОРА НА СТОРОНЕ XSOLLA**
+**@TODO НАСТРОЙКА СТОРА НА СТОРОНЕ XSOLLA**
 
 ### Installing and Setting up the Plugin
 
@@ -245,75 +243,133 @@ $ firebase login
 
 #### UpdateVirtualItems
 
-Update list of virtual items.
+Update list of virtual items. @TODO **Загружаем витрину проекта**
 
 
 #### UpdateItemGroups
 
 Update list of item groups
-@param Locale (optional) Desired payment locale. Leave empty to use default value.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| Locale        |string | (optional) Desired payment locale. Leave empty to use default value.      |
 
 
 #### UpdateInventory
 
 Update list of purchased virtual items
-@param AuthToken User authorization token.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
 
 
 #### FetchPaymentToken
 
 Initiate item purchase session and fetch token for payment console
 
-     * @param AuthToken User authorization token.
-     * @param ItemSKU Desired item SKU.
-     * @param Currency (optional) Desired payment currency. Leave empty to use default value.
-     * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
-     * @param Locale (optional) Desired payment locale. Leave empty to use default value.
+*Input Data Pins*
 
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
+| ItemSKU       |string | Desired item SKU. **Required.**                                           |
+| Currency      |string | (optional) Desired payment currency. Leave empty to use default value.    |
+| Country       |string | Desired payment country ISO code. Leave empty to use default value.       |
+| Locale        |string | Desired payment locale. Leave empty to use default value.                 |
 
 
 #### FetchCartPaymentToken
 
-     * Initiate cart purchase session and fetch token for payment console
+Initiate cart purchase session and fetch token for payment console
 
-     * @param AuthToken User authorization token.
-     * @param Currency (optional) Desired payment currency. Leave empty to use default value.
-     * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
-     * @param Locale (optional) Desired payment locale. Leave empty to use default value.
+*Input Data Pins*
 
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
+| Currency      |string | (optional) Desired payment currency. Leave empty to use default value.    |
+| Country       |string | Desired payment country ISO code. Leave empty to use default value.       |
+| Locale        |string | Desired payment locale. Leave empty to use default value.                 |
 
 
 #### LaunchPaymentConsole
+
 Open payment console for provided access token 
-@param AuthToken User authorization token.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
 
 #### CheckOrder
-Check pending order status
-@param AuthToken User authorization token.
-@param OrderId 
+
+Check pending order status by its id
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
+| OrderId       |int32  | Unique order id                                                           |
 
 #### CreateCart
+
 Create new cart
-@param AuthToken User authorization token.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
 
 ####  ClearCart
+
 Remove all items from cart
-@param AuthToken User authorization token.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
 
 #### UpdateCart
+
 Update cart content
-@param AuthToken User authorization token.
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
 
 #### AddToCart
+
 Add item to cart and change its quantity
-@param AuthToken User authorization token.
- @param ItemSKU Desired item SKU.
-  @param Quantity
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
+| ItemSKU       |string | Desired item SKU. **Required.**                                           |
+| Quantity      |int32  | Quantity of item to be added **Required.**                                |
 
 #### RemoveFromCart
-@param AuthToken User authorization token.
- @param ItemSKU Desired item SKU.
-Remove item from cart
+
+Completely remove item from cart
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| AuthToken     |string | User authorization token. **Required.**                                   |
+| ItemSKU       |string | Desired item SKU. **Required.**                                           |
 
 
 ### Data access
