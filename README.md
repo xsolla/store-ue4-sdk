@@ -14,7 +14,7 @@ Target OS:
 * Windows 32-bit
 * Windows 64-bit
 
-**Info:** The integration demo is available in the **Content** folder. It includes authorization interface and events processing already set up. **@TODO ДОПОЛНИТЬ ПРО МАГАЗИН** You can use it as an example.
+**Info:** The integration demo is available in the **Content** folder. It includes authorization interface and events processing already set up. You can use it as an example.
 
 ## System Requirements
 
@@ -248,7 +248,7 @@ Update list of virtual items available for configured project.
 
 #### Update Item Groups
 
-Update list of item groups
+Update list of item groups.
 
 *Input Data Pins*
 
@@ -259,7 +259,7 @@ Update list of item groups
 
 #### Update Inventory
 
-Update list of purchased virtual items
+Update list of purchased virtual items.
 
 *Input Data Pins*
 
@@ -270,7 +270,7 @@ Update list of purchased virtual items
 
 #### Fetch Payment Token
 
-Initiate item purchase session and fetch token for payment console
+Initiate item purchase session and fetch token for payment console.
 
 *Input Data Pins*
 
@@ -285,7 +285,7 @@ Initiate item purchase session and fetch token for payment console
 
 #### Fetch Cart Payment Token
 
-Initiate cart purchase session and fetch token for payment console
+Initiate cart purchase session and fetch token for payment console.
 
 *Input Data Pins*
 
@@ -299,7 +299,7 @@ Initiate cart purchase session and fetch token for payment console
 
 #### Launch Payment Console
 
-Open payment console for provided access token 
+Open payment console for provided access token.
 
 *Input Data Pins*
 
@@ -309,7 +309,7 @@ Open payment console for provided access token
 
 #### Check Order
 
-Check pending order status by its id
+Check pending order status by its id.
 
 *Input Data Pins*
 
@@ -320,7 +320,7 @@ Check pending order status by its id
 
 #### Create Cart
 
-Create new cart
+Create new cart.
 
 *Input Data Pins*
 
@@ -330,7 +330,7 @@ Create new cart
 
 ####  Clear Cart
 
-Remove all items from cart
+Remove all items from cart.
 
 *Input Data Pins*
 
@@ -340,7 +340,7 @@ Remove all items from cart
 
 #### Update Cart
 
-Update cart content
+Update cart content.
 
 *Input Data Pins*
 
@@ -350,7 +350,7 @@ Update cart content
 
 #### Add To art
 
-Add item to cart and change its quantity
+Add item to cart and change its quantity.
 
 *Input Data Pins*
 
@@ -362,7 +362,7 @@ Add item to cart and change its quantity
 
 #### Remove From Cart
 
-Completely remove item from cart
+Completely remove item from cart.
 
 *Input Data Pins*
 
@@ -380,7 +380,7 @@ Gets **XsollaStoreController** to use the all store data access nodes.
 
 #### Get Virtual Items
 
-Get list of cached virtual items filtered by Category
+Get list of cached virtual items filtered by Category.
 
 *Input Data Pins*
 
@@ -388,29 +388,52 @@ Get list of cached virtual items filtered by Category
 | :---          | :---  | :---                                                                      |
 | GroupFilter   |string | Group id to filter by. Leave empty to get **all items**                   |
 
+<details><summary>Example</summary>
+  <img src="Documentation/store_getvirtualitems.png"></img>
+</details>
+
 #### Get Virtual Items Without Group
 
 Get list of cached virtual items without any Category provided.
 
 #### Get Items Data
 
-Get cached items data
+Get all cached items data, including groups info.
+
+<details><summary>Example: Get all items info</summary>
+  <img src="Documentation/store_getitemsdata.png"></img>
+</details>
+
+<details><summary>Example: Get groups info</summary>
+  <img src="Documentation/store_getitemsgroups.png"></img>
+</details>
 
 #### Get Cart
 
-Get cached cart data
+Get cached cart data.
+
+<details><summary>Example</summary>
+  <img src="Documentation/store_getcart.png"></img>
+</details>
 
 #### Get Inventory
 
-Get cached inventory data
+Get cached inventory data.
+
+<details><summary>Example</summary>
+  <img src="Documentation/store_getinventory.png"></img>
+</details>
 
 #### Get Pending Paystation Url
 
-Get pending paystation url to be opened in browser
+Get pending paystation url to be opened in browser.
 
 #### Get Currency Library
 
-Get currency-format data table
+Get currency-format data table.
+
+
+### Utilities
 
 #### Format Price
 
@@ -423,4 +446,6 @@ Format store price using [currency-format library](https://github.com/xsolla/cur
 | Amount        |float  | Money amount                                                              |
 | Currency      |string | Currencty to apply                                                        |
 
-
+<details><summary>Example</summary>
+  <img src="Documentation/store_formatprice.png"></img>
+</details>
