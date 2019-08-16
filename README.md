@@ -1,6 +1,6 @@
 # Xsolla Store SDK for Unreal Engine 4
 
-Xsolla UE4 SDK is used to integrate [Xsolla Login API](https://developers.xsolla.com/api/v2/login/) and [Xsolla Store API](https://developers.xsolla.com/api/v2/store/) methods with apps based on the [Unreal Engine](https://www.unrealengine.com/).
+Xsolla UE4 SDK is used to integrate [Xsolla Login API](https://developers.xsolla.com/api/v2/login/) and [Xsolla Store API](https://storeapi.docs.stoplight.io/) methods with apps based on the [Unreal Engine](https://www.unrealengine.com/).
 
 This solution works only for:
 * storing user data at Xsolla’s side
