@@ -49,7 +49,16 @@ Target OS:
 
 ### Setting up Store
 
-**@TODO НАСТРОЙКА СТОРА НА СТОРОНЕ XSOLLA**
+1. Set up the Virtual Items module in your Publisher Account:
+    1. Go to Store > Virtual Items.
+    2. Create item groups.
+    3. Create items, specifying the following for each of them:
+         1. One or more groups that the item should belong to.
+         2. SKU.
+         3. Name and short description.
+         4. Prices in real and virtual currencies.
+         5. Image.
+    4. Turn on group display in Store.
 
 ### Installing and Setting up the Plugin
 
