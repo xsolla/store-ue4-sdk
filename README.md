@@ -84,6 +84,14 @@ Target OS:
 |Sandbox                    |**НАПИСАТЬ ПРО РЕЖИМ ПЕСОЧНИЦЫ ПО ПЛАТЕЖАМ**               |
 |Use Platform Browser       |If yes, external (system) browser will be launched to process payments|
 
+### Demo maps
+
+There are three demo maps provided in **Xsolla Content** > **Maps** folder. 
+
+* **Demo** - all in one demo with Login and Store modules connected to each other. Registration required.
+* **Demo_Login** - just a Login module used.
+* **Demo_Store** - just a Store module demo. No registration required to test the Store.
+
 ### Setting up Events Processing
 
 **Info:** Events are key actions that a user performs during the authentication process.
