@@ -92,10 +92,8 @@ Target OS:
 |Project ID                 |Project ID from your Publisher Account. **Required.**      |
 |Sandbox                    |After a successful configuration of a plugin you can test the payment process at your Store.
 By default all payments are in the sandbox mode and you can use a test bank card to simulate a successful payment process.
-
 [List of bank cards to be used for testing](https://developers.xsolla.com/api/v2/pay-station/#api_payment_ui_test_cards)
-
-To test the payment process by making real payments, be sure that you have a signed contract with Xsolla and removed the tick from the **sandbox mode** checkbox.             |
+To test the payment process by making real payments, be sure that you have a signed contract with Xsolla and removed the tick from the **sandbox mode** checkbox.|
 |Use Platform Browser       |If yes, external (system) browser will be launched to process payments|
 
 ### Demo maps
