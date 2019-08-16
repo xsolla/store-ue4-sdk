@@ -374,25 +374,53 @@ Completely remove item from cart
 
 ### Data access
 
-#### GetVirtualItems
+#### Get Store Controller
+
+Gets **XsollaStoreController** to use the all store data access nodes. 
+
+#### Get Virtual Items
+
 Get list of cached virtual items filtered by Category
-@param GroupFilter
-TArray<FStoreItem>
 
-#### GetVirtualItemsWithoutGroup
-Get list of cached virtual items without any Category provided
+*Input Data Pins*
 
-#### GetItemsData
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| GroupFilter   |string | Group id to filter by. Leave empty to get **all items**                   |
+
+#### Get Virtual Items Without Group
+
+Get list of cached virtual items without any Category provided.
+
+#### Get Items Data
+
 Get cached items data
 
-#### GetCart
+#### Get Cart
+
 Get cached cart data
 
-#### GetInventory
+#### Get Inventory
+
 Get cached inventory data
 
-#### GetPendingPaystationUrl
+#### Get Pending Paystation Url
+
 Get pending paystation url to be opened in browser
 
-#### GetCurrencyLibrary
+#### Get Currency Library
+
 Get currency-format data table
+
+#### Format Price
+
+Format store price using [currency-format library](https://github.com/xsolla/currency-format).
+
+*Input Data Pins*
+
+| Name          | Type  | Description                                                               |
+| :---          | :---  | :---                                                                      |
+| Amount        |float  | Money amount                                                              |
+| Currency      |string | Currencty to apply                                                        |
+
+
