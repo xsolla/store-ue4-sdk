@@ -241,12 +241,12 @@ $ firebase login
 
 ### REST API
 
-#### UpdateVirtualItems
+#### Update Virtual Items
 
-Update list of virtual items. @TODO **Загружаем витрину проекта**
+Update list of virtual items available for configured project.
 
 
-#### UpdateItemGroups
+#### Update Item Groups
 
 Update list of item groups
 
@@ -257,7 +257,7 @@ Update list of item groups
 | Locale        |string | (optional) Desired payment locale. Leave empty to use default value.      |
 
 
-#### UpdateInventory
+#### Update Inventory
 
 Update list of purchased virtual items
 
@@ -268,7 +268,7 @@ Update list of purchased virtual items
 | AuthToken     |string | User authorization token. **Required.**                                   |
 
 
-#### FetchPaymentToken
+#### Fetch Payment Token
 
 Initiate item purchase session and fetch token for payment console
 
@@ -279,11 +279,11 @@ Initiate item purchase session and fetch token for payment console
 | AuthToken     |string | User authorization token. **Required.**                                   |
 | ItemSKU       |string | Desired item SKU. **Required.**                                           |
 | Currency      |string | (optional) Desired payment currency. Leave empty to use default value.    |
-| Country       |string | Desired payment country ISO code. Leave empty to use default value.       |
-| Locale        |string | Desired payment locale. Leave empty to use default value.                 |
+| Country       |string | (optional) Desired payment country ISO code. Leave empty to use default value.       |
+| Locale        |string | (optional) Desired payment locale. Leave empty to use default value.                 |
 
 
-#### FetchCartPaymentToken
+#### Fetch Cart Payment Token
 
 Initiate cart purchase session and fetch token for payment console
 
@@ -293,11 +293,11 @@ Initiate cart purchase session and fetch token for payment console
 | :---          | :---  | :---                                                                      |
 | AuthToken     |string | User authorization token. **Required.**                                   |
 | Currency      |string | (optional) Desired payment currency. Leave empty to use default value.    |
-| Country       |string | Desired payment country ISO code. Leave empty to use default value.       |
-| Locale        |string | Desired payment locale. Leave empty to use default value.                 |
+| Country       |string | (optional) Desired payment country ISO code. Leave empty to use default value.       |
+| Locale        |string | (optional) Desired payment locale. Leave empty to use default value.                 |
 
 
-#### LaunchPaymentConsole
+#### Launch Payment Console
 
 Open payment console for provided access token 
 
@@ -307,7 +307,7 @@ Open payment console for provided access token
 | :---          | :---  | :---                                                                      |
 | AuthToken     |string | User authorization token. **Required.**                                   |
 
-#### CheckOrder
+#### Check Order
 
 Check pending order status by its id
 
@@ -318,7 +318,7 @@ Check pending order status by its id
 | AuthToken     |string | User authorization token. **Required.**                                   |
 | OrderId       |int32  | Unique order id                                                           |
 
-#### CreateCart
+#### Create Cart
 
 Create new cart
 
@@ -328,7 +328,7 @@ Create new cart
 | :---          | :---  | :---                                                                      |
 | AuthToken     |string | User authorization token. **Required.**                                   |
 
-####  ClearCart
+####  Clear Cart
 
 Remove all items from cart
 
@@ -338,7 +338,7 @@ Remove all items from cart
 | :---          | :---  | :---                                                                      |
 | AuthToken     |string | User authorization token. **Required.**                                   |
 
-#### UpdateCart
+#### Update Cart
 
 Update cart content
 
@@ -348,7 +348,7 @@ Update cart content
 | :---          | :---  | :---                                                                      |
 | AuthToken     |string | User authorization token. **Required.**                                   |
 
-#### AddToCart
+#### Add To art
 
 Add item to cart and change its quantity
 
@@ -360,7 +360,7 @@ Add item to cart and change its quantity
 | ItemSKU       |string | Desired item SKU. **Required.**                                           |
 | Quantity      |int32  | Quantity of item to be added **Required.**                                |
 
-#### RemoveFromCart
+#### Remove From Cart
 
 Completely remove item from cart
 
