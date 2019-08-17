@@ -26,6 +26,11 @@ UXsollaStoreController* UXsollaStoreLibrary::GetStoreController(UObject* WorldCo
 	return nullptr;
 }
 
+UXsollaStoreSettings* UXsollaStoreLibrary::GetStoreSettings()
+{
+	return FXsollaStoreModule::Get().GetSettings();
+}
+
 void UXsollaStoreLibrary::LoadImageFromWeb(UObject* WorldContextObject, const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
 	auto StoreController = UXsollaStoreLibrary::GetStoreController(WorldContextObject);
