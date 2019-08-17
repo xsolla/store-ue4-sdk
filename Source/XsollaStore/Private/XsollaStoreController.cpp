@@ -10,7 +10,6 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
-#include "Blueprint/UserWidget.h"
 #include "Engine.h"
 #include "Engine/DataTable.h"
 #include "Json.h"

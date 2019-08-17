@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "XsollaStoreImageLoader.h"
-
 #include "Kismet/BlueprintFunctionLibrary.h"
+
+#include "XsollaStoreDataModel.h"
+#include "XsollaStoreImageLoader.h"
 
 #include "XsollaStoreLibrary.generated.h"
 
 class UXsollaStoreController;
-struct FStoreCart;
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreLibrary : public UBlueprintFunctionLibrary

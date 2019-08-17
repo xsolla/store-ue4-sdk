@@ -11,8 +11,3 @@ UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectIniti
 	bUsePlatformBrowser = false;
 	DemoProjectId = TEXT("44056");
 }
-
-UXsollaStoreSettings* UXsollaStoreLibrary::GetStoreSettings()
-{
-	return FXsollaStoreModule::Get().GetSettings();
-}

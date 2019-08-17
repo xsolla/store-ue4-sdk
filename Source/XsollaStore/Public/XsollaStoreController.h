@@ -5,13 +5,13 @@
 
 #include "XsollaStoreDataModel.h"
 
+#include "Blueprint/UserWidget.h"
 #include "Http.h"
 
 #include "XsollaStoreController.generated.h"
 
 class UXsollaStoreImageLoader;
 
-class UUserWidget;
 class UDataTable;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
