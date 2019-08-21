@@ -51,7 +51,6 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -65,7 +64,6 @@ void UXsollaStoreController::UpdateItemGroups(const FString& Locale, const FOnSt
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -80,7 +78,6 @@ void UXsollaStoreController::UpdateInventory(const FString& AuthToken, const FOn
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
@@ -108,7 +105,6 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -141,7 +137,6 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -204,7 +199,6 @@ void UXsollaStoreController::CheckOrder(const FString& AuthToken, int32 OrderId,
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
@@ -221,7 +215,6 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("POST"));
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
@@ -239,7 +232,6 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("PUT"));
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
@@ -261,7 +253,6 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("GET"));
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
 
@@ -287,7 +278,6 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("PUT"));
 
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -341,7 +331,6 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 
-	HttpRequest->SetURL(Url);
 	HttpRequest->SetVerb(TEXT("DELETE"));
 
 	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
