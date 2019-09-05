@@ -103,6 +103,8 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 	if (!Locale.IsEmpty())
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
+	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
@@ -135,6 +137,8 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 	if (!Locale.IsEmpty())
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
+	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
@@ -156,19 +160,8 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 
 void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget)
 {
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	bool bIsSandboxEnabled = Settings->bSandbox;
-
-#if UE_BUILD_SHIPPING
-	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
-	if (bIsSandboxEnabled)
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
-	}
-#endif // UE_BUILD_SHIPPING
-
 	FString PaystationUrl;
-	if (bIsSandboxEnabled)
+	if (IsSandboxEnabled())
 	{
 		PaystationUrl = FString::Printf(TEXT("https://sandbox-secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 	}
@@ -177,6 +170,7 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken, UU
 		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 	}
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bUsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
@@ -810,6 +804,22 @@ void UXsollaStoreController::ProcessNextCartRequest()
 	{
 		CartRequestsQueue[0].Get().ProcessRequest();
 	}
+}
+
+bool UXsollaStoreController::IsSandboxEnabled()
+{
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	bool bIsSandboxEnabled = Settings->bSandbox;
+
+#if UE_BUILD_SHIPPING
+	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
+	if (bIsSandboxEnabled)
+	{
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
+	}
+#endif // UE_BUILD_SHIPPING
+
+	return bIsSandboxEnabled;
 }
 
 TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupFilter) const
