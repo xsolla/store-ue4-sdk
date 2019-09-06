@@ -755,6 +755,22 @@ void UXsollaStoreController::SaveData()
 	UXsollaStoreSave::Save(FXsollaStoreSaveData(Cart.cart_id, CachedCartCurrency));
 }
 
+bool UXsollaStoreController::IsSandboxEnabled() const
+{
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	bool bIsSandboxEnabled = Settings->bSandbox;
+
+#if UE_BUILD_SHIPPING
+	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
+	if (bIsSandboxEnabled)
+	{
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
+	}
+#endif // UE_BUILD_SHIPPING
+
+	return bIsSandboxEnabled;
+}
+
 TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString& Url)
 {
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
@@ -804,22 +820,6 @@ void UXsollaStoreController::ProcessNextCartRequest()
 	{
 		CartRequestsQueue[0].Get().ProcessRequest();
 	}
-}
-
-bool UXsollaStoreController::IsSandboxEnabled()
-{
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	bool bIsSandboxEnabled = Settings->bSandbox;
-
-#if UE_BUILD_SHIPPING
-	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
-	if (bIsSandboxEnabled)
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
-	}
-#endif // UE_BUILD_SHIPPING
-
-	return bIsSandboxEnabled;
 }
 
 TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupFilter) const
