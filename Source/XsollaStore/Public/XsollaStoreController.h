@@ -131,15 +131,15 @@ protected:
 	/** Save cached data or reset one if necessary */
 	void SaveData();
 
+	/** Check whether sandbox is enabled */
+	bool IsSandboxEnabled() const;
+
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
 
 	/** Try to execute next request in queue */
 	void ProcessNextCartRequest();
-
-	/** Check whether sandbox is enabled */
-	bool IsSandboxEnabled();
 
 	/** Queue to store cart change requests */
 	TArray<TSharedRef<IHttpRequest>> CartRequestsQueue;
