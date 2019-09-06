@@ -676,7 +676,7 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 void UXsollaStoreController::ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{		
+	{
 		return;
 	}
 
