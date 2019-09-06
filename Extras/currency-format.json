@@ -1,0 +1,1628 @@
+[
+    {
+        "name":"AED",
+        "description":"UAE Dirham",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":".د.إ",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"AFN",
+        "description":"Afghani",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"؋",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"ALL",
+        "description":"Lek",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"L",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"AMD",
+        "description":"Armenian Dram",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"դր.",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ANG",
+        "description":"Netherlands Antillean Guilder",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"ƒ",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"AOA",
+        "description":"Kwanza",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"ARS",
+        "description":"Argentine Peso",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"AUD",
+        "description":"Australian Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"AWG",
+        "description":"Aruban Florin",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"ƒ",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"AZN",
+        "description":"Azerbaijanian Manat",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₼",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BAM",
+        "description":"Convertible Mark",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"KM",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BBD",
+        "description":"Barbados Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BDT",
+        "description":"Taka",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"BGN",
+        "description":"Bulgarian Lev",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"лв",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BHD",
+        "description":"Bahraini Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.ب",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"BIF",
+        "description":"Burundi Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"BMD",
+        "description":"Bermudian Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BND",
+        "description":"Brunei Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BOB",
+        "description":"Boliviano",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Bs.",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BOV",
+        "description":"Mvdol",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"BRL",
+        "description":"Brazilian Real",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"R$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BSD",
+        "description":"Bahamian Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BTN",
+        "description":"Ngultrum",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"BWP",
+        "description":"Pula",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"P",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BYN",
+        "description":"Belarussian Ruble",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"p.",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BYR",
+        "description":"Belarussian Ruble",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"p.",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"BZD",
+        "description":"Belize Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"BZ$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"CAD",
+        "description":"Canadian Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"CDF",
+        "description":"Congolese Franc",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CHE",
+        "description":"WIR Euro",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CHF",
+        "description":"Swiss Franc",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CHW",
+        "description":"WIR Franc",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CLF",
+        "description":"Unnamead de Fomento",
+        "fractionSize":4,
+        "symbol":null
+    },
+    {
+        "name":"CLP",
+        "description":"Chilean Peso",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"CNY",
+        "description":"Yuan Renminbi",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"元",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"COP",
+        "description":"Colombian Peso",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"COU",
+        "description":"Unnamead de Valor Real",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CRC",
+        "description":"Cost Rican Colon",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₡",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"CUC",
+        "description":"Peso Convertible",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CUP",
+        "description":"Cuban Peso",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$MN",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"CVE",
+        "description":"Cabo Verde Escudo",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"CZK",
+        "description":"Czech Koruna",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Kč",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"DJF",
+        "description":"Djibouti Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"DKK",
+        "description":"Danish Krone",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kr",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"DOP",
+        "description":"Dominican Peso",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"RD$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"DZD",
+        "description":"Algerian Dinar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":".د.ج",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"EEK",
+        "description":"Estonian Kroon",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kr",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"EGP",
+        "description":"Egyptian Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ERN",
+        "description":"Nakfa",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"ETB",
+        "description":"Ethiopian Birr",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"EUR",
+        "description":"Euro",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"€",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"FJD",
+        "description":"Fiji Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"FKP",
+        "description":"FalklandIslands Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GBP",
+        "description":"Pound Sterling",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GEL",
+        "description":"Lari",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"GGP",
+        "description":"Guernsey Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GHC",
+        "description":"Ghanaian Cedi",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"¢",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GHS",
+        "description":"Ghan Cedi",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"GIP",
+        "description":"Gibraltar Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GMD",
+        "description":"Dalasi",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"GNF",
+        "description":"Guine Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"GTQ",
+        "description":"Quetzal",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Q",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"GYD",
+        "description":"Guyan Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"HKD",
+        "description":"Hong Kong Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"HNL",
+        "description":"Lempira",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"L",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"HRK",
+        "description":"Croatian Kuna",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kn",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"HTG",
+        "description":"Gourde",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"HUF",
+        "description":"Forint",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"Ft",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"nameR",
+        "description":"Rupiah",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Rp",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ILS",
+        "description":"New Israeli Sheqel",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₪",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"IMP",
+        "description":"Manx Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"INR",
+        "description":"Indian Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₹",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"IQD",
+        "description":"Iraqi Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.ع",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"IRR",
+        "description":"Iranian Rial",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"﷼",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"ISK",
+        "description":"Iceland Krona",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kr",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"JEP",
+        "description":"Jersey Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"JMD",
+        "description":"Jamaican Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"J$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"JOD",
+        "description":"Jordanian Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.إ",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"JPY",
+        "description":"Yen",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"¥",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KES",
+        "description":"Kenyan Shilling",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"KSh",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KGS",
+        "description":"Som",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"сом",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KHR",
+        "description":"Riel",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"៛",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KMF",
+        "description":"Comoro Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"KPW",
+        "description":"North Korean Won",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"₩",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KRW",
+        "description":"Won",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"₩",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KWD",
+        "description":"Kuwaiti Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.ك",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"KYD",
+        "description":"Cayman Islands Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"KZT",
+        "description":"Tenge",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₸",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LAK",
+        "description":"Kip",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₭",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LBP",
+        "description":"Lebanese Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LKR",
+        "description":"Sri Lank Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₨",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LRD",
+        "description":"Liberian Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LSL",
+        "description":"Loti",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"LTL",
+        "description":"Lithuanian Litas",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Lt",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LVL",
+        "description":"Latvian Lats",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Ls",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LYD",
+        "description":"Libyan Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.ل",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"MAD",
+        "description":"Moroccan Dirham",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":".د.م",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"MDL",
+        "description":"Moldovan Leu",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MGA",
+        "description":"Malagasy ariary",
+        "fractionSize":1,
+        "symbol":null
+    },
+    {
+        "name":"MKD",
+        "description":"Denar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"ден",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"MMK",
+        "description":"Kyat",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MNT",
+        "description":"Tugrik",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₮",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"MOP",
+        "description":"Pataca",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MRO",
+        "description":"Ouguiya",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MUR",
+        "description":"Mauritius Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₨",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"MVR",
+        "description":"Rufiyaa",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MWK",
+        "description":"Kwacha",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MXN",
+        "description":"Mexican Peso",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"MXV",
+        "description":"Mexican Unnamead de Inversion (UDI)",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"MYR",
+        "description":"Malaysian Ringgit",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"RM",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"MZN",
+        "description":"Mozambique Metical",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"MT",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NAD",
+        "description":"Namibi Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NGN",
+        "description":"Naira",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₦",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NIO",
+        "description":"Cordob Oro",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"C$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NOK",
+        "description":"Norwegian Krone",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kr",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NPR",
+        "description":"Nepalese Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₨",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"NZD",
+        "description":"New Zealand Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"OMR",
+        "description":"Rial Omani",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":"﷼",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"PAB",
+        "description":"Balboa",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"B/.",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"PEN",
+        "description":"Nuevo Sol",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"S/",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"PGK",
+        "description":"Kina",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"PHP",
+        "description":"Philippine Peso",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₱",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"PKR",
+        "description":"Pakistan Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₨",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"PLN",
+        "description":"Zloty",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"zł",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"PYG",
+        "description":"Guarani",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"Gs",
+            "format":"1$",
+            "rtl":false
+        }
+    },
+    {
+        "name":"QAR",
+        "description":"Qatari Rial",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"﷼",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"RON",
+        "description":"New Romanian Leu",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"lei",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"RSD",
+        "description":"Serbian Dinar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Дин.",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"RUB",
+        "description":"Russian Ruble",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₽",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"RUR",
+        "description":"Russian Ruble",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₽",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"RWF",
+        "description":"Rwand Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"SAR",
+        "description":"Saudi Riyal",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"﷼",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"SBD",
+        "description":"Solomon Islands Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SCR",
+        "description":"Seychelles Rupee",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₨",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SDG",
+        "description":"Sudanese Pound",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"SEK",
+        "description":"Swedish Krona",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"kr",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SGD",
+        "description":"Singapore Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SHP",
+        "description":"Saint Helen Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SLL",
+        "description":"Leone",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"SOS",
+        "description":"Somali Shilling",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"S",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SRD",
+        "description":"Surinam Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SSP",
+        "description":"South Sudanese Pound",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"STD",
+        "description":"Dobra",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"SVC",
+        "description":"El Salvador Colon",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SYP",
+        "description":"Syrian Pound",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"£",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"SZL",
+        "description":"Lilangeni",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"THB",
+        "description":"Baht",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"฿",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"TJS",
+        "description":"Somoni",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"TMT",
+        "description":"Turkmenistan New Manat",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"TND",
+        "description":"Tunisian Dinar",
+        "fractionSize":3,
+        "symbol":{
+            "grapheme":".د.ت",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"TOP",
+        "description":"Pa’anga",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"TRL",
+        "description":"Turkish Lira",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₤",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"TRY",
+        "description":"Turkish Lira",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₺",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"TTD",
+        "description":"Trinnamead and Tobago Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"TT$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"TWD",
+        "description":"New Taiwan Dollar",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"NT$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"TZS",
+        "description":"Tanzanian Shilling",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"TSh",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"UAH",
+        "description":"Hryvnia",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"₴",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"UGX",
+        "description":"Ugand Shilling",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"USh",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"USD",
+        "description":"US Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"USN",
+        "description":"US Dollar (Next day)",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"UYI",
+        "description":"Uruguay Peso en Unnameades Indexadas (URUIURUI)",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"UYU",
+        "description":"Peso Uruguayo",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"$U",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"UZS",
+        "description":"Uzbekistan Sum",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"so’m",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"VEF",
+        "description":"Bolivar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Bs",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"VES",
+        "description":"Bolivar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Bs",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"VND",
+        "description":"Dong",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"₫",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"VUV",
+        "description":"Vatu",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"WST",
+        "description":"Tala",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"XAF",
+        "description":"CFA Franc BEAC",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"FCFA",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"XCD",
+        "description":"East Caribbean Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"XDR",
+        "description":"SDR (Special Drawing Right)",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"XOF",
+        "description":"CFA Franc BCEAO",
+        "fractionSize":0,
+        "symbol":{
+            "grapheme":"CFA",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"XPF",
+        "description":"CFP Franc",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"XSU",
+        "description":"Sucre",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"XUA",
+        "description":"ADB Unit of Account",
+        "fractionSize":0,
+        "symbol":null
+    },
+    {
+        "name":"YER",
+        "description":"Yemeni Rial",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"﷼",
+            "format":"1 $",
+            "rtl":true
+        }
+    },
+    {
+        "name":"ZAR",
+        "description":"Rand",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"R",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ZMW",
+        "description":"Zambian Kwacha",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"ZWD",
+        "description":"Zimbabwe Dollar",
+        "fractionSize":2,
+        "symbol":{
+            "grapheme":"Z$",
+            "format":"$1",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ZWL",
+        "description":"Zimbabwe Dollar",
+        "fractionSize":2,
+        "symbol":null
+    },
+    {
+        "name":"BTC",
+        "description":"BTC",
+        "fractionSize":4,
+        "symbol":{
+            "grapheme":"₿",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"ETH",
+        "description":"ETH",
+        "fractionSize":4,
+        "symbol":{
+            "grapheme":"Ξ",
+            "format":"1 $",
+            "rtl":false
+        }
+    },
+    {
+        "name":"LTC",
+        "description":"LTC",
+        "fractionSize":4,
+        "symbol":{
+            "grapheme":"Ł",
+            "format":"1 $",
+            "rtl":false
+        }
+    }
+]

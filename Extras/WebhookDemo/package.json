@@ -1,0 +1,18 @@
+{
+  "name": "xsolla-webhookdemo",
+  "version": "0.0.1",
+  "description": "Simple webhook demo server for XsollaStore UE4 SDK",
+  "author": "Vladimir Alyamkin",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "~1.9.0",
+    "nedb": "^1.8.0",
+    "sha1": "^1.1.1"
+  }
+}

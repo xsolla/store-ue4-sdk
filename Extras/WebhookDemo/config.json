@@ -1,0 +1,6 @@
+{
+    "store": {
+        "secretKey" : "",
+        "validateUser" : false
+    }
+}
