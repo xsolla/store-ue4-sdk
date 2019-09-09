@@ -201,7 +201,7 @@ protected:
 	FString PengindPaystationUrl;
 
 	/** Loaded currency library asset */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla|Currency")
 	UDataTable* CurrencyLibrary;
 
 public:
@@ -212,5 +212,5 @@ private:
 	UXsollaStoreImageLoader* ImageLoader;
 
 	UPROPERTY()
-	TSubclassOf<UUserWidget> BrowserWidgetClass;
+	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 };

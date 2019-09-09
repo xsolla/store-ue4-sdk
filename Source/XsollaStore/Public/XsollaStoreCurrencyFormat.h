@@ -14,13 +14,13 @@ struct XSOLLASTORE_API FXsollaStoreCurrencySymbol
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	FString grapheme;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	FString format;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	bool rtl;
 
 	FXsollaStoreCurrencySymbol()
@@ -32,16 +32,16 @@ struct XSOLLASTORE_API FXsollaStoreCurrency : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	FString name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	FString description;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	int32 fractionSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Xsolla Currency")
 	FXsollaStoreCurrencySymbol symbol;
 
 	FXsollaStoreCurrency()

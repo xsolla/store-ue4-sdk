@@ -16,6 +16,19 @@
 	"Installed": false,
 	"Modules": [
 		{
+			"Name": "XsollaWebBrowser",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		},
+		{
 			"Name": "XsollaLogin",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
@@ -40,12 +53,6 @@
 				"Android",
 				"Linux"
 			]
-		}
-	],
-	"Plugins": [ 
-		{
-			"Name": "WebBrowserWidget",
-			"Enabled": true
 		}
 	]
 }

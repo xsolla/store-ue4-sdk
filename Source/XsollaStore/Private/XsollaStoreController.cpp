@@ -18,21 +18,16 @@
 #include "Runtime/Launch/Resources/Version.h"
 #include "UObject/ConstructorHelpers.h"
 
-#include "WebBrowserWidgetModule.h"
-
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
 UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// Dirty hack to fix modules loading order, check https://github.com/xsolla/store-ue4-sdk/issues/113
-	auto BrowserModule = FModuleManager::LoadModuleChecked<IWebBrowserWidgetModule>("WebBrowserWidget");
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Data/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_StoreBrowser.W_StoreBrowser_C"));
-	BrowserWidgetClass = BrowserWidgetFinder.Class;
+	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 
 	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68
 	CachedCartCurrency = TEXT("USD");
@@ -183,6 +178,9 @@ void UXsollaStoreController::LaunchPaymentConsole(const FString& AccessToken, UU
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
+		// Check for user browser widget override
+		auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
+		
 		PengindPaystationUrl = PaystationUrl;
 		auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
 		MyBrowser->AddToViewport(MAX_int32);

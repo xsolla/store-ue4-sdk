@@ -16,7 +16,8 @@ public class XsollaStore : ModuleRules
                 "HTTP",
                 "Json",
                 "JsonUtilities",
-                "UMG"
+                "UMG",
+                "XsollaWebBrowser"
             }
             );
 
@@ -28,8 +29,7 @@ public class XsollaStore : ModuleRules
                 "Slate",
                 "SlateCore",
                 "UMG",
-                "ImageWrapper",
-                "WebBrowserWidget"
+                "ImageWrapper"
             }
             );
 
