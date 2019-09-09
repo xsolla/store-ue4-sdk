@@ -18,16 +18,11 @@
 #include "Runtime/Launch/Resources/Version.h"
 #include "UObject/ConstructorHelpers.h"
 
-#include "WebBrowserWidgetModule.h"
-
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
 UXsollaStoreController::UXsollaStoreController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// Dirty hack to fix modules loading order, check https://github.com/xsolla/store-ue4-sdk/issues/113
-	auto BrowserModule = FModuleManager::LoadModuleChecked<IWebBrowserWidgetModule>("WebBrowserWidget");
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Data/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
