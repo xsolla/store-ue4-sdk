@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Blueprint/UserWidget.h"
+
 #include "XsollaStoreSettings.generated.h"
 
 UCLASS(config = Engine, defaultconfig)
@@ -22,6 +24,10 @@ public:
 	/** Is sandbox mode can be used in Shipping build? Use carefully! */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool bEnableSandboxInShipping;
+
+	/** Custom class to handle payment console */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
 	/** If yes, external (system) browser will be launched to process payments */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")

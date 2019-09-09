@@ -212,5 +212,5 @@ private:
 	UXsollaStoreImageLoader* ImageLoader;
 
 	UPROPERTY()
-	TSubclassOf<UUserWidget> BrowserWidgetClass;
+	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 };
