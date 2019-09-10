@@ -287,10 +287,10 @@ TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString
 	HttpRequest->SetContentAsString(Content);
 
 	// Xsolla meta
-	HttpRequest->SetHeader(TEXT("X_ENGINE"), TEXT("UE4"));
-	HttpRequest->SetHeader(TEXT("X_ENGINE_V"), ENGINE_VERSION_STRING);
-	HttpRequest->SetHeader(TEXT("X_SDK"), TEXT("LOGIN"));
-	HttpRequest->SetHeader(TEXT("X_SDK_V"), XSOLLA_LOGIN_VERSION);
+	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE4"));
+	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
+	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("LOGIN"));
+	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_LOGIN_VERSION);
 
 	return HttpRequest;
 }
