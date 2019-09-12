@@ -37,6 +37,4 @@ private:
 	UXsollaWebBrowserAssetManager* WebBrowserAssetMgr;
 };
 
-//////////////////////////////////////////////////////////////////////////
-
 IMPLEMENT_MODULE(FXsollaWebBrowserModule, XsollaWebBrowser);
