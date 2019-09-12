@@ -1,6 +1,6 @@
 ### Xsolla Store SDK for Unreal Engine 4
 
-Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unreal Engine](https://www.unrealengine.com/). The sulution includes the following SDKs:
+Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unreal Engine](https://www.unrealengine.com/). The solution includes the following SDKs:
 
 * Xsolla Login UE4 SDK
 * Xsolla Store UE4 SDK
