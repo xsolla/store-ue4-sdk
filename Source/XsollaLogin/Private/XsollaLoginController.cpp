@@ -12,6 +12,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Launch/Resources/Version.h"
 
+#include <regex>
+
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
 const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
@@ -324,6 +326,13 @@ void UXsollaLoginController::SaveData()
 		// Dron't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
+}
+
+bool UXsollaLoginController::IsEmailValid(const FString& email)
+{
+	const std::regex pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+
+	return std::regex_match(TCHAR_TO_UTF8(*email), pattern);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -87,6 +87,10 @@ public:
 	/** Save cached data or reset one if RememberMe is false */
 	void SaveData();
 
+	/** Validate email string format */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	bool IsEmailValid(const FString& email);
+
 protected:
 	/** Keeps state of user login */
 	FXsollaLoginData LoginData;
