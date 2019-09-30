@@ -330,9 +330,9 @@ void UXsollaLoginController::SaveData()
 
 bool UXsollaLoginController::IsEmailValid(const FString& email)
 {
-	const std::regex pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+	const std::regex emailPattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
 
-	return std::regex_match(TCHAR_TO_UTF8(*email), pattern);
+	return std::regex_match(TCHAR_TO_UTF8(*email), emailPattern);
 }
 
 #undef LOCTEXT_NAMESPACE
