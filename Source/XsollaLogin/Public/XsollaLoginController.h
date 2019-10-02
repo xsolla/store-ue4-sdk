@@ -124,7 +124,6 @@ protected:
 
 	static const FString ProxyRegistrationEndpoint;
 	static const FString ProxyLoginEndpoint;
-	static const FString ProxyLoginSocialEndpoint;
 	static const FString ProxyResetPasswordEndpoint;
 
 private:

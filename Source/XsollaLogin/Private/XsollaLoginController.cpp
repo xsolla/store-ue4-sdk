@@ -23,7 +23,6 @@ const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.
 
 const FString UXsollaLoginController::ProxyRegistrationEndpoint(TEXT("https://login.xsolla.com/api/proxy/registration"));
 const FString UXsollaLoginController::ProxyLoginEndpoint(TEXT("https://login.xsolla.com/api/proxy/login"));
-const FString UXsollaLoginController::ProxyLoginSocialEndpoint(TEXT("https://login.xsolla.com/api/proxy/social"));
 const FString UXsollaLoginController::ProxyResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/proxy/password/reset"));
 
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
@@ -153,9 +152,8 @@ void UXsollaLoginController::GetSocialAuthenticationUrl(const FString& ProviderN
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginSocialEndpoint : ProxyLoginSocialEndpoint;
 	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
-		*Endpoint,
+		*LoginSocialEndpoint,
 		*ProviderName,
 		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
