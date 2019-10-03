@@ -39,6 +39,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
 
+	/** Custom class to handle authentication via social networks */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
+
 	/**
 	 * A JWT signed by the secret key is generated for each successfully authenticated user.
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.

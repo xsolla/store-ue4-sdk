@@ -8,14 +8,17 @@
 #include "XsollaLoginSave.h"
 #include "XsollaLoginSettings.h"
 
+#include "Engine.h"
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "UObject/ConstructorHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
 const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
 const FString UXsollaLoginController::LoginEndpoint(TEXT("https://login.xsolla.com/api/login"));
+const FString UXsollaLoginController::LoginSocialEndpoint(TEXT("https://login.xsolla.com/api/social"));
 const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/password/reset/request"));
 
 const FString UXsollaLoginController::ProxyRegistrationEndpoint(TEXT("https://login.xsolla.com/api/proxy/registration"));
@@ -25,6 +28,8 @@ const FString UXsollaLoginController::ProxyResetPasswordEndpoint(TEXT("https://l
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_LoginBrowser.W_LoginBrowser_C"));
+	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
 void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
@@ -131,6 +136,42 @@ void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback,
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginController::GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
+		*LoginSocialEndpoint,
+		*ProviderName,
+		*LoginProjectId,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, TEXT(""));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget)
+{
+	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
+	// Check for user browser widget override
+	auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
+
+	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
+	MyBrowser->AddToViewport(MAX_int32);
+
+	BrowserWidget = MyBrowser;
+}
+
+void UXsollaLoginController::SetToken(const FString& token)
+{
+	LoginData.AuthToken.JWT = token;
+	SaveData();
+}
+
 void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
@@ -218,6 +259,43 @@ void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr Htt
 	SuccessCallback.ExecuteIfBound(LoginData);
 }
 
+void UXsollaLoginController::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString SocialUrlFieldName = TEXT("url");
+		if (JsonObject->HasTypedField<EJson::String>(SocialUrlFieldName))
+		{
+			FString SocialnUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
+			SuccessCallback.ExecuteIfBound(SocialnUrl);
+			return;
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *SocialUrlFieldName);
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
 bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
 {
 	FString ErrorStr;
@@ -280,11 +358,18 @@ TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString
 		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
 		ENGINE_VERSION_STRING,
 		XSOLLA_LOGIN_VERSION);
-
 	HttpRequest->SetURL(Url + MetaUrl);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetContentAsString(Content);
+
+	if (!Content.IsEmpty())
+	{
+		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+		HttpRequest->SetVerb(TEXT("POST"));
+		HttpRequest->SetContentAsString(Content);
+	}
+	else
+	{
+		HttpRequest->SetVerb(TEXT("GET"));
+	}
 
 	// Xsolla meta
 	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE4"));
@@ -324,6 +409,11 @@ void UXsollaLoginController::SaveData()
 		// Dron't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
+}
+
+FString UXsollaLoginController::GetPendingSocialAuthenticationUrl() const
+{
+	return PendingSocialAuthenticationUrl;
 }
 
 #undef LOCTEXT_NAMESPACE
