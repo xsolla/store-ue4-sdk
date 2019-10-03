@@ -43,6 +43,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateInventory(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Update list of virtual currencies */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencies(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Update list of virtual currency packages */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencyPackages(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Update virtual currency balance */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/**
 	 * Initiate item purchase session and fetch token for payment console
 	 *
@@ -109,6 +121,9 @@ protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void UpdateVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
 	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
@@ -157,6 +172,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FStoreItemsData GetItemsData() const;
 
+	/** Get list of cached virtual currencies */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
+	TArray<FVirtualCurrency> GetVirtualCurrencyData() const;
+
+	/** Get list of cached virtual currency packages */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
+	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
+
+	/** Get cached virtual currencies balance */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
+	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
+
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
@@ -187,6 +214,15 @@ protected:
 
 	/** Current cart */
 	FStoreCart Cart;
+
+	/** Cached list of virtual currencies */
+	FVirtualCurrencyData VirtualCurrencyData;
+
+	/** Cached virtual currency packages */
+	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
+
+	/** Cached virtual currency balance */
+	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
 
 	/** User inventory */
 	FStoreInventory Inventory;
