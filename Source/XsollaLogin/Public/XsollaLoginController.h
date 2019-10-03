@@ -85,7 +85,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content);
 
 	/** Cached Xsolla Login project id */
 	FString LoginProjectId;
