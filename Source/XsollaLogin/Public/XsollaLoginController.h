@@ -128,5 +128,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TSubclassOf<UUserWidget> BrowserWidgetClass;
+	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 };

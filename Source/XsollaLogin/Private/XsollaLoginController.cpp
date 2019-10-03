@@ -29,7 +29,7 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 	: Super(ObjectInitializer)
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_LoginBrowser.W_LoginBrowser_C"));
-	BrowserWidgetClass = BrowserWidgetFinder.Class;
+	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
 void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
@@ -167,6 +167,11 @@ void UXsollaLoginController::GetSocialAuthenticationUrl(const FString& ProviderN
 void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
+	// Check for user browser widget override
+	auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
 
 	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
 	MyBrowser->AddToViewport(MAX_int32);
