@@ -11,9 +11,19 @@
 
 #include "XsollaStoreController.generated.h"
 
-class UXsollaStoreImageLoader;
+/** Verb (GET, PUT, POST) used by the request */
+UENUM(BlueprintType)
+enum class ERequestVerb : uint8
+{
+	GET,
+	POST,
+	PUT,
+	DELETE
+};
 
+class UXsollaStoreImageLoader;
 class UDataTable;
+class FJsonObject;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
@@ -137,7 +147,10 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url);
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const ERequestVerb Verb = ERequestVerb::GET, const FString& AuthToken = FString(), const FString& Content = FString());
+
+	/** Serialize json object into string */
+	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
 
 	/** Try to execute next request in queue */
 	void ProcessNextCartRequest();
