@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "XsollaLoginDefines.h"
+
+#include "Blueprint/UserWidget.h"
+
 #include "XsollaLoginSettings.generated.h"
 
 /** You can store user data at Xsolla's side, which is the default option, or in your own storage. */

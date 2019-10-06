@@ -4,6 +4,7 @@
 #pragma once
 
 #include "XsollaStoreDataModel.h"
+#include "XsollaStoreDefines.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
