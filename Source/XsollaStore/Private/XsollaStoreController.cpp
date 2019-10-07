@@ -50,10 +50,7 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/virtual_items"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -63,10 +60,7 @@ void UXsollaStoreController::UpdateItemGroups(const FString& Locale, const FOnSt
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -77,12 +71,7 @@ void UXsollaStoreController::UpdateInventory(const FString& AuthToken, const FOn
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/user/inventory/items"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -140,21 +129,9 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("POST"));
-
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetContentAsString(PostContent);
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -174,21 +151,9 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/cart/%d"), *ProjectId, Cart.cart_id);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("POST"));
-
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetContentAsString(PostContent);
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -235,12 +200,7 @@ void UXsollaStoreController::CheckOrder(const FString& AuthToken, int32 OrderId,
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/order/%d"), *ProjectId, OrderId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -251,11 +211,7 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CreateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	CartRequestsQueue.Add(HttpRequest);
@@ -268,11 +224,7 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/clear"), *ProjectId, Cart.cart_id);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("PUT"));
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::PUT, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	CartRequestsQueue.Add(HttpRequest);
@@ -289,11 +241,7 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d"), *ProjectId, Cart.cart_id);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	CartRequestsQueue.Add(HttpRequest);
@@ -308,21 +256,9 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("PUT"));
-
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetContentAsString(PostContent);
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::PUT, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	CartRequestsQueue.Add(HttpRequest);
@@ -367,12 +303,7 @@ void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FStr
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("DELETE"));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::DELETE, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	CartRequestsQueue.Add(HttpRequest);
@@ -416,21 +347,9 @@ void UXsollaStoreController::ConsumeInventoryItem(const FString& AuthToken, cons
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/user/inventory/item/consume"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("POST"));
-
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetContentAsString(PostContent);
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	HttpRequest->ProcessRequest();
@@ -1022,7 +941,7 @@ bool UXsollaStoreController::IsSandboxEnabled() const
 	return bIsSandboxEnabled;
 }
 
-TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString& Url)
+TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString& Url, const ERequestVerb Verb, const FString& AuthToken, const FString& Content)
 {
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
@@ -1039,7 +958,54 @@ TSharedRef<IHttpRequest> UXsollaStoreController::CreateHttpRequest(const FString
 	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("STORE"));
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_STORE_VERSION);
 
+	switch (Verb)
+	{
+	case ERequestVerb::GET:
+		HttpRequest->SetVerb(TEXT("GET"));
+
+		// Check that we doen't provide content with GET request
+		if (!Content.IsEmpty())
+		{
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Request content is not empty for GET request. Maybe you should use POST one?"), *VA_FUNC_LINE);
+		}
+		break;
+
+	case ERequestVerb::POST:
+		HttpRequest->SetVerb(TEXT("POST"));
+		break;
+
+	case ERequestVerb::PUT:
+		HttpRequest->SetVerb(TEXT("PUT"));
+		break;
+
+	case ERequestVerb::DELETE:
+		HttpRequest->SetVerb(TEXT("DELETE"));
+		break;
+
+	default:
+		unimplemented();
+	}
+
+	if (!AuthToken.IsEmpty())
+	{
+		HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
+	}
+
+	if (!Content.IsEmpty())
+	{
+		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+		HttpRequest->SetContentAsString(Content);
+	}
+
 	return HttpRequest;
+}
+
+FString UXsollaStoreController::SerializeJson(const TSharedPtr<FJsonObject> DataJson) const
+{
+	FString JsonContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&JsonContent);
+	FJsonSerializer::Serialize(DataJson.ToSharedRef(), Writer);
+	return JsonContent;
 }
 
 void UXsollaStoreController::ProcessNextCartRequest()
