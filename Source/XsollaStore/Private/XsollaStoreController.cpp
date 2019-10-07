@@ -80,10 +80,7 @@ void UXsollaStoreController::UpdateVirtualCurrencies(const FOnStoreUpdate& Succe
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -92,10 +89,7 @@ void UXsollaStoreController::UpdateVirtualCurrencyPackages(const FOnStoreUpdate&
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -106,12 +100,7 @@ void UXsollaStoreController::UpdateVirtualCurrencyBalance(const FString& AuthTok
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"), *ProjectId);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -359,10 +348,7 @@ void UXsollaStoreController::GetVirtualCurrency(const FString& CurrencySKU, cons
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/sku/%s"), *ProjectId, *CurrencySKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::GetVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -371,10 +357,7 @@ void UXsollaStoreController::GetVirtualCurrencyPackage(const FString& PackageSKU
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package/sku/%s"), *ProjectId, *PackageSKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("GET"));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::GetVirtualCurrencyPackage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -385,12 +368,7 @@ void UXsollaStoreController::BuyItemWithVirtualCurrency(const FString& AuthToken
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s/virtual/%s"), *ProjectId, *ItemSKU, *CurrencySKU);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-
-	HttpRequest->SetVerb(TEXT("POST"));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
