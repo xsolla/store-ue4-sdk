@@ -152,135 +152,6 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreCartItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FString sku;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FString name;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FString description;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FString long_description;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	bool is_free;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FStorePrice price;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	FString image_url;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	int32 quantity;
-
-	/** TNumericLimits<int32>::Max() if no limit */
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	int32 purchase_limit;
-
-public:
-	FStoreCartItem()
-		: is_free(false)
-		, quantity(0)
-		, purchase_limit(TNumericLimits<int32>::Max()){};
-
-	FStoreCartItem(const FStoreItem& Item)
-		: sku(Item.sku)
-		, name(Item.name)
-		, is_free(Item.is_free)
-		, image_url(Item.image_url)
-		, quantity(0)
-		, purchase_limit(Item.purchase_limit){};
-
-	bool operator==(const FStoreCartItem& Item) const
-	{
-		return sku == Item.sku;
-	}
-
-	/*bool operator==(const FStoreItem& Item) const
-	{
-		return sku == Item.sku;
-	}*/
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreCart
-{
-public:
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	int32 cart_id;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	FStorePrice price;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	bool is_free;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	TArray<FStoreCartItem> Items;
-
-public:
-	FStoreCart()
-		: cart_id(INVALID_CART)
-		, is_free(false){};
-
-	FStoreCart(int32 CartId)
-		: cart_id(CartId)
-		, is_free(false){};
-
-	// Check we have the same set if items
-	bool operator==(const FStoreCart& Cart) const
-	{
-		if (cart_id == Cart.cart_id)
-		{
-			if (Items.Num() == Cart.Items.Num())
-			{
-				int32 ItemsCount = Items.Num();
-				for (int32 i = 0; i < ItemsCount; ++i)
-				{
-					if (Items[i].sku == Cart.Items[i].sku)
-					{
-						if (Items[i].quantity != Cart.Items[i].quantity)
-						{
-							return false;
-						}
-					}
-					else
-					{
-						return false;
-					}
-				}
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreInventory
-{
-public:
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Data")
-	TArray<FStoreCartItem> Items;
-
-public:
-	FStoreInventory(){};
-};
-
-USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FVirtualCurrency
 {
 public:
@@ -447,4 +318,141 @@ public:
 
 public:
 	FVirtualCurrencyBalanceData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCartItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	int32 quantity;
+
+	/** TNumericLimits<int32>::Max() if no limit */
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	int32 purchase_limit;
+
+public:
+	FStoreCartItem()
+		: is_free(false)
+		, quantity(0)
+		, purchase_limit(TNumericLimits<int32>::Max()){};
+
+	FStoreCartItem(const FStoreItem& Item)
+		: sku(Item.sku)
+		, name(Item.name)
+		, is_free(Item.is_free)
+		, image_url(Item.image_url)
+		, quantity(0)
+		, purchase_limit(Item.purchase_limit){};
+
+	FStoreCartItem(const FVirtualCurrencyPackage& CurrencyPackage)
+		: sku(CurrencyPackage.sku)
+		, name(CurrencyPackage.name)
+		, is_free(CurrencyPackage.is_free)
+		, image_url(CurrencyPackage.image_url)
+		, quantity(0)
+		, purchase_limit(TNumericLimits<int32>::Max()){};
+
+	bool operator==(const FStoreCartItem& Item) const
+	{
+		return sku == Item.sku;
+	}
+
+	/*bool operator==(const FStoreItem& Item) const
+	{
+		return sku == Item.sku;
+	}*/
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCart
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	int32 cart_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
+	TArray<FStoreCartItem> Items;
+
+public:
+	FStoreCart()
+		: cart_id(INVALID_CART)
+		, is_free(false){};
+
+	FStoreCart(int32 CartId)
+		: cart_id(CartId)
+		, is_free(false){};
+
+	// Check we have the same set if items
+	bool operator==(const FStoreCart& Cart) const
+	{
+		if (cart_id == Cart.cart_id)
+		{
+			if (Items.Num() == Cart.Items.Num())
+			{
+				int32 ItemsCount = Items.Num();
+				for (int32 i = 0; i < ItemsCount; ++i)
+				{
+					if (Items[i].sku == Cart.Items[i].sku)
+					{
+						if (Items[i].quantity != Cart.Items[i].quantity)
+						{
+							return false;
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreInventory
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Data")
+	TArray<FStoreCartItem> Items;
+
+public:
+	FStoreInventory(){};
 };

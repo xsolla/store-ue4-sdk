@@ -279,7 +279,21 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 		}
 		else
 		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find provided SKU in local cache: %s"), *VA_FUNC_LINE, *ItemSKU);
+			auto CurrencyPackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSKU](const FVirtualCurrencyPackage& InItem) {
+				return InItem.sku == ItemSKU;
+			});
+
+			if (CurrencyPackageItem)
+			{
+				FStoreCartItem Item(*CurrencyPackageItem);
+				Item.quantity = FMath::Clamp(Quantity, 0, Item.purchase_limit);
+
+				Cart.Items.Add(Item);
+			}
+			else
+			{
+				UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find provided SKU in local cache: %s"), *VA_FUNC_LINE, *ItemSKU);
+			}
 		}
 	}
 
