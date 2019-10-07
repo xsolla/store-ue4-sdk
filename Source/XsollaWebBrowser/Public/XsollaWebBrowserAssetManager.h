@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "UObject/SoftObjectPtr.h"
 #include "Materials/Material.h"
+#include "UObject/SoftObjectPtr.h"
 
 #include "XsollaWebBrowserAssetManager.generated.h"
 
