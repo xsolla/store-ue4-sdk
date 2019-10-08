@@ -187,6 +187,9 @@ private:
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
 
+	/** Parse JWT token and get its payload as json object */
+	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
+
 	/** Try to execute next request in queue */
 	void ProcessNextCartRequest();
 
