@@ -11,6 +11,7 @@
 #include "Engine.h"
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
+#include "OnlineSubsystem.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -39,6 +40,13 @@ void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
 
 void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(TEXT("Registration failed"), TEXT("User registration should be handled via Steam"));
+		return;
+	}
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("username"), Username);
@@ -64,6 +72,13 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 
 void UXsollaLoginController::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("User authentication should be handled via Steam"));
+		return;
+	}
+
 	// Be sure we've dropped any saved info
 	LoginData = FXsollaLoginData();
 	LoginData.Username = Username;
@@ -96,6 +111,13 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 
 void UXsollaLoginController::ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(TEXT("Password reset failed"), TEXT("User password reset should be handled via Steam"));
+		return;
+	}
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("username"), Username);
