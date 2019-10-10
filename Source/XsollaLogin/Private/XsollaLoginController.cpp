@@ -42,7 +42,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 {
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
-		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Registration failed"), TEXT("User registration should be handled via Steam"));
 		return;
 	}
@@ -74,7 +74,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 {
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
-		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("User authentication should be handled via Steam"));
 		return;
 	}
@@ -113,7 +113,7 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 {
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
-		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Password reset failed"), TEXT("User password reset should be handled via Steam"));
 		return;
 	}
