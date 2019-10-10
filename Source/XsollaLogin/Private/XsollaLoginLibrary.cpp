@@ -28,9 +28,9 @@ UXsollaLoginSettings* UXsollaLoginLibrary::GetLoginSettings()
 	return FXsollaLoginModule::Get().GetSettings();
 }
 
-bool UXsollaLoginLibrary::IsEmailValid(const FString& email)
+bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 {
 	FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
-	FRegexMatcher Matcher(EmailPattern, email);
+	FRegexMatcher Matcher(EmailPattern, EMail);
 	return Matcher.FindNext();
 }

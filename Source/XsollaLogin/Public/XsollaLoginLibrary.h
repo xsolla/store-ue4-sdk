@@ -26,5 +26,5 @@ public:
 
 	/** Validate email string format */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
-	static bool IsEmailValid(const FString& email);
+	static bool IsEmailValid(const FString& EMail);
 };
