@@ -105,10 +105,6 @@ public:
 	/** Save cached data or reset one if RememberMe is false */
 	void SaveData();
 
-	/** Validate email string format */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
-	bool IsEmailValid(const FString& email);
-
 	/** Get pending social authentication url to be opened in browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetPendingSocialAuthenticationUrl() const;

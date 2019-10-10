@@ -23,4 +23,8 @@ public:
 	/** Direct access to login SDK settings */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
 	static UXsollaLoginSettings* GetLoginSettings();
+
+	/** Validate email string format */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	static bool IsEmailValid(const FString& email);
 };
