@@ -62,7 +62,7 @@ void FXsollaStoreModule::ShutdownModule()
 		// If we're in exit purge, this object has already been destroyed
 		XsollaStoreSettings->RemoveFromRoot();
 
-		for(auto StoreController : XsollaStoreControllers)
+		for (auto StoreController : XsollaStoreControllers)
 		{
 			StoreController.Value->RemoveFromRoot();
 		}

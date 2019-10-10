@@ -63,7 +63,7 @@ void FXsollaLoginModule::ShutdownModule()
 		// If we're in exit purge, this object has already been destroyed
 		XsollaLoginSettings->RemoveFromRoot();
 
-		for(auto LoginController : XsollaLoginControllers)
+		for (auto LoginController : XsollaLoginControllers)
 		{
 			LoginController.Value->RemoveFromRoot();
 		}

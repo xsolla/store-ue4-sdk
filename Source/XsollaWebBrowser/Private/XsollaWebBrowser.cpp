@@ -43,6 +43,7 @@ void UXsollaWebBrowser::ReleaseSlateResources(bool bReleaseChildren)
 
 TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 {
+	// clang-format off
 	if (IsDesignTime())
 	{
 		return SNew(SBox)
@@ -64,6 +65,7 @@ TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 
 		return WebBrowserWidget.ToSharedRef();
 	}
+	// clang-format on
 }
 
 void UXsollaWebBrowser::HandleOnUrlChanged(const FText& InText)
@@ -81,6 +83,7 @@ bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)
 		}
 		else
 		{
+			// clang-format off
 			// Retry on the GameThread now
 			TWeakObjectPtr<UXsollaWebBrowser> WeakThis = this;
 			FFunctionGraphTask::CreateAndDispatchWhenReady([WeakThis, URL, Frame]()
@@ -90,6 +93,7 @@ bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)
 					WeakThis->HandleOnBeforePopup(URL, Frame);
 				}
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
+			// clang-format on
 		}
 
 		return true;

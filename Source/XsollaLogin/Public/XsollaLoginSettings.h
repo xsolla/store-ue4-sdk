@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "XsollaLoginDefines.h"
+
+#include "Blueprint/UserWidget.h"
+
 #include "XsollaLoginSettings.generated.h"
 
 /** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
@@ -38,6 +42,10 @@ public:
 	/** API methods will be calling different URLs depending on the selected storage method. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
+
+	/** Custom class to handle authentication via social networks */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
 	/**
 	 * A JWT signed by the secret key is generated for each successfully authenticated user.

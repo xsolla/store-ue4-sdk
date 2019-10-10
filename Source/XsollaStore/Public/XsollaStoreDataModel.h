@@ -152,6 +152,175 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrency
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FString> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	int order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FString> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FStorePrice price;
+
+public:
+	FVirtualCurrency()
+		: is_free(false)
+		, order(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Data")
+	TArray<FVirtualCurrency> Items;
+
+public:
+	FVirtualCurrencyData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyPackageContent
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	int quantity;
+
+public:
+	FVirtualCurrencyPackageContent()
+		: quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyPackage
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	int order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	TArray<FString> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FVirtualCurrencyPackageContent content;
+
+public:
+	FVirtualCurrencyPackage()
+		: is_free(false)
+		, order(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyPackagesData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Packages Data")
+	TArray<FVirtualCurrencyPackage> Items;
+
+public:
+	FVirtualCurrencyPackagesData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyBalance
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	int amount;
+
+public:
+	FVirtualCurrencyBalance()
+		: amount(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyBalanceData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance Data")
+	TArray<FVirtualCurrencyBalance> Items;
+
+public:
+	FVirtualCurrencyBalanceData(){};
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreCartItem
 {
 	GENERATED_BODY()
@@ -197,6 +366,14 @@ public:
 		, image_url(Item.image_url)
 		, quantity(0)
 		, purchase_limit(Item.purchase_limit){};
+
+	FStoreCartItem(const FVirtualCurrencyPackage& CurrencyPackage)
+		: sku(CurrencyPackage.sku)
+		, name(CurrencyPackage.name)
+		, is_free(CurrencyPackage.is_free)
+		, image_url(CurrencyPackage.image_url)
+		, quantity(0)
+		, purchase_limit(TNumericLimits<int32>::Max()){};
 
 	bool operator==(const FStoreCartItem& Item) const
 	{
