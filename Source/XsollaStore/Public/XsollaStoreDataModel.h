@@ -368,6 +368,9 @@ struct XSOLLASTORE_API FStoreCartItem
 	FStorePrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FVirtualCurrencyPrice> vc_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
