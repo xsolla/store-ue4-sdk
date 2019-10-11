@@ -54,6 +54,12 @@ struct XSOLLASTORE_API FVirtualCurrencyPrice
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
 	FString image_url;
+
+public:
+	FVirtualCurrencyPrice()
+		: is_default(false)
+		, amount(0)
+		, amount_without_discount(0){};
 };
 
 USTRUCT(BlueprintType)
@@ -105,6 +111,7 @@ public:
 		, groups(Item.groups)
 		, is_free(Item.is_free)
 		, price(Item.price)
+		, vc_prices(Item.vc_prices)
 		, image_url(Item.image_url)
 		, purchase_limit(Item.purchase_limit){};
 
