@@ -33,6 +33,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool bUsePlatformBrowser;
 
+	/** If yes, certain tasks like authentication and payments will be processed via Steam */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool bBuildForSteam;
+
 	/** Demo Store ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
 	FString DemoProjectId;

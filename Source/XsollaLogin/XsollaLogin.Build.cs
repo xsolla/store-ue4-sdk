@@ -16,6 +16,7 @@ public class XsollaLogin : ModuleRules
                 "HTTP",
                 "Json",
                 "UMG",
+                "OnlineSubsystem",
                 "XsollaWebBrowser"
             }
             );

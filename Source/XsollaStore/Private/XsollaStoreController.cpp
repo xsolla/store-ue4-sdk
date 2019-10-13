@@ -121,6 +121,37 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	if (Settings->bBuildForSteam)
+	{
+		TSharedPtr<FJsonObject> PayloadJsonObject;
+		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
+		{
+			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't parse token payload"));
+			return;
+		}
+
+		FString SteamIdUrl;
+		if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
+		{
+			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find Steam profile ID in token payload"), *VA_FUNC_LINE);
+			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't find Steam profile ID in token payload"));
+			return;
+		}
+
+		// Extract ID value from user's Steam profile URL
+		FString SteamId;
+		int SteamIdIndex;
+		if (SteamIdUrl.FindLastChar('/', SteamIdIndex))
+		{
+			SteamId = SteamIdUrl.RightChop(SteamIdIndex + 1);
+		}
+
+		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
+	}
+
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -143,6 +174,37 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/cart/%d"), *ProjectId, Cart.cart_id);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	if (Settings->bBuildForSteam)
+	{
+		TSharedPtr<FJsonObject> PayloadJsonObject;
+		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
+		{
+			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't parse token payload"));
+			return;
+		}
+
+		FString SteamIdUrl;
+		if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
+		{
+			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find Steam profile ID in token payload"), *VA_FUNC_LINE);
+			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't find Steam profile ID in token payload"));
+			return;
+		}
+
+		// Extract ID value from user's Steam profile URL
+		FString SteamId;
+		int SteamIdIndex;
+		if (SteamIdUrl.FindLastChar('/', SteamIdIndex))
+		{
+			SteamId = SteamIdUrl.RightChop(SteamIdIndex + 1);
+		}
+
+		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
+	}
+
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -998,6 +1060,26 @@ FString UXsollaStoreController::SerializeJson(const TSharedPtr<FJsonObject> Data
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&JsonContent);
 	FJsonSerializer::Serialize(DataJson.ToSharedRef(), Writer);
 	return JsonContent;
+}
+
+bool UXsollaStoreController::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
+{
+	TArray<FString> TokenParts;
+	Token.ParseIntoArray(TokenParts, TEXT("."));
+
+	FString PayloadStr;
+	if (!FBase64::Decode(TokenParts[1], PayloadStr))
+	{
+		return false;
+	}
+
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
+	if (!FJsonSerializer::Deserialize(Reader, PayloadJsonObject))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void UXsollaStoreController::ProcessNextCartRequest()
