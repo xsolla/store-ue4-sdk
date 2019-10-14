@@ -25,6 +25,10 @@ public:
 	static UXsollaLoginSettings* GetLoginSettings();
 
 	/** Validate email string format */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static bool IsEmailValid(const FString& EMail);
+
+	/** Get string command line parameter value */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetStringCommandLineParam(const FString& ParamName);
 };

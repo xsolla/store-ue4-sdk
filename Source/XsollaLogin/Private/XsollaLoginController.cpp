@@ -5,6 +5,7 @@
 
 #include "XsollaLogin.h"
 #include "XsollaLoginDefines.h"
+#include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
 #include "XsollaLoginSettings.h"
 
@@ -36,6 +37,14 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
 {
 	LoginProjectId = InLoginProjectId;
+
+	// Check token override from Xsolla Launcher
+	FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-jwt"));
+	if (!LauncherLoginJwt.IsEmpty())
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Xsolla Launcher login token is used"), *VA_FUNC_LINE);
+		LoginData.AuthToken.JWT = LauncherLoginJwt;
+	}
 }
 
 void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
