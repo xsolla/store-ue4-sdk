@@ -36,6 +36,33 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyPrice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	bool is_default;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	int amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	int amount_without_discount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString image_url;
+
+public:
+	FVirtualCurrencyPrice()
+		: is_default(false)
+		, amount(0)
+		, amount_without_discount(0){};
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
@@ -62,6 +89,9 @@ struct XSOLLASTORE_API FStoreItem
 	FStorePrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	TArray<FVirtualCurrencyPrice> vc_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
 	/** TNumericLimits<int32>::Max() if no limit */
@@ -81,6 +111,7 @@ public:
 		, groups(Item.groups)
 		, is_free(Item.is_free)
 		, price(Item.price)
+		, vc_prices(Item.vc_prices)
 		, image_url(Item.image_url)
 		, purchase_limit(Item.purchase_limit){};
 
@@ -342,6 +373,9 @@ struct XSOLLASTORE_API FStoreCartItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FVirtualCurrencyPrice> vc_prices;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString image_url;
