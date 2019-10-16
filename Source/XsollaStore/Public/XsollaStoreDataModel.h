@@ -62,7 +62,6 @@ public:
 		, amount_without_discount(0){};
 };
 
-
 USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreGroup
 {

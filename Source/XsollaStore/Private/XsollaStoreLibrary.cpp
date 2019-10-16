@@ -53,7 +53,7 @@ FString UXsollaStoreLibrary::FormatPrice(UObject* WorldContextObject, float Amou
 		FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven, false, true, 1, 324, Row->fractionSize, Row->fractionSize).ToString();
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
 	}
-	
+
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to format price (%d %s) for %s"), *VA_FUNC_LINE, Amount, *Currency, *WorldContextObject->GetName());
 	return FString();
 }
