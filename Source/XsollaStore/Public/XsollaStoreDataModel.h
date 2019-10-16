@@ -62,64 +62,6 @@ public:
 		, amount_without_discount(0){};
 };
 
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString sku;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString name;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString description;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString long_description;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	TArray<FString> groups;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	bool is_free;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FStorePrice price;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	TArray<FVirtualCurrencyPrice> vc_prices;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString image_url;
-
-	/** TNumericLimits<int32>::Max() if no limit */
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	int32 purchase_limit;
-
-public:
-	FStoreItem()
-		: is_free(false)
-		, purchase_limit(TNumericLimits<int32>::Max()){};
-
-	FStoreItem(const FStoreItem& Item)
-		: sku(Item.sku)
-		, name(Item.name)
-		, description(Item.description)
-		, long_description(Item.long_description)
-		, groups(Item.groups)
-		, is_free(Item.is_free)
-		, price(Item.price)
-		, vc_prices(Item.vc_prices)
-		, image_url(Item.image_url)
-		, purchase_limit(Item.purchase_limit){};
-
-	bool operator==(const FStoreItem& Item) const
-	{
-		return sku == Item.sku;
-	}
-};
 
 USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreGroup
@@ -159,6 +101,59 @@ public:
 		: id(-1)
 		, level(0)
 		, order(1){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString image_url;
+
+public:
+	FStoreItem()
+		: is_free(false){};
+
+	FStoreItem(const FStoreItem& Item)
+		: sku(Item.sku)
+		, name(Item.name)
+		, description(Item.description)
+		, long_description(Item.long_description)
+		, groups(Item.groups)
+		, is_free(Item.is_free)
+		, price(Item.price)
+		, virtual_prices(Item.virtual_prices)
+		, image_url(Item.image_url){};
+
+	bool operator==(const FStoreItem& Item) const
+	{
+		return sku == Item.sku;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -383,31 +378,24 @@ struct XSOLLASTORE_API FStoreCartItem
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	int32 quantity;
 
-	/** TNumericLimits<int32>::Max() if no limit */
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
-	int32 purchase_limit;
-
 public:
 	FStoreCartItem()
 		: is_free(false)
-		, quantity(0)
-		, purchase_limit(TNumericLimits<int32>::Max()){};
+		, quantity(0){};
 
 	FStoreCartItem(const FStoreItem& Item)
 		: sku(Item.sku)
 		, name(Item.name)
 		, is_free(Item.is_free)
 		, image_url(Item.image_url)
-		, quantity(0)
-		, purchase_limit(Item.purchase_limit){};
+		, quantity(0){};
 
 	FStoreCartItem(const FVirtualCurrencyPackage& CurrencyPackage)
 		: sku(CurrencyPackage.sku)
 		, name(CurrencyPackage.name)
 		, is_free(CurrencyPackage.is_free)
 		, image_url(CurrencyPackage.image_url)
-		, quantity(0)
-		, purchase_limit(TNumericLimits<int32>::Max()){};
+		, quantity(0){};
 
 	bool operator==(const FStoreCartItem& Item) const
 	{

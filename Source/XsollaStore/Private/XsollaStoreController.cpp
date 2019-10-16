@@ -322,7 +322,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 
 	if (CartItem)
 	{
-		CartItem->quantity = FMath::Clamp(Quantity, 0, CartItem->purchase_limit);
+		CartItem->quantity = FMath::Max(0, Quantity);
 	}
 	else
 	{
@@ -333,7 +333,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 		if (StoreItem)
 		{
 			FStoreCartItem Item(*StoreItem);
-			Item.quantity = FMath::Clamp(Quantity, 0, Item.purchase_limit);
+			Item.quantity = FMath::Max(0, Quantity);
 
 			// @TODO Predict price locally before cart sync https://github.com/xsolla/store-ue4-sdk/issues/68
 
@@ -348,7 +348,7 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 			if (CurrencyPackageItem)
 			{
 				FStoreCartItem Item(*CurrencyPackageItem);
-				Item.quantity = FMath::Clamp(Quantity, 0, Item.purchase_limit);
+				Item.quantity = FMath::Max(0, Quantity);
 
 				Cart.Items.Add(Item);
 			}
@@ -477,7 +477,7 @@ void UXsollaStoreController::UpdateVirtualItems_HttpRequestComplete(FHttpRequest
 	{
 		for (auto& ItemGroup : Item.groups)
 		{
-			ItemsData.GroupIds.Add(ItemGroup);
+			ItemsData.GroupIds.Add(ItemGroup.external_id);
 		}
 	}
 
@@ -1122,7 +1122,14 @@ TArray<FStoreItem> UXsollaStoreController::GetVirtualItems(const FString& GroupF
 	else
 	{
 		return ItemsData.Items.FilterByPredicate([GroupFilter](const FStoreItem& InStoreItem) {
-			return InStoreItem.groups.Contains(GroupFilter);
+			for (auto& ItemGroup : InStoreItem.groups)
+			{
+				if (ItemGroup.external_id == GroupFilter)
+				{
+					return true;
+				}
+			}
+			return false;
 		});
 	}
 }
