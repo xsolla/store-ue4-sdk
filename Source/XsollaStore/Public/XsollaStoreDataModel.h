@@ -312,19 +312,19 @@ struct XSOLLASTORE_API FVirtualCurrencyBalance
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString sku;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString name;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString description;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString image_url;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	int amount;
 
 public:
