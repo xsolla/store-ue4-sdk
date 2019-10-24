@@ -126,6 +126,8 @@ protected:
 	static const FString ProxyLoginEndpoint;
 	static const FString ProxyResetPasswordEndpoint;
 
+	static const FString ValidateTokenEndpoint;
+
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;

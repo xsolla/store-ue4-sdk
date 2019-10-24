@@ -27,6 +27,8 @@ const FString UXsollaLoginController::ProxyRegistrationEndpoint(TEXT("https://lo
 const FString UXsollaLoginController::ProxyLoginEndpoint(TEXT("https://login.xsolla.com/api/proxy/login"));
 const FString UXsollaLoginController::ProxyResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/proxy/password/reset"));
 
+const FString UXsollaLoginController::ValidateTokenEndpoint(TEXT("https://login.xsolla.com/api/token/validate"));
+
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -160,7 +162,7 @@ void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback,
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = Settings->VerifyTokenURL;
+	const FString Url = (!Settings->VerifyTokenURL.IsEmpty()) ? Settings->VerifyTokenURL : ValidateTokenEndpoint;
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
