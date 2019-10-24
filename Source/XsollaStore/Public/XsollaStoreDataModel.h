@@ -12,7 +12,8 @@ enum class EXsollaOrderStatus : uint8
 {
 	Unknown,
 	New,
-	Paid
+	Paid,
+	Done
 };
 
 USTRUCT(BlueprintType)

@@ -693,6 +693,10 @@ void UXsollaStoreController::CheckOrder_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		OrderStatus = EXsollaOrderStatus::Paid;
 	}
+	else if (Status == TEXT("done"))
+	{
+		OrderStatus = EXsollaOrderStatus::Done;
+	}
 	else
 	{
 		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Status, OrderId);
