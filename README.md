@@ -28,7 +28,7 @@ Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unre
 
 1. [Epic Games Launcher](https://www.epicgames.com/unrealtournament/download).
 2. Create a new UE4 project.
-3. Register an Xsolla [Publisher Account](https://publisher.xsolla.com/signup?integration_type=SDKCart).
+3. Register an Xsolla [Publisher Account](https://publisher.xsolla.com/signup?integration_type=SDKCart). More instructions are on [Xsolla Developers portal](https://developers.xsolla.com/sdk/game-engines/unreal-engine/).
 4. Create and set up a Publisher Account project:
     1. Go to Projects and click **Create new project**.
     2. In setup mode, add **Project name** and click **Create**.
