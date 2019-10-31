@@ -26,6 +26,7 @@ global.db.users.insert([
 
 // Prepare router and launch the app
 let webhookRouter = require('./routes/webhook');
+let tokenRouter = require('./routes/verify');
 
 let app = express();
 
@@ -34,5 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/webhook', webhookRouter);
+app.use('/verify', tokenRouter);
 
 module.exports = app;

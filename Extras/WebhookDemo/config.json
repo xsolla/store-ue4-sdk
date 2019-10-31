@@ -2,5 +2,9 @@
     "store": {
         "secretKey" : "",
         "validateUser" : false
+    },
+    "login": {
+        "dump_payload" : false,
+        "secret" : ""
     }
 }
