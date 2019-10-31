@@ -15,6 +15,8 @@
 UXsollaPayStationController::UXsollaPayStationController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_PayStationBrowser.W_PayStationBrowser_C"));
+	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
 void UXsollaPayStationController::FetchPaymentToken(const FOnFetchPaymentTokenSuccess& SuccessCallback, const FOnPayStationError& ErrorCallback)
