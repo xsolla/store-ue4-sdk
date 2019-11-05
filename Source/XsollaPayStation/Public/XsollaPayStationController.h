@@ -43,6 +43,9 @@ protected:
 	/** Pending paystation URL to be opened in browser */
 	FString PengindPayStationUrl;
 
+	static const FString PaymentEndpoint;
+	static const FString SandboxPaymentEndpoint;
+
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;

@@ -12,6 +12,9 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaPayStationModule"
 
+const FString UXsollaPayStationController::PaymentEndpoint(TEXT("https://secure.xsolla.com/paystation3"));
+const FString UXsollaPayStationController::SandboxPaymentEndpoint(TEXT("https://sandbox-secure.xsolla.com/paystation3"));
+
 UXsollaPayStationController::UXsollaPayStationController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -30,15 +33,8 @@ void UXsollaPayStationController::FetchPaymentToken(const FOnFetchPaymentTokenSu
 
 void UXsollaPayStationController::LaunchPaymentConsole(const FString& PaymentToken, UUserWidget*& BrowserWidget)
 {
-	FString PayStationUrl;
-	if (IsSandboxEnabled())
-	{
-		PayStationUrl = FString::Printf(TEXT("https://sandbox-secure.xsolla.com/paystation3?access_token=%s"), *PaymentToken);
-	}
-	else
-	{
-		PayStationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *PaymentToken);
-	}
+	const FString Endpoint = IsSandboxEnabled() ? SandboxPaymentEndpoint : PaymentEndpoint;
+	const FString PayStationUrl = FString::Printf(TEXT("%s?access_token=%s"), *Endpoint, *PaymentToken);
 
 	UE_LOG(LogXsollaPayStation, Log, TEXT("%s: Loading PayStation: %s"), *VA_FUNC_LINE, *PayStationUrl);
 
