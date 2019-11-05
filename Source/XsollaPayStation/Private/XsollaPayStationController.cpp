@@ -71,7 +71,7 @@ void UXsollaPayStationController::FetchPaymentToken_HttpRequestComplete(FHttpReq
 	else
 	{
 		UE_LOG(LogXsollaPayStation, Warning, TEXT("%s: request failed"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(204, 0, TEXT("No response"));
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("No response"));
 	}
 }
 
