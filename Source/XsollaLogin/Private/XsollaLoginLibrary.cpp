@@ -6,8 +6,8 @@
 #include "XsollaLogin.h"
 
 #include "Engine/Engine.h"
+#include "Internationalization/Regex.h"
 #include "Misc/CommandLine.h"
-#include "Regex.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
