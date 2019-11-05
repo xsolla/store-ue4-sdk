@@ -41,32 +41,32 @@
 				"Linux"
 			]
 		},
-    {
-      "Name": "XsollaStore",
-      "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux"
-      ]
-    },
-    {
-      "Name": "XsollaPayStation",
-      "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux"
-      ]
-    }
+		{
+			"Name": "XsollaStore",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		},
+		{
+			"Name": "XsollaPayStation",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		}
 	],
 	"Plugins": [
 		{
