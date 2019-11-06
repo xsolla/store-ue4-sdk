@@ -280,7 +280,7 @@ public:
 	int order;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
-	TArray<FString> groups;
+	TArray<FStoreGroup> groups;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FStorePrice price;
