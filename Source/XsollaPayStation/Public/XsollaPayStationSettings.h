@@ -20,6 +20,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla PayStation Settings")
 	bool bSandbox;
 
+	/** Is sandbox mode can be used in Shipping build? Use carefully! */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool bEnableSandboxInShipping;
+
 	/** Custom class to handle payment console */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;

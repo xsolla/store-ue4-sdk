@@ -7,4 +7,5 @@ UXsollaPayStationSettings::UXsollaPayStationSettings(const FObjectInitializer& O
 {
 	TokenRequestURL = TEXT("https://livedemo.xsolla.com/paystation/token_unreal.php");
 	bSandbox = true;
+	bEnableSandboxInShipping = false;
 }
