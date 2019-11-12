@@ -5,6 +5,13 @@
 
 #include "XsollaLoginTypes.generated.h"
 
+UENUM(BlueprintType)
+enum class EXsollaAttributePermission : uint8
+{
+	Private,
+	Public
+};
+
 USTRUCT(BlueprintType)
 struct FXsollaAuthToken
 {
@@ -45,4 +52,19 @@ struct FXsollaLoginData
 		: bRememberMe(false)
 	{
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaUserAttribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	FString key;
+
+	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	FString permission;
+
+	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	FString value;
 };

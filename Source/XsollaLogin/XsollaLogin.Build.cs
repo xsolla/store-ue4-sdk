@@ -15,6 +15,7 @@ public class XsollaLogin : ModuleRules
                 "Core",
                 "HTTP",
                 "Json",
+                "JsonUtilities",
                 "UMG",
                 "OnlineSubsystem",
                 "XsollaWebBrowser"

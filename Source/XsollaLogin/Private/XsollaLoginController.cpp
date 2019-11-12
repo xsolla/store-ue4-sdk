@@ -11,6 +11,7 @@
 
 #include "Engine.h"
 #include "Json.h"
+#include "JsonObjectConverter.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -28,6 +29,8 @@ const FString UXsollaLoginController::ProxyLoginEndpoint(TEXT("https://login.xso
 const FString UXsollaLoginController::ProxyResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/proxy/password/reset"));
 
 const FString UXsollaLoginController::ValidateTokenEndpoint(TEXT("https://login.xsolla.com/api/token/validate"));
+
+const FString UXsollaLoginController::UserAttributesEndpoint(TEXT("https://login.xsolla.com/api/attributes"));
 
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -205,6 +208,23 @@ void UXsollaLoginController::SetToken(const FString& token)
 	SaveData();
 }
 
+void UXsollaLoginController::UpdateUserAttributesClientAuth(const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+}
+
+void UXsollaLoginController::UpdateUserAttributesPublisherAuth(const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+}
+
+void UXsollaLoginController::ModifyUserAttributesClientAuth(const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+}
+
+void UXsollaLoginController::ModifyUserAttributesPublisherAuth(const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+
+}
+
 void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
@@ -329,6 +349,29 @@ void UXsollaLoginController::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr H
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
+void UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	TArray<FXsollaUserAttribute> userAttributes;
+	if (!FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributes, 0, 0))
+	{
+		UserAttributes = userAttributes;
+		SuccessCallback.ExecuteIfBound();
+		return;
+	}
+
+	// No success before so call the error callback
+	FString ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
 bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
 {
 	FString ErrorStr;
@@ -447,6 +490,11 @@ void UXsollaLoginController::SaveData()
 FString UXsollaLoginController::GetPendingSocialAuthenticationUrl() const
 {
 	return PendingSocialAuthenticationUrl;
+}
+
+TArray<FXsollaUserAttribute> UXsollaLoginController::GetUserAttributes()
+{
+	return UserAttributes;
 }
 
 #undef LOCTEXT_NAMESPACE
