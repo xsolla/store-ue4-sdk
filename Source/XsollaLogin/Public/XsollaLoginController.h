@@ -10,6 +10,8 @@
 
 #include "XsollaLoginController.generated.h"
 
+class FJsonObject;
+
 /** Common callback for operations without any user-friendly messages from server on success */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
 
@@ -76,19 +78,19 @@ public:
 
 	/** Update list of user attributes (client's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesClientAuth(const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserAttributesClientAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update list of user attributes (publisher's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesPublisherAuth(const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify list of user attributes by creating/altering/removing its items (client's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserAttributesClientAuth(const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserAttributesClientAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify list of user attributes by creating/altering/removing its items (publisher's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserAttributesPublisherAuth(const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -96,13 +98,16 @@ protected:
 	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	
+
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content);
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content, const FString& AuthToken = FString());
+
+	/** Parse JWT token and get its payload as json object */
+	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
 
 	/** Cached Xsolla Login project id */
 	FString LoginProjectId;
