@@ -78,11 +78,11 @@ public:
 
 	/** Update list of user attributes (client's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesClientAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserAttributesClientAuth(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update list of user attributes (publisher's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserAttributesPublisherAuth(const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify list of user attributes by creating/altering/removing its items (client's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -90,7 +90,7 @@ public:
 
 	/** Modify list of user attributes by creating/altering/removing its items (publisher's token is used for autorization) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserAttributesPublisherAuth(const FString& UserId, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -120,6 +120,10 @@ public:
 	/** Drop cache and cleanup login data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData();
+
+	/** Get user ID from specified JWT token */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetUserId(const FString& Token);
 
 	/** Load save game and extract data */
 	void LoadSavedData();

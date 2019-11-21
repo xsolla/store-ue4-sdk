@@ -208,24 +208,8 @@ void UXsollaLoginController::SetToken(const FString& token)
 	SaveData();
 }
 
-void UXsollaLoginController::UpdateUserAttributesClientAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::UpdateUserAttributesClientAuth(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(TEXT("0"), TEXT("Can't parse token payload"));
-		return;
-	}
-
-	FString UserId;
-	if (!PayloadJsonObject->TryGetStringField(TEXT("sub"), UserId))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find user ID in token payload"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(TEXT("0"), TEXT("Can't find user ID in token payload"));
-		return;
-	}
-
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	if (!UserId.IsEmpty())
@@ -252,7 +236,7 @@ void UXsollaLoginController::UpdateUserAttributesClientAuth(const FString& AuthT
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::UpdateUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::UpdateUserAttributesPublisherAuth(const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 }
 
@@ -295,7 +279,7 @@ void UXsollaLoginController::ModifyUserAttributesClientAuth(const FString& AuthT
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::ModifyUserAttributesPublisherAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::ModifyUserAttributesPublisherAuth(const FString& UserId, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 }
 
@@ -566,6 +550,25 @@ void UXsollaLoginController::DropLoginData()
 
 	// Drop saved data too
 	UXsollaLoginSave::Save(LoginData);
+}
+
+FString UXsollaLoginController::GetUserId(const FString& Token)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return FString(TEXT(""));
+	}
+
+	FString UserId;
+	if (!PayloadJsonObject->TryGetStringField(TEXT("sub"), UserId))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find user ID in token payload"), *VA_FUNC_LINE);
+		return FString(TEXT(""));
+	}
+
+	return UserId;
 }
 
 void UXsollaLoginController::LoadSavedData()
