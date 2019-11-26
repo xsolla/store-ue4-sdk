@@ -69,7 +69,7 @@ void UXsollaStoreController::UpdateInventory(const FString& AuthToken, const FOn
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/user/inventory/items"), *ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"), *ProjectId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);

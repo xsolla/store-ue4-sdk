@@ -467,13 +467,47 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreInventoryItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	TArray<FString> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	int32 remaining_uses;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreInventory
 {
 public:
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Data")
-	TArray<FStoreCartItem> Items;
+	TArray<FStoreInventoryItem> Items;
 
 public:
 	FStoreInventory(){};
