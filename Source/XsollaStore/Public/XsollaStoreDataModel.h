@@ -494,6 +494,9 @@ public:
 	TArray<FStoreGroup> groups;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString instance_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
 	int32 quantity;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
