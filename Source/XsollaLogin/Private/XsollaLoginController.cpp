@@ -39,8 +39,9 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
-void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
+void UXsollaLoginController::Initialize(int InProjectId, const FString& InLoginProjectId)
 {
+	ProjectId = InProjectId;
 	LoginProjectId = InLoginProjectId;
 
 	// Check token override from Xsolla Launcher
@@ -208,14 +209,13 @@ void UXsollaLoginController::SetToken(const FString& token)
 	SaveData();
 }
 
-void UXsollaLoginController::UpdateUserAttributesClientAuth(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
 	if (!UserId.IsEmpty())
 		RequestDataJson->SetStringField(TEXT("user_id"), UserId);
-	if (!LoginProjectId.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("publisher_project_id"), LoginProjectId);
 
 	TArray<TSharedPtr<FJsonValue>> KeysJsonArray;
 	for (auto Key : AttributeKeys)
@@ -229,18 +229,13 @@ void UXsollaLoginController::UpdateUserAttributesClientAuth(const FString& AuthT
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);
-
+	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);	
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::UpdateUserAttributesPublisherAuth(const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-}
-
-void UXsollaLoginController::ModifyUserAttributesClientAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -256,9 +251,7 @@ void UXsollaLoginController::ModifyUserAttributesClientAuth(const FString& AuthT
 	}
 
 	RequestDataJson->SetArrayField(TEXT("attributes"), AttributesJsonArray);
-
-	if (!LoginProjectId.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("publisher_project_id"), LoginProjectId);
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
 
 	TArray<TSharedPtr<FJsonValue>> KeysToRemoveJsonArray;
 	for (auto RemoveKey : AttributesToRemove)
@@ -277,10 +270,6 @@ void UXsollaLoginController::ModifyUserAttributesClientAuth(const FString& AuthT
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
-}
-
-void UXsollaLoginController::ModifyUserAttributesPublisherAuth(const FString& UserId, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
 }
 
 void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
@@ -408,17 +397,17 @@ void UXsollaLoginController::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr H
 }
 
 void UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{
+{	
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
 		return;
 	}
 
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: TEST2"), *VA_FUNC_LINE);
 
+	FString ResponseStr = HttpResponse->GetContentAsString();
 	TArray<FXsollaUserAttribute> userAttributes;
-	if (!FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributes, 0, 0))
+	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributes, 0, 0))
 	{
 		UserAttributes = userAttributes;
 		SuccessCallback.ExecuteIfBound();

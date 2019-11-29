@@ -25,9 +25,9 @@ class XSOLLALOGIN_API UXsollaLoginController : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Initialize controller with provided project id (use to override project settings) */
+	/** Initialize controller with provided project and login id (use to override project settings) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InLoginProjectId);
+	void Initialize(int InProjectId, const FString& InLoginProjectId);
 
 	/**
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -76,21 +76,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& token);
 
-	/** Update list of user attributes (client's token is used for autorization) */
+	/** Update list of user attributes */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesClientAuth(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update list of user attributes (publisher's token is used for autorization) */
+	/** Modify list of user attributes by creating/altering/removing its items */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributesPublisherAuth(const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Modify list of user attributes by creating/altering/removing its items (client's token is used for autorization) */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserAttributesClientAuth(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Modify list of user attributes by creating/altering/removing its items (publisher's token is used for autorization) */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserAttributesPublisherAuth(const FString& UserId, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -108,6 +100,9 @@ private:
 
 	/** Parse JWT token and get its payload as json object */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
+
+	/** Cached Xsolla project id */
+	int ProjectId;
 
 	/** Cached Xsolla Login project id */
 	FString LoginProjectId;
