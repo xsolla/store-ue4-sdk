@@ -29,7 +29,7 @@ public:
 	/** Project ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	int ProjectId;
-	
+
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString LoginProjectID;

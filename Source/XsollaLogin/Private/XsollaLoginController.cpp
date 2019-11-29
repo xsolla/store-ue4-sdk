@@ -229,7 +229,7 @@ void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, cons
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);	
+	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -397,13 +397,11 @@ void UXsollaLoginController::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr H
 }
 
 void UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{	
+{
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
 		return;
 	}
-
-	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: TEST2"), *VA_FUNC_LINE);
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	TArray<FXsollaUserAttribute> userAttributes;
