@@ -9,11 +9,14 @@
 #include "XsollaLoginSave.h"
 #include "XsollaLoginSettings.h"
 
-#include "Engine.h"
-#include "Json.h"
+#include "Dom/JsonObject.h"
+#include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
