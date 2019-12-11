@@ -59,12 +59,12 @@ struct FXsollaUserAttribute
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	UPROPERTY(BlueprintReadWrite, Category = "User Attribute")
 	FString key;
 
-	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	UPROPERTY(BlueprintReadWrite, Category = "User Attribute")
 	FString permission;
 
-	UPROPERTY(BlueprintReadOnly, Category = "User Attribute")
+	UPROPERTY(BlueprintReadWrite, Category = "User Attribute")
 	FString value;
 };
