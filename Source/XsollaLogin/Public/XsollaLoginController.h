@@ -98,6 +98,9 @@ private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content, const FString& AuthToken = FString());
 
+	/** Set a Json string array field named FieldName and value of Array */
+	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
+
 	/** Parse JWT token and get its payload as json object */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
 

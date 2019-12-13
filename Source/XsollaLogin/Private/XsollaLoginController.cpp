@@ -63,7 +63,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 	}
 
 	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("username"), Username);
 	RequestDataJson->SetStringField(TEXT("password"), Password);
 	RequestDataJson->SetStringField(TEXT("email"), Email);
@@ -102,7 +102,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	SaveData();
 
 	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("username"), Username);
 	RequestDataJson->SetStringField(TEXT("password"), Password);
 	RequestDataJson->SetBoolField(TEXT("remember_me"), false);
@@ -134,7 +134,7 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 	}
 
 	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("username"), Username);
 
 	FString PostContent;
@@ -157,7 +157,7 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("token"), LoginData.AuthToken.JWT);
 
 	FString PostContent;
@@ -212,10 +212,12 @@ void UXsollaLoginController::SetToken(const FString& token)
 void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
 	if (!UserId.IsEmpty())
+	{
 		RequestDataJson->SetStringField(TEXT("user_id"), UserId);
+	}
 
 	TArray<TSharedPtr<FJsonValue>> KeysJsonArray;
 	for (auto Key : AttributeKeys)
@@ -238,12 +240,12 @@ void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, cons
 void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 
 	TArray<TSharedPtr<FJsonValue>> AttributesJsonArray;
 	for (auto Attribute : UserAttributes)
 	{
-		TSharedRef<FJsonObject> AttributeJson = MakeShareable(new FJsonObject);
+		TSharedRef<FJsonObject> AttributeJson = MakeShareable(new FJsonObject());
 		if (FJsonObjectConverter::UStructToJsonObject(FXsollaUserAttribute::StaticStruct(), &Attribute, AttributeJson, 0, 0))
 		{
 			AttributesJsonArray.Push(MakeShareable(new FJsonValueObject(AttributeJson)));
@@ -253,13 +255,7 @@ void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, cons
 	RequestDataJson->SetArrayField(TEXT("attributes"), AttributesJsonArray);
 	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
 
-	TArray<TSharedPtr<FJsonValue>> KeysToRemoveJsonArray;
-	for (auto RemoveKey : AttributesToRemove)
-	{
-		KeysToRemoveJsonArray.Push(MakeShareable(new FJsonValueString(RemoveKey)));
-	}
-
-	RequestDataJson->SetArrayField(TEXT("removing_keys"), KeysToRemoveJsonArray);
+	SetStringArrayField(RequestDataJson, TEXT("removing_keys"), AttributesToRemove);
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -404,10 +400,10 @@ void UXsollaLoginController::UpdateUserAttributes_HttpRequestComplete(FHttpReque
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	TArray<FXsollaUserAttribute> userAttributes;
-	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributes, 0, 0))
+	TArray<FXsollaUserAttribute> userAttributesData;
+	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributesData, 0, 0))
 	{
-		UserAttributes = userAttributes;
+		UserAttributes = userAttributesData;
 		SuccessCallback.ExecuteIfBound();
 		return;
 	}
@@ -506,6 +502,17 @@ TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString
 	return HttpRequest;
 }
 
+void UXsollaLoginController::SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const
+{
+	TArray<TSharedPtr<FJsonValue>> StringJsonArray;
+	for (auto Item : Array)
+	{
+		StringJsonArray.Push(MakeShareable(new FJsonValueString(Item)));
+	}
+
+	Object->SetArrayField(FieldName, StringJsonArray);
+}
+
 bool UXsollaLoginController::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
 {
 	TArray<FString> TokenParts;
@@ -545,14 +552,14 @@ FString UXsollaLoginController::GetUserId(const FString& Token)
 	if (!ParseTokenPayload(Token, PayloadJsonObject))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		return FString(TEXT(""));
+		return FString();
 	}
 
 	FString UserId;
 	if (!PayloadJsonObject->TryGetStringField(TEXT("sub"), UserId))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find user ID in token payload"), *VA_FUNC_LINE);
-		return FString(TEXT(""));
+		return FString();
 	}
 
 	return UserId;
