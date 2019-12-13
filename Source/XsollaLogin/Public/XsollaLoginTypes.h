@@ -5,13 +5,6 @@
 
 #include "XsollaLoginTypes.generated.h"
 
-UENUM(BlueprintType)
-enum class EXsollaAttributePermission : uint8
-{
-	Private,
-	Public
-};
-
 USTRUCT(BlueprintType)
 struct FXsollaAuthToken
 {
