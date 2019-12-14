@@ -28,7 +28,7 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 public:
 	/** Project ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	int ProjectId;
+	FString ProjectId;
 
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
@@ -61,7 +61,7 @@ public:
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
-	int DemoProjectId;
+	FString DemoProjectId;
 
 	/** Demo Login ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")

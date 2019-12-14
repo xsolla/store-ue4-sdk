@@ -39,7 +39,7 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
-void UXsollaLoginController::Initialize(int InProjectId, const FString& InLoginProjectId)
+void UXsollaLoginController::Initialize(const FString& InProjectId, const FString& InLoginProjectId)
 {
 	ProjectId = InProjectId;
 	LoginProjectId = InLoginProjectId;
@@ -213,7 +213,7 @@ void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, cons
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
 	if (!UserId.IsEmpty())
 	{
 		RequestDataJson->SetStringField(TEXT("user_id"), UserId);
@@ -253,7 +253,7 @@ void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, cons
 	}
 
 	RequestDataJson->SetArrayField(TEXT("attributes"), AttributesJsonArray);
-	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), ProjectId);
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
 
 	SetStringArrayField(RequestDataJson, TEXT("removing_keys"), AttributesToRemove);
 
