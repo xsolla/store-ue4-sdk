@@ -237,7 +237,7 @@ void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -255,6 +255,22 @@ void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, cons
 	RequestDataJson->SetArrayField(TEXT("attributes"), AttributesJsonArray);
 	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
 
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginController::RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request body
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
 	SetStringArrayField(RequestDataJson, TEXT("removing_keys"), AttributesToRemove);
 
 	FString PostContent;
