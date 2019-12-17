@@ -19,19 +19,12 @@ router.post('/', function(req, res, next) {
     try {
         console.log("Processing payload: " + JSON.stringify(req.body));
 
-        global.db.users.findOne({ id: req.body.username }, function (err, doc) {
+        global.db.users.insert({id: req.body.username, email: req.body.email, password: req.body.password}, function (err, newDoc) {
             if(err)
                 requestError(res, err);
-            else if(!doc)
-                requestError(res, "No user " + req.body.username + " found in test db", errorCodes.INVALID_USER);
             else {
-                if(doc.password == req.body.password) {
-                    console.log(doc);
-                    endRequestAuth(res, req.body.username);
-                }
-                else {
-                    requestError(res, "Invalid user " + req.body.username + " auth data", errorCodes.INVALID_USER);
-                }
+                console.log(newDoc);
+                endRequest(res);
             }
         });
 
@@ -41,12 +34,9 @@ router.post('/', function(req, res, next) {
 });
 
 // Provide status code and finish request processing
-endRequestAuth = function (res, token) {
+endRequest = function (res) {
     res.statusCode = 204;
-    res.contentType("application/json");
-    res.write('{"login_url":"');
-    res.write(token.toString());
-    res.write('"}}');
+    res.contentType("text/plain");
     res.end();
 }
 

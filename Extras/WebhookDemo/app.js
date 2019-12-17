@@ -18,7 +18,7 @@ global.db.purchases = new Datastore();
 global.db.users.insert([
     { id: "ladora@directmail.top" },
     { id: "d342dad2-9d59-11e9-a384-42010aa8003f" },		// "name": "xsolla"
-    { id: "test_user_1" },
+    { id: "test_user_1", email: "test@test.ru", password: "111" },
     { id: "test_user_2" }],
     function (err, newDocs) {
     console.log("Demo users were inserted in the database");
@@ -28,6 +28,7 @@ global.db.users.insert([
 let webhookRouter = require('./routes/webhook');
 let tokenRouter = require('./routes/verify');
 let proxyVerifyUserRouter = require('./routes/userVerify');
+let proxyRegisterUserRouter = require('./routes/userRegister');
 
 let app = express();
 
@@ -38,5 +39,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/webhook', webhookRouter);
 app.use('/verify', tokenRouter);
 app.use('/userVerify', proxyVerifyUserRouter);
+app.use('/userRegister', proxyRegisterUserRouter);
 
 module.exports = app;
