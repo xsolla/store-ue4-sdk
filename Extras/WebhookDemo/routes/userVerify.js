@@ -17,20 +17,20 @@ router.post('/', function(req, res, next) {
     });
 
     try {
-        console.log("Processing payload: " + JSON.stringify(req.body));
+        console.log("Processing payload: " + JSON.stringify(req.query));
 
-        global.db.users.findOne({ id: req.body.username }, function (err, doc) {
+        global.db.users.findOne({ id: req.query.username }, function (err, doc) {
             if(err)
                 requestError(res, err);
             else if(!doc)
-                requestError(res, "No user " + req.body.username + " found in test db", errorCodes.INVALID_USER);
+                requestError(res, "No user " + req.query.username + " found in test db", errorCodes.INVALID_USER);
             else {
-                if(doc.password == req.body.password) {
+                if(doc.password == req.query.password) {
                     console.log(doc);
-                    endRequestAuth(res, req.body.username);
+                    endRequestAuth(res, req.query.username);
                 }
                 else {
-                    requestError(res, "Invalid user " + req.body.username + " auth data", errorCodes.INVALID_USER);
+                    requestError(res, "Invalid user " + req.query.username + " auth data", errorCodes.INVALID_USER);
                 }
             }
         });
