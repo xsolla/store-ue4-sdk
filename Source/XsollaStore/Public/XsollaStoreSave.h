@@ -15,16 +15,15 @@ struct XSOLLASTORE_API FXsollaStoreSaveData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY()
-	int32 CartId;
+	FString CartId;
 
 	UPROPERTY()
 	FString CartCurrency;
 
 	FXsollaStoreSaveData()
-		: CartId(INVALID_CART)
-		, CartCurrency(TEXT("USD")){};
+		: CartCurrency(TEXT("USD")){};
 
-	FXsollaStoreSaveData(int32 InCartId, const FString& InCartCurrency)
+	FXsollaStoreSaveData(FString InCartId, const FString& InCartCurrency)
 		: CartId(InCartId)
 		, CartCurrency(InCartCurrency){};
 };

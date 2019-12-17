@@ -415,7 +415,7 @@ public:
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
-	int32 cart_id;
+	FString cart_id;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Data")
 	FStorePrice price;
@@ -428,10 +428,9 @@ public:
 
 public:
 	FStoreCart()
-		: cart_id(INVALID_CART)
-		, is_free(false){};
+		: is_free(false){};
 
-	FStoreCart(int32 CartId)
+	FStoreCart(FString CartId)
 		: cart_id(CartId)
 		, is_free(false){};
 

@@ -85,12 +85,13 @@ public:
 	 * Initiate cart purchase session and fetch token for payment console
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart to be purchased. Current user cart will be purchased if empty.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use default value.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void FetchCartPaymentToken(const FString& AuthToken, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Open payment console for provided access token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
@@ -101,24 +102,44 @@ public:
 	void CheckOrder(const FString& AuthToken, int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Create new cart */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (DeprecatedFunction, AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Remove all items from cart  */
+	/**
+	 * Remove all items from cart
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart to be cleared. Current user cart will be cleared if empty.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ClearCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void ClearCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update cart content */
+	/**
+	 * Update cart content
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart to be updated. Current user cart will be updated if empty.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Add item to cart and change its quantity */
+	/**
+	 * Add item to cart and change its quantity
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart to which item will be added. Current user cart will be modified if empty.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AddToCart(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Remove item from cart */
+	/**
+	 * Remove item from cart
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart from which item will be removed. Current user cart will be modified if empty.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RemoveFromCart(const FString& AuthToken, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/**
 	 * Consume inventory item
@@ -269,6 +290,9 @@ protected:
 
 	/** Cached auth token (used for silent cart update) */
 	FString CachedAuthToken;
+
+	/** Cached cart identifier (used for silent cart update) */
+	FString CachedCartId;
 
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
