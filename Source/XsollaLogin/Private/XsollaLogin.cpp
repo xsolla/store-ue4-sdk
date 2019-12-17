@@ -41,7 +41,7 @@ void FXsollaLoginModule::StartupModule()
 
 		// Initialize module with project id provided by user
 		const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-		LoginController->Initialize(Settings->LoginProjectID);
+		LoginController->Initialize(Settings->ProjectId, Settings->LoginProjectID);
 
 		XsollaLoginControllers.Add(World, LoginController);
 
