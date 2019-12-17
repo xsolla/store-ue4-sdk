@@ -26,6 +26,10 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Project ID from Publisher Account. Required. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	FString ProjectId;
+
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString LoginProjectID;
@@ -54,6 +58,10 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
+
+	/** Demo Project ID */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
+	FString DemoProjectId;
 
 	/** Demo Login ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")

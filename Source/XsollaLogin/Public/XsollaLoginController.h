@@ -10,6 +10,8 @@
 
 #include "XsollaLoginController.generated.h"
 
+class FJsonObject;
+
 /** Common callback for operations without any user-friendly messages from server on success */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
 
@@ -23,9 +25,9 @@ class XSOLLALOGIN_API UXsollaLoginController : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Initialize controller with provided project id (use to override project settings) */
+	/** Initialize controller with provided project and login id (use to override project settings) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InLoginProjectId);
+	void Initialize(const FString& InProjectId, const FString& InLoginProjectId);
 
 	/**
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -74,18 +76,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& token);
 
+	/** Update list of user attributes */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
+	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Modify list of user attributes by creating/editing its items */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Remove user attributes with specified keys */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
+	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content);
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content, const FString& AuthToken = FString());
+
+	/** Set a Json string array field named FieldName and value of Array */
+	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
+
+	/** Parse JWT token and get its payload as json object */
+	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
+
+	/** Cached Xsolla project id */
+	FString ProjectId;
 
 	/** Cached Xsolla Login project id */
 	FString LoginProjectId;
@@ -99,6 +123,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData();
 
+	/** Get user ID from specified JWT token */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetUserId(const FString& Token);
+
 	/** Load save game and extract data */
 	void LoadSavedData();
 
@@ -109,12 +137,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetPendingSocialAuthenticationUrl() const;
 
+	/** Get user attributes */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	TArray<FXsollaUserAttribute> GetUserAttributes();
+
 protected:
 	/** Keeps state of user login */
 	FXsollaLoginData LoginData;
 
 	/** Social authentication url to be opened in browser */
 	FString PendingSocialAuthenticationUrl;
+
+	/** Cached list of user attributes */
+	TArray<FXsollaUserAttribute> UserAttributes;
 
 protected:
 	static const FString RegistrationEndpoint;
@@ -127,6 +162,8 @@ protected:
 	static const FString ProxyResetPasswordEndpoint;
 
 	static const FString ValidateTokenEndpoint;
+
+	static const FString UserAttributesEndpoint;
 
 private:
 	UPROPERTY()
