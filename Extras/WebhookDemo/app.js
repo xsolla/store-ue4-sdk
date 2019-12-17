@@ -19,6 +19,7 @@ global.db.users.insert([
     { id: "ladora@directmail.top" },
     { id: "d342dad2-9d59-11e9-a384-42010aa8003f" },		// "name": "xsolla"
     { id: "test_user_1", email: "test@test.ru", password: "111" },
+    { id: "xsolla", email: "ufna@ufna.ru", password: "xsolla" },
     { id: "test_user_2" }],
     function (err, newDocs) {
     console.log("Demo users were inserted in the database");
