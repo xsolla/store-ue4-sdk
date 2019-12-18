@@ -237,13 +237,13 @@ void UXsollaLoginController::UpdateUserAttributes(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& UserAttributes, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& AttributesToModify, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 
 	TArray<TSharedPtr<FJsonValue>> AttributesJsonArray;
-	for (auto Attribute : UserAttributes)
+	for (auto Attribute : AttributesToModify)
 	{
 		TSharedRef<FJsonObject> AttributeJson = MakeShareable(new FJsonObject());
 		if (FJsonObjectConverter::UStructToJsonObject(FXsollaUserAttribute::StaticStruct(), &Attribute, AttributeJson, 0, 0))
