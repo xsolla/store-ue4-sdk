@@ -58,7 +58,7 @@ void UXsollaStoreController::UpdateVirtualItems(const FOnStoreUpdate& SuccessCal
 void UXsollaStoreController::UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -118,7 +118,7 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
@@ -156,9 +156,10 @@ void UXsollaStoreController::FetchPaymentToken(const FString& AuthToken, const F
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedCartId = CartId;
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -171,7 +172,15 @@ void UXsollaStoreController::FetchCartPaymentToken(const FString& AuthToken, con
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/payment/cart/%d"), *ProjectId, Cart.cart_id);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart"), *ProjectId);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart/%s"), *ProjectId, *Cart.cart_id);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
@@ -249,7 +258,7 @@ void UXsollaStoreController::CheckOrder(const FString& AuthToken, int32 OrderId,
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/order/%d"), *ProjectId, OrderId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/order/%d"), *ProjectId, OrderId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -269,11 +278,20 @@ void UXsollaStoreController::CreateCart(const FString& AuthToken, const FOnStore
 	ProcessNextCartRequest();
 }
 
-void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::ClearCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedCartId = CartId;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/clear"), *ProjectId, Cart.cart_id);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/clear"), *ProjectId);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/clear"), *ProjectId, *Cart.cart_id);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::PUT, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -286,11 +304,20 @@ void UXsollaStoreController::ClearCart(const FString& AuthToken, const FOnStoreC
 	OnCartUpdate.Broadcast(Cart);
 }
 
-void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedCartId = CartId;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d"), *ProjectId, Cart.cart_id);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart"), *ProjectId);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s"), *ProjectId, *Cart.cart_id);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::UpdateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -299,15 +326,24 @@ void UXsollaStoreController::UpdateCart(const FString& AuthToken, const FOnStore
 	ProcessNextCartRequest();
 }
 
-void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedCartId = CartId;
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectId, *ItemSKU);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectId, *Cart.cart_id, *ItemSKU);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::PUT, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -362,11 +398,20 @@ void UXsollaStoreController::AddToCart(const FString& AuthToken, const FString& 
 	OnCartUpdate.Broadcast(Cart);
 }
 
-void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreController::RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedCartId = CartId;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart/%d/item/%s"), *ProjectId, Cart.cart_id, *ItemSKU);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectId, *ItemSKU);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectId, *Cart.cart_id, *ItemSKU);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::DELETE, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -412,7 +457,7 @@ void UXsollaStoreController::ConsumeInventoryItem(const FString& AuthToken, cons
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/user/inventory/item/consume"), *ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"), *ProjectId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreController::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -725,7 +770,7 @@ void UXsollaStoreController::CreateCart_HttpRequestComplete(FHttpRequestPtr Http
 		return;
 	}
 
-	Cart = FStoreCart(JsonObject->GetNumberField(TEXT("id")));
+	Cart = FStoreCart(JsonObject->GetStringField(TEXT("cart_id")));
 	OnCartUpdate.Broadcast(Cart);
 
 	SaveData();
@@ -787,7 +832,7 @@ void UXsollaStoreController::AddToCart_HttpRequestComplete(FHttpRequestPtr HttpR
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
-		UpdateCart(CachedAuthToken, SuccessCallback, ErrorCallback);
+		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
 		return;
 	}
 
@@ -803,7 +848,7 @@ void UXsollaStoreController::RemoveFromCart_HttpRequestComplete(FHttpRequestPtr 
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
-		UpdateCart(CachedAuthToken, SuccessCallback, ErrorCallback);
+		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
 		return;
 	}
 
