@@ -10,12 +10,16 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
-#include "Engine.h"
+#include "Dom/JsonObject.h"
 #include "Engine/DataTable.h"
-#include "Json.h"
+#include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
+#include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"

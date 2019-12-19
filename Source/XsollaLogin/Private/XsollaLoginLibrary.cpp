@@ -39,6 +39,6 @@ bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 FString UXsollaLoginLibrary::GetStringCommandLineParam(const FString& ParamName)
 {
 	TCHAR Result[256] = TEXT("");
-	const bool FoundValue = FParse::Value(FCommandLine::Get(), *(ParamName + TEXT("=")), Result, ARRAY_COUNT(Result));
+	const bool FoundValue = FParse::Value(FCommandLine::Get(), *(ParamName + TEXT("=")), Result, UE_ARRAY_COUNT(Result));
 	return FoundValue ? FString(Result) : FString(TEXT(""));
 }

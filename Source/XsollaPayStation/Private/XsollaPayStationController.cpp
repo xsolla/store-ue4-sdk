@@ -6,8 +6,9 @@
 #include "XsollaPayStationDefines.h"
 #include "XsollaPayStationSettings.h"
 
-#include "Engine.h"
+#include "Engine/Engine.h"
 #include "Modules/ModuleManager.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "UObject/ConstructorHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaPayStationModule"
