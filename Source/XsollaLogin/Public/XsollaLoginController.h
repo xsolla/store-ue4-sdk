@@ -127,6 +127,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetUserId(const FString& Token);
 
+	/** Get token provider */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetTokenProvider(const FString& token);
+
 	/** Load save game and extract data */
 	void LoadSavedData();
 

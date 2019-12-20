@@ -585,6 +585,25 @@ FString UXsollaLoginController::GetUserId(const FString& Token)
 	return UserId;
 }
 
+FString UXsollaLoginController::GetTokenProvider(const FString& token)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return FString();
+	}
+
+	FString Provider;
+	if (!PayloadJsonObject->TryGetStringField(TEXT("provider"), Provider))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find provider in token payload"), *VA_FUNC_LINE);
+		return FString();
+	}
+
+	return Provider;
+}
+
 void UXsollaLoginController::LoadSavedData()
 {
 	LoginData = UXsollaLoginSave::Load();
