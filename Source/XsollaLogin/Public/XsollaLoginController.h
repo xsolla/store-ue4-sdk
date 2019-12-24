@@ -70,7 +70,7 @@ public:
 
 	/** Open social authentication URL in browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget);
+	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
 
 	/** Set new value of token (used when token obtained via social network authentication etc.) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")

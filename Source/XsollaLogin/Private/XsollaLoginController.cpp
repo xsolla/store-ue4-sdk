@@ -192,7 +192,7 @@ void UXsollaLoginController::GetSocialAuthenticationUrl(const FString& ProviderN
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget)
+void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
@@ -205,6 +205,11 @@ void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAut
 	MyBrowser->AddToViewport(MAX_int32);
 
 	BrowserWidget = MyBrowser;
+
+	// Be sure we've dropped any saved info
+	LoginData = FXsollaLoginData();
+	LoginData.bRememberMe = bRememberMe;
+	SaveData();
 }
 
 void UXsollaLoginController::SetToken(const FString& token)
