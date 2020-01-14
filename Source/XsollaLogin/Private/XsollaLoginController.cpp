@@ -192,7 +192,7 @@ void UXsollaLoginController::GetSocialAuthenticationUrl(const FString& ProviderN
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget)
+void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
@@ -205,6 +205,11 @@ void UXsollaLoginController::LaunchSocialAuthentication(const FString& SocialAut
 	MyBrowser->AddToViewport(MAX_int32);
 
 	BrowserWidget = MyBrowser;
+
+	// Be sure we've dropped any saved info
+	LoginData = FXsollaLoginData();
+	LoginData.bRememberMe = bRememberMe;
+	SaveData();
 }
 
 void UXsollaLoginController::SetToken(const FString& token)
@@ -583,6 +588,25 @@ FString UXsollaLoginController::GetUserId(const FString& Token)
 	}
 
 	return UserId;
+}
+
+FString UXsollaLoginController::GetTokenProvider(const FString& token)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return FString();
+	}
+
+	FString Provider;
+	if (!PayloadJsonObject->TryGetStringField(TEXT("provider"), Provider))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find provider in token payload"), *VA_FUNC_LINE);
+		return FString();
+	}
+
+	return Provider;
 }
 
 void UXsollaLoginController::LoadSavedData()

@@ -70,7 +70,7 @@ public:
 
 	/** Open social authentication URL in browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget);
+	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
 
 	/** Set new value of token (used when token obtained via social network authentication etc.) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
@@ -126,6 +126,10 @@ public:
 	/** Get user ID from specified JWT token */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetUserId(const FString& Token);
+
+	/** Get token provider */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetTokenProvider(const FString& token);
 
 	/** Load save game and extract data */
 	void LoadSavedData();
