@@ -34,4 +34,7 @@ private:
 
 	/** Internal brushes cache */
 	TMap<FString, TSharedPtr<FSlateDynamicImageBrush>> ImageBrushes;
+
+	/** Internal cache for pending requests */
+	TMap<FString, TArray<FOnImageLoaded>> PendingRequests;
 };

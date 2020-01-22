@@ -30,13 +30,24 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	}
 	else
 	{
-		TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+		if (PendingRequests.Contains(ResourceId))
+		{
+			PendingRequests[ResourceId].Add(SuccessCallback);
+		}
+		else
+		{
+			TArray<FOnImageLoaded> requestCallbacks;
+			requestCallbacks.Add(SuccessCallback);
+			PendingRequests.Add(ResourceId, requestCallbacks);
 
-		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
-		HttpRequest->SetURL(URL);
-		HttpRequest->SetVerb(TEXT("GET"));
+			TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-		HttpRequest->ProcessRequest();
+			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
+			HttpRequest->SetURL(URL);
+			HttpRequest->SetVerb(TEXT("GET"));
+
+			HttpRequest->ProcessRequest();
+		}
 	}
 }
 
@@ -68,7 +79,13 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 					TSharedPtr<FSlateDynamicImageBrush> ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
 					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
 
-					SuccessCallback.ExecuteIfBound(*ImageBrush.Get());
+					for (auto callback : PendingRequests[ResourceName.ToString()])
+					{
+						callback.ExecuteIfBound(*ImageBrush.Get());
+					}
+
+					PendingRequests.Remove(ResourceName.ToString());
+
 					return;
 				}
 				else
