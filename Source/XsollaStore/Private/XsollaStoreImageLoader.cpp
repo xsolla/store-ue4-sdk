@@ -32,8 +32,8 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	{
 		if (PendingRequests.Contains(ResourceId))
 		{
-			PendingRequests[ResourceId].AddLambda([=](bool isCompleted) {
-				if (isCompleted)
+			PendingRequests[ResourceId].AddLambda([=](bool IsCompleted) {
+				if (IsCompleted)
 				{
 					UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
 					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get());
@@ -118,7 +118,11 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 
 	ErrorCallback.ExecuteIfBound();
 
-	PendingRequests[ResourceName.ToString()].Broadcast(false);
+	if (PendingRequests.Contains(ResourceName.ToString()))
+	{
+		PendingRequests[ResourceName.ToString()].Broadcast(false);
+		PendingRequests.Remove(ResourceName.ToString());
+	}
 }
 
 FName UXsollaStoreImageLoader::GetCacheName(const FString& URL) const
