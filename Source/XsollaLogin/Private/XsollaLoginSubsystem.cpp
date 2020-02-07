@@ -3,7 +3,6 @@
 
 #include "XsollaLoginSubsystem.h"
 
-#include "XsollaLogin.h"
 #include "XsollaLoginDefines.h"
 #include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
