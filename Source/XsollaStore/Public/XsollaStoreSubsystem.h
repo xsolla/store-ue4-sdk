@@ -5,11 +5,14 @@
 
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
+#include "XsollaStoreImageLoader.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "Subsystems/SubsystemCollection.h"
 
-#include "XsollaStoreController.generated.h"
+#include "XsollaStoreSubsystem.generated.h"
 
 /** Verb (GET, PUT, POST) used by the request */
 UENUM(BlueprintType)
@@ -22,6 +25,7 @@ enum class ERequestVerb : uint8
 };
 
 class UXsollaStoreImageLoader;
+class UXsollaStoreSettings;
 class UDataTable;
 class FJsonObject;
 
@@ -36,11 +40,18 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurren
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
 
 UCLASS()
-class XSOLLASTORE_API UXsollaStoreController : public UObject
+class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UXsollaStoreSubsystem();
+
+	// Begin USubsystem
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End USubsystem
+
 	/** Initialize controller with provided project id (use to override project settings) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
@@ -258,6 +269,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	UDataTable* GetCurrencyLibrary() const;
 
+	/** Getter for internal settings object to support runtime configuration changes */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	UXsollaStoreSettings* GetSettings() const;
+
+private:
+	/** Module settings */
+	UXsollaStoreSettings* Settings;
+
 public:
 	/** Event occured when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -310,4 +329,13 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+
+public:
+	/** Async load image from web */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "ErrorCallback"))
+	void LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
+
+	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
+	FString FormatPrice(float Amount, const FString& Currency = TEXT("USD")) const;
 };

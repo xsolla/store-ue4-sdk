@@ -5,19 +5,12 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class UXsollaPayStationSettings;
-class UXsollaPayStationController;
-
 /**
  * Xsolla PayStation SDK Module
  */
 class FXsollaPayStationModule : public IModuleInterface
 {
 public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-
 	/**
 	 * Singleton-like access to this module's interface. This is just for convenience!
 	 * Beware of calling this during the shutdown phase, though. Your module might have beed unloaded already.
@@ -38,17 +31,4 @@ public:
 	{
 		return FModuleManager::Get().IsModuleLoaded("XsollaPayStation");
 	}
-
-	/** Getter for internal settings object to support runtime configuration changes */
-	UXsollaPayStationSettings* GetSettings() const;
-
-	/** Get global Xsolla PayStation data controller */
-	UXsollaPayStationController* GetPayStationController(UWorld* World) const;
-
-private:
-	/** Module settings */
-	UXsollaPayStationSettings* XsollaPayStationSettings;
-
-	/** PayStation data controllers (one for each World we have) */
-	TMap<UWorld*, UXsollaPayStationController*> XsollaPayStationControllers;
 };
