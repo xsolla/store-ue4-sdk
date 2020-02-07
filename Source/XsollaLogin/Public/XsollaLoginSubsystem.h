@@ -7,10 +7,13 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "Subsystems/SubsystemCollection.h"
 
-#include "XsollaLoginController.generated.h"
+#include "XsollaLoginSubsystem.generated.h"
 
 class FJsonObject;
+class UXsollaLoginSettings;
 
 /** Common callback for operations without any user-friendly messages from server on success */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -20,11 +23,18 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 
 UCLASS()
-class XSOLLALOGIN_API UXsollaLoginController : public UObject
+class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UXsollaLoginSubsystem();
+
+	// Begin USubsystem
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End USubsystem
+
 	/** Initialize controller with provided project and login id (use to override project settings) */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginProjectId);
@@ -144,6 +154,14 @@ public:
 	/** Get user attributes */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserAttributes();
+
+	/** Getter for internal settings object to support runtime configuration changes */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	UXsollaLoginSettings* GetSettings() const;
+
+private:
+	/** Module settings */
+	UXsollaLoginSettings* Settings;
 
 protected:
 	/** Keeps state of user login */
