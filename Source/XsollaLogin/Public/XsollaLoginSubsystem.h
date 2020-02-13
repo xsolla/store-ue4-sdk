@@ -161,6 +161,7 @@ public:
 
 private:
 	/** Module settings */
+	UPROPERTY()
 	UXsollaLoginSettings* Settings;
 
 protected:

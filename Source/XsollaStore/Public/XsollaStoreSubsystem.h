@@ -275,6 +275,7 @@ public:
 
 private:
 	/** Module settings */
+	UPROPERTY()
 	UXsollaStoreSettings* Settings;
 
 public:

@@ -66,5 +66,6 @@ private:
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 
 	/** Module settings */
+	UPROPERTY()
 	UXsollaPayStationSettings* Settings;
 };
