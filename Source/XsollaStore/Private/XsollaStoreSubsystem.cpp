@@ -153,6 +153,34 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
+	FString theme;
+
+	switch (Settings->PaymentInterfaceTheme)
+	{
+	case EXsollaPaymentUiTheme::Default:
+		theme = TEXT("default");
+		break;
+
+	case EXsollaPaymentUiTheme::DefaultDark:
+		theme = TEXT("default_dark");
+		break;
+
+	case EXsollaPaymentUiTheme::Dark:
+		theme = TEXT("dark");
+		break;
+
+	default:
+		theme = TEXT("dark");
+	}
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
@@ -205,6 +233,34 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
+	FString theme;
+
+	switch (Settings->PaymentInterfaceTheme)
+	{
+	case EXsollaPaymentUiTheme::Default:
+		theme = TEXT("default");
+		break;
+
+	case EXsollaPaymentUiTheme::DefaultDark:
+		theme = TEXT("default_dark");
+		break;
+
+	case EXsollaPaymentUiTheme::Dark:
+		theme = TEXT("dark");
+		break;
+
+	default:
+		theme = TEXT("dark");
+	}
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
 	FString Url;
 	if (CartId.IsEmpty())
