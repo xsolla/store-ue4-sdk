@@ -614,6 +614,8 @@ void UXsollaStoreSubsystem::UpdateInventory_HttpRequestComplete(FHttpRequestPtr 
 		return;
 	}
 
+	Inventory.Items.Empty();
+
 	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &Inventory))
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
