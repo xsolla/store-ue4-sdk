@@ -13,7 +13,6 @@
 #include "XsollaLoginSubsystem.generated.h"
 
 class FJsonObject;
-class UXsollaLoginSettings;
 
 /** Common callback for operations without any user-friendly messages from server on success */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -154,15 +153,6 @@ public:
 	/** Get user attributes */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserAttributes();
-
-	/** Getter for internal settings object to support runtime configuration changes */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	UXsollaLoginSettings* GetSettings() const;
-
-private:
-	/** Module settings */
-	UPROPERTY()
-	UXsollaLoginSettings* Settings;
 
 protected:
 	/** Keeps state of user login */
