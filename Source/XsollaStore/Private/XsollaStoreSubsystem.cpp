@@ -11,7 +11,6 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
-#include "Developer/Settings/Public/ISettingsModule.h"
 #include "Dom/JsonObject.h"
 #include "Engine/DataTable.h"
 #include "Engine/Engine.h"
@@ -45,19 +44,6 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	Settings = NewObject<UXsollaStoreSettings>(GetTransientPackage(), "XsollaStoreSettings", RF_Standalone);
-
-	// Register settings
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaStore",
-			LOCTEXT("RuntimeSettingsName", "Xsolla Store"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Store"),
-			Settings);
-	}
-
-	Initialize(Settings->ProjectId);
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -157,6 +143,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bBuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
@@ -218,6 +205,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bBuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
@@ -263,6 +251,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 	}
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bUsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
@@ -1062,6 +1051,7 @@ void UXsollaStoreSubsystem::SaveData()
 
 bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 {
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	bool bIsSandboxEnabled = Settings->bSandbox;
 
 #if UE_BUILD_SHIPPING
@@ -1259,11 +1249,6 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 UDataTable* UXsollaStoreSubsystem::GetCurrencyLibrary() const
 {
 	return CurrencyLibrary;
-}
-
-UXsollaStoreSettings* UXsollaStoreSubsystem::GetSettings() const
-{
-	return Settings;
 }
 
 UXsollaStoreImageLoader* UXsollaStoreSubsystem::GetImageLoader() const
