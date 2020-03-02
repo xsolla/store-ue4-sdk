@@ -61,6 +61,8 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	Initialize(Settings->ProjectId, Settings->LoginProjectID);
 
+	LoadSavedData();
+
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
 
