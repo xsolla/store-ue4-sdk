@@ -11,4 +11,5 @@ UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectIniti
 	bUsePlatformBrowser = false;
 	bBuildForSteam = false;
 	DemoProjectId = TEXT("44056");
+	PaymentInterfaceTheme = EXsollaPaymentUiTheme::Dark;
 }
