@@ -16,6 +16,10 @@ class XSOLLALOGIN_API UXsollaLoginLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Direct access to login SDK settings */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	static UXsollaLoginSettings* GetLoginSettings();
+
 	/** Validate email string format */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static bool IsEmailValid(const FString& EMail);
