@@ -141,6 +141,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	FString theme;
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	switch (Settings->PaymentInterfaceTheme)
 	{
 	case EXsollaPaymentUiTheme::Default:
@@ -171,7 +172,6 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bBuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
@@ -223,6 +223,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	FString theme;
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	switch (Settings->PaymentInterfaceTheme)
 	{
 	case EXsollaPaymentUiTheme::Default:
@@ -261,7 +262,6 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bBuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
