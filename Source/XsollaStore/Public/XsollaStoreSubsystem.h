@@ -25,7 +25,6 @@ enum class ERequestVerb : uint8
 };
 
 class UXsollaStoreImageLoader;
-class UXsollaStoreSettings;
 class UDataTable;
 class FJsonObject;
 
@@ -268,15 +267,6 @@ public:
 	/** Get currency-format data table */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	UDataTable* GetCurrencyLibrary() const;
-
-	/** Getter for internal settings object to support runtime configuration changes */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	UXsollaStoreSettings* GetSettings() const;
-
-private:
-	/** Module settings */
-	UPROPERTY()
-	UXsollaStoreSettings* Settings;
 
 public:
 	/** Event occured when the cart was changed or updated */

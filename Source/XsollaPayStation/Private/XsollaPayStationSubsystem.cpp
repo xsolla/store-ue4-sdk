@@ -2,12 +2,11 @@
 
 #include "XsollaPayStationSubsystem.h"
 
+#include "XsollaPayStation.h"
 #include "XsollaPayStationDefines.h"
 #include "XsollaPayStationSettings.h"
 
-#include "Developer/Settings/Public/ISettingsModule.h"
 #include "Engine/Engine.h"
-#include "Engine/World.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "UObject/ConstructorHelpers.h"
@@ -29,17 +28,6 @@ void UXsollaPayStationSubsystem::Initialize(FSubsystemCollectionBase& Collection
 {
 	Super::Initialize(Collection);
 
-	Settings = NewObject<UXsollaPayStationSettings>(GetTransientPackage(), "XsollaPayStationSettings", RF_Standalone);
-
-	// Register settings
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaPayStation",
-			LOCTEXT("RuntimeSettingsName", "Xsolla PayStation"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla PayStation"),
-			Settings);
-	}
-
 	UE_LOG(LogXsollaPayStation, Log, TEXT("%s: XsollaPayStation subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -51,6 +39,7 @@ void UXsollaPayStationSubsystem::Deinitialize()
 
 void UXsollaPayStationSubsystem::FetchPaymentToken(const FOnFetchPaymentTokenSuccess& SuccessCallback, const FOnPayStationError& ErrorCallback)
 {
+	const UXsollaPayStationSettings* Settings = FXsollaPayStationModule::Get().GetSettings();
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Settings->TokenRequestURL);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaPayStationSubsystem::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -62,6 +51,8 @@ void UXsollaPayStationSubsystem::LaunchPaymentConsole(const FString& PaymentToke
 	const FString PayStationUrl = FString::Printf(TEXT("%s?access_token=%s"), *Endpoint, *PaymentToken);
 
 	UE_LOG(LogXsollaPayStation, Log, TEXT("%s: Loading PayStation: %s"), *VA_FUNC_LINE, *PayStationUrl);
+
+	const UXsollaPayStationSettings* Settings = FXsollaPayStationModule::Get().GetSettings();
 
 	// Check for user browser widget override
 	auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
@@ -76,11 +67,6 @@ void UXsollaPayStationSubsystem::LaunchPaymentConsole(const FString& PaymentToke
 FString UXsollaPayStationSubsystem::GetPendingPayStationUrl() const
 {
 	return PengindPayStationUrl;
-}
-
-UXsollaPayStationSettings* UXsollaPayStationSubsystem::GetSettings() const
-{
-	return Settings;
 }
 
 void UXsollaPayStationSubsystem::FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFetchPaymentTokenSuccess SuccessCallback, FOnPayStationError ErrorCallback)
@@ -101,6 +87,7 @@ void UXsollaPayStationSubsystem::FetchPaymentToken_HttpRequestComplete(FHttpRequ
 
 bool UXsollaPayStationSubsystem::IsSandboxEnabled() const
 {
+	const UXsollaPayStationSettings* Settings = FXsollaPayStationModule::Get().GetSettings();
 	bool bIsSandboxEnabled = Settings->bSandbox;
 
 #if UE_BUILD_SHIPPING

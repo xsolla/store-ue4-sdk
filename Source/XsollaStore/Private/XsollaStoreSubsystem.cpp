@@ -11,7 +11,6 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
-#include "Developer/Settings/Public/ISettingsModule.h"
 #include "Dom/JsonObject.h"
 #include "Engine/DataTable.h"
 #include "Engine/Engine.h"
@@ -45,19 +44,6 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	Settings = NewObject<UXsollaStoreSettings>(GetTransientPackage(), "XsollaStoreSettings", RF_Standalone);
-
-	// Register settings
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaStore",
-			LOCTEXT("RuntimeSettingsName", "Xsolla Store"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Store"),
-			Settings);
-	}
-
-	Initialize(Settings->ProjectId);
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -153,6 +139,35 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
+	FString theme;
+
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	switch (Settings->PaymentInterfaceTheme)
+	{
+	case EXsollaPaymentUiTheme::Default:
+		theme = TEXT("default");
+		break;
+
+	case EXsollaPaymentUiTheme::DefaultDark:
+		theme = TEXT("default_dark");
+		break;
+
+	case EXsollaPaymentUiTheme::Dark:
+		theme = TEXT("dark");
+		break;
+
+	default:
+		theme = TEXT("dark");
+	}
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, ERequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
@@ -205,6 +220,35 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
+	FString theme;
+
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	switch (Settings->PaymentInterfaceTheme)
+	{
+	case EXsollaPaymentUiTheme::Default:
+		theme = TEXT("default");
+		break;
+
+	case EXsollaPaymentUiTheme::DefaultDark:
+		theme = TEXT("default_dark");
+		break;
+
+	case EXsollaPaymentUiTheme::Dark:
+		theme = TEXT("dark");
+		break;
+
+	default:
+		theme = TEXT("dark");
+	}
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
 	FString Url;
 	if (CartId.IsEmpty())
@@ -263,6 +307,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 	}
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	if (Settings->bUsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
@@ -614,12 +659,15 @@ void UXsollaStoreSubsystem::UpdateInventory_HttpRequestComplete(FHttpRequestPtr 
 		return;
 	}
 
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &Inventory))
+	FStoreInventory newInventory;
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &newInventory))
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
 		return;
 	}
+
+	Inventory = newInventory;
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
@@ -1062,6 +1110,7 @@ void UXsollaStoreSubsystem::SaveData()
 
 bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 {
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	bool bIsSandboxEnabled = Settings->bSandbox;
 
 #if UE_BUILD_SHIPPING
@@ -1259,11 +1308,6 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 UDataTable* UXsollaStoreSubsystem::GetCurrencyLibrary() const
 {
 	return CurrencyLibrary;
-}
-
-UXsollaStoreSettings* UXsollaStoreSubsystem::GetSettings() const
-{
-	return Settings;
 }
 
 UXsollaStoreImageLoader* UXsollaStoreSubsystem::GetImageLoader() const

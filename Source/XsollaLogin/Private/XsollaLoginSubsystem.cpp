@@ -3,6 +3,7 @@
 
 #include "XsollaLoginSubsystem.h"
 
+#include "XsollaLogin.h"
 #include "XsollaLoginDefines.h"
 #include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
@@ -47,19 +48,6 @@ UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	Settings = NewObject<UXsollaLoginSettings>(GetTransientPackage(), "XsollaLoginSettings", RF_Standalone);
-
-	// Register settings
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaLogin",
-			LOCTEXT("RuntimeSettingsName", "Xsolla Login"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login"),
-			Settings);
-	}
-
-	Initialize(Settings->ProjectId, Settings->LoginProjectID);
 
 	LoadSavedData();
 
@@ -106,6 +94,7 @@ void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FStrin
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
@@ -144,6 +133,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
@@ -173,6 +163,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& Username, const FOn
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
@@ -195,6 +186,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = (!Settings->VerifyTokenURL.IsEmpty()) ? Settings->VerifyTokenURL : ValidateTokenEndpoint;
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
@@ -205,6 +197,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
 		*LoginSocialEndpoint,
 		*ProviderName,
@@ -219,6 +212,8 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	// Check for user browser widget override
 	auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
@@ -357,7 +352,7 @@ void UXsollaLoginSubsystem::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRe
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
 			// Check if verification URL is provided
-			if (Settings->VerifyTokenURL.IsEmpty())
+			if (FXsollaLoginModule::Get().GetSettings()->VerifyTokenURL.IsEmpty())
 			{
 				UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: No VerifyTokenURL is set, skip token verification step"), *VA_FUNC_LINE);
 
@@ -657,11 +652,6 @@ FString UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
 TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserAttributes()
 {
 	return UserAttributes;
-}
-
-UXsollaLoginSettings* UXsollaLoginSubsystem::GetSettings() const
-{
-	return Settings;
 }
 
 #undef LOCTEXT_NAMESPACE
