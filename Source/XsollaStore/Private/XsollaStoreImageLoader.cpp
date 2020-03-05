@@ -30,18 +30,41 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	}
 	else
 	{
-		TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+		if (PendingRequests.Contains(ResourceId))
+		{
+			PendingRequests[ResourceId].AddLambda([=](bool IsCompleted) {
+				if (IsCompleted)
+				{
+					UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
+					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get());
+				}
+				else
+				{
+					UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to get image"), *VA_FUNC_LINE);
+					ErrorCallback.ExecuteIfBound();
+				}
+			});
+		}
+		else
+		{
+			FOnRequestCompleted imageLoadingCompletedDelegate;
+			PendingRequests.Add(ResourceId, imageLoadingCompletedDelegate);
 
-		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
-		HttpRequest->SetURL(URL);
-		HttpRequest->SetVerb(TEXT("GET"));
+			TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-		HttpRequest->ProcessRequest();
+			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
+			HttpRequest->SetURL(URL);
+			HttpRequest->SetVerb(TEXT("GET"));
+
+			HttpRequest->ProcessRequest();
+		}
 	}
 }
 
 void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
 {
+	const FName ResourceName = GetCacheName(HttpRequest->GetURL());
+
 	if (bSucceeded && HttpResponse.IsValid())
 	{
 		const TArray<uint8>& ImageData = HttpResponse->GetContent();
@@ -61,14 +84,16 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 
 			if (ImageWrapper->GetRaw(ERGBFormat::BGRA, BytesPerPixel, RawData) && RawData && RawData->Num() > 0)
 			{
-				const FName ResourceName = GetCacheName(HttpRequest->GetURL());
-
 				if (FSlateApplication::Get().GetRenderer()->GenerateDynamicImageResource(ResourceName, ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), *RawData))
 				{
 					TSharedPtr<FSlateDynamicImageBrush> ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
 					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
 
 					SuccessCallback.ExecuteIfBound(*ImageBrush.Get());
+
+					PendingRequests[ResourceName.ToString()].Broadcast(true);
+					PendingRequests.Remove(ResourceName.ToString());
+
 					return;
 				}
 				else
@@ -92,6 +117,12 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 	}
 
 	ErrorCallback.ExecuteIfBound();
+
+	if (PendingRequests.Contains(ResourceName.ToString()))
+	{
+		PendingRequests[ResourceName.ToString()].Broadcast(false);
+		PendingRequests.Remove(ResourceName.ToString());
+	}
 }
 
 FName UXsollaStoreImageLoader::GetCacheName(const FString& URL) const

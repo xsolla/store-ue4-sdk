@@ -9,5 +9,7 @@ UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectIniti
 	bSandbox = true;
 	bEnableSandboxInShipping = false;
 	bUsePlatformBrowser = false;
+	bBuildForSteam = false;
 	DemoProjectId = TEXT("44056");
+	PaymentInterfaceTheme = EXsollaPaymentUiTheme::Dark;
 }

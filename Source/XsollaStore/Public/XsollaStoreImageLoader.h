@@ -11,6 +11,7 @@
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
 DECLARE_DYNAMIC_DELEGATE(FOnImageLoadFailed);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnRequestCompleted, bool);
 
 /**
  * Async image loading from web. Should be used for DEMO PUPPOSES ONLY.
@@ -34,4 +35,7 @@ private:
 
 	/** Internal brushes cache */
 	TMap<FString, TSharedPtr<FSlateDynamicImageBrush>> ImageBrushes;
+
+	/** Internal cache for pending requests callbacks */
+	TMap<FString, FOnRequestCompleted> PendingRequests;
 };

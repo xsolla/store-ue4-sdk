@@ -7,6 +7,14 @@
 
 #include "XsollaStoreSettings.generated.h"
 
+UENUM(BlueprintType)
+enum class EXsollaPaymentUiTheme : uint8
+{
+	Default,
+	DefaultDark,
+	Dark
+};
+
 UCLASS(config = Engine, defaultconfig)
 class XSOLLASTORE_API UXsollaStoreSettings : public UObject
 {
@@ -32,6 +40,14 @@ public:
 	/** If yes, external (system) browser will be launched to process payments */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool bUsePlatformBrowser;
+
+	/** If yes, certain tasks like authentication and payments will be processed via Steam */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool bBuildForSteam;
+
+	/** Payment user interface theme */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
 	/** Demo Store ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")

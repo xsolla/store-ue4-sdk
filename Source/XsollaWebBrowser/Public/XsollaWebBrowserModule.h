@@ -27,7 +27,6 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded( "XsollaWebBrowser" );
+		return FModuleManager::Get().IsModuleLoaded("XsollaWebBrowser");
 	}
 };
-

@@ -7,7 +7,6 @@
 #include "Modules/ModuleManager.h"
 
 class UXsollaStoreSettings;
-class UXsollaStoreController;
 
 /**
  * Xsolla Store SDK Module
@@ -43,13 +42,7 @@ public:
 	/** Getter for internal settings object to support runtime configuration changes */
 	UXsollaStoreSettings* GetSettings() const;
 
-	/** Get global xsolla Store data controller */
-	UXsollaStoreController* GetStoreController(UWorld* World) const;
-
 private:
 	/** Module settings */
 	UXsollaStoreSettings* XsollaStoreSettings;
-
-	/** Store data controllers (one for each World we have) */
-	TMap<UWorld*, UXsollaStoreController*> XsollaStoreControllers;
 };

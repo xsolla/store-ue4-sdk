@@ -7,7 +7,6 @@
 #include "Modules/ModuleManager.h"
 
 class UXsollaLoginSettings;
-class UXsollaLoginController;
 
 /**
  * Xsolla Login SDK Module
@@ -44,13 +43,7 @@ public:
 	/** Getter for internal settings object to support runtime configuration changes */
 	UXsollaLoginSettings* GetSettings() const;
 
-	/** Get global xsolla login data controller */
-	UXsollaLoginController* GetLoginController(UWorld* World) const;
-
 private:
 	/** Module settings */
 	UXsollaLoginSettings* XsollaLoginSettings;
-
-	/** Login data controllers (one for each World we have) */
-	TMap<UWorld*, UXsollaLoginController*> XsollaLoginControllers;
 };

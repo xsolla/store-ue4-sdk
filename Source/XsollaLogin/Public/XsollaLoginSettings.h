@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "XsollaLoginDefines.h"
+
+#include "Blueprint/UserWidget.h"
+
 #include "XsollaLoginSettings.generated.h"
 
 /** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
@@ -22,6 +26,10 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Project ID from Publisher Account. Required. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	FString ProjectId;
+
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString LoginProjectID;
@@ -39,6 +47,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
 
+	/** Custom class to handle authentication via social networks */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
+
 	/**
 	 * A JWT signed by the secret key is generated for each successfully authenticated user.
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
@@ -46,6 +58,10 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
+
+	/** Demo Project ID */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
+	FString DemoProjectId;
 
 	/** Demo Login ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
