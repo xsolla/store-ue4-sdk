@@ -16,7 +16,7 @@
 
 /** Verb (GET, PUT, POST) used by the request */
 UENUM(BlueprintType)
-enum class ERequestVerb : uint8
+enum class EXsollaRequestVerb : uint8
 {
 	GET,
 	POST,
@@ -213,7 +213,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const ERequestVerb Verb = ERequestVerb::GET, const FString& AuthToken = FString(), const FString& Content = FString());
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::GET, const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;

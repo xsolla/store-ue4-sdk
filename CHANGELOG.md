@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.10] - 2020-03-17
+
+### Added
+
+- Comments for blueprints.
+
+### Fixed
+
+- Some small bugs.
+
 ## [0.4.9] - 2020-03-06
 
 ### Added
