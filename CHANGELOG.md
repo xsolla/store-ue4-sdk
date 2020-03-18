@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.11] - 2020-03-18
+
+### Fixed
+
+- Some small bugs.
+
 ## [0.4.10] - 2020-03-17
 
 ### Added
