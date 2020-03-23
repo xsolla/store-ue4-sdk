@@ -8,6 +8,8 @@
 #include "Engine/Engine.h"
 #include "Internationalization/Regex.h"
 #include "Misc/CommandLine.h"
+#include "Online.h"
+#include "OnlineSubsystem.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -31,4 +33,12 @@ FString UXsollaLoginLibrary::GetStringCommandLineParam(const FString& ParamName)
 	TCHAR Result[256] = TEXT("");
 	const bool FoundValue = FParse::Value(FCommandLine::Get(), *(ParamName + TEXT("=")), Result, UE_ARRAY_COUNT(Result));
 	return FoundValue ? FString(Result) : FString(TEXT(""));
+}
+
+FString UXsollaLoginLibrary::GetSessionTicket()
+{
+	IOnlineSubsystem* OnlineInterface;
+	OnlineInterface = IOnlineSubsystem::Get();
+	FString SessionTicket = OnlineInterface->GetIdentityInterface()->GetAuthToken(0);
+	return SessionTicket;
 }

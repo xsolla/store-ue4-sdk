@@ -27,4 +27,8 @@ public:
 	/** Get string command line parameter value */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetStringCommandLineParam(const FString& ParamName);
+
+	/** Get platform specific authentication session ticket to verify user identity */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetSessionTicket();
 };
