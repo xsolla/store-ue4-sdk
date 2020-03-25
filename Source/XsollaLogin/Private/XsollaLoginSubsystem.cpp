@@ -235,6 +235,22 @@ void UXsollaLoginSubsystem::SetToken(const FString& token)
 	SaveData();
 }
 
+void UXsollaLoginSubsystem::GetCrossAuthenticationToken(const FString& ProviderName, const FString& SessionTicket, const FOnCrossAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/%s/cross_auth?projectId=%s&login_url=%s&session_ticket=%s"),
+		*LoginSocialEndpoint,
+		*ProviderName,
+		*LoginProjectId,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		*SessionTicket);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, TEXT(""));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
@@ -432,6 +448,14 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 
 	// No success before so call the error callback
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCrossAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
 }
 
 void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
