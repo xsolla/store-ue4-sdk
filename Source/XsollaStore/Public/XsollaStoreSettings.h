@@ -7,12 +7,32 @@
 
 #include "XsollaStoreSettings.generated.h"
 
+/** User interface theme for payment interface*/
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiTheme : uint8
 {
 	Default,
 	DefaultDark,
 	Dark
+};
+
+/** Target platform name */
+UENUM(BlueprintType)
+enum class EXsollaPublishingPlatform : uint8
+{
+	NotDefined,
+	PlaystationNetwork,
+	XboxLive,
+	Xsolla,
+	PcStandalone,
+	NintendoShop,
+	GooglePlay,
+	AppStoreIos,
+	AndroidStandalone,
+	IosStandalone,
+	AndroidOther,
+	IosOther,
+	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)
@@ -48,6 +68,10 @@ public:
 	/** Payment user interface theme */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
+
+	/** Target platform for project publishing */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	EXsollaPublishingPlatform PublishingPlatform;
 
 	/** Demo Store ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
