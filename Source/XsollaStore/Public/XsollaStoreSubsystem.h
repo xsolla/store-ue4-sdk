@@ -65,7 +65,7 @@ public:
 
 	/** Update list of purchased virtual items */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateInventory(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateInventory(const FString& AuthToken, const FString& Platform, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Update list of virtual currencies */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -77,7 +77,7 @@ public:
 
 	/** Update virtual currency balance */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FString& Platform, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/**
 	 * Initiate item purchase session and fetch token for payment console
@@ -160,7 +160,7 @@ public:
 	 * @param InstanceID Instance item ID. If item is countable, should be empty.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FString& InstanceID, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void ConsumeInventoryItem(const FString& AuthToken, const FString& Platform, const FString& ItemSKU, int32 Quantity, const FString& InstanceID, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get virtual currency with specified SKU */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
