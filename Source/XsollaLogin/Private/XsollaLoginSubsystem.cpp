@@ -38,6 +38,8 @@ const FString UXsollaLoginSubsystem::ValidateTokenEndpoint(TEXT("https://login.x
 
 const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.xsolla.com/api/attributes"));
 
+const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://login.xsolla.com/api/users/account/code"));
+
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -101,7 +103,7 @@ void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FStrin
 		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -140,7 +142,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -170,7 +172,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& Username, const FOn
 		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -189,7 +191,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = (!Settings->VerifyTokenURL.IsEmpty()) ? Settings->VerifyTokenURL : ValidateTokenEndpoint;
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -204,7 +206,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, TEXT(""));
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -258,7 +260,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -287,7 +289,7 @@ void UXsollaLoginSubsystem::ModifyUserAttributes(const FString& AuthToken, const
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -305,8 +307,35 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent, AuthToken);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(AccountLinkingCodeEndpoint, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *Platform, *Code);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *Platform);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -455,6 +484,88 @@ void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpReques
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
+void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString AccountLinkingCode = TEXT("code");
+		if (JsonObject->HasTypedField<EJson::String>(AccountLinkingCode))
+		{
+			FString SocialnUrl = JsonObject.Get()->GetStringField(AccountLinkingCode);
+			SuccessCallback.ExecuteIfBound(SocialnUrl);
+			return;
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *AccountLinkingCode);
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString TokenFieldName = TEXT("token");
+		if (JsonObject->HasTypedField<EJson::String>(TokenFieldName))
+		{
+			FString Token = JsonObject.Get()->GetStringField(TokenFieldName);
+
+			LoginData.AuthToken.JWT = Token;
+
+			SaveData();
+
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
+
+			SuccessCallback.ExecuteIfBound(LoginData);
+
+			return;
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *TokenFieldName);
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
 bool UXsollaLoginSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
 {
 	FString ErrorStr;
@@ -508,7 +619,7 @@ bool UXsollaLoginSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHtt
 	return false;
 }
 
-TSharedRef<IHttpRequest> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const FString& Content, const FString& AuthToken)
+TSharedRef<IHttpRequest> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb, const FString& Content, const FString& AuthToken)
 {
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
@@ -519,15 +630,38 @@ TSharedRef<IHttpRequest> UXsollaLoginSubsystem::CreateHttpRequest(const FString&
 		XSOLLA_LOGIN_VERSION);
 	HttpRequest->SetURL(Url + MetaUrl);
 
+	switch (Verb)
+	{
+	case EXsollaLoginRequestVerb::GET:
+		HttpRequest->SetVerb(TEXT("GET"));
+
+		// Check that we doen't provide content with GET request
+		if (!Content.IsEmpty())
+		{
+			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Request content is not empty for GET request. Maybe you should use POST one?"), *VA_FUNC_LINE);
+		}
+		break;
+
+	case EXsollaLoginRequestVerb::POST:
+		HttpRequest->SetVerb(TEXT("POST"));
+		break;
+
+	case EXsollaLoginRequestVerb::PUT:
+		HttpRequest->SetVerb(TEXT("PUT"));
+		break;
+
+	case EXsollaLoginRequestVerb::DELETE:
+		HttpRequest->SetVerb(TEXT("DELETE"));
+		break;
+
+	default:
+		unimplemented();
+	}
+
 	if (!Content.IsEmpty())
 	{
 		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-		HttpRequest->SetVerb(TEXT("POST"));
 		HttpRequest->SetContentAsString(Content);
-	}
-	else
-	{
-		HttpRequest->SetVerb(TEXT("GET"));
 	}
 
 	if (!AuthToken.IsEmpty())

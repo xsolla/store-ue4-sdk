@@ -12,6 +12,16 @@
 
 #include "XsollaLoginSubsystem.generated.h"
 
+/** Verb (GET, PUT, POST) used by the request */
+UENUM(BlueprintType)
+enum class EXsollaLoginRequestVerb : uint8
+{
+	GET,
+	POST,
+	PUT,
+	DELETE
+};
+
 class FJsonObject;
 
 /** Common callback for operations without any user-friendly messages from server on success */
@@ -20,6 +30,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -97,19 +108,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Creates code for linking user platform account to main account */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Links user platform account to main account */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Authenticates platform account user */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
+	void AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content, const FString& AuthToken = FString());
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET, const FString& Content = FString(), const FString& AuthToken = FString());
 
 	/** Set a Json string array field named FieldName and value of Array */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
@@ -177,6 +202,8 @@ protected:
 	static const FString ValidateTokenEndpoint;
 
 	static const FString UserAttributesEndpoint;
+
+	static const FString AccountLinkingCodeEndpoint;
 
 private:
 	UPROPERTY()
