@@ -170,6 +170,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetTokenProvider(const FString& token);
 
+	/** Get value of specified JWT token parameter */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetTokenParameter(const FString& Token, const FString& Parameter);
+
 	/** Load save game and extract data */
 	void LoadSavedData();
 
