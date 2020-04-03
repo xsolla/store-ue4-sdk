@@ -224,6 +224,9 @@ private:
 	/** Try to execute next request in queue */
 	void ProcessNextCartRequest();
 
+	/** Get name of publishing platform */
+	FString GetPublishingPlatformName();
+
 	/** Queue to store cart change requests */
 	TArray<TSharedRef<IHttpRequest>> CartRequestsQueue;
 
