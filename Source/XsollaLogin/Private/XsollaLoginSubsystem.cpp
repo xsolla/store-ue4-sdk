@@ -233,9 +233,9 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	SaveData();
 }
 
-void UXsollaLoginSubsystem::SetToken(const FString& token)
+void UXsollaLoginSubsystem::SetToken(const FString& Token)
 {
-	LoginData.AuthToken.JWT = token;
+	LoginData.AuthToken.JWT = Token;
 	SaveData();
 }
 
@@ -803,10 +803,10 @@ FString UXsollaLoginSubsystem::GetUserId(const FString& Token)
 	return UserId;
 }
 
-FString UXsollaLoginSubsystem::GetTokenProvider(const FString& token)
+FString UXsollaLoginSubsystem::GetTokenProvider(const FString& Token)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(token, PayloadJsonObject))
+	if (!ParseTokenPayload(Token, PayloadJsonObject))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return FString();

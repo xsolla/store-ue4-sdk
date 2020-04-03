@@ -45,7 +45,11 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** Initialize controller with provided project and login id (use to override project settings) */
+	/** Initialize controller with provided project and login id (use to override project settings)
+	 *
+	 * @param InProjectId New project id value.
+	 * @param InLoginProjectId New login project id value.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginProjectId);
 
@@ -88,39 +92,77 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Open social authentication URL in browser */
+	/** Open social authentication URL in browser
+	 *
+	 * @param SocialAuthenticationUrl URL with social network authentication form.
+	 * @param BrowserWidget Widget to represent social network authentication form. Can be set in project settings.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
 
-	/** Set new value of token (used when token obtained via social network authentication etc.) */
+	/** Set new value of token (used when token obtained via social network authentication etc.)
+	 *
+	 * @param Token User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void SetToken(const FString& token);
+	void SetToken(const FString& Token);
 
-	/** Authenticates user by exchanging platform specific session ticket to token */
+	/** Authenticates user by exchanging platform specific session ticket to token
+	 *
+	 * @param ProviderName Platform on which session ticket was obtained.
+	 * @param SessionTicket Session ticket.
+	 * @param AppId Platform application identifier.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update list of user attributes */
+	/** Update list of user attributes (cached locally)
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param UserId Identifier of user for which attributes should be updated.
+	 * @param AttributeKeys Keys of attributes that should be updated.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
 	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Modify list of user attributes by creating/editing its items */
+	/** Modify list of user attributes by creating/editing its items
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param List of new/edited attributes.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& AttributesToModify, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Remove user attributes with specified keys */
+	/** Remove user attributes with specified keys
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param AttributesToRemove List of attribute keys to be removed.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Creates code for linking user platform account to main account */
+	/** Creates code for linking user platform account to main account
+	 *
+	 * @param AuthToken User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Links user platform account to main account */
+	/** Links user platform account to main account
+	 *
+	 * @param UserId Identifier of platform account user.
+	 * @param Platform Platform name.
+	 * @param Code Account linking code obtained from master account.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Authenticates platform account user */
+	/** Authenticates platform account user
+	 *
+	 * @param UserId Identifier of platform account user.
+	 * @param Platform Platform name.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -162,15 +204,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData();
 
-	/** Get user ID from specified JWT token */
+	/** Get user ID from specified JWT token
+	 *
+	 * @param Token User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetUserId(const FString& Token);
 
-	/** Get token provider */
+	/** Get token provider
+	 *
+	 * @param Token User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenProvider(const FString& token);
+	FString GetTokenProvider(const FString& Token);
 
-	/** Get value of specified JWT token parameter */
+	/** Get value of specified JWT token parameter
+	 *
+	 * @param Token User authorization token.
+	 * @param Parameter Name of parameter which value should be extracted from token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetTokenParameter(const FString& Token, const FString& Parameter);
 
