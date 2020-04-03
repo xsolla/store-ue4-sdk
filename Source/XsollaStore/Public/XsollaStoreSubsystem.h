@@ -51,7 +51,11 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** Initialize controller with provided project id (use to override project settings) */
+	/** 
+	 * Initialize controller with provided project id (use to override project settings)
+	 *
+	 * @param InProjectId New project id value.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
@@ -59,11 +63,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of item groups */
+	/** Update list of item groups
+	 *
+	 * @param Locale (optional) Desired item groups locale. Leave empty to use default value.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of purchased virtual items */
+	/** Update list of purchased virtual items 
+	 *
+	 * @param AuthToken User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateInventory(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
@@ -75,7 +85,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update virtual currency balance */
+	/** Update virtual currency balance
+	 *
+	 * @param AuthToken User authorization token.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
@@ -138,6 +151,8 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart to which item will be added. Current user cart will be modified if empty.
+	 * @param ItemSKU Desired item SKU.
+	 * @param Quantity Amount of items to be added to cart.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -147,6 +162,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart from which item will be removed. Current user cart will be modified if empty.
+	 * @param ItemSKU Desired item SKU.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -162,15 +178,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FString& InstanceID, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Get virtual currency with specified SKU */
+	/** Get virtual currency with specified SKU
+	 *
+	 * @param CurrencySKU Desired currency SKU
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU, const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Get virtual currency package with specified SKU */
+	/** Get virtual currency package with specified SKU
+	 *
+	 * @param PackageSKU Desired currency package SKU
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU, const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Buy item using virtual currency */
+	/** Buy item using virtual currency
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param ItemSKU Desired item SKU.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU, const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
@@ -231,7 +257,10 @@ private:
 	TArray<TSharedRef<IHttpRequest>> CartRequestsQueue;
 
 public:
-	/** Get list of cached virtual items filtered by Category */
+	/** Get list of cached virtual items filtered by Category
+	 *
+	 * @param GroupFilter Group for which items should be received.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItems(const FString& GroupFilter) const;
 
@@ -325,7 +354,10 @@ private:
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 
 public:
-	/** Async load image from web */
+	/** Async load image from web
+	 *
+	 * @param URL Address of image to be downloaded.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "ErrorCallback"))
 	void LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
