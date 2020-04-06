@@ -150,7 +150,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param OrderId Identifier of order to be checked.
-	 * @param SuccessCallback Callback function called after successful order check. Order status wiil be received.
+	 * @param SuccessCallback Callback function called after successful order check. Order status will be received.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
