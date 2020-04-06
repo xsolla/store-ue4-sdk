@@ -145,7 +145,7 @@ public:
 	/** Modify list of user attributes by creating/editing its items (changes made on server side).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param List of new/edited attributes.
+	 * @param AttributesToModify List of new/edited attributes.
 	 * @param SuccessCallback Callback function called after successful user attributes modification on server side.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
