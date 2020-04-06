@@ -59,6 +59,8 @@ public:
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
 	 * @param Email Email. Required.
+	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to specified email.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -68,6 +70,8 @@ public:
 	 *
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
+	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including JWT will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -77,17 +81,25 @@ public:
 	 * Resets the user's password.
 	 *
 	 * @param Username Username. Required.
+	 * @param SuccessCallback Callback function called after successful user password reset.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Internal request for token validation (called with each auth update automatically) */
+	/** Internal request for token validation (called with each auth update automatically)
+	 *
+	 * @param SuccessCallback Callback function called after successful token validation.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Get URL for authentication via specified social network
 	 *
 	 * @param ProviderName Name of social network. Provider must be enabled for the project. Required.
+	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -113,6 +125,8 @@ public:
 	 * @param ProviderName Platform on which session ticket was obtained.
 	 * @param SessionTicket Session ticket.
 	 * @param AppId Platform application identifier.
+	 * @param SuccessCallback Callback function called after successful user authentication with platform session ticket. Authentication data including JWT will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -122,22 +136,28 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of user for which attributes should be updated.
 	 * @param AttributeKeys Keys of attributes that should be updated.
+	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
 	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Modify list of user attributes by creating/editing its items
+	/** Modify list of user attributes by creating/editing its items (changes made on server side).
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param List of new/edited attributes.
+	 * @param SuccessCallback Callback function called after successful user attributes modification on server side.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& AttributesToModify, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Remove user attributes with specified keys
+	/** Remove user attributes with specified keys (changes made on server side).
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param AttributesToRemove List of attribute keys to be removed.
+	 * @param SuccessCallback Callback function called after successful user attributes removal on server side.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -145,6 +165,8 @@ public:
 	/** Creates code for linking user platform account to main account
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after successful accout linking code creation. New linking code will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -154,6 +176,8 @@ public:
 	 * @param UserId Identifier of platform account user.
 	 * @param Platform Platform name.
 	 * @param Code Account linking code obtained from master account.
+	 * @param SuccessCallback Callback function called after successful account linking.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -162,6 +186,8 @@ public:
 	 *
 	 * @param UserId Identifier of platform account user.
 	 * @param Platform Platform name.
+	 * @param SuccessCallback Callback function called after succesfull user authentication on specified platform.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -176,7 +202,7 @@ protected:
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
-	/** Return true if error is happened */
+	/** Return true if error has happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:

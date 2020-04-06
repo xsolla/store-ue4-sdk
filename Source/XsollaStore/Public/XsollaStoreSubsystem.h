@@ -59,35 +59,53 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
-	/** Update list of virtual items */
+	/** Update list of virtual items (cached locally)
+	 *
+	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of item groups
+	/** Update list of virtual item groups (cached locally)
 	 *
 	 * @param Locale (optional) Desired item groups locale. Leave empty to use default value.
+	 * @param SuccessCallback Callback function called after local cache of virtual item groups was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of purchased virtual items 
+	/** Update list of purchased virtual items (cached locally)
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateInventory(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of virtual currencies */
+	/** Update list of virtual currencies (cached locally)
+	 *
+	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update list of virtual currency packages */
+	/** Update list of virtual currency packages (cached locally)
+	 *
+	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update virtual currency balance
+	/** Update virtual currency balance (cached locally)
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -100,6 +118,8 @@ public:
 	 * @param Currency (optional) Desired payment currency. Leave empty to use default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use default value.
+	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -112,19 +132,36 @@ public:
 	 * @param Currency (optional) Desired payment currency. Leave empty to use default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use default value.
+	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Open payment console for provided access token */
+	/** Open payment console for provided access token
+	 *
+	 * @param AccessToken Payment token used during purchase processing.
+	 * @param BrowserWidget Widget to represent payment form. Can be set in project settings.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget);
 
-	/** Check pending order status */
+	/** Check pending order status
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param OrderId Identifier of order to be checked.
+	 * @param SuccessCallback Callback function called after successful order check. Order status wiil be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckOrder(const FString& AuthToken, int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Create new cart */
+	/** Create new cart
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after successful cart creation.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (DeprecatedFunction, AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
@@ -133,15 +170,19 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart to be cleared. Current user cart will be cleared if empty.
+	 * @param SuccessCallback Callback function called after successful cart clearing.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ClearCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/**
-	 * Update cart content
+	 * Update cart content (cached locally)
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart to be updated. Current user cart will be updated if empty.
+	 * @param SuccessCallback Callback function called after local cache of cart items was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -153,6 +194,8 @@ public:
 	 * @param CartId (optional) Identifier of cart to which item will be added. Current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
 	 * @param Quantity Amount of items to be added to cart.
+	 * @param SuccessCallback Callback function called after adding new item to cart successfully.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, int32 Quantity, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -163,6 +206,8 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart from which item will be removed. Current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
+	 * @param SuccessCallback Callback function called after removing item from cart successfully.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -174,6 +219,8 @@ public:
 	 * @param ItemSKU Desired item SKU.
 	 * @param Quantity Items quantity. If item is uncountable, should be zero.
 	 * @param InstanceID Instance item ID. If item is countable, should be empty.
+	 * @param SuccessCallback Callback function called after successful inventory item consumption.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FString& InstanceID, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -181,6 +228,8 @@ public:
 	/** Get virtual currency with specified SKU
 	 *
 	 * @param CurrencySKU Desired currency SKU
+	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU, const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -188,6 +237,8 @@ public:
 	/** Get virtual currency package with specified SKU
 	 *
 	 * @param PackageSKU Desired currency package SKU
+	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU, const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -196,6 +247,9 @@ public:
 	 * 
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
+	 * @param CurrencySKU Currency to buy virtual item with.
+	 * @param SuccessCallback Callback function called after successful item purchase.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU, const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
