@@ -411,6 +411,8 @@ public:
 	/** Async load image from web
 	 *
 	 * @param URL Address of image to be downloaded.
+	 * @param SuccessCallback Callback function called after successful image download.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "ErrorCallback"))
 	void LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
