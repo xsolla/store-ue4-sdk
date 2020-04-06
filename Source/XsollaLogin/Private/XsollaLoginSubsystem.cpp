@@ -40,8 +40,6 @@ const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.
 
 const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://livedemo.xsolla.com/sdk/token"));
 
-const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://login.xsolla.com/api/users/account/code"));
-
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -326,33 +324,6 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(AccountLinkingCodeEndpoint, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *Platform, *Code);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *Platform);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 

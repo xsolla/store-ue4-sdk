@@ -59,24 +59,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
 
-	/**
-	 * URL used to link user platform account to main account with generated code.
-	 * Main account is the Xsolla Login project which other Xsolla Login projects (platform accounts)
-	 * are linked to. Main and platform accounts are created in Publisher Account.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString AccountLinkingURL;
-
-	/**
-	 * URL used for user platform account authentication.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString PlatformAuthenticationURL;
-
-	/** Flag indicating whether this build should be primarily used for platform-specific (shadow) account */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	bool PlatformBuild;
-
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoProjectId;

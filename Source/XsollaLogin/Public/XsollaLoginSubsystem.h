@@ -162,36 +162,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Creates code for linking user platform account to main account
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful accout linking code creation. New linking code will be received.
-	 * @param ErrorCallback Callback function called after request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Links user platform account to main account
-	 *
-	 * @param UserId Identifier of platform account user.
-	 * @param Platform Platform name.
-	 * @param Code Account linking code obtained from master account.
-	 * @param SuccessCallback Callback function called after successful account linking.
-	 * @param ErrorCallback Callback function called after request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Authenticates platform account user
-	 *
-	 * @param UserId Identifier of platform account user.
-	 * @param Platform Platform name.
-	 * @param SuccessCallback Callback function called after succesfull user authentication on specified platform.
-	 * @param ErrorCallback Callback function called after request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
@@ -291,8 +261,6 @@ protected:
 	static const FString UserAttributesEndpoint;
 
 	static const FString CrossAuthEndpoint;
-
-	static const FString AccountLinkingCodeEndpoint;
 
 private:
 	UPROPERTY()
