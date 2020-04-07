@@ -1,10 +1,19 @@
 # Changelog
 
+## [0.4.12] - 2020-04-08
+
+### Added
+
+- The utility method of getting the Steam session_ticket for authorization.
+- Possibility of passing JWT to application via terminal for simpler authentication.
+
+
 ## [0.4.11] - 2020-03-18
 
 ### Fixed
 
-- Some small bugs.
+- Minor bugs.
+
 
 ## [0.4.10] - 2020-03-17
 
@@ -14,17 +23,18 @@
 
 ### Fixed
 
-- Some small bugs.
+- Minor bugs.
+
 
 ## [0.4.9] - 2020-03-06
 
 ### Added
 
-- Paystation theme settings.
+- Pay Station theme settings.
 
 ### Fixed
 
-- Some small bugs.
+- Minor bugs.
 
 
 
@@ -32,7 +42,7 @@
 
 ### Fixed
 
-- Fix loading images.
+- Image loading issues.
 
 
 
@@ -41,32 +51,31 @@
 ### Added
 
 - Design improvement.
-- Save token for Steam autorization.
+- The ability to save token for the Steam autorization.
 
 ### Fixed
 
-- Some small bugs.
-
+- Minor bugs.
 
 
 ## [0.4.6] - 2019-12-23
 
-### Changed
+### Added
 
-- Added custom attribute for users.
+- Methods for working with user attributes.
 
 ### Fixed
 
-- Some small bugs.
+- Minor bugs.
 
 
 
 ## [0.4.5] - 2019-12-11
 
-### Changed
+### Added
 
-- Added Consume.
+- The ability to consume items in the inventory demo scene.
 
 ### Fixed
 
-- Some small bugs.
+- Minor bugs.
