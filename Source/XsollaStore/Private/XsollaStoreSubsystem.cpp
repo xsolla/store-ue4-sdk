@@ -90,7 +90,13 @@ void UXsollaStoreSubsystem::UpdateInventory(const FString& AuthToken, const FOnS
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"), *ProjectId);
+
+	const FString Platform = GetPublishingPlatformName();
+	if (!Platform.IsEmpty())
+	{
+		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -119,7 +125,13 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToke
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"), *ProjectId);
+
+	const FString Platform = GetPublishingPlatformName();
+	if (!Platform.IsEmpty())
+	{
+		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -534,7 +546,13 @@ void UXsollaStoreSubsystem::ConsumeInventoryItem(const FString& AuthToken, const
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"), *ProjectId);
+
+	const FString Platform = GetPublishingPlatformName();
+	if (!Platform.IsEmpty())
+	{
+		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -564,7 +582,13 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s/virtual/%s"), *ProjectId, *ItemSKU, *CurrencySKU);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s/virtual/%s"), *ProjectId, *ItemSKU, *CurrencySKU);
+
+	const FString Platform = GetPublishingPlatformName();
+	if (!Platform.IsEmpty())
+	{
+		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
+	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -1240,6 +1264,69 @@ void UXsollaStoreSubsystem::ProcessNextCartRequest()
 	{
 		CartRequestsQueue[0].Get().ProcessRequest();
 	}
+}
+
+FString UXsollaStoreSubsystem::GetPublishingPlatformName()
+{
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+
+	FString platform;
+
+	switch (Settings->PublishingPlatform)
+	{
+	case EXsollaPublishingPlatform::PlaystationNetwork:
+		platform = TEXT("playstation_network");
+		break;
+
+	case EXsollaPublishingPlatform::XboxLive:
+		platform = TEXT("xbox_live");
+		break;
+
+	case EXsollaPublishingPlatform::Xsolla:
+		platform = TEXT("xsolla");
+		break;
+
+	case EXsollaPublishingPlatform::PcStandalone:
+		platform = TEXT("pc_standalone");
+		break;
+
+	case EXsollaPublishingPlatform::NintendoShop:
+		platform = TEXT("nintendo_shop");
+		break;
+
+	case EXsollaPublishingPlatform::GooglePlay:
+		platform = TEXT("google_play");
+		break;
+
+	case EXsollaPublishingPlatform::AppStoreIos:
+		platform = TEXT("app_store_ios");
+		break;
+
+	case EXsollaPublishingPlatform::AndroidStandalone:
+		platform = TEXT("android_standalone");
+		break;
+
+	case EXsollaPublishingPlatform::IosStandalone:
+		platform = TEXT("ios_standalone");
+		break;
+
+	case EXsollaPublishingPlatform::AndroidOther:
+		platform = TEXT("android_other");
+		break;
+
+	case EXsollaPublishingPlatform::IosOther:
+		platform = TEXT("ios_other");
+		break;
+
+	case EXsollaPublishingPlatform::PcOther:
+		platform = TEXT("pc_other");
+		break;
+
+	default:
+		platform = TEXT("");
+	}
+
+	return platform;
 }
 
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItems(const FString& GroupFilter) const
