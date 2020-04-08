@@ -853,7 +853,6 @@ bool UXsollaLoginSubsystem::IsMasterAccount(const FString& Token)
 	bool ParameterValue = false;
 	if (!PayloadJsonObject->TryGetBoolField(TEXT("is_master"), ParameterValue))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find parameter in token payload"), *VA_FUNC_LINE);
 		return false;
 	}
 
