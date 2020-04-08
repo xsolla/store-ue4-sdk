@@ -88,6 +88,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
 	EXsollaConsole Console;
 
+	/** Unique identifier of console user account. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
+	FString ConsoleUserId;
+
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoProjectId;

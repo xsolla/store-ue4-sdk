@@ -31,4 +31,8 @@ public:
 	/** Get platform specific authentication session ticket to verify user identity */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetSessionTicket();
+
+	/** Oepn specified URL in platfrom browser */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
+	static void LaunchPlatfromBrowser(const FString& URL);
 };
