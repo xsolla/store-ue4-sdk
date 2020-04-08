@@ -346,13 +346,13 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const FString& Pl
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateConsoleAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *Platform);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->ConsoleAuthenticationURL, *UserId, *Platform);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -583,7 +583,7 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -834,8 +834,27 @@ FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FSt
 	FString ParameterValue;
 	if (!PayloadJsonObject->TryGetStringField(Parameter, ParameterValue))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find provider in token payload"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find parameter %s in token payload"), *VA_FUNC_LINE, *Parameter);
 		return FString();
+	}
+
+	return ParameterValue;
+}
+
+bool UXsollaLoginSubsystem::IsMasterAccount(const FString& Token)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return false;
+	}
+
+	bool ParameterValue = false;
+	if (!PayloadJsonObject->TryGetBoolField(TEXT("is_master"), ParameterValue))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find parameter in token payload"), *VA_FUNC_LINE);
+		return false;
 	}
 
 	return ParameterValue;

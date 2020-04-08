@@ -20,6 +20,15 @@ enum class EUserDataStorage : uint8
 	Custom UMETA(DisplayName = "Custom storage"),
 };
 
+/** Target platform name */
+UENUM(BlueprintType)
+enum class EXsollaConsole : uint8
+{
+	PlaystationNetwork,
+	XboxLive,
+	NintendoShop
+};
+
 UCLASS(config = Engine, defaultconfig)
 class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 {
@@ -67,15 +76,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString AccountLinkingURL;
 
-	/**
-	 * URL used for user platform account authentication.
-	 */
+	/** Flag indicating whether this build targeted for console platforms */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString PlatformAuthenticationURL;
+	bool ConsoleBuild;
 
-	/** Flag indicating whether this build should be primarily used for platform-specific (shadow) account */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	bool PlatformBuild;
+	/** URL used for console platform user account authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
+	FString ConsoleAuthenticationURL;
+
+	/** Console platform. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
+	EXsollaConsole Console;
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
