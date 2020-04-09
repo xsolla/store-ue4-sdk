@@ -336,20 +336,22 @@ void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, c
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *Platform, *Code);
+	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *PlatformName, *Code);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateConsoleAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateConsoleAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->ConsoleAuthenticationURL, *UserId, *Platform);
+	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *PlatformName);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -769,6 +771,67 @@ bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<F
 	}
 
 	return true;
+}
+
+FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platform)
+{
+	FString platform;
+
+	switch (Platform)
+	{
+	case EXsollaTargetPlatform::PlaystationNetwork:
+		platform = TEXT("playstation_network");
+		break;
+
+	case EXsollaTargetPlatform::XboxLive:
+		platform = TEXT("xbox_live");
+		break;
+
+	case EXsollaTargetPlatform::Xsolla:
+		platform = TEXT("xsolla");
+		break;
+
+	case EXsollaTargetPlatform::PcStandalone:
+		platform = TEXT("pc_standalone");
+		break;
+
+	case EXsollaTargetPlatform::NintendoShop:
+		platform = TEXT("nintendo_shop");
+		break;
+
+	case EXsollaTargetPlatform::GooglePlay:
+		platform = TEXT("google_play");
+		break;
+
+	case EXsollaTargetPlatform::AppStoreIos:
+		platform = TEXT("app_store_ios");
+		break;
+
+	case EXsollaTargetPlatform::AndroidStandalone:
+		platform = TEXT("android_standalone");
+		break;
+
+	case EXsollaTargetPlatform::IosStandalone:
+		platform = TEXT("ios_standalone");
+		break;
+
+	case EXsollaTargetPlatform::AndroidOther:
+		platform = TEXT("android_other");
+		break;
+
+	case EXsollaTargetPlatform::IosOther:
+		platform = TEXT("ios_other");
+		break;
+
+	case EXsollaTargetPlatform::PcOther:
+		platform = TEXT("pc_other");
+		break;
+
+	default:
+		platform = TEXT("");
+	}
+
+	return platform;
 }
 
 FXsollaLoginData UXsollaLoginSubsystem::GetLoginData()

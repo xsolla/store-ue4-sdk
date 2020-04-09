@@ -180,7 +180,7 @@ public:
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkAccount(const FString& UserId, const FString& Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticates platform account user
 	 *
@@ -190,7 +190,7 @@ public:
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticateConsoleAccountUser(const FString& UserId, const FString& Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateConsoleAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -214,6 +214,9 @@ private:
 
 	/** Parse JWT token and get its payload as json object */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
+
+	/** Get name of target platform */
+	FString GetTargetPlatformName(EXsollaTargetPlatform Platform);
 
 	/** Cached Xsolla project id */
 	FString ProjectId;

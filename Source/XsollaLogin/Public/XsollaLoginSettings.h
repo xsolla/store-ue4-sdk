@@ -22,11 +22,20 @@ enum class EUserDataStorage : uint8
 
 /** Target platform name */
 UENUM(BlueprintType)
-enum class EXsollaConsole : uint8
+enum class EXsollaTargetPlatform : uint8
 {
 	PlaystationNetwork,
 	XboxLive,
-	NintendoShop
+	Xsolla,
+	PcStandalone,
+	NintendoShop,
+	GooglePlay,
+	AppStoreIos,
+	AndroidStandalone,
+	IosStandalone,
+	AndroidOther,
+	IosOther,
+	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)
@@ -76,21 +85,21 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString AccountLinkingURL;
 
-	/** Flag indicating whether this build targeted for console platforms */
+	/** Flag indicating whether this build is targeted for specific platform */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	bool ConsoleBuild;
+	bool PlatformBuild;
 
-	/** URL used for console platform user account authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
-	FString ConsoleAuthenticationURL;
+	/** URL used for target platform (shadow) user account authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	FString PlatformAuthenticationURL;
 
-	/** Console platform. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
-	EXsollaConsole Console;
+	/** Target platform. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	EXsollaTargetPlatform Platform;
 
-	/** Unique identifier of console user account. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "ConsoleBuild"))
-	FString ConsoleUserId;
+	/** Unique identifier of target platform user account. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	FString PlatformUserId;
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
