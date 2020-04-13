@@ -156,15 +156,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckOrder(const FString& AuthToken, int32 OrderId, const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Create new cart
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful cart creation.
-	 * @param ErrorCallback Callback function called after request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (DeprecatedFunction, AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
 	/**
 	 * Remove all items from cart
 	 *
