@@ -347,7 +347,7 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTarg
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateConsoleAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString PlatformName = GetTargetPlatformName(Platform);
