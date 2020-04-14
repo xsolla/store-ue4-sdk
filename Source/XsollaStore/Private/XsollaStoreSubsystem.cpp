@@ -45,6 +45,10 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	// Initialize subsystem with project identifier provided by user
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	Initialize(Settings->ProjectId);
+
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
 

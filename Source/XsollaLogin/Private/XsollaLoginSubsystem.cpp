@@ -55,6 +55,10 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	LoadSavedData();
 
+	// Initialize subsystem with project identifiers provided by user
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	Initialize(Settings->ProjectId, Settings->LoginProjectID);
+
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
 
