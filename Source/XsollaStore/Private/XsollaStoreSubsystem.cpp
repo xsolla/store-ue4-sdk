@@ -354,19 +354,6 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, int32 OrderId, 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart"), *ProjectId);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CreateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	CartRequestsQueue.Add(HttpRequest);
-	ProcessNextCartRequest();
-}
-
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
