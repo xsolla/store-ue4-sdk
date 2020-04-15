@@ -45,6 +45,10 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	// Initialize subsystem with project identifier provided by user
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	Initialize(Settings->ProjectId);
+
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -352,19 +356,6 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, int32 OrderId, 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
-}
-
-void UXsollaStoreSubsystem::CreateCart(const FString& AuthToken, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v1/project/%s/cart"), *ProjectId);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CreateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	CartRequestsQueue.Add(HttpRequest);
-	ProcessNextCartRequest();
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -1409,6 +1400,12 @@ void UXsollaStoreSubsystem::LoadImageFromWeb(const FString& URL, const FOnImageL
 
 FString UXsollaStoreSubsystem::FormatPrice(float Amount, const FString& Currency) const
 {
+	if (Currency.IsEmpty())
+	{
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: In PA there is no price provided for certain item"), *VA_FUNC_LINE);
+		return FString();
+	}
+
 	auto Row = GetCurrencyLibrary()->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
 	if (Row)
 	{

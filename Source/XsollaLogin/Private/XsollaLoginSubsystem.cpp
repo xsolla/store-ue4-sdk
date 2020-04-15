@@ -40,6 +40,8 @@ const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.
 
 const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://livedemo.xsolla.com/sdk/token"));
 
+const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://login.xsolla.com/api/users/account/code"));
+
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -52,6 +54,10 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	LoadSavedData();
+
+	// Initialize subsystem with project identifiers provided by user
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	Initialize(Settings->ProjectId, Settings->LoginProjectID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -327,6 +333,35 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(AccountLinkingCodeEndpoint, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *PlatformName, *Code);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *PlatformName);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
@@ -554,7 +589,7 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -742,6 +777,67 @@ bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<F
 	return true;
 }
 
+FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platform)
+{
+	FString platform;
+
+	switch (Platform)
+	{
+	case EXsollaTargetPlatform::PlaystationNetwork:
+		platform = TEXT("playstation_network");
+		break;
+
+	case EXsollaTargetPlatform::XboxLive:
+		platform = TEXT("xbox_live");
+		break;
+
+	case EXsollaTargetPlatform::Xsolla:
+		platform = TEXT("xsolla");
+		break;
+
+	case EXsollaTargetPlatform::PcStandalone:
+		platform = TEXT("pc_standalone");
+		break;
+
+	case EXsollaTargetPlatform::NintendoShop:
+		platform = TEXT("nintendo_shop");
+		break;
+
+	case EXsollaTargetPlatform::GooglePlay:
+		platform = TEXT("google_play");
+		break;
+
+	case EXsollaTargetPlatform::AppStoreIos:
+		platform = TEXT("app_store_ios");
+		break;
+
+	case EXsollaTargetPlatform::AndroidStandalone:
+		platform = TEXT("android_standalone");
+		break;
+
+	case EXsollaTargetPlatform::IosStandalone:
+		platform = TEXT("ios_standalone");
+		break;
+
+	case EXsollaTargetPlatform::AndroidOther:
+		platform = TEXT("android_other");
+		break;
+
+	case EXsollaTargetPlatform::IosOther:
+		platform = TEXT("ios_other");
+		break;
+
+	case EXsollaTargetPlatform::PcOther:
+		platform = TEXT("pc_other");
+		break;
+
+	default:
+		platform = TEXT("");
+	}
+
+	return platform;
+}
+
 FXsollaLoginData UXsollaLoginSubsystem::GetLoginData()
 {
 	return LoginData;
@@ -805,8 +901,26 @@ FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FSt
 	FString ParameterValue;
 	if (!PayloadJsonObject->TryGetStringField(Parameter, ParameterValue))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find provider in token payload"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find parameter %s in token payload"), *VA_FUNC_LINE, *Parameter);
 		return FString();
+	}
+
+	return ParameterValue;
+}
+
+bool UXsollaLoginSubsystem::IsMasterAccount(const FString& Token)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return false;
+	}
+
+	bool ParameterValue = false;
+	if (!PayloadJsonObject->TryGetBoolField(TEXT("is_master"), ParameterValue))
+	{
+		return false;
 	}
 
 	return ParameterValue;

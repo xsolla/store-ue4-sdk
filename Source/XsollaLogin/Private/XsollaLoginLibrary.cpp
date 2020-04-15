@@ -42,3 +42,8 @@ FString UXsollaLoginLibrary::GetSessionTicket()
 	FString SessionTicket = OnlineInterface->GetIdentityInterface()->GetAuthToken(0);
 	return SessionTicket;
 }
+
+void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
+{
+	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+}

@@ -145,7 +145,7 @@ public:
 	/** Modify list of user attributes by creating/editing its items (changes made on server side).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param List of new/edited attributes.
+	 * @param AttributesToModify List of new/edited attributes.
 	 * @param SuccessCallback Callback function called after successful user attributes modification on server side.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
@@ -162,6 +162,36 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Creates code for linking user platform account to main account
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after successful accout linking code creation. New linking code will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Links user platform account to main account
+	 *
+	 * @param UserId Identifier of platform account user.
+	 * @param Platform Platform name.
+	 * @param Code Account linking code obtained from master account.
+	 * @param SuccessCallback Callback function called after successful account linking.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Authenticates platform account user
+	 *
+	 * @param UserId Identifier of platform account user.
+	 * @param Platform Platform name.
+	 * @param SuccessCallback Callback function called after succesfull user authentication on specified platform.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
@@ -170,7 +200,7 @@ protected:
 	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthPlatformAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Return true if error has happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
@@ -184,6 +214,9 @@ private:
 
 	/** Parse JWT token and get its payload as json object */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
+
+	/** Get name of target platform */
+	FString GetTargetPlatformName(EXsollaTargetPlatform Platform);
 
 	/** Cached Xsolla project id */
 	FString ProjectId;
@@ -221,6 +254,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetTokenParameter(const FString& Token, const FString& Parameter);
+
+	/** Check if specified JWT token represents master account
+	 *
+	 * @param Token User authorization token.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	bool IsMasterAccount(const FString& Token);
 
 	/** Load save game and extract data */
 	void LoadSavedData();
@@ -261,6 +301,8 @@ protected:
 	static const FString UserAttributesEndpoint;
 
 	static const FString CrossAuthEndpoint;
+
+	static const FString AccountLinkingCodeEndpoint;
 
 private:
 	UPROPERTY()
