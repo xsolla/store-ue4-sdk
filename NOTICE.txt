@@ -1,0 +1,5 @@
+Xsolla Store SDK for Unreal Engine 4
+Copyright 2020 Xsolla (USA), Inc.
+
+This product includes software developed at
+Xsolla (USA), Inc. (https://xsolla.com/).
