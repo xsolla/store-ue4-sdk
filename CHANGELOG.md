@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.13] - 2020-04-15
+
+### Added
+- The ability of cross-platform account linking for combining player’s inventory on different platforms.
+
+### Fixed 
+- Automatic SDK initialization when using Subsystems.
+- Minor bugs.
+
+
 ## [0.4.12] - 2020-04-08
 
 ### Added

@@ -20,6 +20,24 @@ enum class EUserDataStorage : uint8
 	Custom UMETA(DisplayName = "Custom storage"),
 };
 
+/** Target platform name */
+UENUM(BlueprintType)
+enum class EXsollaTargetPlatform : uint8
+{
+	PlaystationNetwork,
+	XboxLive,
+	Xsolla,
+	PcStandalone,
+	NintendoShop,
+	GooglePlay,
+	AppStoreIos,
+	AndroidStandalone,
+	IosStandalone,
+	AndroidOther,
+	IosOther,
+	PcOther
+};
+
 UCLASS(config = Engine, defaultconfig)
 class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 {
@@ -58,6 +76,30 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
+
+	/**
+	 * URL used to link user platform account to main account with generated code.
+	 * Main account is the Xsolla Login project which other Xsolla Login projects (platform accounts)
+	 * are linked to. Main and platform accounts are created in Publisher Account.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	FString AccountLinkingURL;
+
+	/** Flag indicating whether this build is targeted for specific platform */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	bool PlatformBuild;
+
+	/** URL used for target platform (shadow) user account authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	FString PlatformAuthenticationURL;
+
+	/** Target platform. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	EXsollaTargetPlatform Platform;
+
+	/** Unique identifier of target platform user account. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	FString PlatformUserId;
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
