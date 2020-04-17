@@ -98,7 +98,7 @@ public:
 	EXsollaTargetPlatform Platform;
 
 	/** Unique identifier of target platform user account. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild && Platform != EXsollaTargetPlatform::Xsolla"))
 	FString PlatformUserId;
 
 	/** Demo Project ID */
