@@ -70,6 +70,7 @@ public:
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
 	/** Target platform for project publishing */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	EXsollaPublishingPlatform PublishingPlatform;
 
 	/** Demo Store ID */

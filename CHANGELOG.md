@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.14] - 2020-04-23
+
+### Added
+- The ability of signing in via Facebook and Google.
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.4.13] - 2020-04-15
 
 ### Added
