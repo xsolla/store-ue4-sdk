@@ -4,7 +4,7 @@
 #pragma once
 
 #include "XsollaLoginTypes.h"
-
+#include "Runtime/Core/Public/Misc/AES.h"
 #include "GameFramework/SaveGame.h"
 
 #include "XsollaLoginSave.generated.h"
@@ -17,6 +17,10 @@ class UXsollaLoginSave : public USaveGame
 public:
 	static FXsollaLoginData Load();
 	static void Save(const FXsollaLoginData& InLoginData);
+
+	static FAES::FAESKey GetEncryptionKey();
+	static FString EncryptString(const FString& InString, const FAES::FAESKey& InKey);
+	static FString DecryptString(const FString& InString, const FAES::FAESKey& InKey);
 
 public:
 	static const FString SaveSlotName;

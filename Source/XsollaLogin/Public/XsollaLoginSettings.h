@@ -85,6 +85,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString AccountLinkingURL;
 
+	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	bool EncryptCachedCredentials;
+	
+	/** AES-256 encryption key to use when encrypting Xsolla cached credentials */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	FString XsollaSaveEncryptionKey;
+	
 	/** Flag indicating whether this build is targeted for specific platform */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	bool PlatformBuild;
