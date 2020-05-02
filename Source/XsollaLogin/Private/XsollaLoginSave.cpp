@@ -8,7 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Core/Public/Misc/AES.h"
 #include "Runtime/Core/Public/Misc/Base64.h"
-#include "Runtime/PakFile/Public/IPlatformFilePak.h"
 
 const FString UXsollaLoginSave::SaveSlotName = "XsollaLoginSaveSlot";
 const int32 UXsollaLoginSave::UserIndex = 0;
@@ -125,7 +124,7 @@ FString UXsollaLoginSave::EncryptString(const FString& InString, const FAES::FAE
 
 	if (!InKey.IsValid())
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("DecryptString received invalid AES-256 key!"));
+		UE_LOG(LogXsollaLogin, Error, TEXT("EncryptString received invalid AES-256 key!"));
 
 		return FString();
 	}
