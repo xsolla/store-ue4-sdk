@@ -80,11 +80,11 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 		else if (ImageWrapper->SetCompressed(ImageData.GetData(), ImageData.Num()))
 		{
 			const int32 BytesPerPixel = ImageWrapper->GetBitDepth();
-			const TArray<uint8>* RawData = nullptr;
+			TArray<uint8> RawData;
 
-			if (ImageWrapper->GetRaw(ERGBFormat::BGRA, BytesPerPixel, RawData) && RawData && RawData->Num() > 0)
+			if (ImageWrapper->GetRaw(ERGBFormat::BGRA, BytesPerPixel, RawData) && RawData.Num() > 0)
 			{
-				if (FSlateApplication::Get().GetRenderer()->GenerateDynamicImageResource(ResourceName, ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), *RawData))
+				if (FSlateApplication::Get().GetRenderer()->GenerateDynamicImageResource(ResourceName, ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), RawData))
 				{
 					TSharedPtr<FSlateDynamicImageBrush> ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
 					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
