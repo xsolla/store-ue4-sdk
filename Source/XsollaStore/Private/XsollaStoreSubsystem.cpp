@@ -47,7 +47,7 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifier provided by user
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	Initialize(Settings->ProjectId);
+	Initialize(Settings->ProjectID);
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -60,7 +60,7 @@ void UXsollaStoreSubsystem::Deinitialize()
 
 void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 {
-	ProjectId = InProjectId;
+	ProjectID = InProjectId;
 
 	LoadData();
 
@@ -73,7 +73,7 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 
 void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items"), *ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items"), *ProjectID);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -83,7 +83,7 @@ void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCall
 void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s"), *ProjectId, *UsedLocale);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s"), *ProjectID, *UsedLocale);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -94,7 +94,7 @@ void UXsollaStoreSubsystem::UpdateInventory(const FString& AuthToken, const FOnS
 {
 	CachedAuthToken = AuthToken;
 
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"), *ProjectID);
 
 	const FString Platform = GetPublishingPlatformName();
 	if (!Platform.IsEmpty())
@@ -109,7 +109,7 @@ void UXsollaStoreSubsystem::UpdateInventory(const FString& AuthToken, const FOnS
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency"), *ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency"), *ProjectID);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -118,7 +118,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& Succes
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package"), *ProjectId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package"), *ProjectID);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -129,7 +129,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToke
 {
 	CachedAuthToken = AuthToken;
 
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"), *ProjectID);
 
 	const FString Platform = GetPublishingPlatformName();
 	if (!Platform.IsEmpty())
@@ -184,11 +184,11 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"), *ProjectId, *ItemSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"), *ProjectID, *ItemSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
-	if (Settings->bBuildForSteam)
+	if (Settings->BuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
 		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
@@ -269,16 +269,16 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart"), *ProjectId);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart"), *ProjectID);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart/%s"), *ProjectId, *Cart.cart_id);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/cart/%s"), *ProjectID, *Cart.cart_id);
 	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 
-	if (Settings->bBuildForSteam)
+	if (Settings->BuildForSteam)
 	{
 		TSharedPtr<FJsonObject> PayloadJsonObject;
 		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
@@ -324,7 +324,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 	}
 
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	if (Settings->bUsePlatformBrowser)
+	if (Settings->UsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
@@ -351,7 +351,7 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, int32 OrderId, 
 {
 	CachedAuthToken = AuthToken;
 
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/order/%d"), *ProjectId, OrderId);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/order/%d"), *ProjectID, OrderId);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -366,11 +366,11 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/clear"), *ProjectId);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/clear"), *ProjectID);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/clear"), *ProjectId, *Cart.cart_id);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/clear"), *ProjectID, *Cart.cart_id);
 	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::PUT, AuthToken);
@@ -392,11 +392,11 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart"), *ProjectId);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart"), *ProjectID);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s"), *ProjectId, *Cart.cart_id);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s"), *ProjectID, *Cart.cart_id);
 	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
@@ -418,11 +418,11 @@ void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& C
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectId, *ItemSKU);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectID, *ItemSKU);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectId, *Cart.cart_id, *ItemSKU);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectID, *Cart.cart_id, *ItemSKU);
 	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::PUT, AuthToken, SerializeJson(RequestDataJson));
@@ -486,11 +486,11 @@ void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FStri
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectId, *ItemSKU);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/item/%s"), *ProjectID, *ItemSKU);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectId, *Cart.cart_id, *ItemSKU);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/item/%s"), *ProjectID, *Cart.cart_id, *ItemSKU);
 	}
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::DELETE, AuthToken);
@@ -537,7 +537,7 @@ void UXsollaStoreSubsystem::ConsumeInventoryItem(const FString& AuthToken, const
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"), *ProjectId);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"), *ProjectID);
 
 	const FString Platform = GetPublishingPlatformName();
 	if (!Platform.IsEmpty())
@@ -553,7 +553,7 @@ void UXsollaStoreSubsystem::ConsumeInventoryItem(const FString& AuthToken, const
 
 void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU, const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/sku/%s"), *ProjectId, *CurrencySKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/sku/%s"), *ProjectID, *CurrencySKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -562,7 +562,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU, const
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU, const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package/sku/%s"), *ProjectId, *PackageSKU);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package/sku/%s"), *ProjectID, *PackageSKU);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -573,7 +573,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 {
 	CachedAuthToken = AuthToken;
 
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s/virtual/%s"), *ProjectId, *ItemSKU, *CurrencySKU);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s/virtual/%s"), *ProjectID, *ItemSKU, *CurrencySKU);
 
 	const FString Platform = GetPublishingPlatformName();
 	if (!Platform.IsEmpty())
@@ -1126,10 +1126,10 @@ void UXsollaStoreSubsystem::SaveData()
 bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 {
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	bool bIsSandboxEnabled = Settings->bSandbox;
+	bool bIsSandboxEnabled = Settings->EnableSandbox;
 
 #if UE_BUILD_SHIPPING
-	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
+	bIsSandboxEnabled = Settings->EnableSandbox && Settings->EnableSandboxInShippingBuild;
 	if (bIsSandboxEnabled)
 	{
 		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
@@ -1263,7 +1263,12 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName()
 
 	FString platform;
 
-	switch (Settings->PublishingPlatform)
+	if (!Settings->UseCrossPlatformAccountLinking)
+	{
+		return platform;
+	}
+
+	switch (Settings->Platform)
 	{
 	case EXsollaPublishingPlatform::PlaystationNetwork:
 		platform = TEXT("playstation_network");

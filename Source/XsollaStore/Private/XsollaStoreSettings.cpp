@@ -6,11 +6,11 @@
 UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	bSandbox = true;
-	bEnableSandboxInShipping = false;
-	bUsePlatformBrowser = false;
-	bBuildForSteam = false;
-	DemoProjectId = TEXT("44056");
+	EnableSandbox = true;
+	EnableSandboxInShippingBuild = false;
+	UsePlatformBrowser = false;
+	BuildForSteam = false;
+	UseCrossPlatformAccountLinking = false;
+	DemoProjectID = TEXT("44056");
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::Dark;
-	PublishingPlatform = EXsollaPublishingPlatform::NotDefined;
 }

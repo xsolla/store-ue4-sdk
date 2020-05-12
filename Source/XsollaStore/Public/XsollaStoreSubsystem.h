@@ -352,7 +352,7 @@ public:
 
 protected:
 	/** Cached Xsolla Store project id */
-	FString ProjectId;
+	FString ProjectID;
 
 	/** Cached virtual items list */
 	FStoreItemsData ItemsData;
