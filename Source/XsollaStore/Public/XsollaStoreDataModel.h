@@ -37,6 +37,18 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyCalculatedPrice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Calculated Price")
+	FString amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Calculated Price")
+	FString amount_without_discount;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FVirtualCurrencyPrice
 {
 	GENERATED_BODY()
@@ -55,6 +67,18 @@ struct XSOLLASTORE_API FVirtualCurrencyPrice
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
 	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FVirtualCurrencyCalculatedPrice calculated_price;
 
 public:
 	FVirtualCurrencyPrice()
