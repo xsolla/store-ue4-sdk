@@ -48,10 +48,10 @@ public:
 	/** Initialize controller with provided project and login id (use to override project settings)
 	 *
 	 * @param InProjectId New project id value.
-	 * @param InLoginProjectId New login project id value.
+	 * @param InLoginId New login project id value.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginProjectId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId);
 
 	/**
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -219,10 +219,10 @@ private:
 	FString GetTargetPlatformName(EXsollaTargetPlatform Platform);
 
 	/** Cached Xsolla project id */
-	FString ProjectId;
+	FString ProjectID;
 
 	/** Cached Xsolla Login project id */
-	FString LoginProjectId;
+	FString LoginID;
 
 public:
 	/** Get user login state data */
