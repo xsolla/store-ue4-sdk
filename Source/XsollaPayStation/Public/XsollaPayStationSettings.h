@@ -24,7 +24,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
 	bool EnableSandboxInShippingBuild;
 
-	/** Custom class to handle payments. */
+	/** Custom class to handle payment console. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 };
