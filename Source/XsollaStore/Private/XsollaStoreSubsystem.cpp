@@ -810,12 +810,15 @@ void UXsollaStoreSubsystem::UpdateSubscriptions_HttpRequestComplete(FHttpRequest
 		return;
 	}
 
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreSubscriptionData::StaticStruct(), &Subscriptions))
+	FStoreSubscriptionData receivedSubscriptions;
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreSubscriptionData::StaticStruct(), &receivedSubscriptions))
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
 		return;
 	}
+
+	Subscriptions = receivedSubscriptions;
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);

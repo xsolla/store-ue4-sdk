@@ -596,6 +596,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
 	FString status;
+
+public:
+	FStoreSubscriptionItem()
+		: expired_at(0){}
 };
 
 USTRUCT(BlueprintType)
