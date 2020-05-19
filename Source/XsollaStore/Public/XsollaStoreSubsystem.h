@@ -110,6 +110,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Update user subscriptions (cached locally)
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateSubscriptions(const FString& AuthToken, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/**
 	 * Initiate item purchase session and fetch token for payment console
 	 *
@@ -252,6 +261,7 @@ protected:
 	void UpdateVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
 	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
@@ -329,6 +339,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
 
+	/** Get cached user subscriptions */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
+	TArray<FStoreSubscriptionItem> GetSubscriptions() const;
+
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
@@ -368,6 +382,9 @@ protected:
 
 	/** Cached virtual currency balance */
 	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
+
+	/** Cached user subscriptions */
+	FStoreSubscriptionData Subscriptions;
 
 	/** User inventory */
 	FStoreInventory Inventory;

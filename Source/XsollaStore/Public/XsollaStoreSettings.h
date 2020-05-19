@@ -56,7 +56,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
-	/** Custom class to handle payments. */
+	/** Custom class to handle payment console. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
@@ -68,7 +68,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	bool BuildForSteam;
 
-	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
+	/** If enabled, Login SDK will imitate platform-specific requests so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Store Settings")
 	bool UseCrossPlatformAccountLinking;
 
