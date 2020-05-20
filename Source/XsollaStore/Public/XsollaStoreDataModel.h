@@ -22,18 +22,16 @@ struct XSOLLASTORE_API FStorePrice
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount;
+	FString amount;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount_without_discount;
+	FString amount_without_discount;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	FString currency;
 
 public:
-	FStorePrice()
-		: amount(0.f)
-		, amount_without_discount(0.f){};
+	FStorePrice(){};
 };
 
 USTRUCT(BlueprintType)
