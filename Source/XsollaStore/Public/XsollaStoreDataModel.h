@@ -168,6 +168,9 @@ struct XSOLLASTORE_API FStoreItem
 	FString type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FStoreGroup> groups;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
@@ -193,6 +196,8 @@ public:
 		: sku(Item.sku)
 		, name(Item.name)
 		, description(Item.description)
+		, type(Item.type)
+		, virtual_item_type(Item.virtual_item_type)
 		, groups(Item.groups)
 		, is_free(Item.is_free)
 		, price(Item.price)
@@ -529,6 +534,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
 	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
+	FString virtual_item_type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
 	FString description;
