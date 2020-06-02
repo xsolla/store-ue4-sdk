@@ -57,7 +57,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectId, Settings->LoginProjectID);
+	Initialize(Settings->ProjectID, Settings->LoginID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -68,10 +68,10 @@ void UXsollaLoginSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginProjectId)
+void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId)
 {
-	ProjectId = InProjectId;
-	LoginProjectId = InLoginProjectId;
+	ProjectID = InProjectId;
+	LoginID = InLoginId;
 
 	// Check token override from Xsolla Launcher
 	FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-jwt"));
@@ -106,7 +106,7 @@ void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FStrin
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*LoginProjectId,
+		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
@@ -145,7 +145,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*LoginProjectId,
+		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
@@ -175,7 +175,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& Username, const FOn
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*LoginProjectId,
+		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
@@ -195,7 +195,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = (!Settings->VerifyTokenURL.IsEmpty()) ? Settings->VerifyTokenURL : ValidateTokenEndpoint;
+	const FString Url = (!Settings->JWTValidationURL.IsEmpty()) ? Settings->JWTValidationURL : ValidateTokenEndpoint;
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -209,7 +209,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
 		*LoginSocialEndpoint,
 		*ProviderName,
-		*LoginProjectId,
+		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
@@ -249,7 +249,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 	FString Url = FString::Printf(TEXT("%s/%s?projectId=%s&app_id=%s&session_ticket=%s"),
 		*CrossAuthEndpoint,
 		*ProviderName,
-		*LoginProjectId,
+		*LoginID,
 		*AppId,
 		*SessionTicket);
 
@@ -262,7 +262,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectID));
 	if (!UserId.IsEmpty())
 	{
 		RequestDataJson->SetStringField(TEXT("user_id"), UserId);
@@ -302,7 +302,7 @@ void UXsollaLoginSubsystem::ModifyUserAttributes(const FString& AuthToken, const
 	}
 
 	RequestDataJson->SetArrayField(TEXT("attributes"), AttributesJsonArray);
-	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectID));
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -319,7 +319,7 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectId));
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectID));
 	SetStringArrayField(RequestDataJson, TEXT("removing_keys"), AttributesToRemove);
 
 	FString PostContent;
@@ -404,9 +404,9 @@ void UXsollaLoginSubsystem::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRe
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
 			// Check if verification URL is provided
-			if (FXsollaLoginModule::Get().GetSettings()->VerifyTokenURL.IsEmpty())
+			if (FXsollaLoginModule::Get().GetSettings()->JWTValidationURL.IsEmpty())
 			{
-				UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: No VerifyTokenURL is set, skip token verification step"), *VA_FUNC_LINE);
+				UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: No JWT Validation URL is set, skip token verification step"), *VA_FUNC_LINE);
 
 				SuccessCallback.ExecuteIfBound(LoginData);
 			}

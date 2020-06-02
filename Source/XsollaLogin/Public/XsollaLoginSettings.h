@@ -44,18 +44,17 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Project ID from Publisher Account. Required. */
+	/** Project ID from your Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString ProjectId;
+	FString ProjectID;
 
-	/** Login ID from Publisher Account. Required. */
+	/** Login ID in the UUID format from your Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString LoginProjectID;
+	FString LoginID;
 
 	/**
-	 * URL to generate the link with additional parameters and to redirect the user to
-	 * after account confirmation. Must be identical to the Callback URL
-	 * specified in Publisher Account in Login settings.
+	 * URL to redirect the user to after registration/authentication/password reset.
+	 * Must be identical to a Callback URL specified in Publisher Account in Login settings.
 	 * Required if there are several Callback URLs.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
@@ -65,47 +64,47 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
 
-	/** Custom class to handle authentication via social networks */
+	/** Custom class to handle authentication via social network. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
 	/**
-	 * A JWT signed by the secret key is generated for each successfully authenticated user.
+	 * JWT signed by a secret key is generated for each successfully authenticated user.
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
-	 * Check *Extras/TokenVerificator* folder for example of verification server app.
+	 * Check 'Extras/TokenVerificator' folder for an example of the verification server app.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
-	FString VerifyTokenURL;
+	FString JWTValidationURL;
+
+	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
+	bool UseCrossPlatformAccountLinking;
 
 	/**
-	 * URL used to link user platform account to main account with generated code.
-	 * Main account is the Xsolla Login project which other Xsolla Login projects (platform accounts)
-	 * are linked to. Main and platform accounts are created in Publisher Account.
+	 * URL used to link the user platform account to the main account with a generated code.
+	 * The main account is the Xsolla Login project which other Xsolla Login projects (platform accounts) are linked to.
+	 * Main and platform accounts are created in Publisher Account.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	FString AccountLinkingURL;
 
-	/** Flag indicating whether this build is targeted for specific platform */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	bool PlatformBuild;
-
-	/** URL used for target platform (shadow) user account authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	/** URL used for a target platform user account authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	FString PlatformAuthenticationURL;
 
-	/** Target platform. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild"))
+	/** Target platform for cross-platform account linking. If using Xsolla Store, make sure that in the Store settings the same platform is chosen. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	EXsollaTargetPlatform Platform;
 
-	/** Unique identifier of target platform user account. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "PlatformBuild && Platform != EXsollaTargetPlatform::Xsolla"))
-	FString PlatformUserId;
+	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla"))
+	FString PlatformAccountID;
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
-	FString DemoProjectId;
+	FString DemoProjectID;
 
 	/** Demo Login ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
-	FString DemoLoginProjectID;
+	FString DemoLoginID;
 };

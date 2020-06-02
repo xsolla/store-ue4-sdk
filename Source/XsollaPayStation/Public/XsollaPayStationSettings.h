@@ -12,19 +12,19 @@ class XSOLLAPAYSTATION_API UXsollaPayStationSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** URL used to fetch token for payment console */
+	/** URL used to fetch a token for a payment console */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
 	FString TokenRequestURL;
 
-	/** Set to true to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com */
+	/** Enable to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla PayStation Settings")
-	bool bSandbox;
+	bool EnableSandbox;
 
-	/** Is sandbox mode can be used in Shipping build? Use carefully! */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	bool bEnableSandboxInShipping;
+	/** Enable if the sandbox mode can be used in a shipping build. Use carefully! */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
+	bool EnableSandboxInShippingBuild;
 
-	/** Custom class to handle payment console */
+	/** Custom class to handle payment console. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla PayStation Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 };

@@ -22,18 +22,53 @@ struct XSOLLASTORE_API FStorePrice
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount;
+	FString amount;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
-	float amount_without_discount;
+	FString amount_without_discount;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Price")
 	FString currency;
 
 public:
-	FStorePrice()
-		: amount(0.f)
-		, amount_without_discount(0.f){};
+	FStorePrice(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FItemExpirationPeriod
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Expiration Period")
+	int32 value;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Expiration Period")
+	FString type;
+
+public:
+	FItemExpirationPeriod()
+		: value(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FItemInventoryOptions
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Inventory Options")
+	FItemExpirationPeriod expiration_period;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FVirtualCurrencyCalculatedPrice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Calculated Price")
+	FString amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Calculated Price")
+	FString amount_without_discount;
 };
 
 USTRUCT(BlueprintType)
@@ -55,6 +90,18 @@ struct XSOLLASTORE_API FVirtualCurrencyPrice
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
 	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Price")
+	FVirtualCurrencyCalculatedPrice calculated_price;
 
 public:
 	FVirtualCurrencyPrice()
@@ -118,7 +165,7 @@ struct XSOLLASTORE_API FStoreItem
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
-	FString long_description;
+	FString type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FStoreGroup> groups;
@@ -135,6 +182,9 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FItemInventoryOptions inventory_options;
+
 public:
 	FStoreItem()
 		: is_free(false){};
@@ -143,12 +193,12 @@ public:
 		: sku(Item.sku)
 		, name(Item.name)
 		, description(Item.description)
-		, long_description(Item.long_description)
 		, groups(Item.groups)
 		, is_free(Item.is_free)
 		, price(Item.price)
 		, virtual_prices(Item.virtual_prices)
-		, image_url(Item.image_url){};
+		, image_url(Item.image_url)
+		, inventory_options(Item.inventory_options) {};
 
 	bool operator==(const FStoreItem& Item) const
 	{
@@ -513,4 +563,52 @@ public:
 
 public:
 	FStoreInventory(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreSubscriptionItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString Class;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	int64 expired_at;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString status;
+
+public:
+	FStoreSubscriptionItem()
+		: expired_at(0){}
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreSubscriptionData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Data")
+	TArray<FStoreSubscriptionItem> Items;
+
+public:
+	FStoreSubscriptionData(){};
 };

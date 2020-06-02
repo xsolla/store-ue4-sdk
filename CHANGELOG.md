@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.15] - 2020-05-22
+
+### Added
+- The ability to sell non-recurring subscriptions.
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.4.14] - 2020-04-23
 
 ### Added
