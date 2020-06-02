@@ -88,10 +88,10 @@ void UXsollaPayStationSubsystem::FetchPaymentToken_HttpRequestComplete(FHttpRequ
 bool UXsollaPayStationSubsystem::IsSandboxEnabled() const
 {
 	const UXsollaPayStationSettings* Settings = FXsollaPayStationModule::Get().GetSettings();
-	bool bIsSandboxEnabled = Settings->bSandbox;
+	bool bIsSandboxEnabled = Settings->EnableSandbox;
 
 #if UE_BUILD_SHIPPING
-	bIsSandboxEnabled = Settings->bSandbox && Settings->bEnableSandboxInShipping;
+	bIsSandboxEnabled = Settings->EnableSandbox && Settings->EnableSandboxInShippingBuild;
 	if (bIsSandboxEnabled)
 	{
 		UE_LOG(LogXsollaPayStation, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);

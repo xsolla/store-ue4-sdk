@@ -20,7 +20,6 @@ enum class EXsollaPaymentUiTheme : uint8
 UENUM(BlueprintType)
 enum class EXsollaPublishingPlatform : uint8
 {
-	NotDefined,
 	PlaystationNetwork,
 	XboxLive,
 	Xsolla,
@@ -41,39 +40,43 @@ class XSOLLASTORE_API UXsollaStoreSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Store ID from Publisher Account. Required. */
+	/** Project ID from your Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	FString ProjectId;
+	FString ProjectID;
 
-	/** Set to true to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com */
+	/** Enable to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
-	bool bSandbox;
+	bool EnableSandbox;
 
-	/** Is sandbox mode can be used in Shipping build? Use carefully! */
+	/** Enable if the sandbox mode can be used in a shipping build. Use carefully! */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	bool bEnableSandboxInShipping;
+	bool EnableSandboxInShippingBuild;
 
-	/** Custom class to handle payment console */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
-
-	/** If yes, external (system) browser will be launched to process payments */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	bool bUsePlatformBrowser;
-
-	/** If yes, certain tasks like authentication and payments will be processed via Steam */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	bool bBuildForSteam;
-
-	/** Payment user interface theme */
+	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
-	/** Target platform for project publishing */
+	/** Custom class to handle payment console. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
-	EXsollaPublishingPlatform PublishingPlatform;
+	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
-	/** Demo Store ID */
+	/** Enable to process a payment with an external (system) browser. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool UsePlatformBrowser;
+
+	/** Enable to process tasks such as authentication and payment via Steam. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	bool BuildForSteam;
+
+	/** If enabled, Store SDK will imitate platform-specific requests so you can try account linking from different platforms. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Store Settings")
+	bool UseCrossPlatformAccountLinking;
+
+	/** Target platform for cross-platform account linking. If using Xsolla Login, make sure that in the Login settings the same platform is chosen. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
+	EXsollaPublishingPlatform Platform;
+
+	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
-	FString DemoProjectId;
+	FString DemoProjectID;
 };
