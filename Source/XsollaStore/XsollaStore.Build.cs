@@ -1,6 +1,7 @@
 // Copyright 2019 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
+using System.IO;
 using UnrealBuildTool;
 
 public class XsollaStore : ModuleRules
@@ -33,6 +34,13 @@ public class XsollaStore : ModuleRules
             }
             );
 
-        PublicDefinitions.Add("WITH_XSOLLA_STORE=1");
+		if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "XsollaStore_UPL.xml"));
+		}
+
+		PublicDefinitions.Add("WITH_XSOLLA_STORE=1");
     }
 }
