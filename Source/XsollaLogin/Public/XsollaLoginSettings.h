@@ -10,7 +10,7 @@
 #include "XsollaLoginSettings.generated.h"
 
 /** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
-UENUM()
+UENUM(BlueprintType)
 enum class EUserDataStorage : uint8
 {
 	/** User data is stored at Xsolla's side */
