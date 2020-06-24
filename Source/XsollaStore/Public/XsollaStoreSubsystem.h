@@ -141,7 +141,7 @@ public:
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fetch Cart Payment Token
-	 * Initiates a cart purchase session and fetches token for payment console.
+	 * Initiates a cart purchase session and fetches a token for payment console.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of the cart to be purchased. The current user cart will be purchased if empty.
@@ -197,7 +197,7 @@ public:
 	void UpdateCart(const FString& AuthToken, const FString& CartId, const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Add to Cart
-	 * Adds item to the cart and changes its quantity.
+	 * Adds an item to the cart and changes its quantity.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.

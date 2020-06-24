@@ -98,7 +98,7 @@ public:
 	/** Get Social Authentication URL
 	 * Gets URL for authentication via specified social network.
 	 *
-	 * @param ProviderName Name of social network. Provider must be connected to Login in Publisher Account. Required.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
