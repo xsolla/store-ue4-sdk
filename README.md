@@ -13,7 +13,7 @@ Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unre
 * Mac OS X 10.9.2 and higher
 * Visual Studio 2017 and higher
 * XCode 10.1 and higher for Mac OS
-* Unreal Engine 4.22 and higher
+* Unreal Engine 4.24 and higher
 
 ## Target OS:
 
