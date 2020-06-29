@@ -80,12 +80,12 @@ public:
 	/**
 	 * Resets the user's password.
 	 *
-	 * @param Username Username. Required.
+	 * @param User User identifier (name or email depending on user data storage type). Required.
 	 * @param SuccessCallback Callback function called after successful user password reset.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Internal request for token validation (called with each auth update automatically)
 	 *
