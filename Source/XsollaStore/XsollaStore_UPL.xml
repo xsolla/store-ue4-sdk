@@ -10,25 +10,67 @@
     <setBoolFromProperty result="UseDeepLinkingFlag" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="UseDeepLinking" default="false"/>
     <setStringFromProperty result="DeepLinkingURL" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="RedirectURL" default=""/>
 
-    <!-- Parse redirect URL for deep linking -->
-    <setIntFindString result="DeepLinkingSchemeEndIndex" source="$S(DeepLinkingURL)" find="://"/>
-    <setStringSubstring result="DeepLinkingScheme" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingSchemeEndIndex)"/>
+    <setIntLength result="DeepLinkingURLLength" source="$S(DeepLinkingURL)"/>
+    <setBoolIsGreater  result="DeepLinkingURLNotEmpty" arg1="$I(DeepLinkingURLLength)" arg2="0"/>
 
-    <setStringReplace result="DeepLinkingURL" source="$S(DeepLinkingURL)" find="$S(DeepLinkingScheme)://" with=""/>
-    
-    <setIntFindString result="DeepLinkingHostEndIndex" source="$S(DeepLinkingURL)" find="/"/>
-    <setStringSubstring result="DeepLinkingHost" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingHostEndIndex)"/>
+    <if condition="DeepLinkingURLNotEmpty">
+      <false>
+        <log text="XsollaStore UPL deep linking URL is empty"/>
+      </false>
+    </if>
 
-    <setStringReplace result="DeepLinkingPathPrefix" source="$S(DeepLinkingURL)" find="$S(DeepLinkingHost)/" with=""/>
+    <setBoolAnd result="DeepLinkingSettingsProvided" arg1="$B(UseDeepLinkingFlag)" arg2="$B(DeepLinkingURLNotEmpty)"/>
+
+    <setBool result="DeepLinkingURLValid" value="false"/>
     
-    <log text="$S(DeepLinkingScheme)"/>
-    <log text="$S(DeepLinkingHost)"/>
-    <log text="$S(DeepLinkingPathPrefix)"/>
+    <if condition="DeepLinkingSettingsProvided">
+      <true>
+        <!-- Try parse redirect URL for deep linking (scheme)-->
+        <setIntFindString result="DeepLinkingSchemeEndIndex" source="$S(DeepLinkingURL)" find="://"/>
+        <setBoolIsGreater  result="DeepLinkingURLHasScheme" arg1="$I(DeepLinkingSchemeEndIndex)" arg2="0"/>
+        <if condition="DeepLinkingURLHasScheme">
+          <true>
+            <!-- Try parse redirect URL for deep linking (host)-->
+            <setStringSubstring result="DeepLinkingScheme" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingSchemeEndIndex)"/>
+            <setStringReplace result="DeepLinkingURL" source="$S(DeepLinkingURL)" find="$S(DeepLinkingScheme)://" with=""/>          
+            <setIntFindString result="DeepLinkingHostEndIndex" source="$S(DeepLinkingURL)" find="/"/>
+            <setBoolIsGreater  result="DeepLinkingURLHasHost" arg1="$I(DeepLinkingHostEndIndex)" arg2="0"/>            
+            <if condition="DeepLinkingURLHasHost">
+              <true>
+                <!-- Try parse redirect URL for deep linking (prefix)-->
+                <setStringSubstring result="DeepLinkingHost" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingHostEndIndex)"/>
+                <setStringReplace result="DeepLinkingPathPrefix" source="$S(DeepLinkingURL)" find="$S(DeepLinkingHost)/" with=""/>
+                <setIntLength result="DeepLinkingPathPrefixLength" source="$S(DeepLinkingPathPrefix)"/>
+                <setBoolIsGreater  result="DeepLinkingPathPrefixNotEmpty" arg1="$I(DeepLinkingPathPrefixLength)" arg2="0"/>                
+                <if condition="DeepLinkingPathPrefixNotEmpty">
+                  <true>
+                    <log text="XsollaStore UPL deep linking URL is valid"/>
+                    <setBool result="DeepLinkingURLValid" value="true"/>
+                  </true>
+                  <false>
+                    <log text="XsollaStore UPL deep linking URL ivalid prefix"/>
+                  </false>
+                </if>                
+              </true>
+              <false>
+                <log text="XsollaStore UPL deep linking URL ivalid host"/>
+              </false>
+            </if>            
+          </true>
+          <false>
+            <log text="XsollaStore UPL deep linking URL ivalid scheme"/>
+          </false>
+        </if>
+      </true>
+    </if>
+
+    <setBoolAnd result="DeepLinkingSettingsValid" arg1="$B(UseDeepLinkingFlag)" arg2="$B(DeepLinkingURLValid)"/>
+        
   </init>
 
   <!-- Optional updates applied to AndroidManifest.xml -->
   <androidManifestUpdates>
-    <if condition="UseDeepLinkingFlag">
+    <if condition="DeepLinkingSettingsValid">
       <true>
         <!-- Update the GameActivity activity -->
         <loopElements tag="activity">
