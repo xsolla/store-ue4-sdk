@@ -26,7 +26,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	if (ImageBrushes.Contains(ResourceId))
 	{
 		UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
-		SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get());
+		SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
 	}
 	else
 	{
@@ -36,7 +36,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 				if (IsCompleted)
 				{
 					UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
-					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get());
+					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
 				}
 				else
 				{
@@ -89,7 +89,7 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 					TSharedPtr<FSlateDynamicImageBrush> ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
 					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
 
-					SuccessCallback.ExecuteIfBound(*ImageBrush.Get());
+					SuccessCallback.ExecuteIfBound(*ImageBrush.Get(), HttpRequest->GetURL());
 
 					PendingRequests[ResourceName.ToString()].Broadcast(true);
 					PendingRequests.Remove(ResourceName.ToString());
