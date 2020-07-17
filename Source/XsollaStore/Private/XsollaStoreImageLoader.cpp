@@ -41,7 +41,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 				else
 				{
 					UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to get image"), *VA_FUNC_LINE);
-					ErrorCallback.ExecuteIfBound();
+					ErrorCallback.ExecuteIfBound(URL);
 				}
 			});
 		}
@@ -116,7 +116,7 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to download image"), *VA_FUNC_LINE);
 	}
 
-	ErrorCallback.ExecuteIfBound();
+	ErrorCallback.ExecuteIfBound(HttpRequest->GetURL());
 
 	if (PendingRequests.Contains(ResourceName.ToString()))
 	{
