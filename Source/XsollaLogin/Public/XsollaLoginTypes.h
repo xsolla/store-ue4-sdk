@@ -18,8 +18,17 @@ struct FXsollaAuthToken
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	bool bIsVerified;
 
+	/** Token expiration period in seconds. */
+	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
+	int64 expirationPeriod;
+
+	/** Refresh token for updating the access token (JWT). */
+	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
+	FString RefreshToken;
+
 	FXsollaAuthToken()
 		: bIsVerified(false)
+		, expirationPeriod(0)
 	{
 	}
 };

@@ -122,6 +122,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& Token);
 
+	/** Refresh the token in case it is expired. Works only when OAuth 2.0 is enabled.
+	 *
+	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing user with username/password for the firs time.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Authenticate With Session Ticket
 	 * Authenticates a user by exchanging platform specific session ticket to token.
 	 *
@@ -202,19 +209,28 @@ public:
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
+	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRemeberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void UserLoginOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+
+	/** Process request for obtaining/refreshing token using OAuth 2.0 */
+	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
 	/** Return true if error has happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
+
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET, const FString& Content = FString(), const FString& AuthToken = FString());
 
@@ -313,6 +329,8 @@ protected:
 	static const FString CrossAuthEndpoint;
 
 	static const FString AccountLinkingCodeEndpoint;
+
+	static const FString LoginEndpointOAuth;
 
 private:
 	UPROPERTY()
