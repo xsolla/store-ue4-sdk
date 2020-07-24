@@ -76,6 +76,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString JWTValidationURL;
 
+	/** If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use OAuth2", Category = "Xsolla Login Settings")
+	bool UseOAuth2;
+
+	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseOAuth2"))
+	FString ClientID;
+
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
 	bool UseCrossPlatformAccountLinking;
