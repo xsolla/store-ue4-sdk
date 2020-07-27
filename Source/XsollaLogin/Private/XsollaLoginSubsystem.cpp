@@ -99,7 +99,7 @@ void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FStrin
 
 	if (Settings->UseOAuth2)
 	{
-		RegistrateUserOAuth(Username, Password, Email, SuccessCallback, ErrorCallback, State);
+		RegistrateUserOAuth(Username, Password, Email, State, SuccessCallback, ErrorCallback);
 	}
 	else
 	{
@@ -184,19 +184,18 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
-		*LoginSocialEndpoint,
-		*ProviderName,
-		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	if (Settings->UseOAuth2)
+	{
+		GetSocialAuthenticationUrlOAuth(ProviderName, State, SuccessCallback, ErrorCallback);
+	}
+	else
+	{
+		GetSocialAuthenticationUrlJWT(ProviderName, SuccessCallback, ErrorCallback);
+	}	
 }
 
 void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe)
@@ -243,6 +242,53 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
+	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("authorization_code"));
+	RequestDataJson->SetStringField(TEXT("code"), AuthenticationCode);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+	//HttpRequest->SetContentAsString(FGenericPlatformHttp::UrlEncode(PostContent));
+
+	FString UrlParams = "";
+	uint16 ParamIdx = 0;
+
+	// Loop through all the values and prepare additional url part
+	for (auto RequestIt = RequestDataJson->Values.CreateIterator(); RequestIt; ++RequestIt)
+	{
+		FString Key = RequestIt.Key();
+		FString Value = RequestIt.Value().Get()->AsString();
+
+		if (!Key.IsEmpty() && !Value.IsEmpty())
+		{
+			UrlParams += ParamIdx == 0 ? "" : "&";
+			UrlParams += FGenericPlatformHttp::UrlEncode(Key) + "=" + FGenericPlatformHttp::UrlEncode(Value);
+		}
+
+		ParamIdx++;
+	}
+
+	// Apply params
+	HttpRequest->SetContentAsString(UrlParams);
+
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -391,7 +437,7 @@ void UXsollaLoginSubsystem::RegistrateUserJWT(const FString& Username, const FSt
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& State)
+void UXsollaLoginSubsystem::RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -461,6 +507,37 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
+		*LoginSocialEndpoint,
+		*ProviderName,
+		*LoginID,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/social/%s/login_url?client_id=%s&redirect_uri=%s&response_type=code&state=%s"),
+		*LoginEndpointOAuth,
+		*ProviderName,
+		*Settings->ClientID,
+		*BlankRedirectEndpoint,
+		*State);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 

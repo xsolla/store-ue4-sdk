@@ -61,7 +61,7 @@ public:
 	 * @param Email Email. Required.
 	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to the specified email.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Email. Value used for additional user verification. Required for OAuth 2.0.
+	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -102,9 +102,10 @@ public:
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSocialAuthenticationUrl(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Launch social authentication
 	 * Opens social authentication URL in browser.
@@ -129,6 +130,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Exchange the user authentication code to a valid JWT. Works only when OAuth 2.0 is enabled.
+	 *
+	 * @param AuthenticationCode User authentication code to be exchanged to a JWT.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate With Session Ticket
 	 * Authenticates a user by exchanging platform specific session ticket to token.
@@ -211,10 +219,13 @@ public:
 
 protected:
 	void RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-	void RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& State);
+	void RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRemeberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
