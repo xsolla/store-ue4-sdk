@@ -61,9 +61,10 @@ public:
 	 * @param Email Email. Required.
 	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to the specified email.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param State Email. Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate User
 	 * Authenticates the user by the username and password specified via the authentication interface.
@@ -209,6 +210,9 @@ public:
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
+	void RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& State);
+
 	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRemeberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -331,6 +335,8 @@ protected:
 	static const FString AccountLinkingCodeEndpoint;
 
 	static const FString LoginEndpointOAuth;
+
+	static const FString BlankRedirectEndpoint;
 
 private:
 	UPROPERTY()

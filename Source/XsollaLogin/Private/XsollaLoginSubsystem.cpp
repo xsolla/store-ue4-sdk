@@ -44,6 +44,8 @@ const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://lo
 
 const FString UXsollaLoginSubsystem::LoginEndpointOAuth(TEXT("https://login.xsolla.com/api/oauth2"));
 
+const FString UXsollaLoginSubsystem::BlankRedirectEndpoint(TEXT("https://login.xsolla.com/api/blank"));
+
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -84,7 +86,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	}
 }
 
-void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
@@ -93,27 +95,16 @@ void UXsollaLoginSubsystem::RegistrateUser(const FString& Username, const FStrin
 		return;
 	}
 
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("username"), Username);
-	RequestDataJson->SetStringField(TEXT("password"), Password);
-	RequestDataJson->SetStringField(TEXT("email"), Email);
-
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
-	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
-		*Endpoint,
-		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	if (Settings->UseOAuth2)
+	{
+		RegistrateUserOAuth(Username, Password, Email, SuccessCallback, ErrorCallback, State);
+	}
+	else
+	{
+		RegistrateUserJWT(Username, Password, Email, SuccessCallback, ErrorCallback);
+	}			
 }
 
 void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
@@ -372,6 +363,57 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("username"), Username);
+	RequestDataJson->SetStringField(TEXT("password"), Password);
+	RequestDataJson->SetStringField(TEXT("email"), Email);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
+	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
+		*Endpoint,
+		*LoginID,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& State)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("username"), Username);
+	RequestDataJson->SetStringField(TEXT("password"), Password);
+	RequestDataJson->SetStringField(TEXT("email"), Email);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
+	const FString Url = FString::Printf(TEXT("%s/user?response_type=code&client_id=%s&state=%s&redirect_uri=%s"),
+		*LoginEndpointOAuth,
+		*Settings->ClientID,
+		*State,
+		*BlankRedirectEndpoint);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
