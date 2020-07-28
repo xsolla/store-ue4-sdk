@@ -249,6 +249,9 @@ private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET, const FString& Content = FString(), const FString& AuthToken = FString());
 
+	/** Encode request body to match x-www-form-urlencoded data format */
+	FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+
 	/** Set a Json string array field named FieldName and value of Array */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
 

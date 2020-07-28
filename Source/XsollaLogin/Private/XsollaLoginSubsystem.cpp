@@ -264,31 +264,9 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
-	//HttpRequest->SetContentAsString(FGenericPlatformHttp::UrlEncode(PostContent));
-
-	FString UrlParams = "";
-	uint16 ParamIdx = 0;
-
-	// Loop through all the values and prepare additional url part
-	for (auto RequestIt = RequestDataJson->Values.CreateIterator(); RequestIt; ++RequestIt)
-	{
-		FString Key = RequestIt.Key();
-		FString Value = RequestIt.Value().Get()->AsString();
-
-		if (!Key.IsEmpty() && !Value.IsEmpty())
-		{
-			UrlParams += ParamIdx == 0 ? "" : "&";
-			UrlParams += FGenericPlatformHttp::UrlEncode(Key) + "=" + FGenericPlatformHttp::UrlEncode(Value);
-		}
-
-		ParamIdx++;
-	}
-
-	// Apply params
-	HttpRequest->SetContentAsString(UrlParams);
-
+	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -978,6 +956,28 @@ TSharedRef<IHttpRequest> UXsollaLoginSubsystem::CreateHttpRequest(const FString&
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_LOGIN_VERSION);
 
 	return HttpRequest;
+}
+
+FString UXsollaLoginSubsystem::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson)
+{
+	FString EncodedFormData = "";
+	uint16 ParamIndex = 0;
+
+	for (auto FormDataIt = FormDataJson->Values.CreateIterator(); FormDataIt; ++FormDataIt)
+	{
+		FString Key = FormDataIt.Key();
+		FString Value = FormDataIt.Value().Get()->AsString();
+
+		if (!Key.IsEmpty() && !Value.IsEmpty())
+		{
+			EncodedFormData += ParamIndex == 0 ? "" : "&";
+			EncodedFormData += FGenericPlatformHttp::UrlEncode(Key) + "=" + FGenericPlatformHttp::UrlEncode(Value);
+		}
+
+		ParamIndex++;
+	}
+
+	return EncodedFormData;
 }
 
 void UXsollaLoginSubsystem::SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const
