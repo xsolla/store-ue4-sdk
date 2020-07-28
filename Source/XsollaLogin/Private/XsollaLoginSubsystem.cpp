@@ -271,19 +271,18 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	// Generate endpoint url
-	FString Url = FString::Printf(TEXT("%s/%s?projectId=%s&app_id=%s&session_ticket=%s"),
-		*CrossAuthEndpoint,
-		*ProviderName,
-		*LoginID,
-		*AppId,
-		*SessionTicket);
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	if (Settings->UseOAuth2)
+	{
+		AuthenticateWithSessionTicketOAuth(ProviderName, AppId, SessionTicket, State, SuccessCallback, ErrorCallback);
+	}
+	else
+	{
+		AuthenticateWithSessionTicketJWT(ProviderName, AppId, SessionTicket, SuccessCallback, ErrorCallback);
+	}	
 }
 
 void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
@@ -516,6 +515,39 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	FString Url = FString::Printf(TEXT("%s/%s?projectId=%s&app_id=%s&session_ticket=%s"),
+		*CrossAuthEndpoint,
+		*ProviderName,
+		*LoginID,
+		*AppId,
+		*SessionTicket);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	FString Url = FString::Printf(TEXT("%s/social/%s/cross_auth?client_id=%s&response_type=code&redirect_uri=%s&state=%s&app_id=%s&scope=offline&session_ticket=%s&is_redirect=false"),
+		*LoginEndpointOAuth,
+		*ProviderName,
+		*Settings->ClientID,
+		*BlankRedirectEndpoint,
+		*State,
+		*AppId,
+		*SessionTicket);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
