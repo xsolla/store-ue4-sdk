@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 3,
-	"VersionName": "0.4.17",
+	"Version": 4,
+	"VersionName": "0.5.0",
 	"EngineVersion": "4.25.0",
 	"FriendlyName": "Xsolla SDK",
 	"Description": "Xsolla SDK for Unreal Engine 4",
