@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.0] - 2020-07-28
+
+### Changed
+- Demo maps UI.
+- Removed deprecated PayStation module.
+
+
+## [0.4.17] - 2020-07-08
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.4.16] - 2020-06-18
 
 ### Added
