@@ -153,7 +153,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
@@ -163,15 +163,15 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& Username, const FOn
 	}
 
 	// Prepare request payload
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("username"), Username);
+	RequestDataJson->SetStringField((Settings->UserDataStorage == EUserDataStorage::Xsolla) ? TEXT("username") : TEXT("email"), User);
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	// Generate endpoint url	
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,

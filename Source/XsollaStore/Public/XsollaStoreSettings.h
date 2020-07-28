@@ -79,4 +79,12 @@ public:
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
 	FString DemoProjectID;
+
+	/** Enable deep linking for Android applications. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Android")
+	bool UseDeepLinking;
+
+	/** Redirect URL that allows external applications to enter current project game activity. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Android", meta = (EditCondition = "UseDeepLinking"))
+	FString RedirectURL;
 };

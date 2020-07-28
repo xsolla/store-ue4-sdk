@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.16] - 2020-06-18
+
+### Added
+- Added deep linking configuration for Android builds.
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.4.15] - 2020-05-22
 
 ### Added
