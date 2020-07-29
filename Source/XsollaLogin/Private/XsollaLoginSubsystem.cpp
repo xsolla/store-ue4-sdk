@@ -241,7 +241,9 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	// Generate endpoint url	
 	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -898,7 +900,6 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		if (JsonObject->HasTypedField<EJson::String>(AccessTokenFieldName))
 		{
 			LoginData.AuthToken.JWT = JsonObject->GetStringField(AccessTokenFieldName);
-			LoginData.AuthToken.expirationPeriod = JsonObject->GetNumberField(TEXT("expires_in"));
 			LoginData.AuthToken.RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
 
 			SaveData();
@@ -1154,12 +1155,16 @@ FXsollaLoginData UXsollaLoginSubsystem::GetLoginData()
 	return LoginData;
 }
 
-void UXsollaLoginSubsystem::DropLoginData()
+void UXsollaLoginSubsystem::DropLoginData(bool ClearCache)
 {
+	// Drop saved data in memory
 	LoginData = FXsollaLoginData();
-
-	// Drop saved data too
-	UXsollaLoginSave::Save(LoginData);
+	
+	if (ClearCache)
+	{
+		// Drop saved data in cache
+		UXsollaLoginSave::Save(LoginData);
+	}	
 }
 
 FString UXsollaLoginSubsystem::GetUserId(const FString& Token)
@@ -1250,7 +1255,7 @@ void UXsollaLoginSubsystem::SaveData()
 	}
 	else
 	{
-		// Dron't drop cache in memory but reset save file
+		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
 }

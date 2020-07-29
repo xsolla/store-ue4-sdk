@@ -279,7 +279,7 @@ public:
 
 	/** Drop cache and cleanup login data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void DropLoginData();
+	void DropLoginData(bool ClearCache = true);
 
 	/** Get user ID from the specified JWT token
 	 *
