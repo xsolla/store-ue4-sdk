@@ -341,6 +341,9 @@ public:
 	FStorePrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FVirtualCurrencyPackageContent content;
 
 public:
