@@ -76,6 +76,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString JWTValidationURL;
 
+	/** If enabled, Login SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
+	bool InvalidateExistingSessions;
+
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
 	bool UseCrossPlatformAccountLinking;
