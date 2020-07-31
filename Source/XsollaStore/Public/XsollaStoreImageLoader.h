@@ -9,8 +9,8 @@
 
 #include "XsollaStoreImageLoader.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoaded, FSlateBrush, ImageBrush);
-DECLARE_DYNAMIC_DELEGATE(FOnImageLoadFailed);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImageLoaded, FSlateBrush, ImageBrush, FString, ImageURL);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoadFailed, FString, ImageURL);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRequestCompleted, bool);
 
 /**

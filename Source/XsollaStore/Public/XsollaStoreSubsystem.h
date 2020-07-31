@@ -435,7 +435,7 @@ public:
 	 * @param SuccessCallback Callback function called after the successful image download.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
 	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
