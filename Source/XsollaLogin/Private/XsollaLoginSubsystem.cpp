@@ -34,7 +34,7 @@ const FString UXsollaLoginSubsystem::ProxyRegistrationEndpoint(TEXT("https://log
 const FString UXsollaLoginSubsystem::ProxyLoginEndpoint(TEXT("https://login.xsolla.com/api/proxy/login"));
 const FString UXsollaLoginSubsystem::ProxyResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/proxy/password/reset"));
 
-const FString UXsollaLoginSubsystem::ValidateTokenEndpoint(TEXT("https://login.xsolla.com/api/users/me"));
+const FString UXsollaLoginSubsystem::ValidateTokenEndpoint(TEXT("http://login.xsolla.com/api/users/me"));
 
 const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.xsolla.com/api/attributes"));
 
