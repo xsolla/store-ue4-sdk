@@ -32,6 +32,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	FString GetUrl() const;
 
+	/**
+	 * Clear browser cache (cookies etc.)
+	 *
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void ClearCache() const;
+
 	/** Called when the Url changes. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
 	FOnUrlChanged OnUrlChanged;
