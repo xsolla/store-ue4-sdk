@@ -38,7 +38,7 @@ const FString UXsollaLoginSubsystem::ValidateTokenEndpoint(TEXT("https://login.x
 
 const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.xsolla.com/api/attributes"));
 
-const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://livedemo.xsolla.com/sdk/token"));
+const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://login.xsolla.com/api/social"));
 
 const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://login.xsolla.com/api/users/account/code"));
 
@@ -512,7 +512,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	FString Url = FString::Printf(TEXT("%s/%s?projectId=%s&app_id=%s&session_ticket=%s"),
+	FString Url = FString::Printf(TEXT("%s/%s/cross_auth?projectId=%s&app_id=%s&session_ticket=%s&fields=email&is_redirect=false"),
 		*CrossAuthEndpoint,
 		*ProviderName,
 		*LoginID,
@@ -676,10 +676,14 @@ void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
 	if (FJsonSerializer::Deserialize(Reader, JsonObject))
 	{
-		static const FString TokenFieldName = TEXT("token");
-		if (JsonObject->HasTypedField<EJson::String>(TokenFieldName))
+		static const FString LoginUrlFieldName = TEXT("login_url");
+		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
-			FString Token = JsonObject.Get()->GetStringField(TokenFieldName);
+			FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			FString LoginUrl = FGenericPlatformHttp::UrlDecode(LoginUrlRaw);
+			FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+
+			FString Token = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
 
 			LoginData.AuthToken.JWT = Token;
 
@@ -693,7 +697,7 @@ void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 		}
 		else
 		{
-			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *TokenFieldName);
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *LoginUrlFieldName);
 		}
 	}
 	else
