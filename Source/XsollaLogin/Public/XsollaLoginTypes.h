@@ -18,6 +18,10 @@ struct FXsollaAuthToken
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	bool bIsVerified;
 
+	/** Refresh token for updating the access token (JWT). */
+	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
+	FString RefreshToken;
+
 	FXsollaAuthToken()
 		: bIsVerified(false)
 	{

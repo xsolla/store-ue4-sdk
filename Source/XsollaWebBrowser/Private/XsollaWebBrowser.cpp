@@ -4,6 +4,9 @@
 #include "XsollaWebBrowser.h"
 
 #include "Async/TaskGraphInterfaces.h"
+#include "WebBrowserModule.h"
+#include "IWebBrowserSingleton.h"
+#include "IWebBrowserCookieManager.h"
 #include "SWebBrowser.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -32,6 +35,19 @@ FString UXsollaWebBrowser::GetUrl() const
 	}
 
 	return FString();
+}
+
+void UXsollaWebBrowser::ClearCache() const
+{
+	IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
+	if (WebBrowserSingleton)
+	{
+		TSharedPtr<IWebBrowserCookieManager> CookieManager = WebBrowserSingleton->GetCookieManager();
+		if (CookieManager.IsValid())
+		{
+			CookieManager->DeleteCookies();
+		}
+	}
 }
 
 void UXsollaWebBrowser::ReleaseSlateResources(bool bReleaseChildren)
