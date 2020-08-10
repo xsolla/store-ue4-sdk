@@ -9,6 +9,7 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	UserDataStorage = EUserDataStorage::Xsolla;
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/auth");
+	InvalidateExistingSessions = false;
 	UseOAuth2 = false;
 	UseCrossPlatformAccountLinking = false;
 	DemoProjectID = TEXT("44056");

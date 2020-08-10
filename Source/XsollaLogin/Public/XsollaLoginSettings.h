@@ -68,6 +68,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
+	/** If enabled, Login SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Invalidate Existing Sessions", Category = "Xsolla Login Settings")
+	bool InvalidateExistingSessions;
+
 	/** If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use OAuth2", Category = "Xsolla Login Settings")
 	bool UseOAuth2;

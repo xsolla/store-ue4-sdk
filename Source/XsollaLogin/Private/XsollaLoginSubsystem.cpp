@@ -38,7 +38,7 @@ const FString UXsollaLoginSubsystem::ValidateTokenEndpoint(TEXT("https://login.x
 
 const FString UXsollaLoginSubsystem::UserAttributesEndpoint(TEXT("https://login.xsolla.com/api/attributes"));
 
-const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://livedemo.xsolla.com/sdk/token"));
+const FString UXsollaLoginSubsystem::CrossAuthEndpoint(TEXT("https://login.xsolla.com/api/social"));
 
 const FString UXsollaLoginSubsystem::AccountLinkingCodeEndpoint(TEXT("https://login.xsolla.com/api/users/account/code"));
 
@@ -373,7 +373,11 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString PlatformName = GetTargetPlatformName(Platform);
-	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s"), *Settings->PlatformAuthenticationURL, *UserId, *PlatformName);
+	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&with_logout=%s"),
+		*Settings->PlatformAuthenticationURL,
+		*UserId,
+		*PlatformName,
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -446,10 +450,11 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
-	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
+	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s&with_logout=%s"),
 		*Endpoint,
 		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -482,11 +487,12 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& Provide
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s"),
+	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s&with_logout=%s"),
 		*LoginSocialEndpoint,
 		*ProviderName,
 		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -512,12 +518,14 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	FString Url = FString::Printf(TEXT("%s/%s?projectId=%s&app_id=%s&session_ticket=%s"),
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	FString Url = FString::Printf(TEXT("%s/%s/cross_auth?projectId=%s&app_id=%s&session_ticket=%s&is_redirect=false&with_logout=%s"),
 		*CrossAuthEndpoint,
 		*ProviderName,
 		*LoginID,
 		*AppId,
-		*SessionTicket);
+		*SessionTicket,
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
