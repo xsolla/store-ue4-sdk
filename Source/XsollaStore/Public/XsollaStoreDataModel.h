@@ -384,7 +384,7 @@ public:
 	FString image_url;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
-	int amount;
+	int64 amount;
 
 public:
 	FVirtualCurrencyBalance()
