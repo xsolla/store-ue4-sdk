@@ -304,6 +304,34 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::UpdateUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request body
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetNumberField(TEXT("publisher_project_id"), FCString::Atoi(*ProjectID));
+	if (!UserId.IsEmpty())
+	{
+		RequestDataJson->SetStringField(TEXT("user_id"), UserId);
+	}
+
+	TArray<TSharedPtr<FJsonValue>> KeysJsonArray;
+	for (auto Key : AttributeKeys)
+	{
+		KeysJsonArray.Push(MakeShareable(new FJsonValueString(Key)));
+	}
+
+	RequestDataJson->SetArrayField(TEXT("keys"), KeysJsonArray);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	const FString Url = FString::Printf(TEXT("%s/users/me/get_read_only"), *UserAttributesEndpoint);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::ModifyUserAttributes(const FString& AuthToken, const TArray<FXsollaUserAttribute>& AttributesToModify, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
@@ -717,6 +745,27 @@ void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpReques
 	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userAttributesData, 0, 0))
 	{
 		UserAttributes = userAttributesData;
+		SuccessCallback.ExecuteIfBound();
+		return;
+	}
+
+	// No success before so call the error callback
+	FString ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	TArray<FXsollaUserAttribute> userReadOnlyAttributesData;
+	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &userReadOnlyAttributesData, 0, 0))
+	{
+		UserReadOnlyAttributes = userReadOnlyAttributesData;
 		SuccessCallback.ExecuteIfBound();
 		return;
 	}
@@ -1246,6 +1295,11 @@ FString UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
 TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserAttributes()
 {
 	return UserAttributes;
+}
+
+TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
+{
+	return UserReadOnlyAttributes;
 }
 
 #undef LOCTEXT_NAMESPACE

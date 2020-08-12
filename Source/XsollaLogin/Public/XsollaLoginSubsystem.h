@@ -163,6 +163,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
 	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Update User Read-Only Attributes
+	 * Updates locally cached list of user read-only attributes.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param UserId Identifier of user which attributes should be updated for.
+	 * @param AttributeKeys Keys of attributes that should be updated.
+	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
+	void UpdateUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Modify User Attributes
 	 * Modifies the list of user attributes by creating/editing its items (changes made on server side).
 	 *
@@ -238,6 +250,7 @@ protected:
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
@@ -325,6 +338,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserAttributes();
 
+	/** Get user read-only attributes */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	TArray<FXsollaUserAttribute> GetUserReadOnlyAttributes();
+
 protected:
 	/** Keeps state of user login */
 	FXsollaLoginData LoginData;
@@ -334,6 +351,9 @@ protected:
 
 	/** Cached list of user attributes */
 	TArray<FXsollaUserAttribute> UserAttributes;
+
+	/** Cached list of user read-only attributes */
+	TArray<FXsollaUserAttribute> UserReadOnlyAttributes;
 
 protected:
 	static const FString RegistrationEndpoint;
