@@ -45,8 +45,12 @@ struct FXsollaLoginData
 	UPROPERTY(BlueprintReadOnly, Category = "Login Data")
 	bool bRememberMe;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Login Data")
+	bool bEncrypted;
+
 	FXsollaLoginData()
 		: bRememberMe(false)
+		, bEncrypted(false)
 	{
 	}
 };
