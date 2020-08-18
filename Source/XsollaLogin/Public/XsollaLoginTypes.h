@@ -14,6 +14,10 @@ struct FXsollaAuthToken
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	FString JWT;
 
+	/** Token expiration time. */
+	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
+	int64 ExpiresAt;
+
 	/** Token verification status. */
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	bool bIsVerified;
@@ -23,7 +27,8 @@ struct FXsollaAuthToken
 	FString RefreshToken;
 
 	FXsollaAuthToken()
-		: bIsVerified(false)
+		: ExpiresAt(0)
+		, bIsVerified(false)
 	{
 	}
 };

@@ -940,6 +940,7 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		{
 			LoginData.AuthToken.JWT = JsonObject->GetStringField(AccessTokenFieldName);
 			LoginData.AuthToken.RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + JsonObject->GetNumberField(TEXT("expires_in"));
 
 			SaveData();
 
