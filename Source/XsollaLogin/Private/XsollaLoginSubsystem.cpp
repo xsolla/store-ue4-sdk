@@ -538,7 +538,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	case EXsollaFriendsType::Blocked:
 		FriendType = TEXT("blocked");
 		break;
-			
+
 	case EXsollaFriendsType::BlockedBy:
 		FriendType = TEXT("blocked_by");
 		break;
@@ -546,7 +546,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	default:
 		unimplemented();
 	}
-	
+
 	FString SortByCriteria;
 	switch (SortBy)
 	{
@@ -561,7 +561,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	default:
 		unimplemented();
 	}
-	
+
 	FString SortOrderCriteria;
 	switch (SortOrder)
 	{
@@ -576,7 +576,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	default:
 		unimplemented();
 	}
-	
+
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships?type=%s&sort_by=%s&sort_order=%s"),
 		*UserDetailsEndpoint,
@@ -593,7 +593,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-	
+
 	FString FriendAction;
 	switch (Action)
 	{
@@ -628,7 +628,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	default:
 		unimplemented();
 	}
-	
+
 	RequestDataJson->SetStringField(TEXT("action"), FriendAction);
 
 	FString PostContent;
@@ -1204,7 +1204,7 @@ void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1220,6 +1220,8 @@ void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr Http
 			UserDetails = receivedUserDetails;
 
 			SuccessCallback.ExecuteIfBound();
+
+			return;
 		}
 		else
 		{
@@ -1241,7 +1243,7 @@ void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRe
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1280,7 +1282,7 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1319,7 +1321,7 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1358,7 +1360,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1374,6 +1376,8 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 			FriendsData = receivedUserFriendsData;
 
 			SuccessCallback.ExecuteIfBound();
+
+			return;
 		}
 		else
 		{
@@ -1395,7 +1399,7 @@ void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr Htt
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1432,11 +1436,11 @@ void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr Htt
 				return FriendDetails.user.id == UserID;
 			});
 
-			if(Friend)
+			if (Friend)
 			{
 				Friend->status_incoming = StatusIncoming;
 				Friend->status_outgoing = StatusOutgoing;
-				
+
 				SuccessCallback.ExecuteIfBound();
 				return;
 			}
@@ -1486,7 +1490,7 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1502,6 +1506,8 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 			SocialFriendsData = receivedUserSocialFriendsData;
 
 			SuccessCallback.ExecuteIfBound();
+
+			return;
 		}
 		else
 		{
@@ -1523,7 +1529,7 @@ void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1537,6 +1543,8 @@ void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr Http
 		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaPublicProfile::StaticStruct(), &receivedUserProfile))
 		{
 			SuccessCallback.ExecuteIfBound(receivedUserProfile);
+
+			return;
 		}
 		else
 		{
@@ -1558,7 +1566,7 @@ void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpR
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
@@ -1572,6 +1580,8 @@ void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpR
 		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaUserSearchResult::StaticStruct(), &searchResult))
 		{
 			SuccessCallback.ExecuteIfBound(searchResult);
+
+			return;
 		}
 		else
 		{
