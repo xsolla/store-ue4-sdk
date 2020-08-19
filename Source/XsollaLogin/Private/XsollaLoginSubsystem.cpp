@@ -518,7 +518,7 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder, const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	FString FriendType;
 	switch (Type)
@@ -588,7 +588,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnFriendStatusUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1354,7 +1354,7 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1373,9 +1373,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 		FXsollaFriendsData receivedUserFriendsData;
 		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaFriendsData::StaticStruct(), &receivedUserFriendsData))
 		{
-			FriendsData = receivedUserFriendsData;
-
-			SuccessCallback.ExecuteIfBound();
+			SuccessCallback.ExecuteIfBound(receivedUserFriendsData);
 
 			return;
 		}
@@ -1393,7 +1391,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFriendStatusUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1416,38 +1414,7 @@ void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr Htt
 			FString StatusIncoming = JsonObject->GetStringField(StatusIncomingFieldName);
 			FString StatusOutgoing = JsonObject->GetStringField(StatusOutgoingFieldName);
 
-			FString UserID;
-			auto Payload = HttpRequest->GetContent();
-			FUTF8ToTCHAR PayloadData(reinterpret_cast<const ANSICHAR*>(Payload.GetData()), Payload.Num());
-			FString RequestStr = FString(PayloadData.Length(), PayloadData.Get());
-			TSharedPtr<FJsonObject> RequestJsonObject;
-			TSharedRef<TJsonReader<>> RequestReader = TJsonReaderFactory<>::Create(*RequestStr);
-			if (FJsonSerializer::Deserialize(RequestReader, RequestJsonObject))
-			{
-				UserID = RequestJsonObject->GetStringField(TEXT("user"));
-			}
-			else
-			{
-				ErrorStr = FString::Printf(TEXT("Can't deserialize request json: "), *RequestStr);
-				ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
-			}
-
-			auto Friend = FriendsData.relationships.FindByPredicate([UserID](const FXsollaFriendDetails& FriendDetails) {
-				return FriendDetails.user.id == UserID;
-			});
-
-			if (Friend)
-			{
-				Friend->status_incoming = StatusIncoming;
-				Friend->status_outgoing = StatusOutgoing;
-
-				SuccessCallback.ExecuteIfBound();
-				return;
-			}
-			else
-			{
-				ErrorStr = FString::Printf(TEXT("Can't find friend with ID '%s' in local cache"), *UserID);
-			}
+			SuccessCallback.ExecuteIfBound(StatusIncoming, StatusOutgoing);
 		}
 		else
 		{
@@ -2000,11 +1967,6 @@ TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
 FXsollaUserDetails UXsollaLoginSubsystem::GetUserDetails()
 {
 	return UserDetails;
-}
-
-FXsollaFriendsData UXsollaLoginSubsystem::GetFriends()
-{
-	return FriendsData;
 }
 
 TArray<FXsollaSocialAuthLink> UXsollaLoginSubsystem::GetSocialAuthLinks()

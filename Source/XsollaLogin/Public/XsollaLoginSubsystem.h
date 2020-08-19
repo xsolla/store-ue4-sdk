@@ -32,6 +32,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginD
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFriendStatusUpdate, const FString&, StatusIncoming, const FString&, StatusOutGoing);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 
@@ -332,7 +334,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder, const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	
 	/** Modify Friends
 	 * Modifies relationships with specified user.
@@ -344,7 +346,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnFriendStatusUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	
 	/** Update Social Authentication Links
 	 * Updates locally cached list of links for social authentication enabled in Publisher Account.
@@ -425,8 +427,8 @@ protected:
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void ModifyFriend_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void ModifyFriend_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFriendStatusUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	
 	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -526,10 +528,6 @@ public:
 
 	/** Get user friends */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FXsollaFriendsData GetFriends();
-
-	/** Get user friends */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaSocialAuthLink> GetSocialAuthLinks();
 
 	/** Get user social friends */
@@ -551,9 +549,6 @@ protected:
 
 	/** Cached user details */
 	FXsollaUserDetails UserDetails;
-
-	/** Cached user friends */
-	FXsollaFriendsData FriendsData;
 
 	/** Cached social auth links */
 	TArray<FXsollaSocialAuthLink> SocialAuthLinks;
