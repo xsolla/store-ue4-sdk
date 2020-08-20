@@ -23,8 +23,8 @@ enum class EXsollaFriendsType : uint8
 UENUM(BlueprintType)
 enum class EXsollaUsersSortCriteria : uint8
 {
-	/** Sort the list of users by name alphabetically. */
-	ByName,
+	/** Sort the list of users by nickname alphabetically. */
+	ByNickname,
 	/** Sort the list of users by the date when they last added someone to their friends list or blocked them.. */
 	ByUpdate
 };
@@ -213,15 +213,15 @@ struct FXsollaUserDetails
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	FString registered;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Friend Details")
+	FString presence;
 };
 
 USTRUCT(BlueprintType)
 struct FXsollaFriendDetails
 {
 	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, Category = "Friend Details")
-	FString presence;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Friend Details")
 	FString status_incoming;

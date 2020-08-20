@@ -32,7 +32,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginD
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData, const FString&, type);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFriendStatusUpdate, const FString&, StatusIncoming, const FString&, StatusOutGoing);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);

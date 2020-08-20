@@ -550,8 +550,8 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	FString SortByCriteria;
 	switch (SortBy)
 	{
-	case EXsollaUsersSortCriteria::ByName:
-		SortByCriteria = TEXT("by_name");
+	case EXsollaUsersSortCriteria::ByNickname:
+		SortByCriteria = TEXT("by_nickname");
 		break;
 
 	case EXsollaUsersSortCriteria::ByUpdate:
@@ -1373,7 +1373,11 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 		FXsollaFriendsData receivedUserFriendsData;
 		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaFriendsData::StaticStruct(), &receivedUserFriendsData))
 		{
-			SuccessCallback.ExecuteIfBound(receivedUserFriendsData);
+			FString RequestUrl = HttpRequest->GetURL();
+			FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+			FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
+
+			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, Type);
 
 			return;
 		}
