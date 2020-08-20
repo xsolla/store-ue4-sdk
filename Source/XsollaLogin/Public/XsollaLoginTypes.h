@@ -9,43 +9,43 @@ UENUM(BlueprintType)
 enum class EXsollaFriendsType : uint8
 {
 	/** Users added to a friends list. */
-	Friends,
+	friends UMETA(DisplayName = "Friends"),
 	/** Users to whom friend request was sent. */
-	FriendsRequested,
+	friend_requested UMETA(DisplayName = "FriendsRequested"),
 	/** Users from whom friend request was sent. */
-	FriendsRequestedBy,
+	friend_requested_by UMETA(DisplayName = "FriendsRequestedBy"),
 	/** Users added to a friend list, but blocked. */
-	Blocked,
+	blocked UMETA(DisplayName = "Blocked"),
 	/** Users who blocked this user. */
-	BlockedBy
+	blocked_by UMETA(DisplayName = "BlockedBy")
 };
 
 UENUM(BlueprintType)
 enum class EXsollaUsersSortCriteria : uint8
 {
 	/** Sort the list of users by nickname alphabetically. */
-	ByNickname,
+	by_nickname UMETA(DisplayName = "ByNickname"),
 	/** Sort the list of users by the date when they last added someone to their friends list or blocked them.. */
-	ByUpdate
+	by_update UMETA(DisplayName = "ByUpdate")
 };
 
 UENUM(BlueprintType)
 enum class EXsollaUsersSortOrder : uint8
 {
-	Ascending,
-	Descending
+	asc UMETA(DisplayName = "Ascending"),
+	desc UMETA(DisplayName = "Descending")
 };
 
 UENUM(BlueprintType)
 enum class EXsollaFriendAction : uint8
 {
-	RequestAdd,
-	RequestCancel,
-	RequestApprove,
-	RequestDeny,
-	Remove,
-	Block,
-	Unblock
+	friend_request_add UMETA(DisplayName = "RequestAdd"),
+	friend_request_cancel UMETA(DisplayName = "RequestCancel"),
+	friend_request_approve UMETA(DisplayName = "RequestApprove"),
+	friend_request_deny UMETA(DisplayName = "RequestDeny"),
+	friend_remove UMETA(DisplayName = "Remove"),
+	block UMETA(DisplayName = "Block"),
+	unblock UMETA(DisplayName = "Unblock")
 };
 
 USTRUCT(BlueprintType)
@@ -186,7 +186,7 @@ struct FXsollaUserDetails
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	FString gender;
-	
+
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	TArray<FXsollaUserGroup> groups;
 
@@ -234,8 +234,11 @@ struct FXsollaFriendDetails
 
 	UPROPERTY(BlueprintReadWrite, Category = "Friend Details")
 	FXsollaUserDetails user;
-	
-	FXsollaFriendDetails() : updated(0) {}
+
+	FXsollaFriendDetails()
+		: updated(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -336,8 +339,11 @@ struct FXsollaPublicProfile
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
 	FString user_id;
-	
-	FXsollaPublicProfile() : is_me(false) {}
+
+	FXsollaPublicProfile()
+		: is_me(false)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -353,8 +359,10 @@ struct FXsollaUserSearchResult
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
 	TArray<FXsollaPublicProfile> users;
-	
+
 	FXsollaUserSearchResult()
 		: offset(0)
-		, total_count(0) {}
+		, total_count(0)
+	{
+	}
 };

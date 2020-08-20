@@ -49,6 +49,29 @@ const FString UXsollaLoginSubsystem::BlankRedirectEndpoint(TEXT("https://login.x
 const FString UXsollaLoginSubsystem::UserDetailsEndpoint(TEXT("https://login.xsolla.com/api/users/me"));
 const FString UXsollaLoginSubsystem::UsersEndpoint(TEXT("https://login.xsolla.com/api/users"));
 
+template <typename TEnum>
+static FString GetEnumValueAsString(const FString& EnumName, TEnum Value)
+{
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+	if (!enumPtr)
+	{
+		return FString("Invalid");
+	}
+	FString valueStr = enumPtr->GetNameByValue((int64)Value).ToString();
+	return valueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+}
+
+template <typename EnumType>
+static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
+{
+	UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+	if (!Enum)
+	{
+		return EnumType(0);
+	}
+	return (EnumType)Enum->FindEnumIndex(FName(*String));
+}
+
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -520,62 +543,9 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 
 void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder, const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	FString FriendType;
-	switch (Type)
-	{
-	case EXsollaFriendsType::Friends:
-		FriendType = TEXT("friends");
-		break;
-
-	case EXsollaFriendsType::FriendsRequested:
-		FriendType = TEXT("friend_requested");
-		break;
-
-	case EXsollaFriendsType::FriendsRequestedBy:
-		FriendType = TEXT("friend_requested_by");
-		break;
-
-	case EXsollaFriendsType::Blocked:
-		FriendType = TEXT("blocked");
-		break;
-
-	case EXsollaFriendsType::BlockedBy:
-		FriendType = TEXT("blocked_by");
-		break;
-
-	default:
-		unimplemented();
-	}
-
-	FString SortByCriteria;
-	switch (SortBy)
-	{
-	case EXsollaUsersSortCriteria::ByNickname:
-		SortByCriteria = TEXT("by_nickname");
-		break;
-
-	case EXsollaUsersSortCriteria::ByUpdate:
-		SortByCriteria = TEXT("by_updated");
-		break;
-
-	default:
-		unimplemented();
-	}
-
-	FString SortOrderCriteria;
-	switch (SortOrder)
-	{
-	case EXsollaUsersSortOrder::Ascending:
-		SortOrderCriteria = TEXT("asc");
-		break;
-
-	case EXsollaUsersSortOrder::Descending:
-		SortOrderCriteria = TEXT("desc");
-		break;
-
-	default:
-		unimplemented();
-	}
+	FString FriendType = GetEnumValueAsString("EXsollaFriendsType", Type);
+	FString SortByCriteria = GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
+	FString SortOrderCriteria = GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships?type=%s&sort_by=%s&sort_order=%s"),
@@ -593,43 +563,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-
-	FString FriendAction;
-	switch (Action)
-	{
-	case EXsollaFriendAction::RequestAdd:
-		FriendAction = TEXT("friend_request_add");
-		break;
-
-	case EXsollaFriendAction::RequestCancel:
-		FriendAction = TEXT("friend_request_cancel");
-		break;
-
-	case EXsollaFriendAction::RequestApprove:
-		FriendAction = TEXT("friend_request_approve");
-		break;
-
-	case EXsollaFriendAction::RequestDeny:
-		FriendAction = TEXT("friend_request_deny");
-		break;
-
-	case EXsollaFriendAction::Remove:
-		FriendAction = TEXT("friend_remove");
-		break;
-
-	case EXsollaFriendAction::Block:
-		FriendAction = TEXT("block");
-		break;
-
-	case EXsollaFriendAction::Unblock:
-		FriendAction = TEXT("unblock");
-		break;
-
-	default:
-		unimplemented();
-	}
-
-	RequestDataJson->SetStringField(TEXT("action"), FriendAction);
+	RequestDataJson->SetStringField(TEXT("action"), GetEnumValueAsString("EXsollaFriendAction", Action));
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1377,7 +1311,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 			FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
 			FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
 
-			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, Type);
+			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 
 			return;
 		}
