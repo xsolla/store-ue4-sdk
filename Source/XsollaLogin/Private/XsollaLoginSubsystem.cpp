@@ -558,7 +558,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnFriendStatusUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -572,7 +572,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships"), *UserDetailsEndpoint);
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1314,45 +1314,6 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 
 			return;
-		}
-		else
-		{
-			ErrorStr = FString::Printf(TEXT("Can't process response json"));
-		}
-	}
-	else
-	{
-		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
-	}
-
-	// No success before so call the error callback
-	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
-}
-
-void UXsollaLoginSubsystem::ModifyFriend_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnFriendStatusUpdate SuccessCallback, FOnAuthError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	FString ErrorStr;
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
-	if (FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		static const FString StatusIncomingFieldName = TEXT("status_incoming");
-		static const FString StatusOutgoingFieldName = TEXT("status_outgoing");
-		if (JsonObject->HasTypedField<EJson::String>(StatusIncomingFieldName) && JsonObject->HasTypedField<EJson::String>(StatusOutgoingFieldName))
-		{
-			FString StatusIncoming = JsonObject->GetStringField(StatusIncomingFieldName);
-			FString StatusOutgoing = JsonObject->GetStringField(StatusOutgoingFieldName);
-
-			SuccessCallback.ExecuteIfBound(StatusIncoming, StatusOutgoing);
 		}
 		else
 		{
