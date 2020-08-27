@@ -617,7 +617,7 @@ void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, cons
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/search/by_nickname?nickname=%s&limit=%d&offset=%d"),
 		*UsersEndpoint,
-		*Nickname,
+		*FGenericPlatformHttp::UrlEncode(Nickname),
 		Limit,
 		Offset);
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
