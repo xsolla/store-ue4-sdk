@@ -30,6 +30,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAccountLinkingHtmlReceived, const FString&, Content);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData, EXsollaFriendsType, type);
@@ -386,7 +387,6 @@ public:
 	/** Get User Profile
 	 * Gets specified user public profile information.
 	 *
-	 * @param AuthToken User authorization token.
 	 * @param Nickname User nickname used as search criteria.
 	 * @param SuccessCallback Callback function called after user search completed successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -395,6 +395,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void SearchUsersByNickname(const FString& AuthToken, const FString& Nickname, const FOnUserSearchUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 100);
+
+	/** Link Social Network To User's Account
+	 * Links the social network, which is used by the player for authentication, to the user account.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
+	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName, const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -433,6 +444,8 @@ protected:
 	
 	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserSearchUpdate SuccessCallback, FOnAuthError ErrorCallback);
+
+	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Process request for obtaining/refreshing token using OAuth 2.0 */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
@@ -512,6 +525,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetPendingSocialAuthenticationUrl() const;
 
+	/** Get cached HTML page for social account linking */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	FString GetSocialAccountLinkingHtml() const;
+
 	/** Get user attributes */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserAttributes();
@@ -538,6 +555,9 @@ protected:
 
 	/** Social authentication url to be opened in browser */
 	FString PendingSocialAuthenticationUrl;
+
+	/** Cached HTML page for social account linking */
+	FString SocialAccountLinkingHtml;
 
 	/** Cached list of user attributes */
 	TArray<FXsollaUserAttribute> UserAttributes;

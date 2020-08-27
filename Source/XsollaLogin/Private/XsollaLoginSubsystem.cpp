@@ -625,6 +625,18 @@ void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName, const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/me/social_providers/%s/login_redirect"),
+		*UsersEndpoint,
+		*ProviderName);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -1463,6 +1475,18 @@ void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpR
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
+void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	SocialAccountLinkingHtml = HttpResponse->GetContentAsString();
+
+	SuccessCallback.ExecuteIfBound(SocialAccountLinkingHtml);
+}
+
 void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
@@ -1851,6 +1875,11 @@ void UXsollaLoginSubsystem::SaveData()
 FString UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
 {
 	return PendingSocialAuthenticationUrl;
+}
+
+FString UXsollaLoginSubsystem::GetSocialAccountLinkingHtml() const
+{
+	return SocialAccountLinkingHtml;
 }
 
 TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserAttributes()
