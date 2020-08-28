@@ -36,6 +36,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData, EXsollaFriendsType, type);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkedSocialNetworksReceived, const TArray<FXsollaLinkedSocialNetworkData>&, LinkedNetworks);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -407,6 +408,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName, const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Link Social Network To User's Account
+	 * Links the social network, which is used by the player for authentication, to the user account.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
+	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 protected:
 	void RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void RegistrateUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -446,6 +458,7 @@ protected:
 	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserSearchUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
+	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnLinkedSocialNetworksReceived SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Process request for obtaining/refreshing token using OAuth 2.0 */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);

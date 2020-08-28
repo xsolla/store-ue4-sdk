@@ -637,6 +637,16 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/me/social_providers"), *UsersEndpoint);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -1485,6 +1495,26 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 	SocialAccountLinkingHtml = HttpResponse->GetContentAsString();
 
 	SuccessCallback.ExecuteIfBound(SocialAccountLinkingHtml);
+}
+
+void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnLinkedSocialNetworksReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	TArray<FXsollaLinkedSocialNetworkData> linkedSocialNetworks;
+	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &linkedSocialNetworks, 0, 0))
+	{
+		SuccessCallback.ExecuteIfBound(linkedSocialNetworks);
+		return;
+	}
+
+	// No success before so call the error callback
+	FString ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
 void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback)

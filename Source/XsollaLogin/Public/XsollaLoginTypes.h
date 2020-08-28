@@ -366,3 +366,24 @@ struct FXsollaUserSearchResult
 	{
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaLinkedSocialNetworkData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString full_name;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString nickname;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString picture;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString provider;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString social_id;
+};
