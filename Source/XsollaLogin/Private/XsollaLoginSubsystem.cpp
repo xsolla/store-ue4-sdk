@@ -587,7 +587,7 @@ void UXsollaLoginSubsystem::UpdateSocialAuthLinks(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const FString& Platform, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit, bool FromThisGame)
+void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const FString& Platform, const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit, bool FromThisGame)
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/social_friends?limit=%d&offset=%d&with_xl_uid=%s"),
@@ -637,7 +637,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/me/social_providers"), *UsersEndpoint);
@@ -1372,7 +1372,7 @@ void UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr 
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1393,7 +1393,7 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 		{
 			SocialFriendsData = receivedUserSocialFriendsData;
 
-			SuccessCallback.ExecuteIfBound();
+			SuccessCallback.ExecuteIfBound(SocialFriendsData);
 
 			return;
 		}
@@ -1497,7 +1497,7 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 	SuccessCallback.ExecuteIfBound(SocialAccountLinkingHtml);
 }
 
-void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnLinkedSocialNetworksReceived SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1505,10 +1505,11 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	TArray<FXsollaLinkedSocialNetworkData> linkedSocialNetworks;
-	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &linkedSocialNetworks, 0, 0))
+	TArray<FXsollaLinkedSocialNetworkData> socialNetworks;
+	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &socialNetworks, 0, 0))
 	{
-		SuccessCallback.ExecuteIfBound(linkedSocialNetworks);
+		LinkedSocialNetworks = socialNetworks;
+		SuccessCallback.ExecuteIfBound();
 		return;
 	}
 
@@ -1922,19 +1923,24 @@ TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
 	return UserReadOnlyAttributes;
 }
 
-FXsollaUserDetails UXsollaLoginSubsystem::GetUserDetails()
+FXsollaUserDetails UXsollaLoginSubsystem::GetUserDetails() const
 {
 	return UserDetails;
 }
 
-TArray<FXsollaSocialAuthLink> UXsollaLoginSubsystem::GetSocialAuthLinks()
+TArray<FXsollaSocialAuthLink> UXsollaLoginSubsystem::GetSocialAuthLinks() const
 {
 	return SocialAuthLinks;
 }
 
-FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends()
+FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends() const
 {
 	return SocialFriendsData;
+}
+
+TArray<FXsollaLinkedSocialNetworkData> UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
+{
+	return LinkedSocialNetworks;
 }
 
 #undef LOCTEXT_NAMESPACE

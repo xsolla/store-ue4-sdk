@@ -34,9 +34,9 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAccountLinkingHtmlReceived, const FSt
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCodeReceived, const FString&, Code);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnUserFriendsUpdate, const FXsollaFriendsData&, FriendsData, EXsollaFriendsType, type);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSocialFriendsUpdate, const FXsollaSocialFriendsData&, SocialFriendsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkedSocialNetworksReceived, const TArray<FXsollaLinkedSocialNetworkData>&, LinkedNetworks);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -364,7 +364,7 @@ public:
 	 * Updates locally cached user friends data froma a social provider.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Platform Name of social provider.
+	 * @param Platform Name of social provider. If empty friends from all available social providers will be fetched.
 	 * @param SuccessCallback Callback function called after successful user friends data from social provider local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Offset Number of elements from which list is generated.
@@ -372,7 +372,7 @@ public:
 	 * @param FromThisGame Flag indicating whether social friends are from this game.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSocialFriends(const FString& AuthToken, const FString& Platform, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 500, bool FromThisGame = false);
+	void UpdateSocialFriends(const FString& AuthToken, const FString& Platform, const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 500, bool FromThisGame = false);
 	
 	/** Get User Profile
 	 * Gets specified user public profile information.
@@ -417,7 +417,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void RegistrateUserJWT(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -452,13 +452,13 @@ protected:
 	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	
 	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	
 	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnUserSearchUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnLinkedSocialNetworksReceived SuccessCallback, FOnAuthError ErrorCallback);
+	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Process request for obtaining/refreshing token using OAuth 2.0 */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
@@ -552,15 +552,19 @@ public:
 
 	/** Get user details */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FXsollaUserDetails GetUserDetails();
+	FXsollaUserDetails GetUserDetails() const;
 
 	/** Get user friends */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaSocialAuthLink> GetSocialAuthLinks();
+	TArray<FXsollaSocialAuthLink> GetSocialAuthLinks() const;
 
-	/** Get user social friends */
+	/** Get user friends from social networks. Returns list of users obtained during last UpdateSocialFriends method call */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FXsollaSocialFriendsData GetSocialFriends();
+	FXsollaSocialFriendsData GetSocialFriends() const;
+
+	/** Get linked social networks */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	TArray<FXsollaLinkedSocialNetworkData> GetLinkedSocialNetworks() const;
 
 protected:
 	/** Keeps state of user login */
@@ -584,8 +588,11 @@ protected:
 	/** Cached social auth links */
 	TArray<FXsollaSocialAuthLink> SocialAuthLinks;
 	
-	/** Cached user social  friends */
+	/** Cached list of user's social network friends that was obtained during last UpdateSocialFriends method call */
 	FXsollaSocialFriendsData SocialFriendsData;
+
+	/** Cached list of linked social networks */
+	TArray<FXsollaLinkedSocialNetworkData> LinkedSocialNetworks;
 
 protected:
 	static const FString RegistrationEndpoint;
