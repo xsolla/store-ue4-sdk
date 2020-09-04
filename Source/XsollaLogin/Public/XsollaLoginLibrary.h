@@ -9,6 +9,7 @@
 
 class UXsollaLoginSubsystem;
 class UXsollaLoginSettings;
+class UTexture2D;
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginLibrary : public UBlueprintFunctionLibrary
@@ -35,4 +36,8 @@ public:
 	/** Oepn specified URL in platfrom browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static void LaunchPlatfromBrowser(const FString& URL);
+
+	/** Convert 2D texture to Base64 encoded string */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
+	static FString ConvertTextureToString(UTexture2D* Texture);
 };
