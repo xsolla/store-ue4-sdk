@@ -395,8 +395,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Get User Profile
-	 * Gets specified user public profile information.
+	/** Search Users By Nickname
+	 * Search for users with specified nickname.
 	 *
 	 * @param Nickname User nickname used as search criteria.
 	 * @param SuccessCallback Callback function called after user search completed successfully.
@@ -420,12 +420,11 @@ public:
 	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Link Social Network To User's Account
-	 * Links the social network, which is used by the player for authentication, to the user account.
+	/** Update Linked Social Networks
+	 * Update list of linked social networks cached locally.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
-	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
+	 * @param SuccessCallback Callback function called after list of linked social networks successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
