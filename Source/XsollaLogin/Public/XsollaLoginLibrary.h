@@ -37,7 +37,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static void LaunchPlatfromBrowser(const FString& URL);
 
-	/** Convert 2D texture to Base64 encoded string */
+	/** Convert 2D texture to its PNG-encoded byte representation */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
-	static FString ConvertTextureToString(UTexture2D* Texture);
+	static TArray<uint8> ConvertTextureToByteArray(UTexture2D* Texture);
 };

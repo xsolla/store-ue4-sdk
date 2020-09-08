@@ -7,13 +7,13 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Texture2D.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
 #include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
 #include "OnlineSubsystem.h"
-#include "IImageWrapperModule.h"
-#include "IImageWrapper.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -52,23 +52,23 @@ void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-FString UXsollaLoginLibrary::ConvertTextureToString(UTexture2D* Texture)
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
 {
-	int w = Texture->GetSizeX();
-	int h = Texture->GetSizeY();
+	int Width = Texture->GetSizeX();
+	int Height = Texture->GetSizeY();
 
 	bool isBGRA = Texture->PlatformData->PixelFormat == PF_B8G8R8A8;
 
 	const FColor* FormatedImageData = reinterpret_cast<const FColor*>(Texture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY));
 
 	TArray<FColor> colorArray;
-	colorArray.SetNumZeroed(w * h);
+	colorArray.SetNumZeroed(Width * Height);
 
-	for (int32 X = 0; X < w; X++)
+	for (int32 X = 0; X < Width; X++)
 	{
-		for (int32 Y = 0; Y < h; Y++)
+		for (int32 Y = 0; Y < Height; Y++)
 		{
-			colorArray[Y * w + X] = FormatedImageData[Y * w + X];
+			colorArray[Y * Width + X] = FormatedImageData[Y * Width + X];
 		}
 	}
 
@@ -82,17 +82,12 @@ FString UXsollaLoginLibrary::ConvertTextureToString(UTexture2D* Texture)
 	const size_t BitsPerPixel = (sizeof(FColor) / 4) * 8;
 	const ERGBFormat SourceChannelLayout = isBGRA ? ERGBFormat::BGRA : ERGBFormat::RGBA;
 
-	ImageWriter->SetRaw((void*)&colorArray[0], sizeof(FColor) * w * h, w, h, SourceChannelLayout, BitsPerPixel);
+	ImageWriter->SetRaw((void*)&colorArray[0], sizeof(FColor) * Width * Height, Width, Height, SourceChannelLayout, BitsPerPixel);
 
 	const TArray64<uint8>& CompressedData = ImageWriter->GetCompressed((int32)LocalCompressionQuality);
 
-	TArray<uint8> data;
-	for (int i = 0; i < CompressedData.Num(); ++i)
-	{
-		data.Add(CompressedData[i]);
-	}
+	TArray<uint8> TextureData;
+	TextureData.Append(CompressedData);
 
-	FString encodedImageData = FBase64::Encode(data);
-
-	return FString::Printf(TEXT("%s"), *encodedImageData);
+	return TextureData;
 }

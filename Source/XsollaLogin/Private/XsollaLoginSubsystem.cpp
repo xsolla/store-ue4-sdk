@@ -1,4 +1,4 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
+﻿// Copyright 2019 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSubsystem.h"
@@ -520,20 +520,31 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, const FString& Picture,
+void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("picture"), Picture);
+	// Prepare picture upload request content
+	FString Boundary = TEXT("---------------------------" + FString::FromInt(FDateTime::Now().GetTicks()));
+	FString BeginBoundry = TEXT("\r\n--" + Boundary + "\r\n");
+	FString EndBoundary = TEXT("\r\n--" + Boundary + "--\r\n");
 
-	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	FString PictureHeader = TEXT("Content-Disposition: form-data;");
+	PictureHeader.Append(TEXT("name=\"picture\";"));
+	PictureHeader.Append(TEXT("filename=\"avatar.png\""));
+	PictureHeader.Append(TEXT("\r\nContent-Type: \r\n\r\n"));
+
+	TArray<uint8> UploadContent;
+	UploadContent.Append((uint8*)TCHAR_TO_ANSI(*BeginBoundry), BeginBoundry.Len());
+	UploadContent.Append((uint8*)TCHAR_TO_ANSI(*PictureHeader), PictureHeader.Len());
+	UploadContent.Append(UXsollaLoginLibrary::ConvertTextureToByteArray(Picture));
+	UploadContent.Append((uint8*)TCHAR_TO_ANSI(*EndBoundary), EndBoundary.Len());
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/picture"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, AuthToken);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("multipart/form-data; boundary =" + Boundary));
+	HttpRequest->SetContent(UploadContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }

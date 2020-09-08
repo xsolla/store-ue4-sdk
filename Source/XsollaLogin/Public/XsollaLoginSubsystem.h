@@ -315,12 +315,12 @@ public:
 	 * Modifies user profile picture.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Picture New string-encoded profile picture.
+	 * @param Picture New user profile picture.
 	 * @param SuccessCallback Callback function called after user profile picture modified successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserProfilePicture(const FString& AuthToken, const FString& Picture, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Profile Picture
 	 * Removes user profile picture.
