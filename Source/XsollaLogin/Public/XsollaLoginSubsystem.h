@@ -479,6 +479,8 @@ protected:
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,

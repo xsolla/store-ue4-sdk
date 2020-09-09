@@ -554,7 +554,7 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/picture"), *UserDetailsEndpoint);
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::DELETE, TEXT(""), AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1352,6 +1352,19 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 
 	// No success before so call the error callback
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	UserDetails.picture = TEXT("");
+
+	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
