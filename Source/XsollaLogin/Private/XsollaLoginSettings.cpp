@@ -15,4 +15,5 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	DemoProjectID = TEXT("44056");
 	DemoLoginID = TEXT("e6dfaac6-78a8-11e9-9244-42010aa80004");
 	EncryptCachedCredentials = false;
+	RequestNickname = false;
 }

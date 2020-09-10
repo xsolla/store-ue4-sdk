@@ -1925,7 +1925,7 @@ FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FSt
 	FString ParameterValue;
 	if (!PayloadJsonObject->TryGetStringField(Parameter, ParameterValue))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find parameter %s in token payload"), *VA_FUNC_LINE, *Parameter);
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Can't find parameter %s in token payload"), *VA_FUNC_LINE, *Parameter);
 		return FString();
 	}
 
