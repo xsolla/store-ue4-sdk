@@ -650,7 +650,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/me/social_providers/%s/login_redirect"),
+	const FString Url = FString::Printf(TEXT("%s/me/social_providers/%s/login_url"),
 		*UsersEndpoint,
 		*ProviderName);
 
@@ -1555,9 +1555,35 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 		return;
 	}
 
-	SocialAccountLinkingHtml = HttpResponse->GetContentAsString();
+	FString ResponseStr = HttpResponse->GetContentAsString();
 
-	SuccessCallback.ExecuteIfBound(SocialAccountLinkingHtml);
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString SocialUrlFieldName = TEXT("url");
+		if (JsonObject->HasTypedField<EJson::String>(SocialUrlFieldName))
+		{
+			FString SocialnUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
+			SuccessCallback.ExecuteIfBound(SocialnUrl);
+			return;
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *SocialUrlFieldName);
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
 void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
