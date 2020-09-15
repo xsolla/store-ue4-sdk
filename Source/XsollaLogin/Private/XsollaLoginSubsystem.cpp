@@ -1321,8 +1321,9 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 		return;
 	}
 
-	auto content = HttpRequest->GetContent();
-	FString ContentStr = BytesToString(content.GetData(), content.Num());
+	const TArray<uint8> Content = HttpRequest->GetContent();
+	FUTF8ToTCHAR Converter((ANSICHAR*)Content.GetData(), Content.Num());
+	FString ContentStr = FString(Converter.Length(), Converter.Get());
 
 	FString ErrorStr;
 
@@ -1330,7 +1331,7 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ContentStr);
 	if (FJsonSerializer::Deserialize(Reader, JsonObject))
 	{
-		static const FString PhoneFieldName = TEXT("phone");
+		static const FString PhoneFieldName = TEXT("phone_number");
 		if (JsonObject->HasTypedField<EJson::String>(PhoneFieldName))
 		{
 			UserDetails.phone = JsonObject->GetStringField(PhoneFieldName);
