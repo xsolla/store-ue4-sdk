@@ -1,13 +1,11 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
 #include "Brushes/SlateDynamicImageBrush.h"
 #include "CoreMinimal.h"
 #include "Http.h"
-
-#include "XsollaStoreImageLoader.generated.h"
+#include "XsollaUtilsImageLoader.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImageLoaded, FSlateBrush, ImageBrush, FString, ImageURL);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnImageLoadFailed, FString, ImageURL);
@@ -17,13 +15,13 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnRequestCompleted, bool);
  * Async image loading from web. Should be used for DEMO PUPPOSES ONLY.
  */
 UCLASS()
-class XSOLLASTORE_API UXsollaStoreImageLoader : public UObject
+class XSOLLAUTILS_API UXsollaUtilsImageLoader : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
 public:
 	/** */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
 protected:

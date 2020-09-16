@@ -1,10 +1,8 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
 
-#include "XsollaStoreImageLoader.h"
+#include "XsollaUtilsImageLoader.h"
 
-#include "XsollaStoreDefines.h"
-
+#include "XsollaUtilsDefines.h"
 #include "Framework/Application/SlateApplication.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
@@ -13,19 +11,19 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
-UXsollaStoreImageLoader::UXsollaStoreImageLoader(const FObjectInitializer& ObjectInitializer)
+UXsollaUtilsImageLoader::UXsollaUtilsImageLoader(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 }
 
-void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
+void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
-	UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
+	UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
 
 	const FString ResourceId = GetCacheName(URL).ToString();
 	if (ImageBrushes.Contains(ResourceId))
 	{
-		UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
+		UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
 		SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
 	}
 	else
@@ -35,12 +33,12 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 			PendingRequests[ResourceId].AddLambda([=](bool IsCompleted) {
 				if (IsCompleted)
 				{
-					UE_LOG(LogXsollaStore, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
+					UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
 					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
 				}
 				else
 				{
-					UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to get image"), *VA_FUNC_LINE);
+					UE_LOG(LogXsollaUtils, Error, TEXT("%s: Failed to get image"), *VA_FUNC_LINE);
 					ErrorCallback.ExecuteIfBound(URL);
 				}
 			});
@@ -52,7 +50,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 
 			TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
+			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 			HttpRequest->SetURL(URL);
 			HttpRequest->SetVerb(TEXT("GET"));
 
@@ -61,7 +59,7 @@ void UXsollaStoreImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	}
 }
 
-void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
+void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
 {
 	const FName ResourceName = GetCacheName(HttpRequest->GetURL());
 
@@ -75,7 +73,7 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 
 		if (!ImageWrapper.IsValid())
 		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid image wrapper"), *VA_FUNC_LINE);
+			UE_LOG(LogXsollaUtils, Error, TEXT("%s: Invalid image wrapper"), *VA_FUNC_LINE);
 		}
 		else if (ImageWrapper->SetCompressed(ImageData.GetData(), ImageData.Num()))
 		{
@@ -98,22 +96,22 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 				}
 				else
 				{
-					UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't generate resource"), *VA_FUNC_LINE);
+					UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't generate resource"), *VA_FUNC_LINE);
 				}
 			}
 			else
 			{
-				UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't get raw data"), *VA_FUNC_LINE);
+				UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't get raw data"), *VA_FUNC_LINE);
 			}
 		}
 		else
 		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't load compressed data"), *VA_FUNC_LINE);
+			UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't load compressed data"), *VA_FUNC_LINE);
 		}
 	}
 	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to download image"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Failed to download image"), *VA_FUNC_LINE);
 	}
 
 	ErrorCallback.ExecuteIfBound(HttpRequest->GetURL());
@@ -125,9 +123,9 @@ void UXsollaStoreImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 	}
 }
 
-FName UXsollaStoreImageLoader::GetCacheName(const FString& URL) const
+FName UXsollaUtilsImageLoader::GetCacheName(const FString& URL) const
 {
-	return FName(*FString::Printf(TEXT("XsollaStoreImage_%s"), *FMD5::HashAnsiString(*URL)));
+	return FName(*FString::Printf(TEXT("XsollaUtilsImage_%s"), *FMD5::HashAnsiString(*URL)));
 }
 
 #undef LOCTEXT_NAMESPACE
