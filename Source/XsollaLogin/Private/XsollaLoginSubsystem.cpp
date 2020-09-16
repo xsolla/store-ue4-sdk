@@ -452,16 +452,12 @@ void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FS
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	if (!Birthday.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("birthday"), Birthday);
-	if (!FirstName.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("first_name"), FirstName);
-	if (!LastName.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("last_name"), LastName);
-	if (!Gender.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("gender"), Gender);
-	if (!Nickname.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("nickname"), Nickname);
+
+	RequestDataJson->SetStringField(TEXT("birthday"), Birthday);
+	RequestDataJson->SetStringField(TEXT("first_name"), FirstName);
+	RequestDataJson->SetStringField(TEXT("last_name"), LastName);
+	RequestDataJson->SetStringField(TEXT("gender"), Gender);
+	RequestDataJson->SetStringField(TEXT("nickname"), Nickname);
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
