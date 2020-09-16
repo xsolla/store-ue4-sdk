@@ -258,10 +258,10 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Birthday User  birth date in format (YYYY-MM-DD). Can be changed only once.
-	 * @param FirstName User first name.
-	 * @param LastName User last name.
+	 * @param FirstName User first name. Pass empty string to remove current first name.
+	 * @param LastName User last name. Pass empty string to remove current last name.
 	 * @param Gender User gender (f - for female, m - for male).
-	 * @param Nickname User nickname.
+	 * @param Nickname User nickname. Pass empty string to remove current nickname.
 	 * @param SuccessCallback Callback function called after successful user details modification.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */

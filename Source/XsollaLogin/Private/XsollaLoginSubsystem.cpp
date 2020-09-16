@@ -453,10 +453,13 @@ void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FS
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 
-	RequestDataJson->SetStringField(TEXT("birthday"), Birthday);
+	if (!Birthday.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("birthday"), Birthday);
+	if (!Gender.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("gender"), Gender);
+
 	RequestDataJson->SetStringField(TEXT("first_name"), FirstName);
 	RequestDataJson->SetStringField(TEXT("last_name"), LastName);
-	RequestDataJson->SetStringField(TEXT("gender"), Gender);
 	RequestDataJson->SetStringField(TEXT("nickname"), Nickname);
 
 	FString PostContent;
