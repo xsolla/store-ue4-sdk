@@ -649,9 +649,11 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/me/social_providers/%s/login_url"),
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/me/social_providers/%s/login_url?login_url=%s"),
 		*UsersEndpoint,
-		*ProviderName);
+		*ProviderName,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete, SuccessCallback, ErrorCallback);
