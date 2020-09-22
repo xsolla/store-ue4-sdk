@@ -33,7 +33,7 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Common/Misc/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Common/Browser/W_StoreBrowser.W_StoreBrowser_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 
 	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68

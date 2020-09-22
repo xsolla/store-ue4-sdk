@@ -13,3 +13,8 @@ UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
 {
 	return FXsollaUtilsModule::Get().GetImageLoader();
 }
+
+FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
+{
+	return FDateTime::FromUnixTimestamp(Time);
+}

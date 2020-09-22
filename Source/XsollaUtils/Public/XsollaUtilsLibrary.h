@@ -17,4 +17,8 @@ public:
 	/** Direct access to image loader object */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static UXsollaUtilsImageLoader* GetImageLoader();
+
+	/** Make FDateTime structure based on a given timestamp */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
+    static FDateTime MakeDateTimeFromTimestamp(int64 Time);
 };

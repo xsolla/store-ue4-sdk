@@ -25,8 +25,4 @@ public:
 	/** Returns true if cart A is equal to cart B (A == B) */
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (StoreCart)", CompactNodeTitle = "===", ScriptMethod = "Equals", ScriptOperator = "==", Keywords = "== equal"), Category = "Xsolla|Store|Cart")
 	static bool Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B);
-
-	/** Make FDateTime structure based on a given timestamp */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
-	static FDateTime MakeDateTimeFromTimestamp(int64 time);
 };

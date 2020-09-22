@@ -4,7 +4,7 @@
 #pragma once
 
 #include "XsollaStoreDefines.h"
-
+#include "XsollaUtilsDataModel.h"
 #include "XsollaStoreDataModel.generated.h"
 
 UENUM(BlueprintType)
@@ -108,46 +108,6 @@ public:
 		: is_default(false)
 		, amount(0)
 		, amount_without_discount(0){};
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreGroup
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	int32 id;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString external_id;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString name;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString description;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString image_url;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	int32 level;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	int32 order;
-
-	// https://github.com/xsolla/store-ue4-sdk/issues/103
-	//UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	//TArray<int32> children;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item Group")
-	FString parent_external_id;
-
-public:
-	FStoreGroup()
-		: id(-1)
-		, level(0)
-		, order(1){};
 };
 
 USTRUCT(BlueprintType)

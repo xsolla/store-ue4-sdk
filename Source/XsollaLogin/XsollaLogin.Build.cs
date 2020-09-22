@@ -18,7 +18,8 @@ public class XsollaLogin : ModuleRules
                 "JsonUtilities",
                 "UMG",
                 "OnlineSubsystem",
-                "XsollaWebBrowser"
+                "XsollaWebBrowser",
+                "XsollaUtils"
             }
             );
 
