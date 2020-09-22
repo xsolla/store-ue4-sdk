@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.5.1] - 2020-08-24
+
+### Added
+- The support for OAuth 2.0 authorization.
+- The ability to get read-only attributes on the client side.
+- A new setting for encrypting the local cache with user data using the Xsolla Save Encryption Key.
+- The ability to invalidate JWT.
+
+
+## [0.5.0] - 2020-07-28
+
+### Changed
+- Demo maps UI.
+- Removed deprecated PayStation module.
+
+
+## [0.4.17] - 2020-07-08
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.4.16] - 2020-06-18
 
 ### Added
