@@ -30,7 +30,7 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Common/Misc/currency-format.currency-format'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Store/Misc/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
