@@ -1,3 +1,5 @@
+:: This script required that you already has XsollaLogin project in the directory nearest current Project
+
 :: Need add target/source parameters for usability
 SET target=..\..\..\..\..\..\XsollaLogin
 SET source=..\..\..\..\..
@@ -8,7 +10,6 @@ xcopy %source%\*.uproject %target% /Y
 
 :: Make full copy of useful for Plugin directories/files for Plugin
 for %%a in ("Source" "Content" "Config" "Documentation" "Extras" "Resources") do (xcopy /I /S /Y "%source%\Plugins\store-ue4-sdk\%%~a" "%target%\Plugins\login-ue4-sdk\%%~a")
-xcopy "%source%\Plugins\store-ue4-sdk\*.uplugin" "%target%\Plugins\login-ue4-sdk\" /Y
 
 :: Remove Store directories/files"
 rmdir "%target%\Plugins\login-ue4-sdk\Content\Store" /S /Q
