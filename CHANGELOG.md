@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2] - 2020-09-23
+
+### Added
+- User account functionality.
+- Friends system functionality.
+- The ability to consume virtual currency when purchasing a virtual item or according to in-game logic.
+
+
 ## [0.5.1] - 2020-08-24
 
 ### Added
