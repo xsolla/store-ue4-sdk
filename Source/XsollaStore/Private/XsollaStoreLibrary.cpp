@@ -21,8 +21,3 @@ bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FS
 {
 	return A == B;
 }
-
-FDateTime UXsollaStoreLibrary::MakeDateTimeFromTimestamp(int64 time)
-{
-	return FDateTime::FromUnixTimestamp(time);
-}

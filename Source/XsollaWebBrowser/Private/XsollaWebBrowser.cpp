@@ -27,6 +27,22 @@ void UXsollaWebBrowser::LoadURL(FString NewURL)
 	}
 }
 
+void UXsollaWebBrowser::LoadHtml(FString Contents, FString DummyURL)
+{
+	if (WebBrowserWidget.IsValid())
+	{
+		return WebBrowserWidget->LoadString(Contents, DummyURL);
+	}
+}
+
+void UXsollaWebBrowser::ExecuteJavascript(FString ScriptText)
+{
+	if (WebBrowserWidget.IsValid())
+	{
+		return WebBrowserWidget->ExecuteJavascript(ScriptText);
+	}
+}
+
 FString UXsollaWebBrowser::GetUrl() const
 {
 	if (WebBrowserWidget.IsValid())

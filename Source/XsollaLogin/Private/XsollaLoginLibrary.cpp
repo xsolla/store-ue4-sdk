@@ -6,7 +6,11 @@
 #include "XsollaLogin.h"
 
 #include "Engine/Engine.h"
+#include "Engine/Texture2D.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
+#include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
 #include "OnlineSubsystem.h"
@@ -46,4 +50,44 @@ FString UXsollaLoginLibrary::GetSessionTicket()
 void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 {
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+}
+
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
+{
+	int Width = Texture->GetSizeX();
+	int Height = Texture->GetSizeY();
+
+	bool isBGRA = Texture->PlatformData->PixelFormat == PF_B8G8R8A8;
+
+	const FColor* FormatedImageData = reinterpret_cast<const FColor*>(Texture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY));
+
+	TArray<FColor> colorArray;
+	colorArray.SetNumZeroed(Width * Height);
+
+	for (int32 X = 0; X < Width; X++)
+	{
+		for (int32 Y = 0; Y < Height; Y++)
+		{
+			colorArray[Y * Width + X] = FormatedImageData[Y * Width + X];
+		}
+	}
+
+	Texture->PlatformData->Mips[0].BulkData.Unlock();
+
+	EImageCompressionQuality LocalCompressionQuality = EImageCompressionQuality::Uncompressed;
+
+	IImageWrapperModule* ImageWrapperModule = FModuleManager::LoadModulePtr<IImageWrapperModule>(FName("ImageWrapper"));
+	TSharedPtr<IImageWrapper> ImageWriter = ImageWrapperModule->CreateImageWrapper(EImageFormat::PNG);
+
+	const size_t BitsPerPixel = (sizeof(FColor) / 4) * 8;
+	const ERGBFormat SourceChannelLayout = isBGRA ? ERGBFormat::BGRA : ERGBFormat::RGBA;
+
+	ImageWriter->SetRaw((void*)&colorArray[0], sizeof(FColor) * Width * Height, Width, Height, SourceChannelLayout, BitsPerPixel);
+
+	const TArray64<uint8>& CompressedData = ImageWriter->GetCompressed((int32)LocalCompressionQuality);
+
+	TArray<uint8> TextureData;
+	TextureData.Append(CompressedData);
+
+	return TextureData;
 }

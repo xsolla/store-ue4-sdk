@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 4,
-	"VersionName": "0.5.0",
+	"Version": 5,
+	"VersionName": "0.5.1",
 	"EngineVersion": "4.25.0",
 	"FriendlyName": "Xsolla SDK",
 	"Description": "Xsolla SDK for Unreal Engine 4",
@@ -43,6 +43,19 @@
 		},
 		{
 			"Name": "XsollaStore",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		},
+		{
+			"Name": "XsollaUtils",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [

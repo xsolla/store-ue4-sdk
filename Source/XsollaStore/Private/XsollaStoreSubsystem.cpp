@@ -7,7 +7,6 @@
 #include "XsollaStoreCurrencyFormat.h"
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
-#include "XsollaStoreImageLoader.h"
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
@@ -31,10 +30,10 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Data/currency-format.currency-format'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(TEXT("DataTable'/Xsolla/Common/Misc/currency-format.currency-format'"));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Browser/W_StoreBrowser.W_StoreBrowser_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 
 	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68
@@ -63,12 +62,6 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	ProjectID = InProjectId;
 
 	LoadData();
-
-	// Check image loader is exsits, because initialization can be called multiple times
-	if (!ImageLoader)
-	{
-		ImageLoader = NewObject<UXsollaStoreImageLoader>();
-	}
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -1445,16 +1438,6 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 UDataTable* UXsollaStoreSubsystem::GetCurrencyLibrary() const
 {
 	return CurrencyLibrary;
-}
-
-UXsollaStoreImageLoader* UXsollaStoreSubsystem::GetImageLoader() const
-{
-	return ImageLoader;
-}
-
-void UXsollaStoreSubsystem::LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
-{
-	GetImageLoader()->LoadImage(URL, SuccessCallback, ErrorCallback);
 }
 
 FString UXsollaStoreSubsystem::FormatPrice(float Amount, const FString& Currency) const
