@@ -68,13 +68,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
-	/**
-	 * JWT signed by a secret key is generated for each successfully authenticated user.
-	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
-	 * Check 'Extras/TokenVerificator' folder for an example of the verification server app.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
-	FString JWTValidationURL;
+	/** If enabled, Login SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Invalidate Existing Sessions", Category = "Xsolla Login Settings")
+	bool InvalidateExistingSessions;
+
+	/** If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use OAuth2", Category = "Xsolla Login Settings")
+	bool UseOAuth2;
+
+	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseOAuth2"))
+	FString ClientID;
 
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
@@ -97,8 +101,17 @@ public:
 	EXsollaTargetPlatform Platform;
 
 	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings",
+		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla"))
 	FString PlatformAccountID;
+
+	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	bool EncryptCachedCredentials;
+
+	/** AES-256 encryption key used for cached credentials encryption */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "EncryptCachedCredentials"))
+	FString XsollaSaveEncryptionKey;
 
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
@@ -107,4 +120,8 @@ public:
 	/** Demo Login ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoLoginID;
+
+	/** Request user nickname after successful authorization in case one is missing */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
+	bool RequestNickname;
 };

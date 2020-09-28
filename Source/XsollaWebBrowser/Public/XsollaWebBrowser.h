@@ -25,12 +25,35 @@ public:
 	void LoadURL(FString NewURL);
 
 	/**
+	 * Load the specified HTML page content
+	 *
+	 * @param Contents HTMPL page content
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void LoadHtml(FString Contents, FString DummyURL);
+
+	/**
+	 * Executes a JavaScript string in the context of the web page
+	 *
+	 * @param ScriptText JavaScript string to execute
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void ExecuteJavascript(FString ScriptText);
+
+	/**
 	 * Gets the currently loaded URL.
 	 *
 	 * @return The URL, or empty string if no document is loaded.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	FString GetUrl() const;
+
+	/**
+	 * Clear browser cache (cookies etc.)
+	 *
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void ClearCache() const;
 
 	/** Called when the Url changes. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")

@@ -5,7 +5,6 @@
 
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
-#include "XsollaStoreImageLoader.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
@@ -24,7 +23,6 @@ enum class EXsollaRequestVerb : uint8
 	DELETE
 };
 
-class UXsollaStoreImageLoader;
 class UDataTable;
 class FJsonObject;
 
@@ -418,26 +416,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Xsolla|Currency")
 	UDataTable* CurrencyLibrary;
 
-public:
-	UXsollaStoreImageLoader* GetImageLoader() const;
-
 private:
-	UPROPERTY()
-	UXsollaStoreImageLoader* ImageLoader;
 
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 
 public:
-	/** Async load image from the web
-	 *
-	 * @param URL Address of image to be downloaded.
-	 * @param SuccessCallback Callback function called after the successful image download.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LoadImageFromWeb(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
-
 	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
 	FString FormatPrice(float Amount, const FString& Currency = TEXT("USD")) const;

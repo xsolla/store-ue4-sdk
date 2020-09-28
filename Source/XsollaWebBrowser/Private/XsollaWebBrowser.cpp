@@ -4,6 +4,9 @@
 #include "XsollaWebBrowser.h"
 
 #include "Async/TaskGraphInterfaces.h"
+#include "WebBrowserModule.h"
+#include "IWebBrowserSingleton.h"
+#include "IWebBrowserCookieManager.h"
 #include "SWebBrowser.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -24,6 +27,22 @@ void UXsollaWebBrowser::LoadURL(FString NewURL)
 	}
 }
 
+void UXsollaWebBrowser::LoadHtml(FString Contents, FString DummyURL)
+{
+	if (WebBrowserWidget.IsValid())
+	{
+		return WebBrowserWidget->LoadString(Contents, DummyURL);
+	}
+}
+
+void UXsollaWebBrowser::ExecuteJavascript(FString ScriptText)
+{
+	if (WebBrowserWidget.IsValid())
+	{
+		return WebBrowserWidget->ExecuteJavascript(ScriptText);
+	}
+}
+
 FString UXsollaWebBrowser::GetUrl() const
 {
 	if (WebBrowserWidget.IsValid())
@@ -32,6 +51,19 @@ FString UXsollaWebBrowser::GetUrl() const
 	}
 
 	return FString();
+}
+
+void UXsollaWebBrowser::ClearCache() const
+{
+	IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
+	if (WebBrowserSingleton)
+	{
+		TSharedPtr<IWebBrowserCookieManager> CookieManager = WebBrowserSingleton->GetCookieManager();
+		if (CookieManager.IsValid())
+		{
+			CookieManager->DeleteCookies();
+		}
+	}
 }
 
 void UXsollaWebBrowser::ReleaseSlateResources(bool bReleaseChildren)
