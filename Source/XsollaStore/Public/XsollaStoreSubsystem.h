@@ -35,6 +35,8 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnCheckOrder, int32, OrderId, EXsollaOrderSt
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurrencyPackage&, CurrencyPackage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FStoreCouponRewardData, RewardsData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, const TArray<FStoreRedeemedCouponItem>&, RewardItems);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -281,6 +283,31 @@ public:
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Get Coupon Rewards
+	 * Gets coupons rewards by its code. Can be used to allow users to choose one of many items as a bonus.
+	 * The usual case is choosing a DRM if the coupon contains a game as a bonus.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
+	 * @param SuccessCallback Callback function called after receiving coupon rewards successfully.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
+		const FOnCouponRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Redeem Coupon
+	 * Redeems a coupon code. The user gets a bonus after a coupon is redeemed.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
+	 * @param SuccessCallback Callback function called after successful coupon redeem.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
+		const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -323,6 +350,11 @@ protected:
 
 	void BuyItemWithVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback);
+
+	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -454,7 +486,6 @@ protected:
 	UDataTable* CurrencyLibrary;
 
 private:
-
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 

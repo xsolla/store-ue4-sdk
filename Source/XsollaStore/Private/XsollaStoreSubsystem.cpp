@@ -380,7 +380,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 
 		// Check for user browser widget override
 		auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass)
-			? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
+									  ? Settings->OverrideBrowserWidgetClass
+									  : DefaultBrowserWidgetClass;
 
 		PengindPaystationUrl = PaystationUrl;
 		auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
@@ -673,6 +674,33 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
+	const FOnCouponRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/coupon/code/%s/rewards"),
+		*ProjectID,
+		*CouponCode);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::RedeemCoupon(const FString& AuthToken, const FString& CouponCode, const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/coupon/code/%s/rewards"), *ProjectID);
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("coupon_code"), CouponCode);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::RedeemCoupon_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1212,6 +1240,57 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	SuccessCallback.ExecuteIfBound(OrderId);
 }
 
+void UXsollaStoreSubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	FStoreCouponRewardData couponRewards;
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &couponRewards))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound(couponRewards);
+}
+
+void UXsollaStoreSubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	TArray<FStoreRedeemedCouponItem> redeemedCouponItems;
+	if (!FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &redeemedCouponItems, 0, 0))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	SuccessCallback.ExecuteIfBound(redeemedCouponItems);
+}
+
 bool UXsollaStoreSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreError ErrorCallback)
 {
@@ -1570,7 +1649,8 @@ FString UXsollaStoreSubsystem::FormatPrice(float Amount, const FString& Currency
 	if (Row)
 	{
 		FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
-			false, true, 1, 324, Row->fractionSize, Row->fractionSize).ToString();
+			false, true, 1, 324, Row->fractionSize, Row->fractionSize)
+									  .ToString();
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
 	}
 
