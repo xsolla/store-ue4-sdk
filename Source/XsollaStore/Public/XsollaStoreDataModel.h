@@ -738,3 +738,13 @@ public:
 		: is_free(false)
 		, quantity(0){};
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreRedeemedCouponData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Data")
+	TArray<FStoreRedeemedCouponItem> items;
+};
