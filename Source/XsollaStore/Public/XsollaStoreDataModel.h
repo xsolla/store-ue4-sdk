@@ -583,3 +583,30 @@ public:
 public:
 	FStoreSubscriptionData(){};
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaJsonVariant
+{
+	GENERATED_BODY()
+
+	FXsollaJsonVariant() {};
+	FXsollaJsonVariant(const int Value) : Variant(Value) {};
+	FXsollaJsonVariant(const FString Value) : Variant(Value) {};
+	FXsollaJsonVariant(const float Value) : Variant(Value) {};
+	FXsollaJsonVariant(const bool Value) : Variant(Value) {};
+
+	FVariant Variant;
+
+public:
+
+	FVariant GetVariant() const { return Variant; };
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaPaymentCustomParameters
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, FXsollaJsonVariant> Parameters;
+};
