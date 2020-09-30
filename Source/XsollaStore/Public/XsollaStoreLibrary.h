@@ -4,9 +4,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
-
 #include "XsollaStoreDataModel.h"
-
 #include "XsollaStoreLibrary.generated.h"
 
 class UXsollaStoreSubsystem;
@@ -37,6 +35,4 @@ public:
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Store")
     static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
-
-	static void AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters);
 };

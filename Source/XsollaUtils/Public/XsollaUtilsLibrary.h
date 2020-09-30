@@ -20,5 +20,28 @@ public:
 
 	/** Make FDateTime structure based on a given timestamp */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
-    static FDateTime MakeDateTimeFromTimestamp(int64 Time);
+	static FDateTime MakeDateTimeFromTimestamp(int64 Time);
+
+	template <typename TEnum>
+	static FString GetEnumValueAsString(const FString& EnumName, TEnum Value)
+	{
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+		if (!EnumPtr)
+		{
+			return FString("Invalid");
+		}
+		const FString ValueStr = EnumPtr->GetNameByValue(static_cast<int64>(Value)).ToString();
+		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+	}
+
+	template <typename EnumType>
+	static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
+	{
+		UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+		if (!Enum)
+		{
+			return EnumType(0);
+		}
+		return static_cast<EnumType>(Enum->GetValueByName(FName(*String)));
+	}
 };

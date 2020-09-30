@@ -4,6 +4,7 @@
 #pragma once
 
 #include "XsollaStoreDefines.h"
+#include "Misc/Variant.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaStoreDataModel.generated.h"
 
@@ -590,16 +591,9 @@ struct FXsollaJsonVariant
 	GENERATED_BODY()
 
 	FXsollaJsonVariant() {};
-	FXsollaJsonVariant(const int Value) : Variant(Value) {};
-	FXsollaJsonVariant(const FString Value) : Variant(Value) {};
-	FXsollaJsonVariant(const float Value) : Variant(Value) {};
-	FXsollaJsonVariant(const bool Value) : Variant(Value) {};
+	FXsollaJsonVariant(const FVariant Variant) : Variant(Variant) {};
 
 	FVariant Variant;
-
-public:
-
-	FVariant GetVariant() const { return Variant; };
 };
 
 USTRUCT(BlueprintType)
@@ -609,4 +603,52 @@ struct FXsollaPaymentCustomParameters
 
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, FXsollaJsonVariant> Parameters;
+};
+
+/* Usual version EVariantTypes is not using UENUM() this cause problem when call GetEnumValueAsString with "EVariantTypes" as first argument.
+*/
+UENUM()
+enum class EXsollaVariantTypes : int8
+{
+	Empty = 0,
+    Ansichar = 1,
+    Bool = 2,
+    Box = 3,
+    BoxSphereBounds = 4,
+    ByteArray = 5,
+    Color = 6,
+    DateTime = 7,
+    Double = 8,
+    Enum = 9,
+    Float = 10,
+    Guid = 11,
+    Int8 = 12,
+    Int16 = 13,
+    Int32 = 14,
+    Int64 = 15,
+    IntRect = 16,
+    LinearColor = 17,
+    Matrix = 18,
+    Name = 19,
+    Plane = 20,
+    Quat = 21,
+    RandomStream = 22,
+    Rotator = 23,
+    String = 24,
+    Widechar = 25,
+    Timespan = 26,
+    Transform = 27,
+    TwoVectors = 28,
+    UInt8 = 29,
+    UInt16 = 30,
+    UInt32 = 31,
+    UInt64 = 32,
+    Vector = 33,
+    Vector2d = 34,
+    Vector4 = 35,
+    IntPoint = 36,
+    IntVector = 37,
+    NetworkGUID = 38,
+
+    Custom = 0x40
 };

@@ -423,6 +423,9 @@ private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 
+	/** Patching JsonObject with CustomParameters */
+	static void AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters);
+
 public:
 	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
