@@ -138,12 +138,14 @@ public:
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 		const FString& Currency, const FString& Country, const FString& Locale,
+		const FXsollaPaymentCustomParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fetch Cart Payment Token
@@ -154,12 +156,14 @@ public:
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Country, const FString& Locale,
+		const FXsollaPaymentCustomParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Launch Payment Console
@@ -488,6 +492,9 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+
+	/** Patching JsonObject with CustomParameters */
+	static void AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters);
 
 public:
 	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
