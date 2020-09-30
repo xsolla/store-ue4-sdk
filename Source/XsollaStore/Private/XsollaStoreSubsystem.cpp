@@ -24,7 +24,6 @@
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
-#include "XsollaStoreLibrary.h"
 #include "XsollaUtilsLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
