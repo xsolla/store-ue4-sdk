@@ -23,7 +23,6 @@ enum class EXsollaRequestVerb : uint8
 	DELETE
 };
 
-class UDataTable;
 class FJsonObject;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
@@ -439,10 +438,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
 
-	/** Get currency-format data table */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	UDataTable* GetCurrencyLibrary() const;
-
 public:
 	/** Event occured when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -485,19 +480,10 @@ protected:
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
 
-	/** Loaded currency library asset */
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla|Currency")
-	UDataTable* CurrencyLibrary;
-
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
 
 	/** Patching JsonObject with CustomParameters */
 	static void AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters);
-
-public:
-	/** Format store price using currency-format library https://github.com/xsolla/currency-format */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
-	FString FormatPrice(float Amount, const FString& Currency = TEXT("USD")) const;
 };

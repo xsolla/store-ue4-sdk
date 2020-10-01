@@ -4,18 +4,15 @@
 #include "XsollaStoreSubsystem.h"
 
 #include "XsollaStore.h"
-#include "XsollaStoreCurrencyFormat.h"
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 
 #include "Dom/JsonObject.h"
-#include "Engine/DataTable.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
-#include "Kismet/KismetTextLibrary.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -31,10 +28,6 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(
-		TEXT("DataTable'/Xsolla/Store/Misc/currency-format.currency-format'"));
-	CurrencyLibrary = CurrencyLibraryObj.Object;
-
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(
 		TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
@@ -1648,11 +1641,6 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 	return PengindPaystationUrl;
 }
 
-UDataTable* UXsollaStoreSubsystem::GetCurrencyLibrary() const
-{
-	return CurrencyLibrary;
-}
-
 void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
 {
 	if (CustomParameters.Parameters.Num() == 0)
@@ -1688,27 +1676,6 @@ void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObje
 	}
 
 	JsonObject->SetObjectField("custom_parameters", JsonObjectCustomParameters);
-}
-
-FString UXsollaStoreSubsystem::FormatPrice(float Amount, const FString& Currency) const
-{
-	if (Currency.IsEmpty())
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: In PA there is no price provided for certain item"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	auto Row = GetCurrencyLibrary()->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
-	if (Row)
-	{
-		FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
-			false, true, 1, 324, Row->fractionSize, Row->fractionSize)
-									  .ToString();
-		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
-	}
-
-	UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to format price (%d %s)"), *VA_FUNC_LINE, Amount, *Currency);
-	return FString();
 }
 
 #undef LOCTEXT_NAMESPACE
