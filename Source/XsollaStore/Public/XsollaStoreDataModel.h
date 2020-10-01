@@ -425,6 +425,7 @@ public:
 		, name(Item.name)
 		, is_free(Item.is_free)
 		, image_url(Item.image_url)
+		, price(Item.price)
 		, quantity(0){};
 
 	FStoreCartItem(const FVirtualCurrencyPackage& CurrencyPackage)
