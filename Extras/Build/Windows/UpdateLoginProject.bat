@@ -14,5 +14,6 @@ for %%a in ("Source" "Content" "Config" "Documentation" "Resources") do (xcopy /
 :: Remove Store directories/files"
 rmdir "%target%\Plugins\login-ue4-sdk\Content\Store" /S /Q
 rmdir "%target%\Plugins\login-ue4-sdk\Source\XsollaStore" /S /Q
+del "%target%\Plugins\login-ue4-sdk\Content\Maps\Demo_Store.umap"
 
 @PAUSE
