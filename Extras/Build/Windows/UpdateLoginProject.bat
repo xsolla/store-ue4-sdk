@@ -4,6 +4,10 @@
 SET target=..\..\..\..\..\..\XsollaLogin
 SET source=..\..\..\..\..
 
+:: Remove old assets
+for %%a in ("Common" "Login") do (rmdir "%target%\Plugins\login-ue4-sdk\Content\%%~a" /S /Q)
+rmdir "%target%\Plugins\login-ue4-sdk\Source" /S /Q
+
 :: Make full copy of useful for Project directories/files
 for %%a in ("Source" "Content" "Config") do (xcopy /I /S /Y "%source%\%%~a" "%target%\%%~a")
 xcopy %source%\*.uproject %target% /Y
