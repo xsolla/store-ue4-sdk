@@ -33,7 +33,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetSessionTicket();
 
-	/** Oepn specified URL in platfrom browser */
+	/** Open specified URL in platfrom browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static void LaunchPlatfromBrowser(const FString& URL);
 
