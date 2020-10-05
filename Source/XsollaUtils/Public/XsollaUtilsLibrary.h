@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "EngineMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-
 #include "XsollaUtilsLibrary.generated.h"
 
 class UXsollaUtilsImageLoader;
