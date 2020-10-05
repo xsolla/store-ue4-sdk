@@ -3,6 +3,7 @@
 #pragma once
 
 #include "EngineMinimal.h"
+#include "Components/CheckBox.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsLibrary.generated.h"
 
@@ -19,7 +20,7 @@ public:
 	static UXsollaUtilsImageLoader* GetImageLoader();
 
 	/** Make FDateTime structure based on a given timestamp */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static FDateTime MakeDateTimeFromTimestamp(int64 Time);
 
 	template <typename TEnum>
