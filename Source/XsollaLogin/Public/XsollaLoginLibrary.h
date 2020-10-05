@@ -40,4 +40,8 @@ public:
 	/** Convert 2D texture to its PNG-encoded byte representation */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static TArray<uint8> ConvertTextureToByteArray(UTexture2D* Texture);
+
+	/** Get specified parameter from a given URL */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetUrlParameter(const FString& URL, const FString& Parameter);
 };

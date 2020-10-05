@@ -10,6 +10,7 @@
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
@@ -90,4 +91,18 @@ TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture
 	TextureData.Append(CompressedData);
 
 	return TextureData;
+}
+
+FString UXsollaLoginLibrary::GetUrlParameter(const FString& URL, const FString& Parameter)
+{
+	FString UrlOptions = URL.RightChop(URL.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+	FString ParameterValue = UGameplayStatics::ParseOption(UrlOptions, Parameter);
+
+	// get rid of extra symbols added by Login if any
+	if (ParameterValue.Contains(TEXT("#")))
+	{
+		ParameterValue = ParameterValue.Left(ParameterValue.Find(TEXT("#")));
+	}
+
+	return ParameterValue;
 }
