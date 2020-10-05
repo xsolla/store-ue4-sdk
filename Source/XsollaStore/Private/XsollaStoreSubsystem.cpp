@@ -1641,6 +1641,24 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 	return PengindPaystationUrl;
 }
 
+bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
+{
+	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	return CartItem != nullptr;
+}
+
+bool UXsollaStoreSubsystem::IsItemInInventory(const FString& ItemSKU) const
+{
+	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FStoreInventoryItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	return InventoryItem != nullptr;
+}
+
 void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
 {
 	if (CustomParameters.Parameters.Num() == 0)

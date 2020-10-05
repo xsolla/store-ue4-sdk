@@ -438,6 +438,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
 
+	/** Check if certain item is in cart */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
+	bool IsItemInCart(const FString& ItemSKU) const;
+
+	/** Check if certain item is in inventory */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
+	bool IsItemInInventory(const FString& ItemSKU) const;
+
 public:
 	/** Event occured when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
