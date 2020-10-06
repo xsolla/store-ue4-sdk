@@ -602,9 +602,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FXsollaSocialFriendsData GetSocialFriends() const;
 
+	/** Get social profiles associated with specified user */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	TArray<FXsollaSocialFriend> GetSocialProfiles(const FString& UserID) const;
+
 	/** Get linked social networks */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaLinkedSocialNetworkData> GetLinkedSocialNetworks() const;
+
+	/** Check if specified social network is linked to user profile */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	bool IsSocialNetworkLinked(const FString& Provider) const;
 
 protected:
 	/** Keeps state of user login */

@@ -438,6 +438,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
 
+	/** Get name of the cached item with given SKU */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FString GetItemName(const FString& ItemSKU) const;
+
+	/** Get name of the cached virtual currency with given SKU */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
+
 	/** Check if certain item is in cart */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
@@ -447,7 +455,7 @@ public:
 	bool IsItemInInventory(const FString& ItemSKU) const;
 
 public:
-	/** Event occured when the cart was changed or updated */
+	/** Event occurred when the cart was changed or updated */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
 	FOnCartUpdate OnCartUpdate;
 
