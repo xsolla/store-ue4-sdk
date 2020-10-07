@@ -1641,6 +1641,52 @@ FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 	return PengindPaystationUrl;
 }
 
+FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const
+{
+	auto StoreItem = ItemsData.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	if (StoreItem != nullptr)
+	{
+		return StoreItem->name;
+	}
+
+	return TEXT("");
+}
+
+FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU) const
+{
+	auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySKU](const FVirtualCurrency& InCurrency) {
+		return InCurrency.sku == CurrencySKU;
+	});
+
+	if (Currency != nullptr)
+	{
+		return Currency->name;
+	}
+
+	return TEXT("");
+}
+
+bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
+{
+	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	return CartItem != nullptr;
+}
+
+bool UXsollaStoreSubsystem::IsItemInInventory(const FString& ItemSKU) const
+{
+	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FStoreInventoryItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	return InventoryItem != nullptr;
+}
+
 void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
 {
 	if (CustomParameters.Parameters.Num() == 0)

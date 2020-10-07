@@ -16,13 +16,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "OnlineSubsystem.h"
-#include "XsollaUtilsLibrary.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
+#include "XsollaUtilsLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
@@ -2060,9 +2060,27 @@ FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends() const
 	return SocialFriendsData;
 }
 
+TArray<FXsollaSocialFriend> UXsollaLoginSubsystem::GetSocialProfiles(const FString& UserID) const
+{
+	auto SocialProfiles = SocialFriendsData.data.FilterByPredicate([UserID](const FXsollaSocialFriend& InSocialProfile) {
+		return InSocialProfile.xl_uid == UserID;
+	});
+
+	return SocialProfiles;
+}
+
 TArray<FXsollaLinkedSocialNetworkData> UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
 {
 	return LinkedSocialNetworks;
+}
+
+bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
+{
+	auto SocialNetwork = LinkedSocialNetworks.FindByPredicate([Provider](const FXsollaLinkedSocialNetworkData& InSocialNetwork) {
+		return InSocialNetwork.provider == Provider;
+	});
+
+	return SocialNetwork != nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE
