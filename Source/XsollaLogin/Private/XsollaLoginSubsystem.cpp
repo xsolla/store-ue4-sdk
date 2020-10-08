@@ -16,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "OnlineSubsystem.h"
+#include "XsollaUtilsLibrary.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
@@ -40,29 +41,6 @@ const FString UXsollaLoginSubsystem::LoginEndpointOAuth(TEXT("https://login.xsol
 const FString UXsollaLoginSubsystem::BlankRedirectEndpoint(TEXT("https://login.xsolla.com/api/blank"));
 const FString UXsollaLoginSubsystem::UserDetailsEndpoint(TEXT("https://login.xsolla.com/api/users/me"));
 const FString UXsollaLoginSubsystem::UsersEndpoint(TEXT("https://login.xsolla.com/api/users"));
-
-template <typename TEnum>
-static FString GetEnumValueAsString(const FString& EnumName, TEnum Value)
-{
-	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-	if (!enumPtr)
-	{
-		return FString("Invalid");
-	}
-	FString valueStr = enumPtr->GetNameByValue((int64)Value).ToString();
-	return valueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
-}
-
-template <typename EnumType>
-static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
-{
-	UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-	if (!Enum)
-	{
-		return EnumType(0);
-	}
-	return (EnumType)Enum->FindEnumIndex(FName(*String));
-}
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
@@ -560,9 +538,9 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
 	const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	FString FriendType = GetEnumValueAsString("EXsollaFriendsType", Type);
-	FString SortByCriteria = GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
-	FString SortOrderCriteria = GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
+	FString FriendType = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendsType", Type);
+	FString SortByCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
+	FString SortOrderCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships?type=%s&sort_by=%s&sort_order=%s"),
@@ -581,7 +559,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-	RequestDataJson->SetStringField(TEXT("action"), GetEnumValueAsString("EXsollaFriendAction", Action));
+	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendAction", Action));
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1444,7 +1422,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 			FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
 			FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
 
-			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
+			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 
 			return;
 		}

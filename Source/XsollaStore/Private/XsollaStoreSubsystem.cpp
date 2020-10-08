@@ -15,6 +15,8 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
+#include "XsollaStoreLibrary.h"
+#include "XsollaUtilsLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
@@ -152,7 +154,8 @@ void UXsollaStoreSubsystem::UpdateSubscriptions(const FString& AuthToken, const 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU, const FString& Currency, const FString& Country, const FString& Locale,
+	const FXsollaPaymentCustomParameters CustomParameters, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -164,6 +167,8 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
+	AddCustomParameters(RequestDataJson, CustomParameters);
 
 	FString theme;
 
@@ -231,7 +236,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Country, const FString& Locale, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Country, const FString& Locale, const FXsollaPaymentCustomParameters CustomParameters, const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -244,6 +249,8 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 		RequestDataJson->SetStringField(TEXT("country"), Country);
 	if (!Locale.IsEmpty())
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
+
+	AddCustomParameters(RequestDataJson, CustomParameters);
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
@@ -1439,6 +1446,44 @@ UDataTable* UXsollaStoreSubsystem::GetCurrencyLibrary() const
 {
 	return CurrencyLibrary;
 }
+
+void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
+{
+	if (CustomParameters.Parameters.Num() == 0)
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObjectCustomParameters = MakeShareable(new FJsonObject());
+
+	for (auto Parameter : CustomParameters.Parameters)
+	{
+		const FVariant Variant = Parameter.Value.Variant;
+		
+		switch (Variant.GetType())
+		{
+		case EVariantTypes::Bool:
+			JsonObjectCustomParameters->SetBoolField(Parameter.Key, Variant.GetValue<bool>());
+			break;
+		case EVariantTypes::String:
+			JsonObjectCustomParameters->SetStringField(Parameter.Key, Variant.GetValue<FString>());
+			break;
+		case EVariantTypes::Int32:
+			JsonObjectCustomParameters->SetNumberField(Parameter.Key, Variant.GetValue<int>());
+			break;
+		case EVariantTypes::Float:
+			JsonObjectCustomParameters->SetNumberField(Parameter.Key, Variant.GetValue<float>());
+			break;
+		default:
+			UE_LOG(LogXsollaStore, Log, TEXT("%s: parameter with type of %s was not added"),
+				*VA_FUNC_LINE, *UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaVariantTypes", static_cast<EXsollaVariantTypes>(Variant.GetType())));
+			break;
+		}
+	}
+
+	JsonObject->SetObjectField("custom_parameters", JsonObjectCustomParameters);
+}
+
 
 FString UXsollaStoreSubsystem::FormatPrice(float Amount, const FString& Currency) const
 {
