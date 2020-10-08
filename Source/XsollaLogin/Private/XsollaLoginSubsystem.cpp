@@ -16,13 +16,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "OnlineSubsystem.h"
-#include "XsollaUtilsLibrary.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
+#include "XsollaUtilsLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
@@ -587,14 +587,25 @@ void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const 
 	const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit, bool FromThisGame)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/social_friends?limit=%d&offset=%d&with_xl_uid=%s"),
+	const FString Url = FString::Printf(TEXT("%s/social_friends?limit=%d&offset=%d&with_xl_uid=%s%s"),
 		*UserDetailsEndpoint,
 		Limit,
 		Offset,
 		FromThisGame ? TEXT("true") : TEXT("false"),
-		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
+		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("&platform=%s"), *Platform));
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/social_friends/update%s"),
+        *UserDetailsEndpoint,
+        Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1502,6 +1513,23 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
+
+void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound(TEXT("204"));
+}
+
+
 void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
@@ -2060,9 +2088,27 @@ FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends() const
 	return SocialFriendsData;
 }
 
+TArray<FXsollaSocialFriend> UXsollaLoginSubsystem::GetSocialProfiles(const FString& UserID) const
+{
+	auto SocialProfiles = SocialFriendsData.data.FilterByPredicate([UserID](const FXsollaSocialFriend& InSocialProfile) {
+		return InSocialProfile.xl_uid == UserID;
+	});
+
+	return SocialProfiles;
+}
+
 TArray<FXsollaLinkedSocialNetworkData> UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
 {
 	return LinkedSocialNetworks;
+}
+
+bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
+{
+	auto SocialNetwork = LinkedSocialNetworks.FindByPredicate([Provider](const FXsollaLinkedSocialNetworkData& InSocialNetwork) {
+		return InSocialNetwork.provider == Provider;
+	});
+
+	return SocialNetwork != nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

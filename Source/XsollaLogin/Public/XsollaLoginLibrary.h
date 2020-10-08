@@ -33,11 +33,15 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetSessionTicket();
 
-	/** Oepn specified URL in platfrom browser */
+	/** Open specified URL in platfrom browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static void LaunchPlatfromBrowser(const FString& URL);
 
 	/** Convert 2D texture to its PNG-encoded byte representation */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static TArray<uint8> ConvertTextureToByteArray(UTexture2D* Texture);
+
+	/** Get specified parameter from a given URL */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetUrlParameter(const FString& URL, const FString& Parameter);
 };

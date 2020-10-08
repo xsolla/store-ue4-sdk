@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include "XsollaStoreDefines.h"
 #include "Misc/Variant.h"
+#include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
+
 #include "XsollaStoreDataModel.generated.h"
 
 UENUM(BlueprintType)
@@ -15,6 +16,23 @@ enum class EXsollaOrderStatus : uint8
 	New,
 	Paid,
 	Done
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemAttribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Attribute")
+	int32 stack_size;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Attribute")
+	bool licensed;
+
+public:
+	FStoreItemAttribute()
+		: stack_size(0)
+		, licensed(false){};
 };
 
 USTRUCT(BlueprintType)
@@ -164,7 +182,7 @@ public:
 		, price(Item.price)
 		, virtual_prices(Item.virtual_prices)
 		, image_url(Item.image_url)
-		, inventory_options(Item.inventory_options) {};
+		, inventory_options(Item.inventory_options){};
 
 	bool operator==(const FStoreItem& Item) const
 	{
@@ -406,6 +424,7 @@ public:
 		: sku(Item.sku)
 		, name(Item.name)
 		, is_free(Item.is_free)
+		, price(Item.price)
 		, image_url(Item.image_url)
 		, quantity(0){};
 
@@ -569,7 +588,9 @@ public:
 
 public:
 	FStoreSubscriptionItem()
-		: expired_at(0){}
+		: expired_at(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -586,12 +607,157 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreUnitItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString drm_sku;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCouponRewardItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	TArray<FStoreUnitItem> unit_items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCoupoBonusItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FStoreCouponRewardItem item;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	int32 quantity;
+
+public:
+	FStoreCoupoBonusItem()
+		: quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCouponRewardData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	TArray<FStoreCoupoBonusItem> bonus;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	bool is_selectable;
+
+public:
+	FStoreCouponRewardData()
+		: is_selectable(false){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreRedeemedCouponItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FStoreItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FItemInventoryOptions inventory_options;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	int32 quantity;
+
+public:
+	FStoreRedeemedCouponItem()
+		: is_free(false)
+		, quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreRedeemedCouponData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Data")
+	TArray<FStoreRedeemedCouponItem> items;
+};
+
+USTRUCT(BlueprintType)
 struct FXsollaJsonVariant
 {
 	GENERATED_BODY()
 
-	FXsollaJsonVariant() {};
-	FXsollaJsonVariant(const FVariant Variant) : Variant(Variant) {};
+	FXsollaJsonVariant(){};
+	FXsollaJsonVariant(const FVariant Variant) : Variant(Variant){};
 
 	FVariant Variant;
 };
@@ -611,44 +777,43 @@ UENUM()
 enum class EXsollaVariantTypes : int8
 {
 	Empty = 0,
-    Ansichar = 1,
-    Bool = 2,
-    Box = 3,
-    BoxSphereBounds = 4,
-    ByteArray = 5,
-    Color = 6,
-    DateTime = 7,
-    Double = 8,
-    Enum = 9,
-    Float = 10,
-    Guid = 11,
-    Int8 = 12,
-    Int16 = 13,
-    Int32 = 14,
-    Int64 = 15,
-    IntRect = 16,
-    LinearColor = 17,
-    Matrix = 18,
-    Name = 19,
-    Plane = 20,
-    Quat = 21,
-    RandomStream = 22,
-    Rotator = 23,
-    String = 24,
-    Widechar = 25,
-    Timespan = 26,
-    Transform = 27,
-    TwoVectors = 28,
-    UInt8 = 29,
-    UInt16 = 30,
-    UInt32 = 31,
-    UInt64 = 32,
-    Vector = 33,
-    Vector2d = 34,
-    Vector4 = 35,
-    IntPoint = 36,
-    IntVector = 37,
-    NetworkGUID = 38,
-
-    Custom = 0x40
+	Ansichar = 1,
+	Bool = 2,
+	Box = 3,
+	BoxSphereBounds = 4,
+	ByteArray = 5,
+	Color = 6,
+	DateTime = 7,
+	Double = 8,
+	Enum = 9,
+	Float = 10,
+	Guid = 11,
+	Int8 = 12,
+	Int16 = 13,
+	Int32 = 14,
+	Int64 = 15,
+	IntRect = 16,
+	LinearColor = 17,
+	Matrix = 18,
+	Name = 19,
+	Plane = 20,
+	Quat = 21,
+	RandomStream = 22,
+	Rotator = 23,
+	String = 24,
+	Widechar = 25,
+	Timespan = 26,
+	Transform = 27,
+	TwoVectors = 28,
+	UInt8 = 29,
+	UInt16 = 30,
+	UInt32 = 31,
+	UInt64 = 32,
+	Vector = 33,
+	Vector2d = 34,
+	Vector4 = 35,
+	IntPoint = 36,
+	IntVector = 37,
+	NetworkGUID = 38,
+	Custom = 0x40
 };
