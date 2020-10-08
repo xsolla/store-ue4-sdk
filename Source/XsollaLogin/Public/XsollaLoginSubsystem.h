@@ -370,7 +370,7 @@ public:
 	void UpdateSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update Social Friends
-	 * Updates locally cached user friends data froma a social provider.
+	 * Updates locally cached user friends data from a social provider.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of social provider. If empty friends from all available social providers will be fetched.
@@ -384,12 +384,23 @@ public:
 	void UpdateSocialFriends(const FString& AuthToken, const FString& Platform,
 		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 500, bool FromThisGame = false);
 
+	/** Update Users Friends
+	 * Update friends at server.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Platform Name of the chose social provider. If is not specify it, the method gets friends from all social providers.
+	 * @param SuccessCallback Callback function called after successful update user friends.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Get User Profile
 	 * Gets specified user public profile information.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserID User identifier of public profile information to be received.
-	 * @param SuccessCallback Callback function called after user profile datareceived successfully.
+	 * @param SuccessCallback Callback function called after user profile data received successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -491,6 +502,8 @@ protected:
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void UpdateUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+        FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
