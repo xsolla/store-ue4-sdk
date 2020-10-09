@@ -237,6 +237,19 @@ public:
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Fill Cart By Id
+	 * Fills the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of cart which will fill. The current user cart will be filled if empty.
+	 * @param Items Item for fill cart.
+	 * @param SuccessCallback Callback function called after cart filled successfully.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
+		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
 	 *
@@ -342,6 +355,8 @@ protected:
 		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
