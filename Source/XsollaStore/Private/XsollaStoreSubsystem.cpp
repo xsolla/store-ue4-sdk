@@ -585,10 +585,19 @@ void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FStri
 }
 
 void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
-	const FOnCartFillSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/fill"),
-            *ProjectID, *CartId);
+	FString Url;
+	if (CartId.IsEmpty())
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/fill"),
+			*ProjectID);
+	}
+	else
+	{
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/fill"),
+			*ProjectID, *CartId);
+	}
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
 	TArray<TSharedPtr<FJsonValue>> JsonItems;
@@ -1160,7 +1169,7 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnCartFillSuccess SuccessCallback, FOnStoreError ErrorCallback)
+	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1186,7 +1195,7 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	const FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
-	SuccessCallback.ExecuteIfBound(Cart);
+	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaStoreSubsystem::ConsumeInventoryItem_HttpRequestComplete(
