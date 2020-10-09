@@ -239,7 +239,7 @@ public:
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fill Cart By Id
-	 * Fills the specific cart with items. If the cart already has an item item, the existing item position will be replaced by the given value.
+	 * Fills the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId Identifier of cart.
