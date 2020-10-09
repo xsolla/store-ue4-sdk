@@ -388,7 +388,7 @@ struct XSOLLASTORE_API FStoreCartItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	FString sku;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
@@ -412,7 +412,7 @@ struct XSOLLASTORE_API FStoreCartItem
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString image_url;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	int32 quantity;
 
 public:

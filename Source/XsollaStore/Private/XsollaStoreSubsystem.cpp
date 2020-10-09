@@ -584,6 +584,31 @@ void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FStri
 	OnCartUpdate.Broadcast(Cart);
 }
 
+void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
+	const FOnCartFillSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s/fill"),
+            *ProjectID, *CartId);
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	TArray<TSharedPtr<FJsonValue>> JsonItems;
+
+	for(auto& Item : Items)
+	{
+		TSharedPtr<FJsonObject> JsonItem = MakeShareable(new FJsonObject());
+		JsonItem->SetStringField(TEXT("sku"), Item.sku);
+		JsonItem->SetNumberField(TEXT("quantity"), Item.quantity);
+		JsonItems.Push(MakeShareable(new FJsonValueObject(JsonItem)));
+	}
+	
+	JsonObject->SetArrayField(TEXT("items"), JsonItems);
+	
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::PUT, AuthToken, SerializeJson(JsonObject));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+        &UXsollaStoreSubsystem::FillCartById_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
 	int32 Quantity, const FString& InstanceID,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
@@ -1131,6 +1156,37 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	SuccessCallback.ExecuteIfBound();
 
 	ProcessNextCartRequest();
+}
+
+void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnCartFillSuccess SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCart::StaticStruct(), &Cart))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound(Cart);
 }
 
 void UXsollaStoreSubsystem::ConsumeInventoryItem_HttpRequestComplete(
