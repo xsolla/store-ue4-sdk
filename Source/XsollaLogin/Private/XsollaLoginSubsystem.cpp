@@ -85,14 +85,14 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Registration failed"), TEXT("User registration should be handled via Steam"));
 		return;
 	}
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	if (Settings->UseOAuth2)
 	{
@@ -107,7 +107,9 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("User authentication should be handled via Steam"));
@@ -121,8 +123,6 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	if (Settings->UseOAuth2)
 	{
 		AuthenticateUserOAuth(Username, Password, SuccessCallback, ErrorCallback);
@@ -135,7 +135,9 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 
 void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Password reset failed"), TEXT("User password reset should be handled via Steam"));
@@ -143,7 +145,6 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 	}
 
 	// Prepare request payload
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField((Settings->UserDataStorage == EUserDataStorage::Xsolla) ? TEXT("username") : TEXT("email"), User);
 

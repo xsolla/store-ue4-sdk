@@ -124,4 +124,8 @@ public:
 	/** Request user nickname after successful authorization in case one is missing */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	bool RequestNickname;
+
+	/** If enabled, Login SDK will use Steam as default authorization mechanism */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
+	bool bUseSteamAuthorization;
 };
