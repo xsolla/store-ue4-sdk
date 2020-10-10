@@ -203,7 +203,7 @@ public:
 		, price(Item.price)
 		, virtual_prices(Item.virtual_prices)
 		, image_url(Item.image_url)
-		, inventory_options(Item.inventory_options) {};
+		, inventory_options(Item.inventory_options){};
 
 	bool operator==(const FStoreItem& Item) const
 	{
@@ -608,7 +608,9 @@ public:
 
 public:
 	FStoreSubscriptionItem()
-		: expired_at(0){}
+		: expired_at(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
