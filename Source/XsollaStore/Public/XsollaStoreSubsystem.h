@@ -36,6 +36,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurren
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FStoreCouponRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FStoreRedeemedCouponData, RewardData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeRewardData, RewardsData);
+DECLARE_DYNAMIC_DELEGATE(FOnRedeemPromocodeUpdate);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -324,6 +326,31 @@ public:
 	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
 		const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Get Promocode Rewards
+	* Gets promo code rewards by its code. Can be used to allow users to choose one of many items as a bonus.
+	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
+	* 
+	* @param AuthToken User authorization token.
+	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
+	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
+        const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Redeem Promocode
+	* Redeems a code of promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
+	* 
+	* @param AuthToken User authorization token.
+	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
+	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
+        const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -373,6 +400,10 @@ protected:
 		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
