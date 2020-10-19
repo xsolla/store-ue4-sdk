@@ -6,6 +6,8 @@
 #include "Misc/Variant.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
+#include "Chaos/AABB.h"
+
 
 #include "XsollaStoreDataModel.generated.h"
 
@@ -130,6 +132,36 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBundleContent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	int quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
@@ -167,6 +199,18 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FItemInventoryOptions inventory_options;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	FString bundle_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	FStorePrice total_content_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	TArray<FStoreBundleContent> content;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	TArray<FStoreItemAttribute> attributes;
+
 public:
 	FStoreItem()
 		: is_free(false){};
@@ -182,7 +226,15 @@ public:
 		, price(Item.price)
 		, virtual_prices(Item.virtual_prices)
 		, image_url(Item.image_url)
-		, inventory_options(Item.inventory_options){};
+		, inventory_options(Item.inventory_options)
+		, bundle_type(Item.bundle_type)
+		, total_content_price(Item.total_content_price)
+		, attributes(Item.attributes)
+		, content(Item.content)
+	{
+	}
+
+	FStoreItem(const struct FStoreBundle& Bundle);
 
 	bool operator==(const FStoreItem& Item) const
 	{
@@ -607,6 +659,60 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBundle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString bundle_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice total_content_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreBundleContent> content;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreListOfBundles
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TMap<FString, FStoreBundle> items;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreUnitItem
 {
 public:
@@ -843,3 +949,20 @@ enum class EXsollaVariantTypes : int8
 	NetworkGUID = 38,
 	Custom = 0x40
 };
+
+inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
+{
+	this->description = Bundle.description;
+	this->groups = Bundle.groups;
+	this->image_url = Bundle.image_url;
+	this->is_free = Bundle.is_free == "true";
+	this->name = Bundle.name;
+	this->price = Bundle.price;
+	this->sku = Bundle.sku;
+	this->type = Bundle.type;
+	this->virtual_prices = Bundle.virtual_prices;
+	this->bundle_type = Bundle.bundle_type;
+	this->total_content_price = Bundle.total_content_price;
+	this->content = Bundle.content;
+	this->attributes = Bundle.attributes;
+}
