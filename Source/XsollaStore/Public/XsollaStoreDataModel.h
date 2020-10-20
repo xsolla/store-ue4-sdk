@@ -657,7 +657,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreCoupoBonusItem
+struct XSOLLASTORE_API FStoreCouponBonusItem
 {
 public:
 	GENERATED_BODY()
@@ -669,7 +669,7 @@ public:
 	int32 quantity;
 
 public:
-	FStoreCoupoBonusItem()
+	FStoreCouponBonusItem()
 		: quantity(0){};
 };
 
@@ -680,7 +680,7 @@ public:
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
-	TArray<FStoreCoupoBonusItem> bonus;
+	TArray<FStoreCouponBonusItem> bonus;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
 	bool is_selectable;
@@ -749,6 +749,32 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Data")
 	TArray<FStoreRedeemedCouponItem> items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreDiscount
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Discount")
+	FString percent;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStorePromocodeRewardData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	TArray<FStoreCouponBonusItem> bonus;
+
+	/** Percent discount. The price of cat will be decreased using a value calculated by using this percent and then rounded to 2 decimal places. */
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	FStoreDiscount discount;
+
+	/** If 'true', the user should choose the bonus before redeeming a promo code. */
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	bool is_selectable;
 };
 
 USTRUCT(BlueprintType)

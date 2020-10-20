@@ -738,6 +738,36 @@ void UXsollaStoreSubsystem::RedeemCoupon(const FString& AuthToken, const FString
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode, const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/promocode/code/%s/rewards"),
+        *ProjectID,
+        *PromocodeCode);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+        &UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode, const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/promocode/redeem"), *ProjectID);
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("coupon_code"), PromocodeCode);
+
+	TSharedPtr<FJsonObject> JsonCart = MakeShareable(new FJsonObject);
+	JsonCart->SetStringField(TEXT("id"), Cart.cart_id);
+	RequestDataJson->SetObjectField(TEXT("cart"), JsonCart);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+        &UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1363,6 +1393,65 @@ void UXsollaStoreSubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr Htt
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound(redeemedCouponData);
+}
+
+void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	FStorePromocodeRewardData PromocodeRewardData;
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreRedeemedCouponData::StaticStruct(), &PromocodeRewardData))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound(PromocodeRewardData);
+}
+
+void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCart::StaticStruct(), &Cart))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound();
 }
 
 bool UXsollaStoreSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
