@@ -229,8 +229,8 @@ public:
 		, inventory_options(Item.inventory_options)
 		, bundle_type(Item.bundle_type)
 		, total_content_price(Item.total_content_price)
-		, attributes(Item.attributes)
 		, content(Item.content)
+		, attributes(Item.attributes)
 	{
 	}
 
