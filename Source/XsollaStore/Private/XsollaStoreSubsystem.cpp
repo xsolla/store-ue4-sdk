@@ -1280,12 +1280,12 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 
 	for (auto Bundle : ListOfBundles.items)
 	{
-		ItemsData.Items.Add(Bundle.Value);
+		ItemsData.Items.Add(Bundle);
 	}
 
 	for (auto Bundle : ListOfBundles.items)
 	{
-		for (auto BundleGroup : Bundle.Value.groups)
+		for (auto BundleGroup : Bundle.groups)
 		{
 			ItemsData.GroupIds.Add(BundleGroup.external_id);
 		}

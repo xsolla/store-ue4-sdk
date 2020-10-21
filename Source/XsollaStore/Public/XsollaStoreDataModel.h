@@ -709,7 +709,7 @@ struct XSOLLASTORE_API FStoreListOfBundles
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
-	TMap<FString, FStoreBundle> items;
+	TArray<FStoreBundle> items;
 };
 
 USTRUCT(BlueprintType)
