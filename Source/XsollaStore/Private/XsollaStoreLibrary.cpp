@@ -63,10 +63,10 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 		return FString();
 	}
 
-	auto Row = GetCurrencyLibrary()->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
+	const FXsollaStoreCurrency* Row = GetCurrencyLibrary()->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
 	if (Row)
 	{
-		FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
+		const FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
 			false, true, 1, 324, Row->fractionSize, Row->fractionSize)
 									  .ToString();
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);

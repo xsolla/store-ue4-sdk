@@ -36,6 +36,10 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurren
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FStoreCouponRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FStoreRedeemedCouponData, RewardData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeRewardData, RewardsData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, FStoreListOfBundles, ListOfBundles);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
+DECLARE_DYNAMIC_DELEGATE(FOnRedeemPromocodeUpdate);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -250,6 +254,28 @@ public:
 	void FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Get Specified Bundle
+	* Gets a specified bundle.
+	*
+	* @param Sku Bundle SKU.
+	* @param SuccessCallback Callback function called after cart filled successfully.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void GetSpecifiedBundle(const FString& Sku,
+        const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Update Bundles
+	* Gets a list of bundles for building a catalog.
+	*
+	* @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	* @param SuccessCallback Callback function called after cart filled successfully.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void UpdateBundles(const FString& Locale,
+        const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
 	 *
@@ -324,6 +350,31 @@ public:
 	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
 		const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	/** Get Promocode Rewards
+	* Gets promo code rewards by its code. Can be used to allow users to choose one of many items as a bonus.
+	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
+	* 
+	* @param AuthToken User authorization token.
+	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
+	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
+        const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Redeem Promocode
+	* Redeems a code of promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
+	* 
+	* @param AuthToken User authorization token.
+	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
+	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
+        const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -358,6 +409,11 @@ protected:
 	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
         bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
+	void GetListOfBundles_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void GetSpecifiedBundle_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
+
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
@@ -373,6 +429,10 @@ protected:
 		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+        bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
