@@ -22,6 +22,7 @@
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
+#include "XsollaUtilsLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
@@ -40,29 +41,6 @@ const FString UXsollaLoginSubsystem::LoginEndpointOAuth(TEXT("https://login.xsol
 const FString UXsollaLoginSubsystem::BlankRedirectEndpoint(TEXT("https://login.xsolla.com/api/blank"));
 const FString UXsollaLoginSubsystem::UserDetailsEndpoint(TEXT("https://login.xsolla.com/api/users/me"));
 const FString UXsollaLoginSubsystem::UsersEndpoint(TEXT("https://login.xsolla.com/api/users"));
-
-template <typename TEnum>
-static FString GetEnumValueAsString(const FString& EnumName, TEnum Value)
-{
-	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-	if (!enumPtr)
-	{
-		return FString("Invalid");
-	}
-	FString valueStr = enumPtr->GetNameByValue((int64)Value).ToString();
-	return valueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
-}
-
-template <typename EnumType>
-static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
-{
-	UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-	if (!Enum)
-	{
-		return EnumType(0);
-	}
-	return (EnumType)Enum->FindEnumIndex(FName(*String));
-}
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
@@ -107,14 +85,14 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Registration failed"), TEXT("User registration should be handled via Steam"));
 		return;
 	}
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	if (Settings->UseOAuth2)
 	{
@@ -129,7 +107,9 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("User authentication should be handled via Steam"));
@@ -143,8 +123,6 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	if (Settings->UseOAuth2)
 	{
 		AuthenticateUserOAuth(Username, Password, SuccessCallback, ErrorCallback);
@@ -157,7 +135,9 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 
 void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(TEXT("Password reset failed"), TEXT("User password reset should be handled via Steam"));
@@ -165,7 +145,6 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 	}
 
 	// Prepare request payload
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField((Settings->UserDataStorage == EUserDataStorage::Xsolla) ? TEXT("username") : TEXT("email"), User);
 
@@ -522,6 +501,12 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	if (!IsValid(Picture))
+	{
+		ErrorCallback.Execute("-1", "Picture is invalid.");
+		return;
+	}
+	
 	// Prepare picture upload request content
 	FString Boundary = TEXT("---------------------------" + FString::FromInt(FDateTime::Now().GetTicks()));
 	FString BeginBoundry = TEXT("\r\n--" + Boundary + "\r\n");
@@ -560,9 +545,9 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
 	const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	FString FriendType = GetEnumValueAsString("EXsollaFriendsType", Type);
-	FString SortByCriteria = GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
-	FString SortOrderCriteria = GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
+	FString FriendType = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendsType", Type);
+	FString SortByCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
+	FString SortOrderCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships?type=%s&sort_by=%s&sort_order=%s"),
@@ -581,7 +566,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-	RequestDataJson->SetStringField(TEXT("action"), GetEnumValueAsString("EXsollaFriendAction", Action));
+	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendAction", Action));
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -609,14 +594,25 @@ void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const 
 	const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit, bool FromThisGame)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/social_friends?limit=%d&offset=%d&with_xl_uid=%s"),
+	const FString Url = FString::Printf(TEXT("%s/social_friends?limit=%d&offset=%d&with_xl_uid=%s%s"),
 		*UserDetailsEndpoint,
 		Limit,
 		Offset,
 		FromThisGame ? TEXT("true") : TEXT("false"),
-		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
+		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("&platform=%s"), *Platform));
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/social_friends/update%s"),
+        *UserDetailsEndpoint,
+        Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1444,7 +1440,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 			FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
 			FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
 
-			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
+			SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 
 			return;
 		}
@@ -1523,6 +1519,23 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 	// No success before so call the error callback
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
+
+
+void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound(TEXT("204"));
+}
+
 
 void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback)
@@ -2082,9 +2095,27 @@ FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends() const
 	return SocialFriendsData;
 }
 
+TArray<FXsollaSocialFriend> UXsollaLoginSubsystem::GetSocialProfiles(const FString& UserID) const
+{
+	auto SocialProfiles = SocialFriendsData.data.FilterByPredicate([UserID](const FXsollaSocialFriend& InSocialProfile) {
+		return InSocialProfile.xl_uid == UserID;
+	});
+
+	return SocialProfiles;
+}
+
 TArray<FXsollaLinkedSocialNetworkData> UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
 {
 	return LinkedSocialNetworks;
+}
+
+bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
+{
+	auto SocialNetwork = LinkedSocialNetworks.FindByPredicate([Provider](const FXsollaLinkedSocialNetworkData& InSocialNetwork) {
+		return InSocialNetwork.provider == Provider;
+	});
+
+	return SocialNetwork != nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

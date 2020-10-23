@@ -3,8 +3,11 @@
 
 #pragma once
 
+#include "Misc/Variant.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
+
+
 #include "XsollaStoreDataModel.generated.h"
 
 UENUM(BlueprintType)
@@ -14,6 +17,23 @@ enum class EXsollaOrderStatus : uint8
 	New,
 	Paid,
 	Done
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemAttribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Attribute")
+	int32 stack_size;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Store Item Attribute")
+	bool licensed;
+
+public:
+	FStoreItemAttribute()
+		: stack_size(0)
+		, licensed(false){};
 };
 
 USTRUCT(BlueprintType)
@@ -111,6 +131,36 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBundleContent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	int quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
@@ -148,6 +198,18 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FItemInventoryOptions inventory_options;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	FString bundle_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	FStorePrice total_content_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	TArray<FStoreBundleContent> content;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
+	TArray<FStoreItemAttribute> attributes;
+
 public:
 	FStoreItem()
 		: is_free(false){};
@@ -163,7 +225,15 @@ public:
 		, price(Item.price)
 		, virtual_prices(Item.virtual_prices)
 		, image_url(Item.image_url)
-		, inventory_options(Item.inventory_options) {};
+		, inventory_options(Item.inventory_options)
+		, bundle_type(Item.bundle_type)
+		, total_content_price(Item.total_content_price)
+		, content(Item.content)
+		, attributes(Item.attributes)
+	{
+	}
+
+	FStoreItem(const struct FStoreBundle& Bundle);
 
 	bool operator==(const FStoreItem& Item) const
 	{
@@ -369,7 +439,7 @@ struct XSOLLASTORE_API FStoreCartItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	FString sku;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
@@ -393,7 +463,7 @@ struct XSOLLASTORE_API FStoreCartItem
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString image_url;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	int32 quantity;
 
 public:
@@ -405,6 +475,7 @@ public:
 		: sku(Item.sku)
 		, name(Item.name)
 		, is_free(Item.is_free)
+		, price(Item.price)
 		, image_url(Item.image_url)
 		, quantity(0){};
 
@@ -568,7 +639,9 @@ public:
 
 public:
 	FStoreSubscriptionItem()
-		: expired_at(0){}
+		: expired_at(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -583,3 +656,312 @@ public:
 public:
 	FStoreSubscriptionData(){};
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBundle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString bundle_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FStorePrice total_content_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreBundleContent> content;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreListOfBundles
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FStoreBundle> items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreUnitItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Unit Item")
+	FString drm_sku;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCouponRewardItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	TArray<FStoreUnitItem> unit_items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCouponBonusItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	FStoreCouponRewardItem item;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	int32 quantity;
+
+public:
+	FStoreCouponBonusItem()
+		: quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreCouponRewardData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	TArray<FStoreCouponBonusItem> bonus;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Coupon Data")
+	bool is_selectable;
+
+public:
+	FStoreCouponRewardData()
+		: is_selectable(false){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreRedeemedCouponItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FStoreGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FStoreItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	bool is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FStorePrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	TArray<FVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	FItemInventoryOptions inventory_options;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Item")
+	int32 quantity;
+
+public:
+	FStoreRedeemedCouponItem()
+		: is_free(false)
+		, quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreRedeemedCouponData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Data")
+	TArray<FStoreRedeemedCouponItem> items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreDiscount
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Discount")
+	FString percent;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStorePromocodeRewardData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	TArray<FStoreCouponBonusItem> bonus;
+
+	/** Percent discount. The price of cat will be decreased using a value calculated by using this percent and then rounded to 2 decimal places. */
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	FStoreDiscount discount;
+
+	/** If 'true', the user should choose the bonus before redeeming a promo code. */
+	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
+	bool is_selectable;
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaJsonVariant
+{
+	GENERATED_BODY()
+
+	FXsollaJsonVariant(){};
+	FXsollaJsonVariant(const FVariant Variant) : Variant(Variant){};
+
+	FVariant Variant;
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaPaymentCustomParameters
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, FXsollaJsonVariant> Parameters;
+};
+
+/* Usual version EVariantTypes is not using UENUM() this cause problem when call GetEnumValueAsString with "EVariantTypes" as first argument.
+*/
+UENUM()
+enum class EXsollaVariantTypes : int8
+{
+	Empty = 0,
+	Ansichar = 1,
+	Bool = 2,
+	Box = 3,
+	BoxSphereBounds = 4,
+	ByteArray = 5,
+	Color = 6,
+	DateTime = 7,
+	Double = 8,
+	Enum = 9,
+	Float = 10,
+	Guid = 11,
+	Int8 = 12,
+	Int16 = 13,
+	Int32 = 14,
+	Int64 = 15,
+	IntRect = 16,
+	LinearColor = 17,
+	Matrix = 18,
+	Name = 19,
+	Plane = 20,
+	Quat = 21,
+	RandomStream = 22,
+	Rotator = 23,
+	String = 24,
+	Widechar = 25,
+	Timespan = 26,
+	Transform = 27,
+	TwoVectors = 28,
+	UInt8 = 29,
+	UInt16 = 30,
+	UInt32 = 31,
+	UInt64 = 32,
+	Vector = 33,
+	Vector2d = 34,
+	Vector4 = 35,
+	IntPoint = 36,
+	IntVector = 37,
+	NetworkGUID = 38,
+	Custom = 0x40
+};
+
+inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
+{
+	this->description = Bundle.description;
+	this->groups = Bundle.groups;
+	this->image_url = Bundle.image_url;
+	this->is_free = Bundle.is_free == "true";
+	this->name = Bundle.name;
+	this->price = Bundle.price;
+	this->sku = Bundle.sku;
+	this->type = Bundle.type;
+	this->virtual_prices = Bundle.virtual_prices;
+	this->bundle_type = Bundle.bundle_type;
+	this->total_content_price = Bundle.total_content_price;
+	this->content = Bundle.content;
+	this->attributes = Bundle.attributes;
+}
