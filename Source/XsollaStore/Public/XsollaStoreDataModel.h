@@ -6,7 +6,6 @@
 #include "Misc/Variant.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
-#include "Chaos/AABB.h"
 
 
 #include "XsollaStoreDataModel.generated.h"
