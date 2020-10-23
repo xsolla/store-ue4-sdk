@@ -359,7 +359,7 @@ public:
 	* @param SuccessCallback Callback function called after successful coupon redeem.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
     void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
         const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
@@ -371,7 +371,7 @@ public:
 	* @param SuccessCallback Callback function called after successful coupon redeem.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
     void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
         const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
