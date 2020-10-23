@@ -37,6 +37,7 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnUserFriendsUpdate, const FXsollaFriendsDat
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSocialFriendsUpdate, const FXsollaSocialFriendsData&, SocialFriendsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -219,6 +220,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Check User Age
+	* Checks user’s age for a particular region. The age requirements depend on the region. Service determines the user’s location by the IP address.
+	*
+	* @param AuthToken User authorization token.
+	* @param Dob User's birth date in the 'YYYY-MM-DD' format.
+	* @param SuccessCallback Callback function called after successful check user age.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CheckUserAge(const FString& AuthToken, const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Link Accounts by Code
 	 * Links the user platform account to the existing main account by the code.
 	 *
@@ -369,6 +381,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	void AuthViaAccessTokenOfSocialNetwork();
+
+	void AuthViaProviderProject();
+
+	void AuthByUsernameAndPassword();
+
 	/** Update Social Friends
 	 * Updates locally cached user friends data from a social provider.
 	 *
@@ -476,6 +494,8 @@ protected:
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
+	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+        FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,

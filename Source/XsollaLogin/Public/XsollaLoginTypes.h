@@ -387,3 +387,12 @@ struct FXsollaLinkedSocialNetworkData
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
 	FString social_id;
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaCheckUserAgeResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Check User Age")
+	bool accepted;
+};

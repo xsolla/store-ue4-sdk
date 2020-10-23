@@ -391,6 +391,25 @@ void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, c
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::CheckUserAge(const FString& AuthToken, const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+
+	RequestDataJson->SetStringField(TEXT("dob"), *Dob);
+	RequestDataJson->SetStringField(TEXT("project_id"), *LoginID);
+	
+	const FString Url = FString::Printf(TEXT("%s/age/check"), *UsersEndpoint);
+
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, *AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
@@ -1081,6 +1100,43 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 	else
 	{
 		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+    FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		FXsollaCheckUserAgeResult CheckUserAgeResult;
+		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaCheckUserAgeResult::StaticStruct(), &CheckUserAgeResult))
+		{
+			SuccessCallback.ExecuteIfBound(CheckUserAgeResult);
+			return;
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json"));
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: %s"), *ResponseStr);
 	}
 
 	// No success before so call the error callback
