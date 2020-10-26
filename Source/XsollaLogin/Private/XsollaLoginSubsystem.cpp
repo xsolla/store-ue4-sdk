@@ -374,7 +374,7 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 	SetStringArrayField(RequestDataJson, TEXT("removing_keys"), AttributesToRemove);
 
 	FString PostContent;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
@@ -391,7 +391,7 @@ void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, c
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CheckUserAge(const FString& AuthToken, const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CheckUserAge(const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -405,7 +405,7 @@ void UXsollaLoginSubsystem::CheckUserAge(const FString& AuthToken, const FString
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 	
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent, *AuthToken);
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
