@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.3] - 2020-10-23
+
+### Added
+- Coupon functionality.
+- Bundle functionality.
+- Promo codes functionality.
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.5.2] - 2020-09-23
 
 ### Added
@@ -146,3 +157,4 @@
 ### Fixed
 
 - Minor bugs.
+

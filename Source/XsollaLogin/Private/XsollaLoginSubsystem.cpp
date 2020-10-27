@@ -520,6 +520,12 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	if (!IsValid(Picture))
+	{
+		ErrorCallback.Execute("-1", "Picture is invalid.");
+		return;
+	}
+	
 	// Prepare picture upload request content
 	FString Boundary = TEXT("---------------------------" + FString::FromInt(FDateTime::Now().GetTicks()));
 	FString BeginBoundry = TEXT("\r\n--" + Boundary + "\r\n");
