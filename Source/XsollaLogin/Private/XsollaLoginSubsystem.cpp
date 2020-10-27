@@ -464,6 +464,16 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::AuthByUsernameAndPassword(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// TODO
+}
+
+void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// TODO
+}
+
 void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(UserDetailsEndpoint, EXsollaLoginRequestVerb::GET, TEXT(""), AuthToken);
@@ -883,6 +893,37 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& ProviderName, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("social/%s/login_with_token?projectId=%s&payload=%s&with_logout=%s"),
+        *CrossAuthEndpoint,
+        *ProviderName,
+        *LoginID,
+        Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(const FString& ProviderName, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = FString::Printf(TEXT("%s/social/%s/login_with_token?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=offline"),
+        *LoginEndpointOAuth,
+        *ProviderName,
+        *Settings->ClientID,
+        *BlankRedirectEndpoint,
+        *State);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
@@ -1240,6 +1281,13 @@ void UXsollaLoginSubsystem::AuthenticationViaProviderProject_HttpRequestComplete
 		FXsollaProviderToken ProviderToken;
 		if (FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FXsollaProviderToken::StaticStruct(), &ProviderToken))
 		{
+			LoginData.AuthToken.JWT = ProviderToken.access_token;
+			LoginData.AuthToken.RefreshToken = ProviderToken.refresh_token;
+			LoginData.AuthToken.ExpiresAt = ProviderToken.expires_in;
+
+			SaveData();
+
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 			SuccessCallback.ExecuteIfBound(ProviderToken);
 			return;
 		}

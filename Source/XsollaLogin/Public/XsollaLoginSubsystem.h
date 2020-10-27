@@ -262,11 +262,29 @@ public:
 	 *
 	 * @param UserId User identifier from a platform account.
 	 * @param Platform Platform name.
-	 * @param SuccessCallback Callback function called after succesfull user authentication on specified platform.
+	 * @param SuccessCallback Callback function called after successful user authentication on specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Auth By Username and Password
+	* Authenticates the user by the username/email and password specified. To finish user authentication, get the user JWT by sending the `Generate JWT` request.
+	*
+	* @param SuccessCallback Callback function called after successful user authentication on specified platform.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void AuthByUsernameAndPassword(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Auth Via Access Token of Social Network
+	* Authenticates a platform account user.
+	*
+	* @param SuccessCallback Callback function called after successful user authentication on specified platform.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+    void AuthViaAccessTokenOfSocialNetwork(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Details
 	 * Updates locally cached user details.
@@ -472,7 +490,7 @@ protected:
 	void RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRemeberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -482,6 +500,10 @@ protected:
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& ProviderName, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError&
+		ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);

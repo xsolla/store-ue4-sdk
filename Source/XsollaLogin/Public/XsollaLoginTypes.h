@@ -408,7 +408,7 @@ struct FXsollaProviderToken
 
 	/** 'access_token' expiration period in seconds. You can configure it in Publisher Account > your Login project > General Settings > JWT expiration. */
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
-	int32 expire_in;
+	int64 expires_in;
 
 	/** Refresh token for updating the 'access token'. */
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
