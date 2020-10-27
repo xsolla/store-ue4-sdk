@@ -396,3 +396,25 @@ struct FXsollaCheckUserAgeResult
 	UPROPERTY(BlueprintReadWrite, Category = "Check User Age")
 	bool accepted;
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaProviderToken
+{
+	GENERATED_BODY()
+
+	/** User JWT for the client project */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString access_token;
+
+	/** 'access_token' expiration period in seconds. You can configure it in Publisher Account > your Login project > General Settings > JWT expiration. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	int32 expire_in;
+
+	/** Refresh token for updating the 'access token'. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString refresh_token;
+
+	/** JWT type. Can be 'bearer'. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString token_type;
+};
