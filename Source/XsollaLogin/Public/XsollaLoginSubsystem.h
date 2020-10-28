@@ -228,7 +228,7 @@ public:
 	 * Creates code for linking user platform account to the main account.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful accout linking code creation. New linking code will be received.
+	 * @param SuccessCallback Callback function called after successful account linking code creation. New linking code will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -268,23 +268,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Auth By Username and Password
-	* Authenticates the user by the username/email and password specified. To finish user authentication, get the user JWT by sending the `Generate JWT` request.
-	*
-	* @param SuccessCallback Callback function called after successful user authentication on specified platform.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void AuthByUsernameAndPassword(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-
 	/** Auth Via Access Token of Social Network
-	* Authenticates a platform account user.
+	* Authenticates the user with the access token using social network credentials.
 	*
+	* @param AuthToken Access token received from a social network
+	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
+	* @param ProviderName Name of the social network connected to the Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
+	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim.
+	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
 	* @param SuccessCallback Callback function called after successful user authentication on specified platform.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void AuthViaAccessTokenOfSocialNetwork(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+    void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret,
+		const FString& ProviderName, const FString& Payload, const FString& State,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Details
 	 * Updates locally cached user details.
@@ -501,9 +499,10 @@ protected:
 	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& ProviderName, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError&
-		ErrorCallback);
-	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName, const FString& Payload, const
+		FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName, const FString& State, const
+		FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -533,6 +532,10 @@ protected:
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+        FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+        FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
