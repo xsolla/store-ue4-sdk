@@ -85,26 +85,6 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateInventory(const FString& AuthToken,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"),
-		*ProjectID);
-
-	const FString Platform = GetPublishingPlatformName();
-	if (!Platform.IsEmpty())
-	{
-		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
-	}
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency"),
@@ -639,50 +619,6 @@ void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FOnGetLis
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
-	int32 Quantity, const FString& InstanceID,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	RequestDataJson->SetStringField(TEXT("sku"), ItemSKU);
-
-	if (Quantity == 0)
-	{
-		RequestDataJson->SetObjectField(TEXT("quantity"), nullptr);
-	}
-	else
-	{
-		RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
-	}
-
-	if (InstanceID.IsEmpty())
-	{
-		RequestDataJson->SetObjectField(TEXT("instance_id"), nullptr);
-	}
-	else
-	{
-		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
-	}
-
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/item/consume"),
-		*ProjectID);
-
-	const FString Platform = GetPublishingPlatformName();
-	if (!Platform.IsEmpty())
-	{
-		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
-	}
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	HttpRequest->ProcessRequest();
-}
-
 void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 	const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
@@ -729,33 +665,6 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaStoreSubsystem::GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
-	const FOnCouponRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/coupon/code/%s/rewards"),
-		*ProjectID,
-		*CouponCode);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaStoreSubsystem::RedeemCoupon(const FString& AuthToken, const FString& CouponCode, const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/coupon/redeem"), *ProjectID);
-
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	RequestDataJson->SetStringField(TEXT("coupon_code"), CouponCode);
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::RedeemCoupon_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -858,40 +767,6 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 
 	// Cache data as it should now
 	ItemsData.Groups = GroupsData.Groups;
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-}
-
-void UXsollaStoreSubsystem::UpdateInventory_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FStoreInventory newInventory;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreInventory::StaticStruct(), &newInventory))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	Inventory = newInventory;
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
@@ -1327,21 +1202,6 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 	SuccessCallback.ExecuteIfBound(Bundle);
 }
 
-void UXsollaStoreSubsystem::ConsumeInventoryItem_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-}
-
 void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1434,66 +1294,6 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	SuccessCallback.ExecuteIfBound(OrderId);
 }
 
-void UXsollaStoreSubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FStoreCouponRewardData couponRewards;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCouponRewardData::StaticStruct(), &couponRewards))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(couponRewards);
-}
-
-void UXsollaStoreSubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FStoreRedeemedCouponData redeemedCouponData;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreRedeemedCouponData::StaticStruct(), &redeemedCouponData))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(redeemedCouponData);
-}
-
 void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
@@ -1511,7 +1311,7 @@ void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequest
 	}
 
 	FStorePromocodeRewardData PromocodeRewardData;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreRedeemedCouponData::StaticStruct(), &PromocodeRewardData))
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStorePromocodeRewardData::StaticStruct(), &PromocodeRewardData))
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
@@ -1884,11 +1684,6 @@ FStoreCart UXsollaStoreSubsystem::GetCart() const
 	return Cart;
 }
 
-FStoreInventory UXsollaStoreSubsystem::GetInventory() const
-{
-	return Inventory;
-}
-
 FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 {
 	return PengindPaystationUrl;
@@ -1929,15 +1724,6 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
-}
-
-bool UXsollaStoreSubsystem::IsItemInInventory(const FString& ItemSKU) const
-{
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FStoreInventoryItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	return InventoryItem != nullptr;
 }
 
 void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
