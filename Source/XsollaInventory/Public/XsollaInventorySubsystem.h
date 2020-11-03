@@ -72,6 +72,17 @@ public:
 	void UpdateVirtualCurrencyBalance(const FString& AuthToken,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
+	/** Update User Subscriptions
+	 * Updates the list of user subscriptions (cached locally).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateSubscriptions(const FString& AuthToken,
+		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
 	 *
@@ -116,6 +127,8 @@ protected:
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
@@ -149,6 +162,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
 
+	/** Get cached user subscriptions */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions")
+	TArray<FSubscriptionItem> GetSubscriptions() const;
+
+	/** Get name of the cached item with given SKU */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
+	FString GetItemName(const FString& ItemSKU) const;
+
 	/** Check if certain item is in inventory */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	bool IsItemInInventory(const FString& ItemSKU) const;
@@ -162,4 +183,7 @@ protected:
 
 	/** Cached virtual currency balance */
 	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
+
+	/** Cached user subscriptions */
+	FSubscriptionData Subscriptions;
 };

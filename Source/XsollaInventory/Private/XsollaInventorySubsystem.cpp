@@ -85,6 +85,24 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& Auth
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
+	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+{
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/subscriptions"),
+		*ProjectID);
+
+	const FString Platform = GetPublishingPlatformName();
+	if (!Platform.IsEmpty())
+	{
+		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
+	}
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
 	int32 Quantity, const FString& InstanceID,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
@@ -212,6 +230,40 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
 		return;
 	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound();
+}
+
+void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		return;
+	}
+
+	FSubscriptionData receivedSubscriptions;
+	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FSubscriptionData::StaticStruct(), &receivedSubscriptions))
+	{
+		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
+		return;
+	}
+
+	Subscriptions = receivedSubscriptions;
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
@@ -493,6 +545,25 @@ FInventoryItemsData UXsollaInventorySubsystem::GetInventory() const
 TArray<FVirtualCurrencyBalance> UXsollaInventorySubsystem::GetVirtualCurrencyBalance() const
 {
 	return VirtualCurrencyBalance.Items;
+}
+
+TArray<FSubscriptionItem> UXsollaInventorySubsystem::GetSubscriptions() const
+{
+	return Subscriptions.Items;
+}
+
+FString UXsollaInventorySubsystem::GetItemName(const FString& ItemSKU) const
+{
+	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
+		return InItem.sku == ItemSKU;
+	});
+
+	if (InventoryItem != nullptr)
+	{
+		return InventoryItem->name;
+	}
+
+	return TEXT("");
 }
 
 bool UXsollaInventorySubsystem::IsItemInInventory(const FString& ItemSKU) const

@@ -177,3 +177,53 @@ public:
 public:
 	FVirtualCurrencyBalanceData(){};
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLAINVENTORY_API FSubscriptionItem
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString Class;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	int64 expired_at;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString status;
+
+public:
+	FSubscriptionItem()
+		: expired_at(0)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAINVENTORY_API FSubscriptionData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Data")
+	TArray<FSubscriptionItem> Items;
+
+public:
+	FSubscriptionData(){};
+};

@@ -98,17 +98,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update User Subscriptions
-	 * Updates the list of user subscriptions (cached locally).
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSubscriptions(const FString& AuthToken,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
 	/** Fetch Payment Token
 	 * Initiates an item purchase session and fetches token for payment console.
 	 *
@@ -321,8 +310,6 @@ protected:
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
@@ -419,10 +406,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
 
-	/** Get cached user subscriptions */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FStoreSubscriptionItem> GetSubscriptions() const;
-
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
@@ -463,9 +446,6 @@ protected:
 
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
-
-	/** Cached user subscriptions */
-	FStoreSubscriptionData Subscriptions;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
