@@ -25,7 +25,7 @@ enum class EXsollaLoginRequestVerb : uint8
 
 class FJsonObject;
 
-/** Common callback for operations without any user-friendly messages from server on success */
+/** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
@@ -53,9 +53,9 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** Initialize controller with provided Project ID and Login ID (use to override project settings)
+	/** Initialize controller with provided Project ID and Login ID (use to override project settings).
 	 *
-	 * @param InProjectId New Project ID value from Publisher Account Project settings > Project ID.
+	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
@@ -118,7 +118,7 @@ public:
 	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Launch social authentication
-	 * Opens social authentication URL in browser.
+	 * Opens social authentication URL in the browser.
 	 *
 	 * @param SocialAuthenticationUrl URL with social network authentication form.
 	 * @param BrowserWidget Widget to represent social network authentication form. Can be set in project settings.
@@ -149,7 +149,7 @@ public:
 
 	/** Refresh the token in case it is expired. Works only when OAuth 2.0 is enabled.
 	 *
-	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing user with username/password for the firs time.
+	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing user with username/password for the first time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -179,7 +179,7 @@ public:
 	 * Updates locally cached list of user attributes.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param UserId Identifier of user which attributes should be updated for.
+	 * @param UserId Identifier of a user whose attributes should be updated.
 	 * @param AttributeKeys Keys of attributes that should be updated.
 	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -192,7 +192,7 @@ public:
 	 * Updates locally cached list of user read-only attributes.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param UserId Identifier of user which attributes should be updated for.
+	 * @param UserId Identifier of a user whose attributes should be updated.
 	 * @param AttributeKeys Keys of attributes that should be updated.
 	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -202,7 +202,7 @@ public:
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Attributes
-	 * Modifies the list of user attributes by creating/editing its items (changes made on server side).
+	 * Modifies the list of user attributes by creating/editing its items (changes made on the server side).
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param AttributesToModify List of new/edited attributes.
@@ -214,7 +214,7 @@ public:
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Attributes
-	 * Removes user attributes with specified keys (changes made on server side).
+	 * Removes user attributes with specified keys (changes made on the server side).
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param AttributesToRemove List of attribute keys to be removed.
@@ -225,10 +225,10 @@ public:
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Create Code for Linking Accounts
-	 * Creates code for linking user platform account to the main account.
+	 * Creates code for linking the user platform account to the main account.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful account linking code creation. New linking code will be received.
+	 * @param SuccessCallback Callback function called after successful account linking code creation. The new linking code will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -249,7 +249,7 @@ public:
 	 *
 	 * @param UserId User identifier from a platform account.
 	 * @param Platform Platform name.
-	 * @param Code Account linking code obtained from master account.
+	 * @param Code Account linking code obtained from the master account.
 	 * @param SuccessCallback Callback function called after successful account linking.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -273,10 +273,10 @@ public:
 	*
 	* @param AuthToken Access token received from a social network
 	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
-	* @param ProviderName Name of the social network connected to the Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
+	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
 	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim.
 	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
-	* @param SuccessCallback Callback function called after successful user authentication on specified platform.
+	* @param SuccessCallback Callback function called after successful user authentication on the specified platform.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -345,8 +345,8 @@ public:
 	 * Removes user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param PhoneNumber User phone number to be removed. If parameter is not specified, locally cached phone  number will be used instead.
-	 * @param SuccessCallback Callback function called after user phone number removed successfully.
+	 * @param PhoneNumber User phone number to be removed. If the parameter isn't specified, locally cached phone number will be used instead.
+	 * @param SuccessCallback Callback function called after the user phone number was removed successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -357,7 +357,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Picture New user profile picture.
-	 * @param SuccessCallback Callback function called after user profile picture modified successfully.
+	 * @param SuccessCallback Callback function called after the user profile picture was modified successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -367,7 +367,7 @@ public:
 	 * Removes user profile picture.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after user profile picture removed successfully.
+	 * @param SuccessCallback Callback function called after user profile picture was removed successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -388,11 +388,11 @@ public:
 		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify Friends
-	 * Modifies relationships with specified user.
+	 * Modifies relationships with the specified user.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Action Type of action to be applied to a specified friend.
-	 * @param UserID Identifier of user to change relationships with.
+	 * @param UserID Identifier of a user to change relationships with.
 	 * @param SuccessCallback Callback function called after successful user friends data modification.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -404,7 +404,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Locale Locale.
-	 * @param SuccessCallback Callback function called after social auth links list local cache updated successfully.
+	 * @param SuccessCallback Callback function called after locally cached list of links for social authentication was updated successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -414,10 +414,10 @@ public:
 	 * Updates locally cached user friends data from a social provider.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Platform Name of social provider. If empty friends from all available social providers will be fetched.
-	 * @param SuccessCallback Callback function called after successful user friends data from social provider local cache update.
+	 * @param Platform Name of social provider. If empty, friends from all available social providers will be fetched.
+	 * @param SuccessCallback Callback function called after successful update of the user friends data from the social provider local cache.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of elements from which list is generated.
+	 * @param Offset Number of the element from which list is generated.
 	 * @param Limit Maximum number of friends that can be received at a time.
 	 * @param FromThisGame Flag indicating whether social friends are from this game.
 	 */
@@ -429,8 +429,8 @@ public:
 	 * Update friends at server.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Platform Name of the chose social provider. If is not specify it, the method gets friends from all social providers.
-	 * @param SuccessCallback Callback function called after successful update user friends.
+	 * @param Platform Name of the chosen social provider. If not specified, the method gets friends from all social providers.
+	 * @param SuccessCallback Callback function called after successful update of user friends.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -465,7 +465,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
-	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
+	 * @param SuccessCallback Callback function called after the URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -476,7 +476,7 @@ public:
 	 * Update list of linked social networks cached locally.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after list of linked social networks successfully received.
+	 * @param SuccessCallback Callback function called after the list of linked social networks was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -567,33 +567,33 @@ protected:
 	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
-	/** Process request for obtaining/refreshing token using OAuth 2.0 */
+	/** Processes the request for obtaining/refreshing token using OAuth 2.0 */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
-	/** Return true if error has happened */
+	/** Returns true if the error occurs. */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
-	/** Create http request and add Xsolla API meta */
+	/** Creates the HTTP request and adds the Xsolla API meta. */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
-	/** Encode request body to match x-www-form-urlencoded data format */
+	/** Encodes the request body to match x-www-form-urlencoded data format. */
 	FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 
-	/** Set a Json string array field named FieldName and value of Array */
+	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
 
-	/** Parse JWT token and get its payload as json object */
+	/** Parses a JWT token and gets its payload as a JSON object. */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
 
-	/** Get name of target platform */
+	/** Gets the name of a target platform. */
 	FString GetTargetPlatformName(EXsollaTargetPlatform Platform);
 
-	/** Cached Xsolla project id */
+	/** Cached Xsolla project ID. */
 	FString ProjectID;
 
-	/** Cached Xsolla Login project id */
+	/** Cached Xsolla Login project. */
 	FString LoginID;
 
 public:
