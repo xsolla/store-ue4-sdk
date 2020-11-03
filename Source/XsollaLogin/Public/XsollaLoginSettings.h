@@ -121,7 +121,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoLoginID;
 
-	/** Request user nickname after successful authorization in case one is missing */
+	/** Request user nickname after successful authorization in case the nickname is missing */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	bool RequestNickname;
 
