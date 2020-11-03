@@ -138,3 +138,42 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Redeemed Coupon Data")
 	TArray<FInventoryRedeemedCouponItem> items;
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLAINVENTORY_API FVirtualCurrencyBalance
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
+	FString sku;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
+	FString name;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
+	FString description;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
+	int64 amount;
+
+public:
+	FVirtualCurrencyBalance()
+		: amount(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAINVENTORY_API FVirtualCurrencyBalanceData
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance Data")
+	TArray<FVirtualCurrencyBalance> Items;
+
+public:
+	FVirtualCurrencyBalanceData(){};
+};

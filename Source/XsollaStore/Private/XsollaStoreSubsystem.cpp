@@ -107,26 +107,6 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FOnStoreUpdate& 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/virtual_currency_balance"),
-		*ProjectID);
-
-	const FString Platform = GetPublishingPlatformName();
-	if (!Platform.IsEmpty())
-	{
-		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
-	}
-
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
 void UXsollaStoreSubsystem::UpdateSubscriptions(const FString& AuthToken,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
@@ -824,37 +804,6 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete(
 	}
 
 	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-}
-
-void UXsollaStoreSubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
-{
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance))
 	{
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
 		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
@@ -1667,11 +1616,6 @@ TArray<FVirtualCurrency> UXsollaStoreSubsystem::GetVirtualCurrencyData() const
 TArray<FVirtualCurrencyPackage> UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
 {
 	return VirtualCurrencyPackages.Items;
-}
-
-TArray<FVirtualCurrencyBalance> UXsollaStoreSubsystem::GetVirtualCurrencyBalance() const
-{
-	return VirtualCurrencyBalance.Items;
 }
 
 TArray<FStoreSubscriptionItem> UXsollaStoreSubsystem::GetSubscriptions() const

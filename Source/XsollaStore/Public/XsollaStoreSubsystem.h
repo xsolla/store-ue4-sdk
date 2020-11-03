@@ -98,17 +98,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update Virtual Curency Balance
-	 * Updates virtual currency balance (cached locally).
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyBalance(const FString& AuthToken,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
 	/** Update User Subscriptions
 	 * Updates the list of user subscriptions (cached locally).
 	 *
@@ -332,8 +321,6 @@ protected:
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
@@ -432,10 +419,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
 
-	/** Get cached virtual currencies balance */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
-
 	/** Get cached user subscriptions */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FStoreSubscriptionItem> GetSubscriptions() const;
@@ -480,9 +463,6 @@ protected:
 
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
-
-	/** Cached virtual currency balance */
-	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
 
 	/** Cached user subscriptions */
 	FStoreSubscriptionData Subscriptions;

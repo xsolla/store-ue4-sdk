@@ -61,6 +61,17 @@ public:
 	void UpdateInventory(const FString& AuthToken,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
+	/** Update Virtual Curency Balance
+	 * Updates virtual currency balance (cached locally).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencyBalance(const FString& AuthToken,
+		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
 	 *
@@ -103,6 +114,8 @@ public:
 protected:
 	void UpdateInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
@@ -132,6 +145,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	FInventoryItemsData GetInventory() const;
 
+	/** Get cached virtual currencies balance */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
+	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
+
 	/** Check if certain item is in inventory */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	bool IsItemInInventory(const FString& ItemSKU) const;
@@ -142,4 +159,7 @@ protected:
 
 	/** User inventory */
 	FInventoryItemsData Inventory;
+
+	/** Cached virtual currency balance */
+	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
 };
