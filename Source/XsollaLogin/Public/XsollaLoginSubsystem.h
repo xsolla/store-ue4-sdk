@@ -342,7 +342,7 @@ public:
 	void ModifyUserPhoneNumber(const FString& AuthToken, const FString& PhoneNumber, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Phone Number
-	 * Removes user phone number.
+	 * Removes the user phone number.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param PhoneNumber User phone number to be removed. If the parameter isn't specified, locally cached phone number will be used instead.
@@ -426,7 +426,7 @@ public:
 		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 500, bool FromThisGame = false);
 
 	/** Update Users Friends
-	 * Update friends at server.
+	 * Updates friends on the server.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of the chosen social provider. If not specified, the method gets friends from all social providers.
@@ -448,7 +448,7 @@ public:
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Search Users By Nickname
-	 * Search for users with specified nickname.
+	 * Searches for users with the specified nickname.
 	 *
 	 * @param Nickname User nickname used as search criteria.
 	 * @param SuccessCallback Callback function called after user search completed successfully.
@@ -473,7 +473,7 @@ public:
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update Linked Social Networks
-	 * Update list of linked social networks cached locally.
+	 * Updates the list of linked social networks cached locally.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param SuccessCallback Callback function called after the list of linked social networks was successfully received.
