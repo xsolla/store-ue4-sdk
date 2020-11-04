@@ -53,7 +53,7 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** Initialize controller with provided Project ID and Login ID (use to override project settings).
+	/** Initializes controller with provided Project ID and Login ID (use to override project settings).
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
@@ -107,7 +107,7 @@ public:
 	void ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Get Social Authentication URL
-	 * Gets URL for authentication via specified social network.
+	 * Gets URL for authentication via the specified social network.
 	 *
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
@@ -121,18 +121,18 @@ public:
 	 * Opens social authentication URL in the browser.
 	 *
 	 * @param SocialAuthenticationUrl URL with social network authentication form.
-	 * @param BrowserWidget Widget to represent social network authentication form. Can be set in project settings.
+	 * @param BrowserWidget Widget to represent social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
 
 	/** Authentication Via Provider Project
-	* Calls to exchange the provider JWT by the client JWT.
+	* Calls to exchange the provider JWT with the client JWT.
 	*
 	* @param AuthToken User authorization token.
 	* @param PlatformProviderProject Name of a social network. Provider must be connected to Login in Publisher Account. Required.
-	* @param Scope Scope is a mechanism in OAuth 2.0 to limit an application's access to a user's account. Can be "email", "offline", "playfab" or you own, if you pass you own scope then the Xsolla Login server does not process these values, but returns them in the received JWT. 
+	* @param Scope Scope is a mechanism in OAuth 2.0 to limit an application's access to a user's account. Can be "email", "offline", "playfab", or you own, if you pass you own scope then the Xsolla Login server doesn't process these values, but returns them in the received JWT. 
 	* @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
@@ -140,14 +140,14 @@ public:
 	void AuthenticationViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
 		const FOnAuthenticationViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Set a new value of token (used when token obtained via social network authentication etc.)
+	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
 	 * @param Token User authorization token.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& Token);
 
-	/** Refresh the token in case it is expired. Works only when OAuth 2.0 is enabled.
+	/** Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
 	 *
 	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing user with username/password for the first time.
 	 */
@@ -217,7 +217,7 @@ public:
 	 * Removes user attributes with specified keys (changes made on the server side).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param AttributesToRemove List of attribute keys to be removed.
+	 * @param AttributesToRemove List of attribute keys for removal.
 	 * @param SuccessCallback Callback function called after successful user attributes removal on the server side.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -238,7 +238,7 @@ public:
 	* Checks user’s age for a particular region. The age requirements depend on the region. Service determines the user’s location by the IP address.
 	*
 	* @param Dob User's birth date in the 'YYYY-MM-DD' format.
-	* @param SuccessCallback Callback function called after successful check user age.
+	* @param SuccessCallback Callback function called after successful check of the user age.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -262,7 +262,7 @@ public:
 	 *
 	 * @param UserId User identifier from a platform account.
 	 * @param Platform Platform name.
-	 * @param SuccessCallback Callback function called after successful user authentication on specified platform.
+	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -299,10 +299,10 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Birthday User  birth date in format (YYYY-MM-DD). Can be changed only once.
-	 * @param FirstName User first name. Pass empty string to remove current first name.
-	 * @param LastName User last name. Pass empty string to remove current last name.
+	 * @param FirstName User first name. Pass empty string to remove the current first name.
+	 * @param LastName User last name. Pass empty string to remove the current last name.
 	 * @param Gender User gender (f - for female, m - for male).
-	 * @param Nickname User nickname. Pass empty string to remove current nickname.
+	 * @param Nickname User nickname. Pass empty string to remove the current nickname.
 	 * @param SuccessCallback Callback function called after successful user details modification.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -345,7 +345,7 @@ public:
 	 * Removes the user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param PhoneNumber User phone number to be removed. If the parameter isn't specified, locally cached phone number will be used instead.
+	 * @param PhoneNumber User phone number for removal. If the parameter isn't specified, locally cached phone number will be used instead.
 	 * @param SuccessCallback Callback function called after the user phone number was removed successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -567,7 +567,7 @@ protected:
 	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
-	/** Processes the request for obtaining/refreshing token using OAuth 2.0 */
+	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
 	/** Returns true if the error occurs. */
@@ -597,22 +597,22 @@ private:
 	FString LoginID;
 
 public:
-	/** Get user login state data */
+	/** Gets user login state data. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
 	FXsollaLoginData GetLoginData();
 
-	/** Drop cache and cleanup login data */
+	/** Drops cache and cleans login data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData(bool ClearCache = true);
 
-	/** Get user ID from the specified JWT token
+	/** Gets user ID from the specified JWT token.
 	 *
 	 * @param Token User authorization token.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetUserId(const FString& Token);
 
-	/** Get a token provider
+	/** Gets a token provider.
 	 *
 	 * @param Token User authorization token.
 	 */
@@ -628,85 +628,85 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetTokenParameter(const FString& Token, const FString& Parameter);
 
-	/** Check if the specified JWT token represents the master account
+	/** Checks if the specified JWT token represents the master account.
 	 *
 	 * @param Token User authorization token.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	bool IsMasterAccount(const FString& Token);
 
-	/** Load save game and extract data */
+	/** Loads save game and extract data. */
 	void LoadSavedData();
 
-	/** Save cached data or reset one if RememberMe is false */
+	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Get the pending social authentication URL to be opened in browser */
+	/** Gets the pending social authentication URL to be opened in the browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetPendingSocialAuthenticationUrl() const;
 
-	/** Get cached HTML page for social account linking */
+	/** Gets cached HTML page for social account linking. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetSocialAccountLinkingHtml() const;
 
-	/** Get user attributes */
+	/** Gets user attributes. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserAttributes();
 
-	/** Get user read-only attributes */
+	/** Gets user read-only attributes. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaUserAttribute> GetUserReadOnlyAttributes();
 
-	/** Get user details */
+	/** Gets user details. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FXsollaUserDetails GetUserDetails() const;
 
-	/** Get user friends */
+	/** Gets user friends. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaSocialAuthLink> GetSocialAuthLinks() const;
 
-	/** Get user friends from social networks. Returns list of users obtained during last UpdateSocialFriends method call */
+	/** Gets user friends from social networks. Returns the list of users obtained during last UpdateSocialFriends method call. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FXsollaSocialFriendsData GetSocialFriends() const;
 
-	/** Get social profiles associated with specified user */
+	/** Gets social profiles associated with specified user. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaSocialFriend> GetSocialProfiles(const FString& UserID) const;
 
-	/** Get linked social networks */
+	/** Gets linked social networks. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	TArray<FXsollaLinkedSocialNetworkData> GetLinkedSocialNetworks() const;
 
-	/** Check if specified social network is linked to user profile */
+	/** Checks if the specified social network is linked to user profile. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	bool IsSocialNetworkLinked(const FString& Provider) const;
 
 protected:
-	/** Keeps state of user login */
+	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
 
-	/** Social authentication url to be opened in browser */
+	/** Social authentication url to be opened in browser. */
 	FString PendingSocialAuthenticationUrl;
 
-	/** Cached HTML page for social account linking */
+	/** Cached HTML page for social account linking. */
 	FString SocialAccountLinkingHtml;
 
-	/** Cached list of user attributes */
+	/** Cached list of user attributes. */
 	TArray<FXsollaUserAttribute> UserAttributes;
 
-	/** Cached list of user read-only attributes */
+	/** Cached list of user read-only attributes. */
 	TArray<FXsollaUserAttribute> UserReadOnlyAttributes;
 
-	/** Cached user details */
+	/** Cached user details. */
 	FXsollaUserDetails UserDetails;
 
-	/** Cached social auth links */
+	/** Cached social auth links. */
 	TArray<FXsollaSocialAuthLink> SocialAuthLinks;
 
-	/** Cached list of user's social network friends that was obtained during last UpdateSocialFriends method call */
+	/** Cached list of user's social network friends that was obtained during last UpdateSocialFriends method call. */
 	FXsollaSocialFriendsData SocialFriendsData;
 
-	/** Cached list of linked social networks */
+	/** Cached list of linked social networks. */
 	TArray<FXsollaLinkedSocialNetworkData> LinkedSocialNetworks;
 
 protected:
