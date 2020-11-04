@@ -402,7 +402,7 @@ struct FXsollaProviderToken
 {
 	GENERATED_BODY()
 
-	/** User JWT for the client project */
+	/** User JWT for the client project. */
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
 	FString access_token;
 
