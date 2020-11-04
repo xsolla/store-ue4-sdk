@@ -9,11 +9,11 @@
 
 #include "XsollaLoginSettings.generated.h"
 
-/** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
+/** You can store user data on the Xsolla side (default opton) or in your own storage. */
 UENUM(BlueprintType)
 enum class EUserDataStorage : uint8
 {
-	/** User data is stored at Xsolla's side */
+	/** User data is stored on the Xsolla side. */
 	Xsolla UMETA(DisplayName = "Xsolla storage"),
 
 	/** If the user data is stored on your side, proxy requests are used. */
@@ -54,7 +54,7 @@ public:
 
 	/**
 	 * URL to redirect the user to after registration/authentication/password reset.
-	 * Must be identical to a Callback URL specified in Publisher Account in Login settings.
+	 * Must be identical to a Callback URL specified in Publisher Account > Login settings.
 	 * Required if there are several Callback URLs.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
@@ -64,23 +64,23 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
 
-	/** Custom class to handle authentication via social network. */
+	/** Custom class to handle authentication via a social network. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
-	/** If enabled, Login SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
+	/** If enabled, the Login SDK will deactivate the existing user JWT values and activate the one generated during the latest successful authentication. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Invalidate Existing Sessions", Category = "Xsolla Login Settings")
 	bool InvalidateExistingSessions;
 
-	/** If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user. */
+	/** If enabled, the Login SDK will use the OAuth 2.0 protocol in order to authorize the user. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use OAuth2", Category = "Xsolla Login Settings")
 	bool UseOAuth2;
 
-	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
+	/** Your application ID. You will get it after sending the request to enable the OAuth 2.0 protocol. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "UseOAuth2"))
 	FString ClientID;
 
-	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
+	/** If enabled, the Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings")
 	bool UseCrossPlatformAccountLinking;
 
@@ -105,27 +105,27 @@ public:
 		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla"))
 	FString PlatformAccountID;
 
-	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key */
+	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	bool EncryptCachedCredentials;
 
-	/** AES-256 encryption key used for cached credentials encryption */
+	/** AES-256 encryption key used for cached credentials encryption. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (EditCondition = "EncryptCachedCredentials"))
 	FString XsollaSaveEncryptionKey;
 
-	/** Demo Project ID */
+	/** Demo Project ID. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoProjectID;
 
-	/** Demo Login ID */
+	/** Demo Login ID. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	FString DemoLoginID;
 
-	/** Request user nickname after successful authorization in case one is missing */
+	/** Request user nickname after successful authorization in case the nickname is missing. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	bool RequestNickname;
 
-	/** If enabled, Login SDK will use Steam as default authorization mechanism */
+	/** If enabled, Login SDK will use Steam as a default authorization mechanism. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Demo")
 	bool bUseSteamAuthorization;
 };
