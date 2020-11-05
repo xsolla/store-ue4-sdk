@@ -38,7 +38,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSocialFriendsUpdate, const FXsollaSocia
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthenticationViaProviderProjectSuccess, const FXsollaProviderToken&, ProviderToken);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthenticateViaProviderProjectSuccess, const FXsollaProviderToken&, ProviderToken);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -137,8 +137,8 @@ public:
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void AuthenticationViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
-		const FOnAuthenticationViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
+		const FOnAuthenticateViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Set a new value of token (used when token obtained via social network authentication etc.)
 	 *
@@ -237,12 +237,12 @@ public:
 	/** Check User Age
 	* Checks user’s age for a particular region. The age requirements depend on the region. Service determines the user’s location by the IP address.
 	*
-	* @param Dob User's birth date in the 'YYYY-MM-DD' format.
+	* @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
 	* @param SuccessCallback Callback function called after successful check user age.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CheckUserAge(const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Link Accounts by Code
 	 * Links the user platform account to the existing main account by the code.
@@ -526,8 +526,8 @@ protected:
         FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthenticationViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-        FOnAuthenticationViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void AuthenticateViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+        FOnAuthenticateViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,

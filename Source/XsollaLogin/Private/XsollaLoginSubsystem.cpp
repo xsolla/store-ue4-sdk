@@ -207,8 +207,8 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	SaveData();
 }
 
-void UXsollaLoginSubsystem::AuthenticationViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
-	const FOnAuthenticationViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
+	const FOnAuthenticateViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -229,7 +229,7 @@ void UXsollaLoginSubsystem::AuthenticationViaProviderProject(const FString& Auth
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthenticationViaProviderProject_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();	
 }
 
@@ -417,12 +417,12 @@ void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, c
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CheckUserAge(const FString& Dob, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 
-	RequestDataJson->SetStringField(TEXT("dob"), *Dob);
+	RequestDataJson->SetStringField(TEXT("dob"), *DateOfBirth);
 	RequestDataJson->SetStringField(TEXT("project_id"), *LoginID);
 	
 	const FString Url = FString::Printf(TEXT("%s/age/check"), *UsersEndpoint);
@@ -922,7 +922,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("access_token"), *AuthToken);
-	if (ProviderName.Compare("twitter"))
+	if (ProviderName.Compare(TEXT("twitter")))
 	{
 		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);		
 	}
@@ -954,7 +954,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("access_token"), *AuthToken);
-	if (ProviderName.Compare("twitter"))
+	if (ProviderName.Compare(TEXT("twitter")))
 	{
 		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);		
 	}
@@ -1301,8 +1301,8 @@ void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequ
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-void UXsollaLoginSubsystem::AuthenticationViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-	FOnAuthenticationViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnAuthenticateViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1322,7 +1322,7 @@ void UXsollaLoginSubsystem::AuthenticationViaProviderProject_HttpRequestComplete
 		{
 			LoginData.AuthToken.JWT = ProviderToken.access_token;
 			LoginData.AuthToken.RefreshToken = ProviderToken.refresh_token;
-			LoginData.AuthToken.ExpiresAt = ProviderToken.expires_in;
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + ProviderToken.expires_in;
 
 			SaveData();
 

@@ -132,20 +132,16 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(
 	const FString& Locale, const TArray<FString>& AdditionalFields,
 	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	FString StringAdditionalFields; 
-	for(auto Field : AdditionalFields)
-	{
-		StringAdditionalFields += Field + ",";
-	}
+	FString StringAdditionalFields = FString::Join(AdditionalFields, TEXT(","));
 	StringAdditionalFields.RemoveFromEnd(",");
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items/group/%s?locale=%s&limit=%d&offset=%d%s"),
             *ProjectID,
-            ExternalId.IsEmpty() ? *FString("all") : *ExternalId,
-            Locale.IsEmpty() ? *FString("en") : *Locale,
+            ExternalId.IsEmpty() ? *FString(TEXT("all")) : *ExternalId,
+            Locale.IsEmpty() ? *FString(TEXT("en")) : *Locale,
             Limit,
             Offset,
-            StringAdditionalFields.IsEmpty() ? *FString("") : *FString("&additional_fields[]=" + StringAdditionalFields)); 
+            StringAdditionalFields.IsEmpty() ? *FString(TEXT("")) : *FString(TEXT("&additional_fields[]=") + StringAdditionalFields)); 
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
