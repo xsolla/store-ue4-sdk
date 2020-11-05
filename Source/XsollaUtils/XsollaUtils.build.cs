@@ -18,7 +18,12 @@ namespace UnrealBuildTool.Rules
                     "UMG",
                     "Engine",
                     "ImageWrapper",
-                    "HTTP"
+                    "HTTP",
+                    "XsollaStore",
+                    "XsollaLogin",
+                    "FunctionalTesting",
+                    "AutomationDriver",
+                    "InputCore"
                 }
             );
         }

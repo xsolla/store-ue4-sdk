@@ -6,6 +6,11 @@
 UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetupDefaultDemoSettings();
+}
+
+void UXsollaLoginSettings::SetupDefaultDemoSettings()
+{
 	UserDataStorage = EUserDataStorage::Xsolla;
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/auth");
@@ -18,5 +23,5 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bUseSteamAuthorization = false;
-	Platform = EXsollaTargetPlatform::PlaystationNetwork; 
+	Platform = EXsollaTargetPlatform::PlaystationNetwork;
 }
