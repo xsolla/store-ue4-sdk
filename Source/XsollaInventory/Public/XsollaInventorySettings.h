@@ -26,6 +26,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Inventory Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	EXsollaPublishingPlatform Platform;
 
+	/** Web Store URL to be opened in order to purchase virtual items. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Inventory Demo")
+	FString WebStoreURL;
+
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Inventory Demo")
 	FString DemoProjectID;
