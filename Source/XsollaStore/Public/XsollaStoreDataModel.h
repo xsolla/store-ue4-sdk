@@ -242,6 +242,15 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemsList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Items List")
+	TArray<FStoreItem> Items;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItemsData
 {
 public:
