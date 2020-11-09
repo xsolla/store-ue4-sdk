@@ -1,18 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TestHelper.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/EditableText.h"
 #include "Components/EditableTextBox.h"
-// #include "XsollaLoginSettings.h"
-// #include "XsollaStoreSettings.h"
 // #include "XsollaLogin.h"
-// #include "XsollaStore.h"
+// #include "XsollaLoginSettings.h"
+// #include "XsollaStore/Public/XsollaStore.h"
+// #include "XsollaStore/Public/XsollaStoreSettings.h"
+#include "XsollaLogin/Public/XsollaLoginSubsystem.h"
 #include "XsollaDemoGameModeBase.h"
-#include "XsollaLoginSubsystem.h"
 #include "AutomationDriver/Public/AutomationDriverTypeDefs.h"
 #include "AutomationDriver/Public/IAutomationDriver.h"
 #include "AutomationDriver/Public/IAutomationDriverModule.h"
@@ -227,32 +226,18 @@ bool UTestHelper::FinishTest(
 
 bool UTestHelper::WriteText(UObject* WorldContextObject, const FString& Text)
 {
-	// if (IAutomationDriverModule::Get().IsEnabled())
-	// {
-	// 	IAutomationDriverModule::Get().Disable();
-	// }
-	// IAutomationDriverModule::Get().Enable();
-	//
-	// FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-	// FDriverElementPtr Element = Driver->FindElement(By::Cursor());
-	// Element->Type(Text);
-	//
-	// Driver.Reset();
-	// IAutomationDriverModule::Get().Disable();
-
-	UGameInstance* GameInst = UGameplayStatics::GetGameInstance(WorldContextObject);
-	UGameViewportClient* ViewportClient = GameInst ->GetGameViewportClient();
-	FViewport* Viewport = ViewportClient->Viewport;
-
-	const int32 ControllerId = 0; 
-		const FName PressedKey = FName("X");
-		const FInputKeyEventArgs Args = FInputKeyEventArgs(
-            Viewport,
-            ControllerId,
-            FKey(PressedKey),
-            IE_Pressed);
-
-		ViewportClient->InputKey(Args);
+	if (IAutomationDriverModule::Get().IsEnabled())
+	{
+		IAutomationDriverModule::Get().Disable();
+	}
+	IAutomationDriverModule::Get().Enable();
+	
+	FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+	FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+	Element->Type(Text);
+	
+	Driver.Reset();
+	IAutomationDriverModule::Get().Disable();
 	
 	return true;
 }
