@@ -2,14 +2,14 @@
 
 namespace UnrealBuildTool.Rules
 {
-    public class XsollaUtils : ModuleRules
+    public class XsollaTests : ModuleRules
     {
-        public XsollaUtils(ReadOnlyTargetRules Target) : base(Target)
+        public XsollaTests(ReadOnlyTargetRules Target) : base(Target)
         {
-            PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+            PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
             PublicDependencyModuleNames.AddRange(
-                new string[]
+                new[]
                 {
                     "Core",
                     "CoreUObject",
@@ -18,7 +18,13 @@ namespace UnrealBuildTool.Rules
                     "UMG",
                     "Engine",
                     "ImageWrapper",
-                    "HTTP"
+                    "HTTP",
+                    "XsollaUtils",
+                    "FunctionalTesting",
+                    "AutomationDriver",
+                    "InputCore",
+                    "XsollaStore",
+                    "XsollaLogin"
                 }
             );
         }

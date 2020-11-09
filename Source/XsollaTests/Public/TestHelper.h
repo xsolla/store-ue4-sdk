@@ -16,7 +16,7 @@
 * Helper class
 */
 UCLASS()
-class XSOLLAUTILS_API UTestHelper : public UBlueprintFunctionLibrary
+class XSOLLATESTS_API UTestHelper : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
