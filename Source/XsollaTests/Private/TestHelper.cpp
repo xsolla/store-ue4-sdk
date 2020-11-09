@@ -2,16 +2,17 @@
 
 #include "TestHelper.h"
 
+#include "Engine/Engine.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/EditableText.h"
 #include "Components/EditableTextBox.h"
-// #include "XsollaLogin.h"
-// #include "XsollaLoginSettings.h"
-// #include "XsollaStore/Public/XsollaStore.h"
-// #include "XsollaStore/Public/XsollaStoreSettings.h"
 #include "XsollaLogin/Public/XsollaLoginSubsystem.h"
 #include "XsollaDemoGameModeBase.h"
+#include "XsollaStore/Public/XsollaStoreLibrary.h"
+#include "XsollaStore/Public/XsollaStoreSettings.h"
+#include "XsollaLogin/Public/XsollaLoginLibrary.h"
+#include "XsollaLogin/Public/XsollaLoginSettings.h"
 #include "AutomationDriver/Public/AutomationDriverTypeDefs.h"
 #include "AutomationDriver/Public/IAutomationDriver.h"
 #include "AutomationDriver/Public/IAutomationDriverModule.h"
@@ -19,6 +20,7 @@
 #include "AutomationDriver/Public/LocateBy.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Internationalization/Regex.h"
 
 UWidget* UTestHelper::FindUIElement(UObject* WorldContextObject, const FName Name,
 	const TSubclassOf<UWidget> WidgetClass)
@@ -190,8 +192,8 @@ UUserWidget* UTestHelper::FindWidgetByClass(UObject* WorldContextObject, const T
 
 void UTestHelper::RestoreDefaultSettings()
 {
-	// FXsollaLoginModule::Get().GetSettings()->SetupDefaultDemoSettings();
-	// FXsollaStoreModule::Get().GetSettings()->SetupDefaultDemoSettings();
+	UXsollaLoginLibrary::GetLoginSettings()->SetupDefaultDemoSettings();
+	UXsollaStoreLibrary::GetStoreSettings()->SetupDefaultDemoSettings();
 }
 
 void UTestHelper::SetupTestPlayground(UObject* WorldContextObject)
