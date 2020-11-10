@@ -18,7 +18,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Inventory Settings")
 	FString ProjectID;
 
-	/** If enabled, Store SDK will imitate platform-specific requests so you can try account linking from different platforms. */
+	/** If enabled, Inventory SDK will imitate platform-specific requests so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Inventory Settings")
 	bool UseCrossPlatformAccountLinking;
 
