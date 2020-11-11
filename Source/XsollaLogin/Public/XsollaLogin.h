@@ -40,7 +40,7 @@ public:
 		return FModuleManager::Get().IsModuleLoaded("XsollaLogin");
 	}
 
-	/** Getter for internal settings object to support runtime configuration changes */
+	/** Getter for internal settings object to support runtime configuration changes. */
 	UXsollaLoginSettings* GetSettings() const;
 
 private:
