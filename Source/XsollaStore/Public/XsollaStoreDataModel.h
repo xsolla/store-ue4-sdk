@@ -532,7 +532,7 @@ public:
 		: cart_id(CartId)
 		, is_free(false){};
 
-	// Check if we have the same set of items
+	// Check if we have the same set of items.
 	bool operator==(const FStoreCart& Cart) const
 	{
 		if (cart_id == Cart.cart_id)
