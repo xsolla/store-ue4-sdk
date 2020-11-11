@@ -13,7 +13,7 @@
 
 #include "XsollaStoreSubsystem.generated.h"
 
-/** Verb (GET, PUT, POST) used by the request */
+/** Verb (GET, PUT, POST) used by the request. */
 UENUM(BlueprintType)
 enum class EXsollaRequestVerb : uint8
 {
@@ -56,9 +56,9 @@ public:
 	// End USubsystem
 
 	/** 
-	 * Initialize the controller with provided Project ID (use to override project settings)
+	 * Initializes the controller with the provided Project ID (used to override project settings).
 	 *
-	 * @param InProjectId New Project ID value form Publisher Account Project settings > Project ID.
+	 * @param InProjectId New Project ID value form Publisher Account > Project settings > Project ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
@@ -75,7 +75,7 @@ public:
 	/** Update Item Groups
 	 * Updates the list of virtual item groups (cached locally).
 	 *
-	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use default value.
+	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after local cache of virtual item groups was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -119,7 +119,7 @@ public:
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count start from 0).
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send its in a request. Available fields 'media_list', 'purchase_limit', 'promotion', 'order', 'long_description'.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'purchase_limit', 'promotion', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -143,7 +143,7 @@ public:
 	 * Updates the list of user subscriptions (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
+	 * @param SuccessCallback Callback function called after the list of user subscriptions was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -172,12 +172,12 @@ public:
 	 * Initiates a cart purchase session and fetches a token for payment console.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of the cart to be purchased. The current user cart will be purchased if empty.
+	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
+	 * @param SuccessCallback Callback function called after the payment token was successfully fetched.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -187,10 +187,10 @@ public:
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Launch Payment Console
-	 * Opens payment console for provided access token.
+	 * Opens payment console for the provided access token.
 	 *
 	 * @param AccessToken Payment token used during purchase processing.
-	 * @param BrowserWidget Widget to represent a payment form. Can be set in project settings.
+	 * @param BrowserWidget Widget to represent a payment form. Can be set in the project settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget);
@@ -237,7 +237,7 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Amount of items to be added to cart.
+	 * @param Quantity Amount of items to be added to a cart.
 	 * @param SuccessCallback Callback function called after adding a new item to the cart successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -249,16 +249,16 @@ public:
 	 * Completely removes an item from the cart.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of cart from which item will be removed from. The current user cart will be modified if empty.
+	 * @param CartId (optional) Identifier of a cart from which the item will be removed. The current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
-	 * @param SuccessCallback Callback function called after removing an item from the cart successfully.
+	 * @param SuccessCallback Callback function called after successfully removing an item from the cart.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Fill Cart By Id
+	/** Fill Cart By ID
 	 * Fills the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
 	 *
 	 * @param AuthToken User authorization token.
@@ -275,7 +275,7 @@ public:
 	* Gets a specified bundle.
 	*
 	* @param Sku Bundle SKU.
-	* @param SuccessCallback Callback function called after cart filled successfully.
+	* @param SuccessCallback Callback function called after the cart is filled successfully.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -286,7 +286,7 @@ public:
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
-	* @param SuccessCallback Callback function called after cart filled successfully.
+	* @param SuccessCallback Callback function called after cart is successfully filled .
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -348,7 +348,7 @@ public:
 	 * 
 	 * @param AuthToken User authorization token.
 	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after receiving coupon rewards successfully.
+	 * @param SuccessCallback Callback function called after successfully receiving coupon rewards.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -360,7 +360,7 @@ public:
 	 * 
 	 * @param AuthToken User authorization token.
 	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successful coupon redeem.
+	 * @param SuccessCallback Callback function called after successful coupon redemption.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -372,8 +372,8 @@ public:
 	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
 	* 
 	* @param AuthToken User authorization token.
-	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
+	* @param SuccessCallback Callback function called after successful coupon redemption.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -381,11 +381,11 @@ public:
         const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Redeem Promocode
-	* Redeems a code of promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
+	* Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
 	* 
 	* @param AuthToken User authorization token.
 	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param SuccessCallback Callback function called after successful coupon redemption.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -496,60 +496,60 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItems(const FString& GroupFilter) const;
 
-	/** Get list of cached virtual items without any Category provided */
+	/** Gets the list of cached virtual items without any Category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItemsWithoutGroup() const;
 
-	/** Get cached items data */
+	/** Gets cached items data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FStoreItemsData GetItemsData() const;
 
-	/** Get the list of cached virtual currencies */
+	/** Gets the list of cached virtual currencies. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrency> GetVirtualCurrencyData() const;
 
-	/** Get the list of cached virtual currency packages */
+	/** Get the list of cached virtual currency packages. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
 
-	/** Get cached virtual currencies balance */
+	/** Gets cached balance of virtual currencies. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
 
-	/** Get cached user subscriptions */
+	/** Gets cached user subscriptions. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FStoreSubscriptionItem> GetSubscriptions() const;
 
-	/** Get cached cart data */
+	/** Gets cached cart data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
 
-	/** Get cached inventory data */
+	/** Gets cached inventory data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
 	FStoreInventory GetInventory() const;
 
-	/** Get the pending PayStation URL to be opened in browser */
+	/** Gets the pending PayStation URL to be opened in browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
 
-	/** Get name of the cached item with given SKU */
+	/** Gets name of the cached item with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetItemName(const FString& ItemSKU) const;
 
-	/** Get name of the cached virtual currency with given SKU */
+	/** Gets name of the cached virtual currency with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
 
-	/** Check if certain item is in cart */
+	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
 
-	/** Check if certain item is in inventory */
+	/** Checks if the certain item is in the inventory. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
 	bool IsItemInInventory(const FString& ItemSKU) const;
 
 public:
-	/** Event occurred when the cart was changed or updated */
+	/** Event occurred when the cart was changed or updated. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
 	FOnCartUpdate OnCartUpdate;
 
