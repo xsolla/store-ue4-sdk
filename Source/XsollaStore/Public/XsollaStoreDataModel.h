@@ -907,7 +907,7 @@ struct FXsollaPaymentCustomParameters
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "Payment Custom Parameters")
 	TMap<FString, FXsollaJsonVariant> Parameters;
 };
 
