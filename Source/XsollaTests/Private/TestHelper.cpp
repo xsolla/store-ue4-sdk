@@ -222,24 +222,24 @@ bool UTestHelper::FinishTest(
 	const EFunctionalTestResult TestResult = bIsSuccess ? EFunctionalTestResult::Succeeded : EFunctionalTestResult::Failed;
 	const FString Message = bIsSuccess ? SuccessMessage : FailureMessage;
 	Test->FinishTest(TestResult, Message);
-	
+
 	return true;
 }
 
-bool UTestHelper::WriteText(UObject* WorldContextObject, const FString& Text)
+bool UTestHelper::WriteText2(UObject* WorldContextObject, const FString& Text)
 {
-	if (IAutomationDriverModule::Get().IsEnabled())
-	{
-		IAutomationDriverModule::Get().Disable();
-	}
 	IAutomationDriverModule::Get().Enable();
-	
+
 	FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
 	FDriverElementPtr Element = Driver->FindElement(By::Cursor());
-	Element->Type(Text);
 	
+	Async(EAsyncExecution::ThreadPool, [&]
+	{
+		Element->Type(Text);
+	});
+
 	Driver.Reset();
 	IAutomationDriverModule::Get().Disable();
-	
+
 	return true;
 }

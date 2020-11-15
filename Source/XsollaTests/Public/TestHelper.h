@@ -74,5 +74,5 @@ class XSOLLATESTS_API UTestHelper : public UBlueprintFunctionLibrary
 
 	/** Write some text to current focused element */
 	UFUNCTION(BlueprintCallable, Category = "TestHelper", meta = (WorldContext = "WorldContextObject"))
-	static bool WriteText(UObject* WorldContextObject, const FString& Text);
+	static bool WriteText2(UObject* WorldContextObject, const FString& Text);
 };
