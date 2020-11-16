@@ -232,11 +232,7 @@ bool UTestHelper::WriteText2(UObject* WorldContextObject, const FString& Text)
 
 	FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
 	FDriverElementPtr Element = Driver->FindElement(By::Cursor());
-	
-	Async(EAsyncExecution::ThreadPool, [&]
-	{
-		Element->Type(Text);
-	});
+	Element->Type(Text);
 
 	Driver.Reset();
 	IAutomationDriverModule::Get().Disable();
