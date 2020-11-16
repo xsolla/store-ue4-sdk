@@ -2,8 +2,7 @@
 
 
 #include "XsollaAutomationTests.h"
-
-#include "TestHelper.h"
+#include "Engine.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FXsollaAuthTest, "Xsolla.AutomationTests SimpleAuth", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask);
 bool FXsollaAuthTest::RunTest(const FString& Parameters)

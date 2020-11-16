@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Engine.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "AsyncTestWriteText.generated.h"
