@@ -34,8 +34,6 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnCheckOrder, int32, OrderId, EXsollaOrderSt
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurrencyPackage&, CurrencyPackage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FStoreCouponRewardData, RewardsData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FStoreRedeemedCouponData, RewardData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, FStoreListOfBundles, ListOfBundles);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
@@ -83,17 +81,6 @@ public:
 	void UpdateItemGroups(const FString& Locale,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update List of Purchased Virtual Items
-	 * Updates the list of purchased virtual items (cached locally).
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateInventory(const FString& AuthToken,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
 	/** Update Virtual Currencies
 	 * Updates the list of virtual currencies (cached locally).
 	 *
@@ -127,28 +114,6 @@ public:
 	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const int Limit, const int Offset,
 		const FString& Locale, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback);
-
-	/** Update Virtual Currency Balance
-	 * Updates virtual currency balance (cached locally).
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyBalance(const FString& AuthToken,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
-	/** Update User Subscriptions
-	 * Updates the list of user subscriptions (cached locally).
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSubscriptions(const FString& AuthToken,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fetch Payment Token
 	 * Initiates an item purchase session and fetches token for payment console.
@@ -279,8 +244,8 @@ public:
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void GetSpecifiedBundle(const FString& Sku,
-        const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void GetSpecifiedBundle(const FString& Sku,
+		const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Update Bundles
 	* Gets a list of bundles for building a catalog.
@@ -290,22 +255,8 @@ public:
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void UpdateBundles(const FString& Locale,
-        const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
-	/** Consume Inventory Item
-	 * Consumes an inventory item.
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Items quantity. If the item is uncountable, should be zero.
-	 * @param InstanceID Instance item ID. If the item is countable, should be empty.
-	 * @param SuccessCallback Callback function called after successful inventory item consumption.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, int32 Quantity, const FString& InstanceID,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateBundles(const FString& Locale,
+		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Virtual Currency
 	 * Gets virtual currency with specified SKU.
@@ -342,73 +293,42 @@ public:
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Get Coupon Rewards
-	 * Gets coupons rewards by its code. Can be used to allow users to choose one of many items as a bonus.
-	 * The usual case is choosing a DRM if the coupon contains a game as a bonus.
-	 * 
-	 * @param AuthToken User authorization token.
-	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after receiving coupon rewards successfully.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
-		const FOnCouponRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
-	/** Redeem Coupon
-	 * Redeems a coupon code. The user gets a bonus after a coupon is redeemed.
-	 * 
-	 * @param AuthToken User authorization token.
-	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successful coupon redeem.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
-		const FOnCouponRedeemUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
-
 	/** Get Promocode Rewards
 	* Gets promo code rewards by its code. Can be used to allow users to choose one of many items as a bonus.
 	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
 	* 
 	* @param AuthToken User authorization token.
 	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param SuccessCallback Callback function called after successful promocode redeem.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
-        const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
+		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Redeem Promocode
 	* Redeems a code of promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
 	* 
 	* @param AuthToken User authorization token.
 	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successful coupon redeem.
+	* @param SuccessCallback Callback function called after successful promocode redeem.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
-        const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
+		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetItemsListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
@@ -426,15 +346,12 @@ protected:
 	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetListOfBundles_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetSpecifiedBundle_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
-
-	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -444,14 +361,10 @@ protected:
 	void BuyItemWithVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
-	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-        bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -512,21 +425,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
 	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
 
-	/** Get cached virtual currencies balance */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
-
-	/** Get cached user subscriptions */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FStoreSubscriptionItem> GetSubscriptions() const;
-
 	/** Get cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
-
-	/** Get cached inventory data */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
-	FStoreInventory GetInventory() const;
 
 	/** Get the pending PayStation URL to be opened in browser */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
@@ -543,10 +444,6 @@ public:
 	/** Check if certain item is in cart */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
-
-	/** Check if certain item is in inventory */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Inventory")
-	bool IsItemInInventory(const FString& ItemSKU) const;
 
 public:
 	/** Event occurred when the cart was changed or updated */
@@ -568,15 +465,6 @@ protected:
 
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
-
-	/** Cached virtual currency balance */
-	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
-
-	/** Cached user subscriptions */
-	FStoreSubscriptionData Subscriptions;
-
-	/** User inventory */
-	FStoreInventory Inventory;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;

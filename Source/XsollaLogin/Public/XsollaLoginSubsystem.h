@@ -39,6 +39,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicPro
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthenticateViaProviderProjectSuccess, const FXsollaProviderToken&, ProviderToken);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
@@ -436,6 +437,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Get Access Token By Email 
+	 * Get Access token by email from your own backend service.
+	 *
+	 * @param Email Email of user used by xsolla sdk backend service
+	 * @param SuccessCallback Callback function called after access token received successfully.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetAccessTokenByEmail(const FString& Email, const FOnAccessTokenLoginSuccess& SuccessCallback,
+		const FOnAuthError& ErrorCallback);
+
 	/** Get User Profile
 	 * Gets specified user public profile information.
 	 *
@@ -566,6 +578,8 @@ protected:
 		FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
+        const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Process request for obtaining/refreshing token using OAuth 2.0 */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
