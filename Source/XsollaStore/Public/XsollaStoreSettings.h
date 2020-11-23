@@ -5,6 +5,8 @@
 
 #include "Blueprint/UserWidget.h"
 
+#include "XsollaUtilsDataModel.h"
+
 #include "XsollaStoreSettings.generated.h"
 
 /** User interface theme for payment interface*/
@@ -14,24 +16,6 @@ enum class EXsollaPaymentUiTheme : uint8
 	Default,
 	DefaultDark,
 	Dark
-};
-
-/** Target platform name */
-UENUM(BlueprintType)
-enum class EXsollaPublishingPlatform : uint8
-{
-	PlaystationNetwork,
-	XboxLive,
-	Xsolla,
-	PcStandalone,
-	NintendoShop,
-	GooglePlay,
-	AppStoreIos,
-	AndroidStandalone,
-	IosStandalone,
-	AndroidOther,
-	IosOther,
-	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)

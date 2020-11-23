@@ -7,16 +7,18 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	UserDataStorage = EUserDataStorage::Xsolla;
-	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/link");
-	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/shadow_account/auth");
+	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
+	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");
 	InvalidateExistingSessions = false;
 	UseOAuth2 = false;
 	UseCrossPlatformAccountLinking = false;
-	DemoProjectID = TEXT("44056");
-	DemoLoginID = TEXT("e6dfaac6-78a8-11e9-9244-42010aa80004");
+	DemoProjectID = TEXT("77640");
+	DemoLoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
 	EncryptCachedCredentials = false;
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bUseSteamAuthorization = false;
-	Platform = EXsollaTargetPlatform::PlaystationNetwork; 
+	Platform = EXsollaTargetPlatform::PlaystationNetwork;
+	bCustomAuthViaAccessToken = false;
+	CustomAuthServerURL = "https://sdk.xsolla.com/";
 }

@@ -685,6 +685,25 @@ void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const F
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::GetAccessTokenByEmail(const FString& Email, const FOnAccessTokenLoginSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	
+	const FString Url = FString::Printf(TEXT("%slogin"), *Settings->CustomAuthServerURL);
+
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("email"), *Email);
+
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+        &UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
@@ -1951,7 +1970,7 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 		return;
 	}
 
-	FString ResponseStr = HttpResponse->GetContentAsString();
+	const FString ResponseStr = HttpResponse->GetContentAsString();
 	TArray<FXsollaLinkedSocialNetworkData> socialNetworks;
 	if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, &socialNetworks, 0, 0))
 	{
@@ -1961,7 +1980,43 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 	}
 
 	// No success before so call the error callback
-	FString ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	const FString ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
+	const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
+    const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	const FString ResponseStr = HttpResponse->GetContentAsString();
+
+	FString ErrorStr;
+
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString AccessTokenFieldName = TEXT("access_token");
+		if (JsonObject->HasTypedField<EJson::String>(AccessTokenFieldName))
+		{
+			const FString AccessToken = JsonObject->GetStringField(AccessTokenFieldName);
+			
+			SuccessCallback.ExecuteIfBound(AccessToken);
+			return;
+		}
+		
+		ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *AccessTokenFieldName);
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: %s"), *ResponseStr);
+	}
+
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
@@ -2163,7 +2218,12 @@ void UXsollaLoginSubsystem::SetStringArrayField(TSharedPtr<FJsonObject> Object, 
 bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
 {
 	TArray<FString> TokenParts;
+	
 	Token.ParseIntoArray(TokenParts, TEXT("."));
+	if (TokenParts.Num() <= 1)
+	{
+		return false;
+	}
 
 	FString PayloadStr;
 	if (!FBase64::Decode(TokenParts[1], PayloadStr))
@@ -2171,7 +2231,7 @@ bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<F
 		return false;
 	}
 
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
 	if (!FJsonSerializer::Deserialize(Reader, PayloadJsonObject))
 	{
 		return false;
