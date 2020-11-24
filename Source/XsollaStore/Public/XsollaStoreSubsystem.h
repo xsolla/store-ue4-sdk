@@ -66,9 +66,11 @@ public:
 	 *
 	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 * @param Limit Limit for the number of elements on the page.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Item Groups
 	 * Updates the list of virtual item groups (cached locally).
@@ -76,28 +78,34 @@ public:
 	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use default value.
 	 * @param SuccessCallback Callback function called after local cache of virtual item groups was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 * @param Limit Limit for the number of elements on the page.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateItemGroups(const FString& Locale,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback,
+		const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Currencies
 	 * Updates the list of virtual currencies (cached locally).
 	 *
 	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 * @param Limit Limit for the number of elements on the page.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Currency Packages
 	 * Updates the list of virtual currency packages (cached locally).
 	 *
 	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 * @param Limit Limit for the number of elements on the page.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Items List By Specified Group
 	 * Gets an items list from the specified group for building a catalog.
