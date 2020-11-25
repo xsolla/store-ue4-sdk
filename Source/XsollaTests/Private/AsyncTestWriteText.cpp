@@ -25,20 +25,25 @@ UAsyncTestWriteText* UAsyncTestWriteText::WriteText(const UObject* WorldContextO
 
 void UAsyncTestWriteText::Activate()
 {
+	if (IAutomationDriverModule::Get().IsEnabled())
+	{
+		IAutomationDriverModule::Get().Disable();
+	}
 	IAutomationDriverModule::Get().Enable();
 
-	FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-	FDriverSequenceRef Sequence = Driver->CreateSequence();
-	Sequence->Actions()
-		.MoveToElement(By::Cursor())
-		.Press(TEXT("W"));
+	Async(EAsyncExecution::TaskGraph, [this]
+	{
+		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+		FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+		Element->Type(Text);
 
-	Sequence->Perform();
-
-	Driver.Reset();
-	IAutomationDriverModule::Get().Disable();
-
-	WorldContextObject->GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UAsyncTestWriteText::ExecuteAfterWriteText, 1.0f);
+		Driver.Reset();
+		AsyncTask(ENamedThreads::GameThread, [this]
+		{
+			IAutomationDriverModule::Get().Disable();
+			this->ExecuteAfterWriteText();
+		});
+	});
 }
 
 void UAsyncTestWriteText::ExecuteAfterWriteText()

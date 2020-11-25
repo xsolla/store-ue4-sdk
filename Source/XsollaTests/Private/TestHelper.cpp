@@ -2,6 +2,8 @@
 
 #include "TestHelper.h"
 
+
+#include "Async.h"
 #include "Engine/Engine.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
@@ -226,16 +228,49 @@ bool UTestHelper::FinishTest(
 	return true;
 }
 
-bool UTestHelper::WriteText2(UObject* WorldContextObject, const FString& Text)
+bool UTestHelper::HelperWriteText(const FString& Text)
 {
 	IAutomationDriverModule::Get().Enable();
 
-	FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-	FDriverElementPtr Element = Driver->FindElement(By::Cursor());
-	Element->Type(Text);
+	AsyncTask(ENamedThreads::AnyThread, [Text]
+	{
+		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+		FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+		Element->Type(Text);
 
-	Driver.Reset();
-	IAutomationDriverModule::Get().Disable();
+		Driver.Reset();
+		AsyncTask(ENamedThreads::GameThread, []
+		{
+			IAutomationDriverModule::Get().Disable();
+		});
+	});
+
+	return true;
+}
+
+bool UTestHelper::HelperCallTab(bool bForward)
+{
+	IAutomationDriverModule::Get().Enable();
+
+	AsyncTask(ENamedThreads::AnyThread, [bForward]
+    {
+        FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+        FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+		if (bForward)
+		{
+			Element->Type(EKeys::Tab);
+		}
+		else
+		{
+			Element->TypeChord(EKeys::LeftShift, EKeys::Tab);
+		}
+
+        Driver.Reset();
+        AsyncTask(ENamedThreads::GameThread, []
+        {
+            IAutomationDriverModule::Get().Disable();
+        });
+    });
 
 	return true;
 }

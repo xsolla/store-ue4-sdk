@@ -72,7 +72,10 @@ class XSOLLATESTS_API UTestHelper : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "TestHelper|Tests", meta = (DefaultToSelf = "Test"))
 	static bool FinishTest(AFunctionalTest* Test, bool bIsSuccess, const FString& SuccessMessage, const FString& FailureMessage);
 
+	UFUNCTION(BlueprintCallable, Category = "TestHelper|Tests")
+	static bool HelperCallTab(bool bForward);
+
 	/** Write some text to current focused element */
-	UFUNCTION(BlueprintCallable, Category = "TestHelper", meta = (WorldContext = "WorldContextObject"))
-	static bool WriteText2(UObject* WorldContextObject, const FString& Text);
+	UFUNCTION(BlueprintCallable, Category = "TestHelper")
+	static bool HelperWriteText(const FString& Text);
 };
