@@ -154,23 +154,23 @@ private:
 	FString GetPublishingPlatformName();
 
 public:
-	/** Get cached inventory data */
+	/** Gets cached inventory data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	FInventoryItemsData GetInventory() const;
 
-	/** Get cached virtual currencies balance */
+	/** Gets cached virtual currencies balance */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
 
-	/** Get cached user subscriptions */
+	/** Gets cached user subscriptions */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions")
 	TArray<FSubscriptionItem> GetSubscriptions() const;
 
-	/** Get name of the cached item with given SKU */
+	/** Gets name of the cached item with given SKU */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	FString GetItemName(const FString& ItemSKU) const;
 
-	/** Check if certain item is in inventory */
+	/** Checks if certain item is in the inventory */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	bool IsItemInInventory(const FString& ItemSKU) const;
 

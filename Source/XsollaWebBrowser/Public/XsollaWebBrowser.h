@@ -17,25 +17,25 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeforePopup, FString, URL, FString, Frame);
 
 	/**
-	 * Load the specified URL
+	 * Loads the specified URL.
 	 *
-	 * @param NewURL New URL to load
+	 * @param NewURL New URL to load.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	void LoadURL(FString NewURL);
 
 	/**
-	 * Load the specified HTML page content
+	 * Loads the specified HTML page content.
 	 *
-	 * @param Contents HTMPL page content
+	 * @param Contents HTMPL page content.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	void LoadHtml(FString Contents, FString DummyURL);
 
 	/**
-	 * Executes a JavaScript string in the context of the web page
+	 * Executes a JavaScript string in the context of the web page.
 	 *
-	 * @param ScriptText JavaScript string to execute
+	 * @param ScriptText JavaScript string to execute.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	void ExecuteJavascript(FString ScriptText);
@@ -49,17 +49,17 @@ public:
 	FString GetUrl() const;
 
 	/**
-	 * Clear browser cache (cookies etc.)
+	 * Clear browser cache (cookies etc.).
 	 *
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	void ClearCache() const;
 
-	/** Called when the Url changes. */
+	/** Called when the URL changes. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
 	FOnUrlChanged OnUrlChanged;
 
-	/** Called when a popup is about to spawn. */
+	/** Called when a pop-up is about to spawn. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
 	FOnBeforePopup OnBeforePopup;
 
