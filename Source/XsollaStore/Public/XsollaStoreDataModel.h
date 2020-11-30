@@ -147,11 +147,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
-	/** All category ids that used by items (calculated locally!) */
+	/** All category IDs used by items (calculated locally!). */
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TSet<FString> GroupIds;
 
-	/** All available item group infos */
+	/** All available item groups infos. */
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FXsollaItemGroup> Groups;
 
@@ -381,7 +381,7 @@ public:
 		: cart_id(CartId)
 		, is_free(false){};
 
-	// Check we have the same set if items
+	// Check if we have the same set of items.
 	bool operator==(const FStoreCart& Cart) const
 	{
 		if (cart_id == Cart.cart_id)
@@ -483,7 +483,7 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
 	TArray<FXsollaBonusItem> bonus;
 
-	/** Percent discount. The price of cat will be decreased using a value calculated by using this percent and then rounded to 2 decimal places. */
+	/** Percent discount. The price of the cart will be decreased by a value calculated by using this percent and then rounded to 2 decimal places. */
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
 	FStoreDiscount discount;
 
@@ -512,7 +512,7 @@ struct FXsollaPaymentCustomParameters
 	TMap<FString, FXsollaJsonVariant> Parameters;
 };
 
-/* Usual version EVariantTypes is not using UENUM() this cause problem when call GetEnumValueAsString with "EVariantTypes" as first argument.
+/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
 */
 UENUM()
 enum class EXsollaVariantTypes : int8
