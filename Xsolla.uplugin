@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 7,
-	"VersionName": "0.5.3",
+	"Version": 8,
+	"VersionName": "0.5.5",
 	"EngineVersion": "4.25.0",
 	"FriendlyName": "Xsolla SDK",
 	"Description": "Xsolla SDK for Unreal Engine 4",
@@ -14,60 +14,73 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": false,
-	"Modules": [
-		{
-			"Name": "XsollaWebBrowser",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win32",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Android",
-				"Linux"
-			]
-		},
-		{
-			"Name": "XsollaLogin",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win32",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Android",
-				"Linux"
-			]
-		},
-		{
-			"Name": "XsollaStore",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win32",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Android",
-				"Linux"
-			]
-		},
-		{
-			"Name": "XsollaUtils",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win32",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Android",
-				"Linux"
-			]
-		}
-	],
+  "Modules": [
+    {
+      "Name": "XsollaWebBrowser",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "XsollaLogin",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "XsollaStore",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "XsollaInventory",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    },
+    {
+      "Name": "XsollaUtils",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
+    }
+  ],
 	"Plugins": [
 		{
 			"Name": "OnlineSubsystem",
