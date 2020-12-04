@@ -589,7 +589,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
 	/** Encode request body to match x-www-form-urlencoded data format */

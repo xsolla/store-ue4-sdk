@@ -62,7 +62,7 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -79,7 +79,7 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& Auth
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -97,7 +97,7 @@ void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -138,7 +138,7 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
@@ -152,7 +152,7 @@ void UXsollaInventorySubsystem::GetCouponRewards(const FString& AuthToken, const
 		*ProjectID,
 		*CouponCode);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -166,7 +166,7 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("coupon_code"), CouponCode);
 
-	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaInventoryRequestVerb::POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -401,10 +401,10 @@ bool UXsollaInventorySubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, 
 	return false;
 }
 
-TSharedRef<IHttpRequest> UXsollaInventorySubsystem::CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb,
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaInventorySubsystem::CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {
-	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
 
 	// Temporal solution with headers processing on server-side #37
 	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=inventory&sdk_v=%s"),

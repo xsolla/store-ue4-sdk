@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 8,
 	"VersionName": "0.5.4",
-	"EngineVersion": "4.25.0",
+	"EngineVersion": "4.26.0",
 	"FriendlyName": "Xsolla SDK",
 	"Description": "Xsolla SDK for Unreal Engine 4",
 	"Category": "Other",

@@ -144,7 +144,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */

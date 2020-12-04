@@ -48,7 +48,7 @@ void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 			FOnRequestCompleted imageLoadingCompletedDelegate;
 			PendingRequests.Add(ResourceId, imageLoadingCompletedDelegate);
 
-			TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+			TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
 
 			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 			HttpRequest->SetURL(URL);
