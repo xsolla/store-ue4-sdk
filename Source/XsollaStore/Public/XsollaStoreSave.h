@@ -40,7 +40,7 @@ public:
 public:
 	static const FString SaveSlotName;
 
-	/** User index (always 0) */
+	/** User index (always 0). */
 	static const int32 UserIndex;
 
 protected:
