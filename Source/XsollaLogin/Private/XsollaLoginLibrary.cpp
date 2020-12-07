@@ -28,7 +28,7 @@ UXsollaLoginSettings* UXsollaLoginLibrary::GetLoginSettings()
 
 bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 {
-	FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
+	const FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
 	FRegexMatcher Matcher(EmailPattern, EMail);
 	return Matcher.FindNext();
 }
@@ -42,8 +42,7 @@ FString UXsollaLoginLibrary::GetStringCommandLineParam(const FString& ParamName)
 
 FString UXsollaLoginLibrary::GetSessionTicket()
 {
-	IOnlineSubsystem* OnlineInterface;
-	OnlineInterface = IOnlineSubsystem::Get();
+	IOnlineSubsystem* OnlineInterface = IOnlineSubsystem::Get();
 	FString SessionTicket = OnlineInterface->GetIdentityInterface()->GetAuthToken(0);
 	return SessionTicket;
 }

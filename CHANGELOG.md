@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.5.5] - 2020-11-26
+
+### Changed
+- Inventory functionality in separate module.
+
+### Fixed
+- Minor bugs.
+- Code comments.
+
+## [0.5.4] - 2020-11-06
+
+### Fixed
+- Minor bugs.
+
+
 ## [0.5.3] - 2020-10-23
 
 ### Added

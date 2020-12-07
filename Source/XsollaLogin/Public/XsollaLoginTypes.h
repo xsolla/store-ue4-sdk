@@ -10,11 +10,11 @@ enum class EXsollaFriendsType : uint8
 {
 	/** Users added to a friends list. */
 	friends UMETA(DisplayName = "Friends"),
-	/** Users to whom friend request was sent. */
+	/** Users to whom a friend request was sent. */
 	friend_requested UMETA(DisplayName = "FriendsRequested"),
-	/** Users from whom friend request was sent. */
+	/** Users from whom a friend request was sent. */
 	friend_requested_by UMETA(DisplayName = "FriendsRequestedBy"),
-	/** Users added to a friend list, but blocked. */
+	/** Users added to a friend list but blocked. */
 	blocked UMETA(DisplayName = "Blocked"),
 	/** Users who blocked this user. */
 	blocked_by UMETA(DisplayName = "BlockedBy")
@@ -23,9 +23,9 @@ enum class EXsollaFriendsType : uint8
 UENUM(BlueprintType)
 enum class EXsollaUsersSortCriteria : uint8
 {
-	/** Sort the list of users by nickname alphabetically. */
+	/** Sorts the list of users by nickname alphabetically. */
 	by_nickname UMETA(DisplayName = "ByNickname"),
-	/** Sort the list of users by the date when they last added someone to their friends list or blocked them.. */
+	/** Sorts the list of users by the date when they last added someone to their friends list or blocked them. */
 	by_update UMETA(DisplayName = "ByUpdate")
 };
 
@@ -65,7 +65,7 @@ struct FXsollaAuthToken
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	bool bIsVerified;
 
-	/** Refresh token for updating the access token (JWT). */
+	/** Refreshes token for updating the access token (JWT). */
 	UPROPERTY(BlueprintReadOnly, Category = "Auth Token")
 	FString RefreshToken;
 
@@ -206,6 +206,9 @@ struct FXsollaUserDetails
 	FString nickname;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
+	FString tag;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	FString phone;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
@@ -335,6 +338,9 @@ struct FXsollaPublicProfile
 	FString nickname;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
+	FString tag;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
 	FString registered;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
@@ -386,4 +392,35 @@ struct FXsollaLinkedSocialNetworkData
 
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
 	FString social_id;
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaCheckUserAgeResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Check User Age")
+	bool accepted;
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaProviderToken
+{
+	GENERATED_BODY()
+
+	/** User JWT for the client project. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString access_token;
+
+	/** 'access_token' expiration period in seconds. You can configure it in Publisher Account > your Login project > General Settings > JWT expiration. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	int64 expires_in;
+
+	/** Refresh token for updating the 'access token'. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString refresh_token;
+
+	/** JWT type. Can be 'bearer'. */
+	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
+	FString token_type;
 };

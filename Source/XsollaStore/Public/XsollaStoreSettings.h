@@ -5,33 +5,17 @@
 
 #include "Blueprint/UserWidget.h"
 
+#include "XsollaUtilsDataModel.h"
+
 #include "XsollaStoreSettings.generated.h"
 
-/** User interface theme for payment interface*/
+/** User interface theme for the payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiTheme : uint8
 {
 	Default,
 	DefaultDark,
 	Dark
-};
-
-/** Target platform name */
-UENUM(BlueprintType)
-enum class EXsollaPublishingPlatform : uint8
-{
-	PlaystationNetwork,
-	XboxLive,
-	Xsolla,
-	PcStandalone,
-	NintendoShop,
-	GooglePlay,
-	AppStoreIos,
-	AndroidStandalone,
-	IosStandalone,
-	AndroidOther,
-	IosOther,
-	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)
@@ -56,7 +40,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
-	/** Custom class to handle payment console. */
+	/** Custom class to handle the payment console. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
@@ -72,11 +56,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Store Settings")
 	bool UseCrossPlatformAccountLinking;
 
-	/** Target platform for cross-platform account linking. If using Xsolla Login, make sure that in the Login settings the same platform is chosen. */
+	/** Target platform for cross-platform account linking. If you use Xsolla Login, make sure that you choose the same platform in the Login settings. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	EXsollaPublishingPlatform Platform;
 
-	/** Demo Project ID */
+	/** Demo Project ID. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Demo")
 	FString DemoProjectID;
 
