@@ -60,10 +60,10 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	LoadData();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items"),
-		*ProjectID);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?offset=%d&limit=%d"),
+		*ProjectID, Offset, Limit);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -72,12 +72,11 @@ void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCall
 }
 
 void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s"),
-		*ProjectID,
-		*UsedLocale);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s&offset=%d&limit=%d"),
+		*ProjectID, *UsedLocale, Offset, Limit);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -85,10 +84,10 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency"),
-		*ProjectID);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency?offset=%d&limit=%d"),
+		*ProjectID, Offset, Limit);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -96,10 +95,10 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& Succes
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package"),
-		*ProjectID);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package?offset=%d&limit=%d"),
+		*ProjectID, Offset, Limit);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
