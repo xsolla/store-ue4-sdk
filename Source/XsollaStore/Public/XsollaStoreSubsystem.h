@@ -382,7 +382,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
@@ -398,7 +398,7 @@ private:
 	FString GetPublishingPlatformName();
 
 	/** Queue to store cart change requests */
-	TArray<TSharedRef<IHttpRequest>> CartRequestsQueue;
+	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
 
 public:
 	/** Get Virtual Items

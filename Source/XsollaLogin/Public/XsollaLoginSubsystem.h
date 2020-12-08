@@ -588,8 +588,8 @@ protected:
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
 private:
-	/** Creates the HTTP request and adds the Xsolla API meta. */
-	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
+	/** Create http request and add Xsolla API meta */
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
