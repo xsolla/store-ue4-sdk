@@ -31,7 +31,7 @@ void UAsyncTestWriteText::Activate()
 	}
 	IAutomationDriverModule::Get().Enable();
 
-	Async(EAsyncExecution::TaskGraph, [this]
+	AsyncTask(ENamedThreads::AnyThread, [this]
 	{
 		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
 		FDriverElementPtr Element = Driver->FindElement(By::Cursor());

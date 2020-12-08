@@ -24,15 +24,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Internationalization/Regex.h"
 
-UWidget* UTestHelper::FindUIElement(UObject* WorldContextObject, const FName Name,
-	const TSubclassOf<UWidget> WidgetClass)
+UWidget* UTestHelper::FindUIElementInternal(UObject* WorldContextObject, const FString& RegExp, const TSubclassOf<UWidget> WidgetClass)
 {
 	TArray<UUserWidget*> Widgets;
 	UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, Widgets, UUserWidget::StaticClass(), true);
 	for (auto Widget : Widgets)
 	{
-		if (auto const Element = FindUIElementInWidget(Widget, Name, WidgetClass))
+		if (auto const Element = FindUIElementInWidgetByRegExp(Widget, RegExp, WidgetClass))
 		{
 			return Element;
 		}
@@ -41,7 +40,19 @@ UWidget* UTestHelper::FindUIElement(UObject* WorldContextObject, const FName Nam
 	return nullptr;
 }
 
-UWidget* UTestHelper::FindUIElementInWidget(const UUserWidget* Parent, const FName Name,
+UWidget* UTestHelper::FindUIElementByRegExp(UObject* WorldContextObject, const FString& RegExp,
+	const TSubclassOf<UWidget> WidgetClass)
+{
+	return FindUIElementInternal(WorldContextObject, RegExp, WidgetClass);
+}
+
+UWidget* UTestHelper::FindUIElementByName(UObject* WorldContextObject, const FName Name, const TSubclassOf<UWidget> WidgetClass)
+{
+	const FString RegExp = FString::Printf(TEXT("^%s$"), *Name.ToString());
+	return FindUIElementInternal(WorldContextObject, RegExp, WidgetClass);
+}
+
+UWidget* UTestHelper::FindUIElementInWidgetInternal(const UUserWidget* Parent, const FString& RegExp,
 	const TSubclassOf<UWidget> WidgetClass)
 {
 	TArray<UUserWidget*> Widgets;
@@ -50,7 +61,7 @@ UWidget* UTestHelper::FindUIElementInWidget(const UUserWidget* Parent, const FNa
 	Parent->WidgetTree->ForEachWidget(
 		[&](UWidget* Widget)
 		{
-			const FRegexPattern ElementPattern(Name.ToString());
+			const FRegexPattern ElementPattern(RegExp);
 			FRegexMatcher Matcher(ElementPattern, Widget->GetName());
 
 			if (Matcher.FindNext() && Widget->GetClass()->IsChildOf(WidgetClass.Get()))
@@ -72,7 +83,7 @@ UWidget* UTestHelper::FindUIElementInWidget(const UUserWidget* Parent, const FNa
 
 	for (auto Widget : Widgets)
 	{
-		if (auto const Element = FindUIElementInWidget(Widget, Name, WidgetClass))
+		if (auto const Element = FindUIElementInWidgetInternal(Widget, RegExp, WidgetClass))
 		{
 			if (Element->GetClass()->IsChildOf(WidgetClass.Get()))
 			{
@@ -82,6 +93,17 @@ UWidget* UTestHelper::FindUIElementInWidget(const UUserWidget* Parent, const FNa
 	}
 
 	return nullptr;
+}
+
+UWidget* UTestHelper::FindUIElementInWidgetByRegExp(const UUserWidget* Parent, const FString& RegExp, TSubclassOf<UWidget> WidgetClass)
+{
+	return FindUIElementInWidgetInternal(Parent, RegExp, WidgetClass);
+}
+
+UWidget* UTestHelper::FindUIElementInWidgetByName(const UUserWidget* Parent, const FName Name, TSubclassOf<UWidget> WidgetClass)
+{
+	const FString RegExp = FString::Printf(TEXT("^%s$"), *Name.ToString());
+	return FindUIElementInWidgetInternal(Parent, RegExp, WidgetClass);
 }
 
 bool UTestHelper::SetInputFieldText(UObject* WorldContextObject, const FName InputFieldName, const FText Text,
@@ -116,7 +138,7 @@ void UTestHelper::ClickButton(UObject* WorldContextObject, UButton* Button)
 
 UWidget* UTestHelper::FindButtonWidget(UObject* WorldContextObject, const FName ButtonName, const bool bFindAsWidget)
 {
-	UWidget* Widget = FindUIElement(WorldContextObject, ButtonName, UWidget::StaticClass());
+	UWidget* Widget = FindUIElementByName(WorldContextObject, ButtonName, UWidget::StaticClass());
 	if (Widget == nullptr)
 	{
 		return nullptr;
@@ -126,7 +148,7 @@ UWidget* UTestHelper::FindButtonWidget(UObject* WorldContextObject, const FName 
 	{
 		if (auto const UserWidget = Cast<UUserWidget>(Widget))
 		{
-			Widget = FindUIElementInWidget(UserWidget, TEXT(".*"), UButton::StaticClass());
+			Widget = FindUIElementInWidgetByRegExp(UserWidget, TEXT(".*"), UButton::StaticClass());
 		}
 	}
 
@@ -146,7 +168,7 @@ bool UTestHelper::ClickButton_Internal(UWidget* Widget)
 
 UWidget* UTestHelper::FindInputWidget(UObject* WorldContextObject, const FName InputFieldName, const bool bFindAsWidget)
 {
-	UWidget* Widget = FindUIElement(WorldContextObject, InputFieldName, UWidget::StaticClass());
+	UWidget* Widget = FindUIElementByName(WorldContextObject, InputFieldName, UWidget::StaticClass());
 	if (Widget == nullptr)
 	{
 		return nullptr;
@@ -156,10 +178,10 @@ UWidget* UTestHelper::FindInputWidget(UObject* WorldContextObject, const FName I
 	{
 		if (auto const UserWidget = Cast<UUserWidget>(Widget))
 		{
-			Widget = FindUIElementInWidget(UserWidget, TEXT(".*"), UEditableTextBox::StaticClass());
+			Widget = FindUIElementInWidgetByRegExp(UserWidget, TEXT(".*"), UEditableTextBox::StaticClass());
 			if (Widget == nullptr)
 			{
-				Widget = FindUIElementInWidget(UserWidget, TEXT(".*"), UEditableText::StaticClass());
+				Widget = FindUIElementInWidgetByRegExp(UserWidget, TEXT(".*"), UEditableText::StaticClass());
 			}
 		}
 	}
@@ -211,6 +233,9 @@ void UTestHelper::CreateLoginWidget(UObject* WorldContextObject)
 		WorldContextObject, DemoGameMode->GetLoginDemo(),
 		UGameplayStatics::GetPlayerControllerFromID(WorldContextObject, 0));
 	Widget->AddToPlayerScreen();
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(WorldContextObject, 0);
+	Controller->SetInputMode(FInputModeUIOnly());
+	Controller->bShowMouseCursor = true;
 }
 
 bool UTestHelper::FinishTest(
@@ -230,26 +255,15 @@ bool UTestHelper::FinishTest(
 
 bool UTestHelper::HelperWriteText(const FString& Text)
 {
-	IAutomationDriverModule::Get().Enable();
-
-	AsyncTask(ENamedThreads::AnyThread, [Text]
-	{
-		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-		FDriverElementPtr Element = Driver->FindElement(By::Cursor());
-		Element->Type(Text);
-
-		Driver.Reset();
-		AsyncTask(ENamedThreads::GameThread, []
-		{
-			IAutomationDriverModule::Get().Disable();
-		});
-	});
-
 	return true;
 }
 
 bool UTestHelper::HelperCallTab(bool bForward)
 {
+	if (IAutomationDriverModule::Get().IsEnabled())
+	{
+		IAutomationDriverModule::Get().Disable();
+	}
 	IAutomationDriverModule::Get().Enable();
 
 	AsyncTask(ENamedThreads::AnyThread, [bForward]
@@ -264,6 +278,30 @@ bool UTestHelper::HelperCallTab(bool bForward)
 		{
 			Element->TypeChord(EKeys::LeftShift, EKeys::Tab);
 		}
+
+        Driver.Reset();
+        AsyncTask(ENamedThreads::GameThread, []
+        {
+            IAutomationDriverModule::Get().Disable();
+        });
+    });
+
+	return true;
+}
+
+bool UTestHelper::HelperClickButton()
+{
+	if (IAutomationDriverModule::Get().IsEnabled())
+	{
+		IAutomationDriverModule::Get().Disable();
+	}
+	IAutomationDriverModule::Get().Enable();
+
+	AsyncTask(ENamedThreads::AnyThread, []
+    {
+        FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+        FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+		Element->Click();
 
         Driver.Reset();
         AsyncTask(ENamedThreads::GameThread, []
