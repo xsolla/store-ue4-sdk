@@ -24,6 +24,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Internationalization/Regex.h"
 
+//~=============================================================================
+// Basic functions.
+
 UWidget* UTestHelper::FindUIElementInternal(UObject* WorldContextObject, const FString& RegExp, const TSubclassOf<UWidget> WidgetClass)
 {
 	TArray<UUserWidget*> Widgets;
@@ -106,34 +109,12 @@ UWidget* UTestHelper::FindUIElementInWidgetByName(const UUserWidget* Parent, con
 	return FindUIElementInWidgetInternal(Parent, RegExp, WidgetClass);
 }
 
-bool UTestHelper::SetInputFieldText(UObject* WorldContextObject, const FName InputFieldName, const FText Text,
-	const bool bFindAsWidget)
+UUserWidget* UTestHelper::FindWidgetByClass(UObject* WorldContextObject, const TSubclassOf<UUserWidget> WidgetClass)
 {
-	UWidget* Widget = FindInputWidget(WorldContextObject, InputFieldName, bFindAsWidget);
+	TArray<UUserWidget*> Widgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(WorldContextObject, Widgets, WidgetClass, false);
 
-	if (Widget == nullptr)
-	{
-		return false;
-	}
-
-	return SetInputFieldText_Internal(Widget, Text);
-}
-
-bool UTestHelper::ClickButtonByName(UObject* WorldContextObject, const FName ButtonName, const bool bFindAsWidget)
-{
-	UWidget* Widget = FindButtonWidget(WorldContextObject, ButtonName, bFindAsWidget);
-
-	if (Widget == nullptr)
-	{
-		return false;
-	}
-
-	return ClickButton_Internal(Widget);
-}
-
-void UTestHelper::ClickButton(UObject* WorldContextObject, UButton* Button)
-{
-	ClickButton_Internal(Button);
+	return Widgets.Num() != 0 ? Widgets[0] : nullptr;
 }
 
 UWidget* UTestHelper::FindButtonWidget(UObject* WorldContextObject, const FName ButtonName, const bool bFindAsWidget)
@@ -153,17 +134,6 @@ UWidget* UTestHelper::FindButtonWidget(UObject* WorldContextObject, const FName 
 	}
 
 	return Widget;
-}
-
-bool UTestHelper::ClickButton_Internal(UWidget* Widget)
-{
-	if (auto const Button = Cast<UButton>(Widget))
-	{
-		Button->OnClicked.Broadcast();
-		return true;
-	}
-
-	return false;
 }
 
 UWidget* UTestHelper::FindInputWidget(UObject* WorldContextObject, const FName InputFieldName, const bool bFindAsWidget)
@@ -189,30 +159,8 @@ UWidget* UTestHelper::FindInputWidget(UObject* WorldContextObject, const FName I
 	return Widget;
 }
 
-bool UTestHelper::SetInputFieldText_Internal(UWidget* Widget, const FText Text)
-{
-	if (auto EditableTextBox = Cast<UEditableTextBox>(Widget))
-	{
-		EditableTextBox->SetText(Text);
-		return true;
-	}
-
-	if (auto EditableText = Cast<UEditableText>(Widget))
-	{
-		EditableText->SetText(Text);
-		return true;
-	}
-
-	return false;
-}
-
-UUserWidget* UTestHelper::FindWidgetByClass(UObject* WorldContextObject, const TSubclassOf<UUserWidget> WidgetClass)
-{
-	TArray<UUserWidget*> Widgets;
-	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(WorldContextObject, Widgets, WidgetClass, false);
-
-	return Widgets.Num() != 0 ? Widgets[0] : nullptr;
-}
+//~=============================================================================
+// Helpers.
 
 void UTestHelper::RestoreDefaultSettings()
 {
@@ -238,8 +186,7 @@ void UTestHelper::CreateLoginWidget(UObject* WorldContextObject)
 	Controller->bShowMouseCursor = true;
 }
 
-bool UTestHelper::FinishTest(
-	AFunctionalTest* Test, const bool bIsSuccess,
+bool UTestHelper::FinishTest(AFunctionalTest* Test, const bool bIsSuccess,
 	const FString& SuccessMessage, const FString& FailureMessage)
 {
 	if (!IsValid(Test))
@@ -253,9 +200,66 @@ bool UTestHelper::FinishTest(
 	return true;
 }
 
-bool UTestHelper::HelperWriteText(const FString& Text)
+//~=============================================================================
+// Helpers UI.
+
+bool UTestHelper::SetInputFieldText_Internal(UWidget* Widget, const FText Text)
 {
-	return true;
+	if (auto EditableTextBox = Cast<UEditableTextBox>(Widget))
+	{
+		EditableTextBox->SetText(Text);
+		return true;
+	}
+
+	if (auto EditableText = Cast<UEditableText>(Widget))
+	{
+		EditableText->SetText(Text);
+		return true;
+	}
+
+	return false;
+}
+
+bool UTestHelper::SetInputFieldText(UObject* WorldContextObject,
+	const FName InputFieldName, const FText Text, const bool bFindAsWidget)
+{
+	UWidget* Widget = FindInputWidget(WorldContextObject, InputFieldName, bFindAsWidget);
+
+	if (Widget == nullptr)
+	{
+		return false;
+	}
+
+	return SetInputFieldText_Internal(Widget, Text);
+}
+
+bool UTestHelper::ClickButton_Internal(UWidget* Widget)
+{
+	if (auto const Button = Cast<UButton>(Widget))
+	{
+		Button->OnClicked.Broadcast();
+		return true;
+	}
+
+	return false;
+}
+
+void UTestHelper::ClickButton(UButton* Button)
+{
+	ClickButton_Internal(Button);
+}
+
+bool UTestHelper::ClickButtonByName(UObject* WorldContextObject,
+	const FName ButtonName, const bool bFindAsWidget)
+{
+	UWidget* Widget = FindButtonWidget(WorldContextObject, ButtonName, bFindAsWidget);
+
+	if (Widget == nullptr)
+	{
+		return false;
+	}
+
+	return ClickButton_Internal(Widget);
 }
 
 bool UTestHelper::HelperCallTab(bool bForward)
@@ -267,9 +271,9 @@ bool UTestHelper::HelperCallTab(bool bForward)
 	IAutomationDriverModule::Get().Enable();
 
 	AsyncTask(ENamedThreads::AnyThread, [bForward]
-    {
-        FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-        FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+	{
+		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+		FDriverElementPtr Element = Driver->FindElement(By::Cursor());
 		if (bForward)
 		{
 			Element->Type(EKeys::Tab);
@@ -279,13 +283,18 @@ bool UTestHelper::HelperCallTab(bool bForward)
 			Element->TypeChord(EKeys::LeftShift, EKeys::Tab);
 		}
 
-        Driver.Reset();
-        AsyncTask(ENamedThreads::GameThread, []
-        {
-            IAutomationDriverModule::Get().Disable();
-        });
-    });
+		Driver.Reset();
+		AsyncTask(ENamedThreads::GameThread, []
+		{
+			IAutomationDriverModule::Get().Disable();
+		});
+	});
 
+	return true;
+}
+
+bool UTestHelper::HelperWriteText(const FString& Text)
+{
 	return true;
 }
 
@@ -298,17 +307,17 @@ bool UTestHelper::HelperClickButton()
 	IAutomationDriverModule::Get().Enable();
 
 	AsyncTask(ENamedThreads::AnyThread, []
-    {
-        FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
-        FDriverElementPtr Element = Driver->FindElement(By::Cursor());
+	{
+		FAutomationDriverPtr Driver = IAutomationDriverModule::Get().CreateDriver();
+		FDriverElementPtr Element = Driver->FindElement(By::Cursor());
 		Element->Click();
 
-        Driver.Reset();
-        AsyncTask(ENamedThreads::GameThread, []
-        {
-            IAutomationDriverModule::Get().Disable();
-        });
-    });
+		Driver.Reset();
+		AsyncTask(ENamedThreads::GameThread, []
+		{
+			IAutomationDriverModule::Get().Disable();
+		});
+	});
 
 	return true;
 }

@@ -86,8 +86,8 @@ class XSOLLATESTS_API UTestHelper : public UBlueprintFunctionLibrary
 	static bool ClickButton_Internal(UWidget* Widget);
 	
 	/** Click at button */
-	UFUNCTION(BlueprintCallable, Category = "TestHelper|UI", meta = (WorldContext = "WorldContextObject"))
-	static void ClickButton(UObject* WorldContextObject, UButton* Button);
+	UFUNCTION(BlueprintCallable, Category = "TestHelper|UI")
+	static void ClickButton(UButton* Button);
 
 	/** Find button by name and click */
 	UFUNCTION(BlueprintCallable, Category = "TestHelper|UI", meta = (WorldContext = "WorldContextObject"))
