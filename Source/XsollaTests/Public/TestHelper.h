@@ -96,10 +96,6 @@ class XSOLLATESTS_API UTestHelper : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "TestHelper|Tests")
 	static bool HelperCallTab(bool bForward);
 
-	/** Write some text to current focused element */
-	UFUNCTION(BlueprintCallable, Category = "TestHelper")
-	static bool HelperWriteText(const FString& Text);
-
 	UFUNCTION(BlueprintCallable, Category = "TestHelper|Tests")
 	static bool HelperClickButton();
 };

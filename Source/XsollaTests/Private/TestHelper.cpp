@@ -293,11 +293,6 @@ bool UTestHelper::HelperCallTab(bool bForward)
 	return true;
 }
 
-bool UTestHelper::HelperWriteText(const FString& Text)
-{
-	return true;
-}
-
 bool UTestHelper::HelperClickButton()
 {
 	if (IAutomationDriverModule::Get().IsEnabled())

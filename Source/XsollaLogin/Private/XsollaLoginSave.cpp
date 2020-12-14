@@ -4,6 +4,7 @@
 #include "XsollaLoginSave.h"
 #include "XsollaLogin.h"
 #include "XsollaLoginSettings.h"
+#include "XsollaLoginDefines.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"

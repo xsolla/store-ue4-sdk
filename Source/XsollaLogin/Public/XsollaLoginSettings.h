@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "XsollaLoginDefines.h"
-
 #include "Blueprint/UserWidget.h"
 
 #include "XsollaLoginSettings.generated.h"

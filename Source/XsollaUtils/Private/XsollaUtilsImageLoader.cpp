@@ -18,7 +18,7 @@ UXsollaUtilsImageLoader::UXsollaUtilsImageLoader(const FObjectInitializer& Objec
 
 void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
-	if (URL.Compare("") == 0)
+	if (URL.IsEmpty())
 	{
 		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Found empty String URL"), *VA_FUNC_LINE);
 		return;
