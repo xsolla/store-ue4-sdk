@@ -25,7 +25,7 @@ class XSOLLASTORE_API UXsollaStoreSettings : public UObject
 
 public:
 	/** Project ID from your Publisher Account. Required. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	FString ProjectID;
 
 	/** Enable to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com. */
@@ -33,42 +33,45 @@ public:
 	bool EnableSandbox;
 
 	/** Enable if the sandbox mode can be used in a shipping build. Use carefully! */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	bool EnableSandboxInShippingBuild;
 
 	/** Payment user interface theme. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
 	/** Custom class to handle the payment console. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	TSubclassOf<UUserWidget> OverrideBrowserWidgetClass;
 
 	/** Enable to process a payment with an external (system) browser. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	bool UsePlatformBrowser;
 
 	/** Enable to process tasks such as authentication and payment via Steam. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	bool BuildForSteam;
 
 	/** If enabled, Store SDK will imitate platform-specific requests so you can try account linking from different platforms. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Store Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Store Settings")
 	bool UseCrossPlatformAccountLinking;
 
 	/** Target platform for cross-platform account linking. If you use Xsolla Login, make sure that you choose the same platform in the Login settings. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
 	EXsollaPublishingPlatform Platform;
 
 	/** Demo Project ID. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Demo")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Demo")
 	FString DemoProjectID;
 
 	/** Enable deep linking for Android applications. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Android")
 	bool UseDeepLinking;
 
 	/** Redirect URL that allows external applications to enter current project game activity. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Store Android", meta = (EditCondition = "UseDeepLinking"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Android", meta = (EditCondition = "UseDeepLinking"))
 	FString RedirectURL;
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla Store Settings")
+	void SetupDefaultDemoSettings();
 };

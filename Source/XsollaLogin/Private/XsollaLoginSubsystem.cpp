@@ -2361,7 +2361,7 @@ FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FSt
 	TSharedPtr<FJsonObject> PayloadJsonObject;
 	if (!ParseTokenPayload(Token, PayloadJsonObject))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return FString();
 	}
 

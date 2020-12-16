@@ -1,19 +1,19 @@
 {
-	"FileVersion": 3,
-	"Version": 8,
-	"VersionName": "0.5.5",
-	"EngineVersion": "4.26.0",
-	"FriendlyName": "Xsolla SDK",
-	"Description": "Xsolla SDK for Unreal Engine 4",
-	"Category": "Other",
-	"CreatedBy": "Xsolla Inc.",
-	"CreatedByURL": "https://xsolla.com",
-	"DocsURL": "",
-	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/e32fb866a54a4a36a2359fb7a5251b59",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
+  "FileVersion": 3,
+  "Version": 8,
+  "VersionName": "0.5.5",
+  "EngineVersion": "4.26.0",
+  "FriendlyName": "Xsolla SDK",
+  "Description": "Xsolla SDK for Unreal Engine 4",
+  "Category": "Other",
+  "CreatedBy": "Xsolla Inc.",
+  "CreatedByURL": "https://xsolla.com",
+  "DocsURL": "",
+  "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/e32fb866a54a4a36a2359fb7a5251b59",
+  "SupportURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
   "Modules": [
     {
       "Name": "XsollaWebBrowser",
@@ -81,10 +81,10 @@
       ]
     }
   ],
-	"Plugins": [
-		{
-			"Name": "OnlineSubsystem",
-			"Enabled": true
-		}
-	]
+  "Plugins": [
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    }
+  ]
 }

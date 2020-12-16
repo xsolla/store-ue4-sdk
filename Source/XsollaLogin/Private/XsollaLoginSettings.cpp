@@ -6,6 +6,11 @@
 UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetupDefaultDemoSettings();
+}
+
+void UXsollaLoginSettings::SetupDefaultDemoSettings()
+{
 	UserDataStorage = EUserDataStorage::Xsolla;
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");

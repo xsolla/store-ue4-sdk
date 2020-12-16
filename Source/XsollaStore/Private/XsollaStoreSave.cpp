@@ -12,7 +12,12 @@ const int32 UXsollaStoreSave::UserIndex = 0;
 
 FXsollaStoreSaveData UXsollaStoreSave::Load()
 {
-	auto SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(UXsollaStoreSave::SaveSlotName, UXsollaStoreSave::UserIndex));
+	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+	{
+		return FXsollaStoreSaveData();		
+	}
+	
+	UXsollaStoreSave* SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 	if (!SaveInstance)
 	{
 		return FXsollaStoreSaveData();

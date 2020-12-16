@@ -6,6 +6,11 @@
 UXsollaStoreSettings::UXsollaStoreSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetupDefaultDemoSettings();
+}
+
+void UXsollaStoreSettings::SetupDefaultDemoSettings()
+{
 	EnableSandbox = true;
 	EnableSandboxInShippingBuild = false;
 	UsePlatformBrowser = false;
