@@ -80,7 +80,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	LoginID = InLoginId;
 
 	// Check token override from Xsolla Launcher
-	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-jwt"));
+	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-token"));
 	if (!LauncherLoginJwt.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Xsolla Launcher login token is used"), *VA_FUNC_LINE);
@@ -2431,7 +2431,7 @@ FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FSt
 	TSharedPtr<FJsonObject> PayloadJsonObject;
 	if (!ParseTokenPayload(Token, PayloadJsonObject))
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return FString();
 	}
 
