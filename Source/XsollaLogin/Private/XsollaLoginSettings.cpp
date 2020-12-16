@@ -21,4 +21,5 @@ UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectIniti
 	Platform = EXsollaTargetPlatform::PlaystationNetwork;
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
+	bAllowNativeAuth = false;
 }
