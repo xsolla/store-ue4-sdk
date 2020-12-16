@@ -74,7 +74,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	LoginID = InLoginId;
 
 	// Check token override from Xsolla Launcher
-	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-jwt"));
+	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-token"));
 	if (!LauncherLoginJwt.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Xsolla Launcher login token is used"), *VA_FUNC_LINE);
