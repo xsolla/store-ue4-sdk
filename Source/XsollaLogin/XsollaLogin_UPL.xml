@@ -73,6 +73,10 @@
   <!-- Additions to proguard -->
   <proguardAdditions>
     <insert>
+      -dontwarn com.xsolla.**
+      -keep class com.xsolla.** { *; }
+      -keep interface com.xsolla.** { *; }
+
       -dontwarn androidx.**
       -keep class androidx.** { *; }
       -keep interface androidx.** { *; }
