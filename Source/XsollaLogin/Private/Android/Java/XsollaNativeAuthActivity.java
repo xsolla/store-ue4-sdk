@@ -1,3 +1,5 @@
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
+
 package com.xsolla.login;
 
 import android.app.Activity;

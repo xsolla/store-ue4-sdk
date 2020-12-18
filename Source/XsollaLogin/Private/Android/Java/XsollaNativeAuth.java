@@ -1,27 +1,35 @@
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
+
 package com.xsolla.login;
 
 import android.app.Activity;
 import android.content.Intent;
 
 import com.xsolla.android.login.XLogin;
+import com.xsolla.android.login.LoginConfig;
 import com.xsolla.android.login.social.SocialNetwork;
 
 public class XsollaNativeAuth {
 
     public static void xLoginInitJwt(Activity activity, String loginID, String callbackUrl, String facebookAppId, String googleAppId) {
-        XLogin.SocialConfig socialConfig = getSocialConfig(facebookAppId, googleAppId);
-        if (callbackUrl.isEmpty())
-            XLogin.initJwt(activity, loginID, socialConfig);
-        else
-            XLogin.initJwt(activity, loginID, callbackUrl, socialConfig);
+        XLogin.SocialConfig socialConfig = new XLogin.SocialConfig(facebookAppId, googleAppId);
+        LoginConfig loginConfig = new LoginConfig.JwtBuilder().
+                setProjectId(loginID).
+                setCallbackUrl(callbackUrl).
+                setSocialConfig(socialConfig).
+                build();
+        XLogin.init(activity, loginConfig);
     }
 
     public static void xLoginInitOauth(Activity activity, String loginID, String clientId, String callbackUrl, String facebookAppId, String googleAppId) {
-        XLogin.SocialConfig socialConfig = getSocialConfig(facebookAppId, googleAppId);
-        if (callbackUrl.isEmpty())
-            XLogin.initOauth(activity, loginID, Integer.parseInt(clientId), socialConfig);
-        else
-            XLogin.initOauth(activity, loginID, Integer.parseInt(clientId), callbackUrl, socialConfig);
+        XLogin.SocialConfig socialConfig = new XLogin.SocialConfig(facebookAppId, googleAppId);
+        LoginConfig loginConfig = new LoginConfig.OauthBuilder().
+                setProjectId(loginID).
+                setOauthClientId(Integer.parseInt(clientId)).
+                setCallbackUrl(callbackUrl).
+                setSocialConfig(socialConfig).
+                build();
+        XLogin.init(activity, loginConfig);
     }
 
     public static void xAuthSocial(Activity activity, String provider, boolean rememberMe, boolean invalidateToken, long callback) {
@@ -32,12 +40,5 @@ public class XsollaNativeAuth {
         intent.putExtra(XsollaNativeAuthActivity.REMEMBER_ME, rememberMe);
         intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
-    }
-
-    private static XLogin.SocialConfig getSocialConfig(String facebookAppId, String googleAppId) {
-        XLogin.SocialConfig.Builder socialConfigBuilder = new XLogin.SocialConfig.Builder();
-        socialConfigBuilder.facebookAppId(facebookAppId);
-        socialConfigBuilder.googleServerId(googleAppId);
-        return socialConfigBuilder.build();
     }
 }
