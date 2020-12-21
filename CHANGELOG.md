@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6] - 2020-12-17
+
+### Added
+- Authorization with access token.
+- Additional social networks for authorization.
+
+
 ## [0.5.5] - 2020-11-26
 
 ### Changed
