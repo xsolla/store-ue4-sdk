@@ -206,6 +206,9 @@ struct FXsollaUserDetails
 	FString nickname;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
+	FString tag;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	FString phone;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
@@ -333,6 +336,9 @@ struct FXsollaPublicProfile
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
 	FString nickname;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
+	FString tag;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Public Profile")
 	FString registered;

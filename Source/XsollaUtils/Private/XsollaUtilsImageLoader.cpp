@@ -18,6 +18,11 @@ UXsollaUtilsImageLoader::UXsollaUtilsImageLoader(const FObjectInitializer& Objec
 
 void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
+	if (URL.IsEmpty())
+	{
+		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Found empty String URL"), *VA_FUNC_LINE);
+		return;
+	}
 	UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
 
 	const FString ResourceId = GetCacheName(URL).ToString();
@@ -48,7 +53,7 @@ void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 			FOnRequestCompleted imageLoadingCompletedDelegate;
 			PendingRequests.Add(ResourceId, imageLoadingCompletedDelegate);
 
-			TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+			TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
 
 			HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 			HttpRequest->SetURL(URL);

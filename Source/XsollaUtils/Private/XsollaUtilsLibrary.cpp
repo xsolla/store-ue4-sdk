@@ -18,3 +18,8 @@ FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
 {
 	return FDateTime::FromUnixTimestamp(Time);
 }
+
+int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime DateTime)
+{
+	return DateTime.ToUnixTimestamp();
+}
