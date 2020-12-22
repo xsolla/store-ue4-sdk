@@ -18,7 +18,9 @@ namespace UnrealBuildTool.Rules
                     "UMG",
                     "Engine",
                     "ImageWrapper",
-                    "HTTP"
+                    "HTTP",
+                    "Json",
+                    "JsonUtilities"
                 }
             );
         }

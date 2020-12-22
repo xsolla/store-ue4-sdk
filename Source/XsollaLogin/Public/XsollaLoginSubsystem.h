@@ -7,6 +7,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
+#include "XsollaUtilsDataModel.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
@@ -440,12 +441,12 @@ public:
 	/** Get Access Token By Email 
 	 * Get Access token by email from your own backend service.
 	 *
-	 * @param Email Email of user used by xsolla sdk backend service
+	 * @param Parameters Parameters for custom auth
 	 * @param SuccessCallback Callback function called after access token received successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetAccessTokenByEmail(const FString& Email, const FOnAccessTokenLoginSuccess& SuccessCallback,
+	void GetAccessTokenFromCustomAuthServer(const FXsollaParameters Parameters, const FOnAccessTokenLoginSuccess& SuccessCallback,
 		const FOnAuthError& ErrorCallback);
 
 	/** Get User Profile
@@ -462,6 +463,7 @@ public:
 	/** Search Users By Nickname
 	 * Searches for users with the specified nickname.
 	 *
+	 * @param AuthToken User authorization token.
 	 * @param Nickname User nickname used as search criteria.
 	 * @param SuccessCallback Callback function called after user search completed successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.

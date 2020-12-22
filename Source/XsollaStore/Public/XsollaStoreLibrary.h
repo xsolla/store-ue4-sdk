@@ -25,18 +25,6 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (StoreCart)", CompactNodeTitle = "===", ScriptMethod = "Equals", ScriptOperator = "==", Keywords = "== equal"), Category = "Xsolla|Store|Cart")
 	static bool Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B);
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (int)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Store")
-	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(int Value);
-
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (float)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Store")
-	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(float Value);
-
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (string)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Store")
-	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(const FString& Value);
-
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Store")
-	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
-
 	/** Gets currency-format data table. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static UDataTable* GetCurrencyLibrary();
