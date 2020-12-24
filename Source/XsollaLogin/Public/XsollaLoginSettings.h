@@ -148,5 +148,5 @@ public:
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth"))
-	FString GoodleAppId;
+	FString GoogleAppId;
 };

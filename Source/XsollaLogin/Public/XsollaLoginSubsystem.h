@@ -136,6 +136,7 @@ public:
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Callback function called after user authentication was cancelled.
 	 * @param ErrorCallback Callback function called after user authentication resulted with an error.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);

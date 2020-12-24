@@ -101,7 +101,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				XsollaJavaConvertor::GetJavaString(Settings->ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoodleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
 		}
 		else
 		{
@@ -111,7 +111,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoodleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
 		}
 	}
 
