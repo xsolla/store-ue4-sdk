@@ -139,14 +139,14 @@ public:
 	FString CustomAuthServerURL;
 
 	/** If enabled, user authentication will be handled via native Android applications if possible. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool bAllowNativeAuth;
 
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
 	FString FacebookAppId;
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
 	FString GoogleAppId;
 };
