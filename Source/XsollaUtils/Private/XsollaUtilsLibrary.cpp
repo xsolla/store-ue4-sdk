@@ -10,32 +10,6 @@ UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitial
 {
 }
 
-UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
-{
-	return FXsollaUtilsModule::Get().GetImageLoader();
-}
-
-FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
-{
-	return FDateTime::FromUnixTimestamp(Time);
-}
-
-int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime DateTime)
-{
-	return DateTime.ToUnixTimestamp();
-}
-
-void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters CustomParameters)
-{
-	Internal_AddParametersToJsonObject(JsonObject, CustomParameters);
-}
-
-void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName,
-	const FXsollaParameters CustomParameters)
-{
-	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
-}
-
 void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
     FXsollaParameters CustomParameters, const FString& FieldName)
 {
@@ -83,6 +57,32 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 	{
 		JsonObject->SetObjectField(FieldName, JsonRequestObject);
 	}
+}
+
+UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
+{
+	return FXsollaUtilsModule::Get().GetImageLoader();
+}
+
+FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
+{
+	return FDateTime::FromUnixTimestamp(Time);
+}
+
+int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime DateTime)
+{
+	return DateTime.ToUnixTimestamp();
+}
+
+void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters CustomParameters)
+{
+	Internal_AddParametersToJsonObject(JsonObject, CustomParameters);
+}
+
+void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName,
+	const FXsollaParameters CustomParameters)
+{
+	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
 }
 
 FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(int Value)

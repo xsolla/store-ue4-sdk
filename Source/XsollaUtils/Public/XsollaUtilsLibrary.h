@@ -15,6 +15,9 @@ class XSOLLAUTILS_API UXsollaUtilsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
+	static void Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
+        FXsollaParameters CustomParameters, const FString& FieldName = "");
+
 public:
 	/** Direct access to the image loader object. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
@@ -50,9 +53,6 @@ public:
 		}
 		return static_cast<EnumType>(Enum->GetValueByName(FName(*String)));
 	}
-
-	static void Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
-		FXsollaParameters CustomParameters, const FString& FieldName = "");
 
 	/** Add parameters to json object root */
 	static void AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, FXsollaParameters CustomParameters);
