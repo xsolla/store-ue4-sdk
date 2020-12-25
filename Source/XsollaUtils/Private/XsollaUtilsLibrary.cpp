@@ -1,9 +1,10 @@
 // Copyright 2020 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsLibrary.h"
-#include "JsonObject.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
+
+#include "Dom/JsonObject.h"
 
 UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -11,7 +12,7 @@ UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitial
 }
 
 void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
-    FXsollaParameters CustomParameters, const FString& FieldName)
+	FXsollaParameters CustomParameters, const FString& FieldName)
 {
 	if (CustomParameters.Parameters.Num() == 0)
 	{
@@ -21,7 +22,7 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 	TSharedPtr<FJsonObject> JsonRequestObject;
 	if (FieldName.IsEmpty())
 	{
-		JsonRequestObject = JsonObject;		
+		JsonRequestObject = JsonObject;
 	}
 	else
 	{
@@ -48,7 +49,7 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 			break;
 		default:
 			UE_LOG(LogXsollaUtils, Log, TEXT("%s: parameter with type of %s was not added"),
-                *VA_FUNC_LINE, *UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaVariantTypes", static_cast<EXsollaVariantTypes>(Variant.GetType())));
+				*VA_FUNC_LINE, *UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaVariantTypes", static_cast<EXsollaVariantTypes>(Variant.GetType())));
 			break;
 		}
 	}

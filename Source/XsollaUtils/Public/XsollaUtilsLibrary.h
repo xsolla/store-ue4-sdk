@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "EngineMinimal.h"
-#include "XsollaUtilsDataModel.h"
 #include "Components/CheckBox.h"
+#include "EngineMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "XsollaUtilsDataModel.h"
 #include "XsollaUtilsLibrary.generated.h"
 
 class UXsollaUtilsImageLoader;
+class FJsonObject;
 
 UCLASS()
 class XSOLLAUTILS_API UXsollaUtilsLibrary : public UBlueprintFunctionLibrary
@@ -16,7 +17,7 @@ class XSOLLAUTILS_API UXsollaUtilsLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 	static void Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
-        FXsollaParameters CustomParameters, const FString& FieldName = "");
+		FXsollaParameters CustomParameters, const FString& FieldName = "");
 
 public:
 	/** Direct access to the image loader object. */

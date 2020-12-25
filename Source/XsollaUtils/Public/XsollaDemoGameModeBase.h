@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -21,10 +21,9 @@ class XSOLLAUTILS_API AXsollaDemoGameModeBase : public AGameModeBase
 	TSubclassOf<UUserWidget> StoreDemo;
 
 public:
-	
 	UFUNCTION(BlueprintPure, Category = "XsollaDemoGameModeBase")
 	TSubclassOf<UUserWidget> GetLoginDemo() const;
 
 	UFUNCTION(BlueprintPure, Category = "XsollaDemoGameModeBase")
-    TSubclassOf<UUserWidget> GetStoreDemo() const;
+	TSubclassOf<UUserWidget> GetStoreDemo() const;
 };
