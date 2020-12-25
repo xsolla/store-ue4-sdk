@@ -30,26 +30,6 @@ bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FS
 	return A == B;
 }
 
-FXsollaJsonVariant UXsollaStoreLibrary::Conv_IntToXsollaJsonVariant(int Value)
-{
-	return FXsollaJsonVariant(Value);
-}
-
-FXsollaJsonVariant UXsollaStoreLibrary::Conv_FloatToXsollaJsonVariant(float Value)
-{
-	return FXsollaJsonVariant(Value);
-}
-
-FXsollaJsonVariant UXsollaStoreLibrary::Conv_StringToXsollaJsonVariant(const FString& Value)
-{
-	return FXsollaJsonVariant(Value);
-}
-
-FXsollaJsonVariant UXsollaStoreLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
-{
-	return FXsollaJsonVariant(Value);
-}
-
 UDataTable* UXsollaStoreLibrary::GetCurrencyLibrary()
 {
 	return CurrencyLibrary;

@@ -138,7 +138,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 		const FString& Currency, const FString& Country, const FString& Locale,
-		const FXsollaPaymentCustomParameters CustomParameters,
+		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fetch Cart Payment Token
@@ -156,7 +156,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Country, const FString& Locale,
-		const FXsollaPaymentCustomParameters CustomParameters,
+		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Launch Payment Console
@@ -489,7 +489,4 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
-
-	/** Patching JsonObject with CustomParameters */
-	static void AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters);
 };

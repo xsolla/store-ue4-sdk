@@ -3,6 +3,7 @@
 #pragma once
 
 #include "EngineMinimal.h"
+#include "XsollaUtilsDataModel.h"
 #include "Components/CheckBox.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsLibrary.generated.h"
@@ -13,6 +14,9 @@ UCLASS()
 class XSOLLAUTILS_API UXsollaUtilsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
+
+	static void Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
+        FXsollaParameters CustomParameters, const FString& FieldName = "");
 
 public:
 	/** Direct access to the image loader object. */
@@ -49,4 +53,22 @@ public:
 		}
 		return static_cast<EnumType>(Enum->GetValueByName(FName(*String)));
 	}
+
+	/** Add parameters to json object root */
+	static void AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, FXsollaParameters CustomParameters);
+
+	/** Add parameters to json object by FieldName */
+	static void AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName, FXsollaParameters CustomParameters);
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (int)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
+	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(int Value);
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (float)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
+	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(float Value);
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (string)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
+	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(const FString& Value);
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
+	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
 };

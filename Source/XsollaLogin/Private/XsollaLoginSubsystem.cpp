@@ -745,14 +745,15 @@ void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const F
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::GetAccessTokenByEmail(const FString& Email, const FOnAccessTokenLoginSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::GetAccessTokenFromCustomAuthServer(const FXsollaParameters Parameters,
+	const FOnAccessTokenLoginSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	const FString Url = FString::Printf(TEXT("%slogin"), *Settings->CustomAuthServerURL);
 
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	RequestDataJson->SetStringField(TEXT("email"), *Email);
+	const TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	UXsollaUtilsLibrary::AddParametersToJsonObject(RequestDataJson, Parameters);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);

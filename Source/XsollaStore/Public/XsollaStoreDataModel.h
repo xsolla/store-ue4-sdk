@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Misc/Variant.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
 
@@ -490,73 +489,6 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 	/** If 'true', the user should choose the bonus before redeeming a promo code. */
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
 	bool is_selectable;
-};
-
-USTRUCT(BlueprintType)
-struct FXsollaJsonVariant
-{
-	GENERATED_BODY()
-
-	FXsollaJsonVariant(){};
-	FXsollaJsonVariant(const FVariant Variant) : Variant(Variant){};
-
-	FVariant Variant;
-};
-
-USTRUCT(BlueprintType)
-struct FXsollaPaymentCustomParameters
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, Category = "Payment Custom Parameters")
-	TMap<FString, FXsollaJsonVariant> Parameters;
-};
-
-/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
-*/
-UENUM()
-enum class EXsollaVariantTypes : int8
-{
-	Empty = 0,
-	Ansichar = 1,
-	Bool = 2,
-	Box = 3,
-	BoxSphereBounds = 4,
-	ByteArray = 5,
-	Color = 6,
-	DateTime = 7,
-	Double = 8,
-	Enum = 9,
-	Float = 10,
-	Guid = 11,
-	Int8 = 12,
-	Int16 = 13,
-	Int32 = 14,
-	Int64 = 15,
-	IntRect = 16,
-	LinearColor = 17,
-	Matrix = 18,
-	Name = 19,
-	Plane = 20,
-	Quat = 21,
-	RandomStream = 22,
-	Rotator = 23,
-	String = 24,
-	Widechar = 25,
-	Timespan = 26,
-	Transform = 27,
-	TwoVectors = 28,
-	UInt8 = 29,
-	UInt16 = 30,
-	UInt32 = 31,
-	UInt64 = 32,
-	Vector = 33,
-	Vector2d = 34,
-	Vector4 = 35,
-	IntPoint = 36,
-	IntVector = 37,
-	NetworkGUID = 38,
-	Custom = 0x40
 };
 
 inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
