@@ -24,6 +24,12 @@
 #include "UObject/Package.h"
 #include "XsollaUtilsLibrary.h"
 
+#if PLATFORM_ANDROID
+#include "Android/XsollaJavaConvertor.h"
+#include "Android/XsollaMethodCallUtils.h"
+#include "Android/XsollaNativeAuthCallback.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
 const FString UXsollaLoginSubsystem::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
@@ -80,13 +86,43 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Xsolla Launcher login token is used"), *VA_FUNC_LINE);
 		LoginData.AuthToken.JWT = LauncherLoginJwt;
 	}
+
+#if PLATFORM_ANDROID
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	if (Settings->bAllowNativeAuth)
+	{
+		if (Settings->UseOAuth2)
+		{
+			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitOauth",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				FJavaWrapper::GameActivityThis,
+				XsollaJavaConvertor::GetJavaString(LoginID),
+				XsollaJavaConvertor::GetJavaString(Settings->ClientID),
+				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
+				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+		}
+		else
+		{
+			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitJwt",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				FJavaWrapper::GameActivityThis,
+				XsollaJavaConvertor::GetJavaString(LoginID),
+				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
+				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+		}
+	}
+
+#endif
 }
 
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	
+
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
@@ -108,7 +144,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	
+
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User authentication should be handled via Steam"), *VA_FUNC_LINE);
@@ -136,7 +172,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	
+
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User password reset should be handled via Steam"), *VA_FUNC_LINE);
@@ -207,6 +243,30 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	SaveData();
 }
 
+void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
+	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
+{
+#if PLATFORM_ANDROID
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	if (Settings->bAllowNativeAuth)
+	{
+		UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
+		nativeCallback->BindSuccessDelegate(SuccessCallback);
+		nativeCallback->BindCancelDelegate(CancelCallback);
+		nativeCallback->BindErrorDelegate(ErrorCallback);
+
+		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZZJ)V",
+			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, Settings->InvalidateExistingSessions, (jlong)nativeCallback);
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Native authentication should be enabled in Project Settings"), *VA_FUNC_LINE);
+	}
+
+#endif
+}
+
 void UXsollaLoginSubsystem::AuthenticateViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
 	const FOnAuthenticateViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
@@ -221,16 +281,16 @@ void UXsollaLoginSubsystem::AuthenticateViaProviderProject(const FString& AuthTo
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/cross/%s/login?client_id=%s&scope=%s"),
-        *LoginEndpointOAuth,
-        *PlatformProviderProject,
-        *Settings->ClientID,
-        *Scope);
+		*LoginEndpointOAuth,
+		*PlatformProviderProject,
+		*Settings->ClientID,
+		*Scope);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();	
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginSubsystem::SetToken(const FString& Token)
@@ -424,13 +484,13 @@ void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCh
 
 	RequestDataJson->SetStringField(TEXT("dob"), *DateOfBirth);
 	RequestDataJson->SetStringField(TEXT("project_id"), *LoginID);
-	
+
 	const FString Url = FString::Printf(TEXT("%s/age/check"), *UsersEndpoint);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -470,7 +530,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	
+
 	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM) && Settings->bUseSteamAuthorization)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User registration should be handled via Steam"), *VA_FUNC_LINE);
@@ -575,7 +635,7 @@ void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, U
 		ErrorCallback.Execute("-1", "Picture is invalid.");
 		return;
 	}
-	
+
 	// Prepare picture upload request content
 	const FString Boundary = TEXT("---------------------------" + FString::FromInt(FDateTime::Now().GetTicks()));
 	const FString BeginBoundary = TEXT("\r\n--" + Boundary + "\r\n");
@@ -678,8 +738,8 @@ void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const F
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/social_friends/update%s"),
-        *UserDetailsEndpoint,
-        Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
+		*UserDetailsEndpoint,
+		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -688,7 +748,7 @@ void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const F
 void UXsollaLoginSubsystem::GetAccessTokenByEmail(const FString& Email, const FOnAccessTokenLoginSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	
+
 	const FString Url = FString::Printf(TEXT("%slogin"), *Settings->CustomAuthServerURL);
 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -700,7 +760,7 @@ void UXsollaLoginSubsystem::GetAccessTokenByEmail(const FString& Email, const FO
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-        &UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -932,18 +992,18 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/%s/login_with_token?projectId=%s&payload=%s&with_logout=%s"),
-        *LoginSocialEndpoint,
-        *ProviderName,
-        *LoginID,
-        *Payload,
-        Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
+		*LoginSocialEndpoint,
+		*ProviderName,
+		*LoginID,
+		*Payload,
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("access_token"), *AuthToken);
 	if (ProviderName.Compare(TEXT("twitter")))
 	{
-		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);		
+		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);
 	}
 
 	FString PostContent;
@@ -964,18 +1024,18 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/social/%s/login_with_token?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=offline"),
-        *LoginEndpointOAuth,
-        *ProviderName,
-        *Settings->ClientID,
-        *BlankRedirectEndpoint,
-        *State);
+		*LoginEndpointOAuth,
+		*ProviderName,
+		*Settings->ClientID,
+		*BlankRedirectEndpoint,
+		*State);
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("access_token"), *AuthToken);
 	if (ProviderName.Compare(TEXT("twitter")))
 	{
-		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);		
+		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);
 	}
 
 	FString PostContent;
@@ -1240,7 +1300,7 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 }
 
 void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-    FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -1349,7 +1409,7 @@ void UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete(F
 			SuccessCallback.ExecuteIfBound(ProviderToken);
 			return;
 		}
-		
+
 		ErrorStr = FString::Printf(TEXT("Can't process response json"));
 	}
 	else
@@ -1830,7 +1890,6 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
 
-
 void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
@@ -1845,7 +1904,6 @@ void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
 
 	SuccessCallback.ExecuteIfBound(TEXT("204"));
 }
-
 
 void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback)
@@ -1986,7 +2044,7 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 
 void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
 	const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
-    const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
@@ -2005,11 +2063,11 @@ void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
 		if (JsonObject->HasTypedField<EJson::String>(AccessTokenFieldName))
 		{
 			const FString AccessToken = JsonObject->GetStringField(AccessTokenFieldName);
-			
+
 			SuccessCallback.ExecuteIfBound(AccessToken);
 			return;
 		}
-		
+
 		ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *AccessTokenFieldName);
 	}
 	else
@@ -2218,7 +2276,7 @@ void UXsollaLoginSubsystem::SetStringArrayField(TSharedPtr<FJsonObject> Object, 
 bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
 {
 	TArray<FString> TokenParts;
-	
+
 	Token.ParseIntoArray(TokenParts, TEXT("."));
 	if (TokenParts.Num() <= 1)
 	{
@@ -2304,6 +2362,18 @@ FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platf
 FXsollaLoginData UXsollaLoginSubsystem::GetLoginData()
 {
 	return LoginData;
+}
+
+void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, bool ClearCache)
+{
+	// Refresh saved data in memory
+	LoginData = Data;
+
+	if (ClearCache)
+	{
+		// Drop saved data in cache
+		UXsollaLoginSave::Save(LoginData);
+	}
 }
 
 void UXsollaLoginSubsystem::DropLoginData(bool ClearCache)
@@ -2468,5 +2538,57 @@ bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
 
 	return SocialNetwork != nullptr;
 }
+
+#if PLATFORM_ANDROID
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
+	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
+{
+	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		FXsollaLoginData receivedData;
+		receivedData.AuthToken.JWT = XsollaJavaConvertor::FromJavaString(accessToken);
+		receivedData.AuthToken.RefreshToken = XsollaJavaConvertor::FromJavaString(refreshToken);
+		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
+		receivedData.bRememberMe = rememberMe;
+		callback->ExecuteSuccess(receivedData);
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+{
+	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteCancel();
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
+{
+	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+#endif
 
 #undef LOCTEXT_NAMESPACE
