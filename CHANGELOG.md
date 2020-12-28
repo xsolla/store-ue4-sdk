@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.7] - 2020-12-25
+
+### Added
+- Native authentication via Facebook and Google on Android.
+- New gender options.
+
+### Changed
+- Authentication via access token with custom parameters.
+- New web store for demo project.
+
 ## [0.5.6] - 2020-12-17
 
 ### Added

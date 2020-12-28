@@ -2,12 +2,12 @@
 
 #include "XsollaUtilsImageLoader.h"
 
-#include "XsollaUtilsDefines.h"
 #include "Framework/Application/SlateApplication.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Misc/SecureHash.h"
 #include "Modules/ModuleManager.h"
+#include "XsollaUtilsDefines.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
