@@ -2,9 +2,9 @@
 
 #include "XsollaUtilsModule.h"
 
+#include "Modules/ModuleManager.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsImageLoader.h"
-#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaUtilsModule"
 

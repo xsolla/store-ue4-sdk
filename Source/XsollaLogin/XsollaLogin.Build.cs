@@ -1,6 +1,7 @@
 // Copyright 2019 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
+using System.IO;
 using UnrealBuildTool;
 
 public class XsollaLogin : ModuleRules
@@ -32,6 +33,15 @@ public class XsollaLogin : ModuleRules
                 "SlateCore",
             }
             );
+
+        if (Target.Platform == UnrealTargetPlatform.Android)
+        {
+            PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/Android"));
+
+            PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+            AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "XsollaLogin_UPL.xml"));
+        }
 
         PublicDefinitions.Add("WITH_XSOLLA_LOGIN=1");
     }

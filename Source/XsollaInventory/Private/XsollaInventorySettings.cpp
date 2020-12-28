@@ -6,6 +6,6 @@ UXsollaInventorySettings::UXsollaInventorySettings(const FObjectInitializer& Obj
 	: Super(ObjectInitializer)
 {
 	UseCrossPlatformAccountLinking = false;
-	WebStoreURL = TEXT("https://livedemo.xsolla.com/sdk-account-linking/");
+	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
 	DemoProjectID = TEXT("77640");
 }

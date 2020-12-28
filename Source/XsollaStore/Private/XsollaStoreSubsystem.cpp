@@ -130,7 +130,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(
 
 void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 	const FString& Currency, const FString& Country, const FString& Locale,
-	const FXsollaPaymentCustomParameters CustomParameters,
+	const FXsollaParameters CustomParameters,
 	const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	// Prepare request payload
@@ -144,31 +144,31 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	AddCustomParameters(RequestDataJson, CustomParameters);
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
 
-	FString theme;
+	FString Theme;
 
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	switch (Settings->PaymentInterfaceTheme)
 	{
 	case EXsollaPaymentUiTheme::Default:
-		theme = TEXT("default");
+		Theme = TEXT("default");
 		break;
 
 	case EXsollaPaymentUiTheme::DefaultDark:
-		theme = TEXT("default_dark");
+		Theme = TEXT("default_dark");
 		break;
 
 	case EXsollaPaymentUiTheme::Dark:
-		theme = TEXT("dark");
+		Theme = TEXT("dark");
 		break;
 
 	default:
-		theme = TEXT("dark");
+		Theme = TEXT("dark");
 	}
 
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Theme);
 
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
@@ -217,7 +217,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 	const FString& Currency, const FString& Country, const FString& Locale,
-	const FXsollaPaymentCustomParameters CustomParameters,
+	const FXsollaParameters CustomParameters,
 	const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
@@ -232,33 +232,33 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	if (!Locale.IsEmpty())
 		RequestDataJson->SetStringField(TEXT("locale"), Locale);
 
-	AddCustomParameters(RequestDataJson, CustomParameters);
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
 
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	FString theme;
+	FString Theme;
 
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 	switch (Settings->PaymentInterfaceTheme)
 	{
 	case EXsollaPaymentUiTheme::Default:
-		theme = TEXT("default");
+		Theme = TEXT("default");
 		break;
 
 	case EXsollaPaymentUiTheme::DefaultDark:
-		theme = TEXT("default_dark");
+		Theme = TEXT("default_dark");
 		break;
 
 	case EXsollaPaymentUiTheme::Dark:
-		theme = TEXT("dark");
+		Theme = TEXT("dark");
 		break;
 
 	default:
-		theme = TEXT("dark");
+		Theme = TEXT("dark");
 	}
 
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), theme);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Theme);
 
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
@@ -1663,43 +1663,6 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
-}
-
-void UXsollaStoreSubsystem::AddCustomParameters(TSharedPtr<FJsonObject> JsonObject, FXsollaPaymentCustomParameters CustomParameters)
-{
-	if (CustomParameters.Parameters.Num() == 0)
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObjectCustomParameters = MakeShareable(new FJsonObject());
-
-	for (auto Parameter : CustomParameters.Parameters)
-	{
-		const FVariant Variant = Parameter.Value.Variant;
-
-		switch (Variant.GetType())
-		{
-		case EVariantTypes::Bool:
-			JsonObjectCustomParameters->SetBoolField(Parameter.Key, Variant.GetValue<bool>());
-			break;
-		case EVariantTypes::String:
-			JsonObjectCustomParameters->SetStringField(Parameter.Key, Variant.GetValue<FString>());
-			break;
-		case EVariantTypes::Int32:
-			JsonObjectCustomParameters->SetNumberField(Parameter.Key, Variant.GetValue<int>());
-			break;
-		case EVariantTypes::Float:
-			JsonObjectCustomParameters->SetNumberField(Parameter.Key, Variant.GetValue<float>());
-			break;
-		default:
-			UE_LOG(LogXsollaStore, Log, TEXT("%s: parameter with type of %s was not added"),
-				*VA_FUNC_LINE, *UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaVariantTypes", static_cast<EXsollaVariantTypes>(Variant.GetType())));
-			break;
-		}
-	}
-
-	JsonObject->SetObjectField("custom_parameters", JsonObjectCustomParameters);
 }
 
 #undef LOCTEXT_NAMESPACE

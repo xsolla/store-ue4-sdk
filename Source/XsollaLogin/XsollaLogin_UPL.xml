@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Copyright 2020 Xsolla Inc. All Rights Reserved.
+-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+  <init>
+    <log text="XsollaLogin UPL initialization"/>        
+  </init>
+
+  <!-- Enable AndroidX support -->
+  <gradleProperties>
+    <insert>
+      android.useAndroidX=true
+      android.enableJetifier=true
+    </insert>
+  </gradleProperties>
+
+  <!-- Replace supportlib imports with AndroidX in engine source files -->
+  <baseBuildGradleAdditions>
+    <insert>
+      allprojects {
+        def mappings = [
+          'android.arch.lifecycle.Lifecycle': 'androidx.lifecycle.Lifecycle',
+          'android.arch.lifecycle.LifecycleObserver': 'androidx.lifecycle.LifecycleObserver',
+          'android.arch.lifecycle.OnLifecycleEvent': 'androidx.lifecycle.OnLifecycleEvent',
+          'android.arch.lifecycle.ProcessLifecycleOwner': 'androidx.lifecycle.ProcessLifecycleOwner',
+          'android.arch.lifecycle': 'androidx.lifecycle',
+          'android.support.annotation': 'androidx.annotation',
+          'android.support.v13.app.FragmentCompat': 'androidx.legacy.app.FragmentCompat',
+          'android.support.v4.app.ActivityCompat': 'androidx.core.app.ActivityCompat',
+          'android.support.v4.app.NotificationCompat': 'androidx.core.app.NotificationCompat',
+          'android.support.v4.app.NotificationManagerCompat': 'androidx.core.app.NotificationManagerCompat',
+          'android.support.v4.content.ContextCompat': 'androidx.core.content.ContextCompat',
+          'android.support.v4.content.FileProvider': 'androidx.core.content.FileProvider',
+        ]
+
+        beforeEvaluate { project ->
+          project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) { f ->
+            mappings.each { entry ->
+              if (f.getText('UTF-8').contains(entry.key)) {
+                println "Updating ${entry.key} to ${entry.value} in file ${f}"
+                ant.replace(file: f, token: entry.key, value: entry.value)
+              }
+            }
+          }
+        }
+      }
+    </insert>
+  </baseBuildGradleAdditions>
+
+  <buildGradleAdditions>
+    <!-- Add dependencies -->
+    <insert>
+      dependencies {
+        implementation 'com.xsolla.android:login:1.1.1'
+        implementation 'com.xsolla.android:login-facebook:1.1.1'
+        implementation 'com.xsolla.android:login-google:1.1.1'
+        implementation 'com.google.android.gms:play-services-auth:18.0.0'
+        implementation 'com.google.android.gms:play-services-games:18.0.0'
+      }
+      repositories {
+        maven { url 'https://maven.google.com' }
+        jcenter { url 'https://jcenter.bintray.com' }
+      }
+    </insert>
+    <!-- Enable older Java versions support -->
+    <insert>
+      android {
+        compileOptions {
+          targetCompatibility JavaVersion.VERSION_1_8
+          sourceCompatibility JavaVersion.VERSION_1_8
+        }
+      }
+    </insert>
+  </buildGradleAdditions>
+
+  <!-- Add native implementation wrapper -->
+  <prebuildCopies>
+    <copyDir src="$S(PluginDir)/Private/Android/Java" dst="$S(BuildDir)/src/com/xsolla/login" />
+  </prebuildCopies>
+
+  <!-- Additions to proguard -->
+  <proguardAdditions>
+    <insert>
+      -dontwarn com.xsolla.**
+      -keep class com.xsolla.** { *; }
+      -keep interface com.xsolla.** { *; }
+
+      -dontwarn androidx.**
+      -keep class androidx.** { *; }
+      -keep interface androidx.** { *; }
+
+      -dontwarn com.google.android.gms.**
+      -keep class com.google.android.gms.** { *; }
+      -keep interface com.google.android.gms.** { *; }
+    </insert>
+  </proguardAdditions>
+
+  <!-- Add custom data to AndroidManifest.xml -->
+  <androidManifestUpdates>
+    <addElements tag="application">
+      <activity android:name="com.xsolla.login.XsollaNativeAuthActivity"
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+    </addElements>
+  </androidManifestUpdates>
+
+</root>
