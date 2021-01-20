@@ -306,3 +306,12 @@ enum class EXsollaVariantTypes : int8
 	NetworkGUID = 38,
 	Custom = 0x40
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaInterfaceTheme
+{
+	GENERATED_BODY()
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Theme")
+	TMap<FString, FColor> Colors;
+};

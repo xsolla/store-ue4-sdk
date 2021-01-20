@@ -3,6 +3,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
+#include "XsollaUtilsSettings.h"
 
 #include "Dom/JsonObject.h"
 
@@ -63,6 +64,11 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
 {
 	return FXsollaUtilsModule::Get().GetImageLoader();
+}
+
+UXsollaUtilsSettings* UXsollaUtilsLibrary::GetUtilsSettings()
+{
+	return FXsollaUtilsModule::Get().GetSettings();
 }
 
 FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
