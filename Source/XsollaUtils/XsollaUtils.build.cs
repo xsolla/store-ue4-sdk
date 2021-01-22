@@ -26,6 +26,10 @@ namespace UnrealBuildTool.Rules
                     "CoreUObject",
                     "Engine",
                     "Slate",
+                    "Blutility",
+                    "UMGEditor",
+                    "UnrealEd",
+                    "Projects",
                     "SlateCore"
                 }
                 );

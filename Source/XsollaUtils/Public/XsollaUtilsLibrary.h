@@ -26,8 +26,11 @@ public:
 	static UXsollaUtilsImageLoader* GetImageLoader();
 
 	/** Gives direct access to the utils settings. */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static UXsollaUtilsSettings* GetUtilsSettings();
+
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
+	static void GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj);
 
 	/** Make FDateTime structure based on a given timestamp. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")

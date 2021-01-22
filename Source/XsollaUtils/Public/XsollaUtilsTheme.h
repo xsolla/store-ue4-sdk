@@ -15,6 +15,6 @@ public:
 	FColor GetColor(const FString& ColorName) const;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FColor> Colors;
 };

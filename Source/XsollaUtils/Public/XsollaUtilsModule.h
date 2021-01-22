@@ -2,10 +2,13 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
 class UXsollaUtilsImageLoader;
 class UXsollaUtilsSettings;
+class FMenuBuilder;
+class FToolBarBuilder;
 
 /**
  * Xsolla Utils Module
@@ -17,6 +20,9 @@ public:
 	/** IModuleInterface implementation. */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+	void AddMenuExtension(FMenuBuilder& Builder);
+	void AddToolbarExtension(FToolBarBuilder& Builder);
 
 	/**
 	 * Singleton-like access to this module's interface.  This is just for convenience!
@@ -46,8 +52,14 @@ public:
 	UXsollaUtilsSettings* GetSettings() const;
 
 private:
+	/** Open editor window for customizing user interface themes. */
+	void OpenThemeEditor();
+
+private:
 	/** Image loader. */
 	UXsollaUtilsImageLoader* ImageLoader;
 	/** Settings. */
 	UXsollaUtilsSettings* XsollaUtilsSettings;
+	/** List of commands than can be invoked from editor. */
+	TSharedPtr<class FUICommandList> XsollaUtilsEditorCommands;
 };

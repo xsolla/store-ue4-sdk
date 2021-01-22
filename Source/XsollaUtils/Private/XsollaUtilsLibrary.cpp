@@ -71,6 +71,12 @@ UXsollaUtilsSettings* UXsollaUtilsLibrary::GetUtilsSettings()
 	return FXsollaUtilsModule::Get().GetSettings();
 }
 
+void UXsollaUtilsLibrary::GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj)
+{
+	if (ObjectClass)
+		DefaultObj = ObjectClass->GetDefaultObject();
+}
+
 FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
 {
 	return FDateTime::FromUnixTimestamp(Time);

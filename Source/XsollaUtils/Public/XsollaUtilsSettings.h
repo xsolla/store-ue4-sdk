@@ -15,9 +15,6 @@ class XSOLLAUTILS_API UXsollaUtilsSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** List of customizable themes available for user interface. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Utils Settings")
-	TMap<FString, FXsollaInterfaceTheme> Themes;
 
 	/** Interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Utils Settings")
