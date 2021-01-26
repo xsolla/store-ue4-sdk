@@ -9,6 +9,7 @@
 #include "XsollaUtilsLibrary.generated.h"
 
 class UXsollaUtilsImageLoader;
+class UXsollaUtilsSettings;
 class FJsonObject;
 
 UCLASS()
@@ -23,6 +24,13 @@ public:
 	/** Direct access to the image loader object. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static UXsollaUtilsImageLoader* GetImageLoader();
+
+	/** Gives direct access to the utils settings. */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
+	static UXsollaUtilsSettings* GetUtilsSettings();
+
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
+	static void GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj);
 
 	/** Make FDateTime structure based on a given timestamp. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")

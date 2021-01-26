@@ -12,17 +12,29 @@ namespace UnrealBuildTool.Rules
                 new string[]
                 {
                     "Core",
-                    "CoreUObject",
-                    "Slate",
-                    "SlateCore",
                     "UMG",
-                    "Engine",
                     "ImageWrapper",
                     "HTTP",
                     "Json",
                     "JsonUtilities"
                 }
             );
+
+            PrivateDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "CoreUObject",
+                    "Engine",
+                    "Slate",
+                    "Blutility",
+                    "UMGEditor",
+                    "UnrealEd",
+                    "Projects",
+                    "SlateCore"
+                }
+                );
+
+            PublicDefinitions.Add("WITH_XSOLLA_UTILS=1");
         }
     }
 }
