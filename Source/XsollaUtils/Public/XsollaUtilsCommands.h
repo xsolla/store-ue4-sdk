@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "Framework/Commands/Commands.h"
 
+/** Custom UE editor commands. */
 class FXsollaUtilsCommands : public TCommands<FXsollaUtilsCommands>
 {
 public:
-
-	/** Default constructor. */
+	
 	FXsollaUtilsCommands();
 
-	/** Initialize commands */
 	virtual void RegisterCommands() override;
 
 	TSharedPtr<FUICommandInfo> OpenThemeEditorCommand;

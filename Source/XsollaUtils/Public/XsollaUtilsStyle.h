@@ -4,6 +4,7 @@
 
 #include "SlateBasics.h"
 
+/** Class for setting custom icons to editor commands. */
 class XsollaUtilsStyle
 {
 public:

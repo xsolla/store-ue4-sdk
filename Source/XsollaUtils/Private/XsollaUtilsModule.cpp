@@ -9,24 +9,24 @@
 #include "XsollaUtilsStyle.h"
 
 #include "Developer/Settings/Public/ISettingsModule.h"
-#include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "Editor/Blutility/Classes/EditorUtilityWidget.h"
 #include "Editor/Blutility/Classes/EditorUtilityWidgetBlueprint.h"
 #include "Editor/Blutility/Public/EditorUtilitySubsystem.h"
 #include "Editor/UMGEditor/Public/WidgetBlueprint.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "LevelEditor.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaUtilsModule"
 
 void FXsollaUtilsModule::StartupModule()
 {
+	// Initialize custom editor commands
 	XsollaUtilsStyle::Initialize();
 	XsollaUtilsStyle::ReloadTextures();
-
+	
 	FXsollaUtilsCommands::Register();
 
 	XsollaUtilsEditorCommands = MakeShareable(new FUICommandList);
-
 	XsollaUtilsEditorCommands->MapAction(
 		FXsollaUtilsCommands::Get().OpenThemeEditorCommand,
 		FExecuteAction::CreateRaw(this, &FXsollaUtilsModule::OpenThemeEditor),
@@ -34,27 +34,22 @@ void FXsollaUtilsModule::StartupModule()
 
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 
-	{
-		TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
-		MenuExtender->AddMenuExtension("WindowLayout", EExtensionHook::After, XsollaUtilsEditorCommands, FMenuExtensionDelegate::CreateRaw(this, &FXsollaUtilsModule::AddMenuExtension));
+	TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
+	MenuExtender->AddMenuExtension("WindowLayout", EExtensionHook::After, XsollaUtilsEditorCommands, FMenuExtensionDelegate::CreateRaw(this, &FXsollaUtilsModule::AddMenuExtension));
+	LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
 
-		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
-	}
+	TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
+	ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, XsollaUtilsEditorCommands, FToolBarExtensionDelegate::CreateRaw(this, &FXsollaUtilsModule::AddToolbarExtension));
+	LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
 
-	{
-		TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
-		ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, XsollaUtilsEditorCommands, FToolBarExtensionDelegate::CreateRaw(this, &FXsollaUtilsModule::AddToolbarExtension));
-
-		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
-	}
-
+	// Initialize image loader
 	ImageLoader = NewObject<UXsollaUtilsImageLoader>();
 	ImageLoader->AddToRoot();
 
+	// Register settings
 	XsollaUtilsSettings = NewObject<UXsollaUtilsSettings>(GetTransientPackage(), "XsollaUtilsSettings", RF_Standalone);
 	XsollaUtilsSettings->AddToRoot();
 
-	// Register settings
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaUtils",

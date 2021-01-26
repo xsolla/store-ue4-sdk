@@ -21,7 +21,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	/** Add custom commands to UE editor menu. */
 	void AddMenuExtension(FMenuBuilder& Builder);
+	/** Add custom commands to UE editor toolbar. */
 	void AddToolbarExtension(FToolBarBuilder& Builder);
 
 	/**
