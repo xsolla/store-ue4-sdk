@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2020 Xsolla Inc. All Rights Reserved.
 
 namespace UnrealBuildTool.Rules
 {
@@ -30,7 +30,8 @@ namespace UnrealBuildTool.Rules
                     "UMGEditor",
                     "UnrealEd",
                     "Projects",
-                    "SlateCore"
+                    "SlateCore",
+                    "InputCore"
                 }
                 );
 
