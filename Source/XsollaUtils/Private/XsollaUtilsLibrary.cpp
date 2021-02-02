@@ -4,6 +4,7 @@
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
 #include "XsollaUtilsSettings.h"
+#include "XsollaUtilsTheme.h"
 
 #include "Dom/JsonObject.h"
 
@@ -75,6 +76,30 @@ void UXsollaUtilsLibrary::GetDefaultObject(TSubclassOf<UObject> ObjectClass, UOb
 {
 	if (ObjectClass)
 		DefaultObj = ObjectClass->GetDefaultObject();
+}
+
+UXsollaUtilsTheme* UXsollaUtilsLibrary::GetCurrentTheme()
+{
+	UXsollaUtilsSettings* Settings = FXsollaUtilsModule::Get().GetSettings();
+	TSubclassOf<UXsollaUtilsTheme> CurrentThemeClass = Settings->InterfaceTheme;
+	if(!CurrentThemeClass)
+		return nullptr;
+	
+	UObject* CurrentTheme;
+	GetDefaultObject(CurrentThemeClass, CurrentTheme);
+	
+	return Cast<UXsollaUtilsTheme>(CurrentTheme);
+}
+
+UXsollaUtilsTheme* UXsollaUtilsLibrary::GetTheme(TSubclassOf<UXsollaUtilsTheme> ThemeClass)
+{
+	if(!ThemeClass)
+		return nullptr;
+	
+	UObject* Theme;
+	GetDefaultObject(ThemeClass, Theme);
+	
+	return Cast<UXsollaUtilsTheme>(Theme);
 }
 
 FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)

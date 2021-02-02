@@ -10,6 +10,7 @@
 
 class UXsollaUtilsImageLoader;
 class UXsollaUtilsSettings;
+class UXsollaUtilsTheme;
 class FJsonObject;
 
 UCLASS()
@@ -31,6 +32,12 @@ public:
 
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
 	static void GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj);
+	
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
+	static UXsollaUtilsTheme* GetCurrentTheme();
+	
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
+	static UXsollaUtilsTheme* GetTheme(TSubclassOf<UXsollaUtilsTheme> ThemeClass);
 
 	/** Make FDateTime structure based on a given timestamp. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")

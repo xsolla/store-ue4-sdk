@@ -2,11 +2,6 @@
 
 #include "XsollaUtilsTheme.h"
 
-UXsollaUtilsTheme::UXsollaUtilsTheme(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-}
-
 FColor UXsollaUtilsTheme::GetColor(const FString& ColorName) const
 {
 	if (Colors.Contains(ColorName))
@@ -16,3 +11,24 @@ FColor UXsollaUtilsTheme::GetColor(const FString& ColorName) const
 
 	return FColor();
 }
+
+FSlateFontInfo UXsollaUtilsTheme::GetFont(const FString& FontName) const
+{
+	if (Fonts.Contains(FontName))
+	{
+		return Fonts[FontName];
+	}
+
+	return FSlateFontInfo();
+}
+
+FSlateBrush UXsollaUtilsTheme::GetBrush(const FString& BrushName) const
+{
+	if (Brushes.Contains(BrushName))
+	{
+		return Brushes[BrushName];
+	}
+
+	return FSlateBrush();
+}
+
