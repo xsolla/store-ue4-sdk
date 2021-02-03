@@ -1,7 +1,8 @@
 ﻿// Copyright 2021 Xsolla Inc. All Rights Reserved.
 #pragma once
 
-#include "UserWidget.h"
+#include "Fonts/SlateFontInfo.h"
+#include "Styling/SlateBrush.h"
 #include "XsollaUiBuilderDataModel.generated.h"
 
 USTRUCT(BlueprintType)

@@ -3,7 +3,7 @@
 
 #include "ThemeObject.h"
 
-#include "SubclassOf.h"
+#include "Templates/SubclassOf.h"
 #include "XsollaUiBuilderLibrary.h"
 
 UThemeObject* UThemeObject::ThemeInstance;

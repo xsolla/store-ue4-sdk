@@ -62,7 +62,7 @@ FTheme UXsollaUiBuilderLibrary::GetUiBuilderCurrentTheme()
 		const auto ThemeInstance = UThemeObject::GetThemeInstance();
 		if (ThemeInstance == nullptr)
 		{
-			UE_LOG(LogActor, Error, TEXT("We found nullptr ThemeObject"));
+			//UE_LOG(LogActor, Error, TEXT("We found nullptr ThemeObject"));
 		}
 		else
 		{

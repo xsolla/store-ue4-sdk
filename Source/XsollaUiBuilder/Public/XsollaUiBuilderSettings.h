@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "ThemeObject.h"
+#include "Templates/SubclassOf.h"
 #include "XsollaUiBuilderDataModel.h"
 
 #include "XsollaUiBuilderSettings.generated.h"

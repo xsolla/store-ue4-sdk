@@ -3,7 +3,7 @@
 
 #include "XsollaUiBuilder.h"
 
-#include "Package.h"
+#include "UObject/Package.h"
 #include "XsollaUiBuilderSettings.h"
 #include "Developer/Settings/Public/ISettingsModule.h"
 
