@@ -97,6 +97,9 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FXsollaItemAttribute> attributes;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString long_description;
+
 public:
 	FStoreItem()
 		: is_free(false){};
@@ -117,6 +120,7 @@ public:
 		, total_content_price(Item.total_content_price)
 		, content(Item.content)
 		, attributes(Item.attributes)
+		, long_description(Item.long_description)
 	{
 	}
 
@@ -489,6 +493,54 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 	/** If 'true', the user should choose the bonus before redeeming a promo code. */
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
 	bool is_selectable;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassRewardItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	FString Sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	FString Promocode;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	int32 Quantity;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassLevel
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FString Tier;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FString Experience;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FStoreBattlepassRewardItem FreeItem;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FStoreBattlepassRewardItem PremiumItem;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	FString Name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	FString ExpiryDate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	TArray<FStoreBattlepassLevel> Levels;
 };
 
 inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)

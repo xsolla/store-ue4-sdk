@@ -326,6 +326,9 @@ public:
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
