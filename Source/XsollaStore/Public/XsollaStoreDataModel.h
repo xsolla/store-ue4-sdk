@@ -516,10 +516,10 @@ struct XSOLLASTORE_API FStoreBattlepassLevel
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	FString Tier;
+	int32 Tier;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	FString Experience;
+	int32 Experience;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
 	FStoreBattlepassRewardItem FreeItem;

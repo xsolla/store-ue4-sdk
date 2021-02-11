@@ -1670,6 +1670,22 @@ FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU
 	return TEXT("");
 }
 
+FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku) const
+{
+	FStoreItem Item;
+
+	const auto StoreItem = ItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem) {
+        return InItem.sku == ItemSku;
+    });
+
+	if (StoreItem != nullptr)
+	{
+		Item = StoreItem[0];
+	}
+
+	return Item;
+}
+
 bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 {
 	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {
