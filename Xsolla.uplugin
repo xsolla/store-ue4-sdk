@@ -79,6 +79,19 @@
         "Android",
         "Linux"
       ]
+    },
+    {
+      "Name": "XsollaUiBuilder",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
     }
   ],
   "Plugins": [
