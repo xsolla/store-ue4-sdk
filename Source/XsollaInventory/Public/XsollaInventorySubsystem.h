@@ -162,6 +162,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
 
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Inventory|VirtualCurrency")
+	FVirtualCurrencyBalance GetVirtualCurrencyBalanceBySku(const FString& CurrencySku, bool& bWasFound) const;
+
 	/** Gets cached user subscriptions */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions")
 	TArray<FSubscriptionItem> GetSubscriptions() const;

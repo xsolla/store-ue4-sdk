@@ -1670,9 +1670,28 @@ FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU
 	return TEXT("");
 }
 
-FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku) const
+FVirtualCurrency UXsollaStoreSubsystem::FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const
+{
+	FVirtualCurrency VirtualCurrency;
+	bHasFound = false;
+
+	const auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySku](const FVirtualCurrency& InCurrency) {
+        return InCurrency.sku == CurrencySku;
+    });
+
+	if (Currency != nullptr)
+	{
+		VirtualCurrency = Currency[0];
+		bHasFound = true;
+	}
+
+	return VirtualCurrency;
+}
+
+FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
 {
 	FStoreItem Item;
+	bHasFound = false;
 
 	const auto StoreItem = ItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem) {
         return InItem.sku == ItemSku;
@@ -1681,6 +1700,7 @@ FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku) const
 	if (StoreItem != nullptr)
 	{
 		Item = StoreItem[0];
+		bHasFound = true;
 	}
 
 	return Item;

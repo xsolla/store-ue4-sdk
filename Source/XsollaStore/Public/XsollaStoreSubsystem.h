@@ -452,9 +452,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
 
+	/** Gets virtual currency from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FVirtualCurrency FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const;
+
 	/** Gets item from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FStoreItem FindItemBySku(const FString& ItemSku) const;
+	FStoreItem FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
 
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
