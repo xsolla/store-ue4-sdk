@@ -140,6 +140,20 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	}
 }
 
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
+	if (Settings->UseOAuth2)
+	{
+		ResendAccountConfirmationEmailOAuth(Username, State, SuccessCallback, ErrorCallback);
+	}
+	else
+	{
+		ResendAccountConfirmationEmailJWT(Username, SuccessCallback, ErrorCallback);
+	}
+}
+
 void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
@@ -858,6 +872,53 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s/user?response_type=code&client_id=%s&state=%s&redirect_uri=%s"),
+		*LoginEndpointOAuth,
+		*Settings->ClientID,
+		*State,
+		*BlankRedirectEndpoint);
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("username"), Username);
+
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
+	const FString Url = FString::Printf(TEXT("%s/resend_confirmation_link?projectId=%s&login_url=%s"),
+		*Endpoint,
+		*LoginID,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("username"), Username);
+
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
+	const FString Url = FString::Printf(TEXT("%s/user/resend_confirmation_link?client_id=%s&state=%s&redirect_uri=%s"),
 		*LoginEndpointOAuth,
 		*Settings->ClientID,
 		*State,
