@@ -345,7 +345,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 									  : DefaultBrowserWidgetClass;
 
 		PengindPaystationUrl = PaystationUrl;
-		if (MyBrowser == nullptr || !IsValid(MyBrowser)) 
+		
+		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled()) 
 		{
 			MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
 			MyBrowser->AddToViewport(MAX_int32);
