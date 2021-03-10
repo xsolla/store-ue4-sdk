@@ -16,10 +16,10 @@
 UENUM(BlueprintType)
 enum class EXsollaInventoryRequestVerb : uint8
 {
-	GET,
-	POST,
-	PUT,
-	DELETE
+	VERB_GET,
+	VERB_POST,
+	VERB_PUT,
+	VERB_DELETE
 };
 
 class FJsonObject;
@@ -144,7 +144,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
