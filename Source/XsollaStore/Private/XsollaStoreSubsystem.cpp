@@ -65,7 +65,7 @@ void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCall
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?offset=%d&limit=%d"),
 		*ProjectID, Offset, Limit);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -78,7 +78,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s&offset=%d&limit=%d"),
 		*ProjectID, *UsedLocale, Offset, Limit);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -89,7 +89,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FOnStoreUpdate& Succes
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency?offset=%d&limit=%d"),
 		*ProjectID, Offset, Limit);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -100,7 +100,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FOnStoreUpdate& 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package?offset=%d&limit=%d"),
 		*ProjectID, Offset, Limit);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -122,7 +122,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(
 		Offset,
 		StringAdditionalFields.IsEmpty() ? *FString(TEXT("")) : *FString(TEXT("&additional_fields[]=") + StringAdditionalFields));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -179,7 +179,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 		*ProjectID,
 		*ItemSKU);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
 	if (Settings->BuildForSteam)
 	{
@@ -278,7 +278,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 			*Cart.cart_id);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
 	if (Settings->BuildForSteam)
 	{
@@ -369,7 +369,7 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, int32 OrderId,
 		*ProjectID,
 		OrderId);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -394,7 +394,7 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 			*Cart.cart_id);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_PUT, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::ClearCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
@@ -425,7 +425,7 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 			*Cart.cart_id);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
@@ -459,7 +459,7 @@ void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& C
 			*ItemSKU);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_PUT, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::AddToCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
@@ -534,7 +534,7 @@ void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FStri
 			*ItemSKU);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_DELETE, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
@@ -581,7 +581,7 @@ void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString
 
 	JsonObject->SetArrayField(TEXT("items"), JsonItems);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_PUT, AuthToken, SerializeJson(JsonObject));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken, SerializeJson(JsonObject));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::FillCartById_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -591,7 +591,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/bundle/sku/%s"), *ProjectID, *Sku);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -602,7 +602,7 @@ void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FOnGetLis
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/bundle?locale=%s"), *ProjectID, *UsedLocale);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -615,7 +615,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 		*ProjectID,
 		*CurrencySKU);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -628,7 +628,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
 		*ProjectID,
 		*PackageSKU);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -651,7 +651,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_POST, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -663,7 +663,7 @@ void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const 
 		*ProjectID,
 		*PromocodeCode);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -681,7 +681,7 @@ void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FStr
 	JsonCart->SetStringField(TEXT("id"), Cart.cart_id);
 	RequestDataJson->SetObjectField(TEXT("cart"), JsonCart);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1396,64 +1396,10 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 	return bIsSandboxEnabled;
 }
 
-TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb,
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
-
-	// Temporal solution with headers processing on server-side #37
-	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=store&sdk_v=%s"),
-		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
-		ENGINE_VERSION_STRING,
-		XSOLLA_STORE_VERSION);
-	HttpRequest->SetURL(Url + MetaUrl);
-
-	// Xsolla meta
-	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE4"));
-	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
-	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("STORE"));
-	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_STORE_VERSION);
-
-	switch (Verb)
-	{
-	case EXsollaRequestVerb::VERB_GET:
-		HttpRequest->SetVerb(TEXT("GET"));
-
-		// Check that we doen't provide content with GET request
-		if (!Content.IsEmpty())
-		{
-			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Request content is not empty for GET request. Maybe you should use POST one?"), *VA_FUNC_LINE);
-		}
-		break;
-
-	case EXsollaRequestVerb::VERB_POST:
-		HttpRequest->SetVerb(TEXT("POST"));
-		break;
-
-	case EXsollaRequestVerb::VERB_PUT:
-		HttpRequest->SetVerb(TEXT("PUT"));
-		break;
-
-	case EXsollaRequestVerb::VERB_DELETE:
-		HttpRequest->SetVerb(TEXT("DELETE"));
-		break;
-
-	default:
-		unimplemented();
-	}
-
-	if (!AuthToken.IsEmpty())
-	{
-		HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-	}
-
-	if (!Content.IsEmpty())
-	{
-		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-		HttpRequest->SetContentAsString(Content);
-	}
-
-	return HttpRequest;
+	return XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("STORE"), XSOLLA_STORE_VERSION);
 }
 
 FString UXsollaStoreSubsystem::SerializeJson(const TSharedPtr<FJsonObject> DataJson) const

@@ -209,7 +209,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -217,7 +217,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(ValidateTokenEndpoint, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), LoginData.AuthToken.JWT);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(ValidateTokenEndpoint, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), LoginData.AuthToken.JWT);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -300,7 +300,7 @@ void UXsollaLoginSubsystem::AuthenticateViaProviderProject(const FString& AuthTo
 		*Settings->ClientID,
 		*Scope);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -330,7 +330,7 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -355,7 +355,7 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/token"), *LoginEndpointOAuth);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -401,7 +401,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/get"), *UserAttributesEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -430,7 +430,7 @@ void UXsollaLoginSubsystem::UpdateUserReadOnlyAttributes(const FString& AuthToke
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/get_read_only"), *UserAttributesEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -460,7 +460,7 @@ void UXsollaLoginSubsystem::ModifyUserAttributes(const FString& AuthToken, const
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -479,14 +479,14 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 
 	const FString Url = FString::Printf(TEXT("%s/users/me/update"), *UserAttributesEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(AccountLinkingCodeEndpoint, EXsollaLoginRequestVerb::VERB_POST, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(AccountLinkingCodeEndpoint, EXsollaHttpRequestVerb::VERB_POST, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -505,7 +505,7 @@ void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCh
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -517,7 +517,7 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTarg
 	const FString PlatformName = GetTargetPlatformName(Platform);
 	const FString Url = FString::Printf(TEXT("%s?user_id=%s&platform=%s&code=%s"), *Settings->AccountLinkingURL, *UserId, *PlatformName, *Code);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -533,7 +533,7 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 		*PlatformName,
 		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -564,7 +564,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 
 void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UserDetailsEndpoint, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UserDetailsEndpoint, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserDetails_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -588,7 +588,7 @@ void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FS
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UserDetailsEndpoint, EXsollaLoginRequestVerb::VERB_PATCH, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UserDetailsEndpoint, EXsollaHttpRequestVerb::VERB_PATCH, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserDetails_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -597,7 +597,7 @@ void UXsollaLoginSubsystem::UpdateUserEmail(const FString& AuthToken, const FOnR
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/email"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -606,7 +606,7 @@ void UXsollaLoginSubsystem::UpdateUserPhoneNumber(const FString& AuthToken, cons
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/phone"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -624,7 +624,7 @@ void UXsollaLoginSubsystem::ModifyUserPhoneNumber(const FString& AuthToken, cons
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/phone"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -636,7 +636,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	const FString Url = FString::Printf(TEXT("%s/phone/%s"),
 		*UserDetailsEndpoint,
 		PhoneNumber.IsEmpty() ? *UserDetails.phone : *PhoneNumber);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -669,7 +669,7 @@ void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, U
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/picture"), *UserDetailsEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, TEXT(""), AuthToken);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("multipart/form-data; boundary =" + Boundary));
 	HttpRequest->SetContent(UploadContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -680,7 +680,7 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/picture"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -698,7 +698,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 		*FriendType,
 		*SortByCriteria,
 		*SortOrderCriteria);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -717,7 +717,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFrien
 
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/relationships"), *UserDetailsEndpoint);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -728,7 +728,7 @@ void UXsollaLoginSubsystem::UpdateSocialAuthLinks(const FString& AuthToken, cons
 	const FString Url = FString::Printf(TEXT("%s/login_urls%s"),
 		*UserDetailsEndpoint,
 		Locale.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?locale=%s"), *Locale));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -743,7 +743,7 @@ void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const 
 		Offset,
 		FromThisGame ? TEXT("true") : TEXT("false"),
 		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("&platform=%s"), *Platform));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -754,7 +754,7 @@ void UXsollaLoginSubsystem::UpdateUsersFriends(const FString& AuthToken, const F
 	const FString Url = FString::Printf(TEXT("%s/social_friends/update%s"),
 		*UserDetailsEndpoint,
 		Platform.IsEmpty() ? TEXT("") : *FString::Printf(TEXT("?platform=%s"), *Platform));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -773,7 +773,7 @@ void UXsollaLoginSubsystem::GetAccessTokenFromCustomAuthServer(const FXsollaPara
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -785,7 +785,7 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 	const FString Url = FString::Printf(TEXT("%s/%s/public"),
 		*UsersEndpoint,
 		*UserID);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserProfile_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -799,7 +799,7 @@ void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, cons
 		*FGenericPlatformHttp::UrlEncode(Nickname),
 		Limit,
 		Offset);
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserSearch_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -814,7 +814,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 		*ProviderName,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -824,7 +824,7 @@ void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken,
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/me/social_providers"), *UsersEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -850,7 +850,7 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -877,7 +877,7 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 		*State,
 		*BlankRedirectEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -900,7 +900,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -924,7 +924,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 		*State,
 		*BlankRedirectEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -951,7 +951,7 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
 		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -973,7 +973,7 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 		*LoginEndpointOAuth,
 		*Settings->ClientID);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -989,7 +989,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& Provide
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
 		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -1006,7 +1006,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 		*BlankRedirectEndpoint,
 		*State);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -1072,7 +1072,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& 
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(
 		this, &UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1104,7 +1104,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaLoginRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -2239,67 +2239,9 @@ bool UXsollaLoginSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHtt
 	return false;
 }
 
-TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb, const FString& Content, const FString& AuthToken)
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& Content, const FString& AuthToken)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
-
-	// Temporal solution with headers processing on server-side #37
-	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=login&sdk_v=%s"),
-		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
-		ENGINE_VERSION_STRING,
-		XSOLLA_LOGIN_VERSION);
-	HttpRequest->SetURL(Url + MetaUrl);
-
-	switch (Verb)
-	{
-	case EXsollaLoginRequestVerb::VERB_GET:
-		HttpRequest->SetVerb(TEXT("GET"));
-
-		// Check that we doen't provide content with GET request
-		if (!Content.IsEmpty())
-		{
-			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Request content is not empty for GET request. Maybe you should use POST one?"), *VA_FUNC_LINE);
-		}
-		break;
-
-	case EXsollaLoginRequestVerb::VERB_POST:
-		HttpRequest->SetVerb(TEXT("POST"));
-		break;
-
-	case EXsollaLoginRequestVerb::VERB_PUT:
-		HttpRequest->SetVerb(TEXT("PUT"));
-		break;
-
-	case EXsollaLoginRequestVerb::VERB_DELETE:
-		HttpRequest->SetVerb(TEXT("DELETE"));
-		break;
-
-	case EXsollaLoginRequestVerb::VERB_PATCH:
-		HttpRequest->SetVerb(TEXT("PATCH"));
-		break;
-
-	default:
-		unimplemented();
-	}
-
-	if (!Content.IsEmpty())
-	{
-		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-		HttpRequest->SetContentAsString(Content);
-	}
-
-	if (!AuthToken.IsEmpty())
-	{
-		HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *AuthToken));
-	}
-
-	// Xsolla meta
-	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE4"));
-	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
-	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("LOGIN"));
-	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_LOGIN_VERSION);
-
-	return HttpRequest;
+	return XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
 }
 
 FString UXsollaLoginSubsystem::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson)

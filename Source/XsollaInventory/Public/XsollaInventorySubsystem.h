@@ -5,22 +5,12 @@
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
 
-#include "Blueprint/UserWidget.h"
-#include "Http.h"
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaInventorySubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request */
-UENUM(BlueprintType)
-enum class EXsollaInventoryRequestVerb : uint8
-{
-	VERB_GET,
-	VERB_POST,
-	VERB_PUT,
-	VERB_DELETE
-};
 
 class FJsonObject;
 
@@ -144,7 +134,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::VERB_GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */

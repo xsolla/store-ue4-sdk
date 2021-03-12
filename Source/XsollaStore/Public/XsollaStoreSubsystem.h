@@ -6,22 +6,13 @@
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Http.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaStoreSubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request. */
-UENUM(BlueprintType)
-enum class EXsollaRequestVerb : uint8
-{
-	VERB_GET,
-	VERB_POST,
-	VERB_PUT,
-	VERB_DELETE
-};
 
 class FJsonObject;
 
@@ -390,7 +381,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::VERB_GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
