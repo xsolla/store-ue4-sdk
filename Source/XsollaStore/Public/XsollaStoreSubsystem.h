@@ -486,6 +486,8 @@ protected:
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
 
+	UUserWidget* MyBrowser;
+
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
