@@ -62,7 +62,7 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 
 void UXsollaStoreSubsystem::UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?offset=%d&limit=%d"),
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?offset=%d&limit=%d&additional_fields[]=long_description"),
 		*ProjectID, Offset, Limit);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaRequestVerb::VERB_GET);
@@ -685,6 +685,20 @@ void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FStr
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+}
+
+FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& BattlepassInfo)
+{
+	FStoreBattlepassData BattlepassData;
+	
+	TSharedPtr<FJsonObject> JsonObject;
+
+	if (!FJsonObjectConverter::JsonObjectStringToUStruct(BattlepassInfo, &BattlepassData, 0, 0))
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert BattlepassInfo to struct"), *VA_FUNC_LINE);
+	}
+
+	return BattlepassData;
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
@@ -1662,6 +1676,42 @@ FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU
 	}
 
 	return TEXT("");
+}
+
+FVirtualCurrency UXsollaStoreSubsystem::FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const
+{
+	FVirtualCurrency VirtualCurrency;
+	bHasFound = false;
+
+	const auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySku](const FVirtualCurrency& InCurrency) {
+        return InCurrency.sku == CurrencySku;
+    });
+
+	if (Currency != nullptr)
+	{
+		VirtualCurrency = Currency[0];
+		bHasFound = true;
+	}
+
+	return VirtualCurrency;
+}
+
+FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
+{
+	FStoreItem Item;
+	bHasFound = false;
+
+	const auto StoreItem = ItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem) {
+        return InItem.sku == ItemSku;
+    });
+
+	if (StoreItem != nullptr)
+	{
+		Item = StoreItem[0];
+		bHasFound = true;
+	}
+
+	return Item;
 }
 
 bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const

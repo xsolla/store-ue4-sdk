@@ -542,6 +542,28 @@ TArray<FVirtualCurrencyBalance> UXsollaInventorySubsystem::GetVirtualCurrencyBal
 	return VirtualCurrencyBalance.Items;
 }
 
+FVirtualCurrencyBalance UXsollaInventorySubsystem::GetVirtualCurrencyBalanceBySku(
+	const FString& CurrencySku, bool& bWasFound) const
+{
+	FVirtualCurrencyBalance Currency;
+	bWasFound = false;
+
+	const auto InventoryItem =
+		VirtualCurrencyBalance.Items.FindByPredicate(
+			[CurrencySku](const FVirtualCurrencyBalance& InCurrency)
+			{
+				return InCurrency.sku == CurrencySku;
+			});
+
+	if (InventoryItem != nullptr)
+	{
+		bWasFound = true;
+		Currency = InventoryItem[0];
+	}
+
+	return Currency;
+}
+
 TArray<FSubscriptionItem> UXsollaInventorySubsystem::GetSubscriptions() const
 {
 	return Subscriptions.Items;
