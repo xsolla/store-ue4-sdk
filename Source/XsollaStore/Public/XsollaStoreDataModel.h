@@ -52,48 +52,63 @@ struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
 
+	/* Unique item ID. The SKU may only contain lowercase Latin alphanumeric characters, periods, dashes, and underscores. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString sku;
 
+	/* Item name. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString name;
 
+	/* Item description. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString description;
 
+	/* Type of item: Consumable/Expiration/Permanent/Lootboxes/Physical. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString type;
 
+	/* Type of virtual item. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString virtual_item_type;
 
+	/* Groups the item belongs to. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FXsollaItemGroup> groups;
 
+	/* If `true`, the item is free. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	bool is_free;
 
+	/* Item prices */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FXsollaPrice price;
 
+	/* Virtual prices. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
 
+	/* Image URL. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
+	/* Defines the inventory item options. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FXsollaItemOptions inventory_options;
 
+	/* Type off bundle. In this case, it is always `standart`. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	FString bundle_type;
 
+	/* Sum of the bundle content prices. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	FXsollaPrice total_content_price;
 
+	/* Bundle package content. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FStoreBundleContent> content;
 
+	/* List of attributes and their values corresponding to the item. Can be used for catalog filtering. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FXsollaItemAttribute> attributes;
 
@@ -181,7 +196,7 @@ public:
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
-	TArray<FString> attributes;
+	TArray<FXsollaItemAttribute> attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	bool is_free;

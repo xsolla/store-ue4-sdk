@@ -33,7 +33,7 @@ public:
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
-	TArray<FString> attributes;
+	TArray<FXsollaItemAttribute> attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
 	TArray<FXsollaItemGroup> groups;
