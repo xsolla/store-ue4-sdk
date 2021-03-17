@@ -61,7 +61,7 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
 		Url += FString::Printf(TEXT("%splatform=%s"), Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"), *Platform);
 	}
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken, FString(), TEXT("INVENTORY"), XSOLLA_INVENTORY_VERSION); //CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -175,229 +175,104 @@ void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
+	XsollaHttpRequestError OutError;
 	FInventoryItemsData NewInventory;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FInventoryItemsData::StaticStruct(), &NewInventory))
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryItemsData::StaticStruct(), &NewInventory, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		Inventory = NewInventory;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	Inventory = NewInventory;
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance, OutError))
 	{
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	else
 	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance))
-	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
+	XsollaHttpRequestError OutError;
 	FSubscriptionData receivedSubscriptions;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FSubscriptionData::StaticStruct(), &receivedSubscriptions))
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionData::StaticStruct(), &receivedSubscriptions, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		Subscriptions = receivedSubscriptions;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	Subscriptions = receivedSubscriptions;
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
 	FInventoryCouponRewardData couponRewards;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FInventoryCouponRewardData::StaticStruct(), &couponRewards))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryCouponRewardData::StaticStruct(), &couponRewards, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		SuccessCallback.ExecuteIfBound(couponRewards);
 	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(couponRewards);
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
 	FInventoryRedeemedCouponData redeemedCouponData;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FInventoryRedeemedCouponData::StaticStruct(), &redeemedCouponData))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryRedeemedCouponData::StaticStruct(), &redeemedCouponData, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaInventory, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(redeemedCouponData);
-}
-
-bool UXsollaInventorySubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnInventoryError ErrorCallback)
-{
-	FString ErrorStr;
-	int32 ErrorCode = 0;
-	int32 StatusCode = 204;
-	FString ResponseStr = TEXT("invalid");
-
-	if (bSucceeded && HttpResponse.IsValid())
-	{
-		ResponseStr = HttpResponse->GetContentAsString();
-
-		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
-		{
-			StatusCode = HttpResponse->GetResponseCode();
-			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
-
-			// Example: {"statusCode":403,"errorCode":0,"errorMessage":"Token not found"}
-			TSharedPtr<FJsonObject> JsonObject;
-			const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
-			if (FJsonSerializer::Deserialize(Reader, JsonObject))
-			{
-				static const FString ErrorFieldName = TEXT("errorMessage");
-				if (JsonObject->HasTypedField<EJson::String>(ErrorFieldName))
-				{
-					StatusCode = JsonObject->GetNumberField(TEXT("statusCode"));
-					ErrorCode = JsonObject->GetNumberField(TEXT("errorCode"));
-					ErrorStr = JsonObject->GetStringField(ErrorFieldName);
-				}
-				else
-				{
-					ErrorStr = FString::Printf(TEXT("Can't deserialize error json: no field '%s' found"), *ErrorFieldName);
-				}
-			}
-			else
-			{
-				ErrorStr = TEXT("Can't deserialize error json");
-			}
-		}
+		SuccessCallback.ExecuteIfBound(redeemedCouponData);
 	}
 	else
 	{
-		ErrorStr = TEXT("No response");
+		HandleRequestError(OutError, ErrorCallback);
 	}
+}
 
-	if (!ErrorStr.IsEmpty())
-	{
-		UE_LOG(LogXsollaInventory, Warning, TEXT("%s: request failed (%s): %s"), *VA_FUNC_LINE, *ErrorStr, *ResponseStr);
-		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorStr);
-		return true;
-	}
-
-	return false;
+void UXsollaInventorySubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnInventoryError ErrorCallback)
+{
+	UE_LOG(LogXsollaInventory, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
+	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaInventorySubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,

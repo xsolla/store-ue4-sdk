@@ -48,9 +48,58 @@ public:
 	static bool ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, XsollaHttpRequestError& OutError);
 	static bool ParseResponseAsJson(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TSharedPtr<FJsonObject>& OutResponse, XsollaHttpRequestError& OutError);
 	static bool ParseResponseAsStruct(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, const UStruct* OutResponseDefinition, void* OutResponse, XsollaHttpRequestError& OutError);
-
+	
 	template <typename OutStructType>
 	static bool ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError);
-
+	
 	static bool ParseError(TSharedPtr<FJsonObject> JsonObject, XsollaHttpRequestError& OutError);
+
+private:
+
+	static const FString NoResponseErrorMsg;
+	static const FString UnknownErrorMsg;
+	static const FString DeserializationErrorMsg;
+	static const FString ConversionErrorMsg;
 };
+
+template <typename OutStructType>
+static bool XsollaUtilsHttpRequestHelper::ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError)
+{
+	if (bSucceeded && HttpResponse.IsValid())
+	{
+		FString ResponseStr = HttpResponse->GetContentAsString();
+
+		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
+		{
+			if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, OutResponse, 0, 0))
+			{
+				return true;
+			}
+
+			OutError = XsollaHttpRequestError(ConversionErrorMsg);
+		}
+		else
+		{
+			TSharedPtr<FJsonObject> JsonObject;
+			const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+			{
+				if (!ParseError(JsonObject, OutError))
+				{
+					OutError = XsollaHttpRequestError(UnknownErrorMsg);
+				}
+			}
+			else
+			{
+				OutError = XsollaHttpRequestError(DeserializationErrorMsg);
+			}
+		}
+	}
+	else
+	{
+		OutError = XsollaHttpRequestError(NoResponseErrorMsg);
+	}
+
+	return false;
+}

@@ -366,8 +366,7 @@ protected:
 		bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
 
 protected:
 	/** Load save game and extract data */

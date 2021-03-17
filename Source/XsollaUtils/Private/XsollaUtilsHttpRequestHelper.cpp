@@ -9,6 +9,11 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
+const FString XsollaUtilsHttpRequestHelper::NoResponseErrorMsg(TEXT("No response"));
+const FString XsollaUtilsHttpRequestHelper::UnknownErrorMsg(TEXT("Unknown error"));
+const FString XsollaUtilsHttpRequestHelper::DeserializationErrorMsg(TEXT("Failed to deserialize response"));
+const FString XsollaUtilsHttpRequestHelper::ConversionErrorMsg(TEXT("Failed to convert response"));
+
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::CreateHttpRequest(const FString& Url,
 	const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken,
@@ -91,18 +96,18 @@ bool XsollaUtilsHttpRequestHelper::ParseResponse(FHttpRequestPtr HttpRequest, FH
 			{
 				if (!ParseError(JsonObject, OutError))
 				{
-					OutError = XsollaHttpRequestError("Unknown error");
+					OutError = XsollaHttpRequestError(UnknownErrorMsg);
 				}
 			}
 			else
 			{
-				OutError = XsollaHttpRequestError("Failed to deserialize response");
+				OutError = XsollaHttpRequestError(DeserializationErrorMsg);
 			}
 		}
 	}
 	else
 	{
-		OutError = XsollaHttpRequestError("No response");
+		OutError = XsollaHttpRequestError(NoResponseErrorMsg);
 	}
 
 	return false;
@@ -128,18 +133,18 @@ bool XsollaUtilsHttpRequestHelper::ParseResponseAsJson(FHttpRequestPtr HttpReque
 			{
 				if (!ParseError(JsonObject, OutError))
 				{
-					OutError = XsollaHttpRequestError("Unknown error");
+					OutError = XsollaHttpRequestError(UnknownErrorMsg);
 				}
 			}
 		}
 		else
 		{
-			OutError = XsollaHttpRequestError("Failed to deserialize response");
+			OutError = XsollaHttpRequestError(DeserializationErrorMsg);
 		}
 	}
 	else
 	{
-		OutError = XsollaHttpRequestError("No response");
+		OutError = XsollaHttpRequestError(NoResponseErrorMsg);
 	}
 
 	return false;
@@ -155,49 +160,7 @@ bool XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(FHttpRequestPtr HttpReq
 			return true;
 		}
 
-		OutError = XsollaHttpRequestError("Failed to convert response");
-	}
-
-	return false;
-}
-
-template <typename OutStructType>
-bool XsollaUtilsHttpRequestHelper::ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError)
-{
-	if (bSucceeded && HttpResponse.IsValid())
-	{
-		FString ResponseStr = HttpResponse->GetContentAsString();
-
-		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
-		{
-			if (FJsonObjectConverter::JsonArrayStringToUStruct(ResponseStr, OutResponse, 0, 0))
-			{
-				return true;
-			}
-
-			OutError = XsollaHttpRequestError("Failed to convert response");
-		}
-		else
-		{
-			TSharedPtr<FJsonObject> JsonObject;
-			const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
-
-			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
-			{
-				if (!ParseError(JsonObject, OutError))
-				{
-					OutError = XsollaHttpRequestError("Unknown error");
-				}
-			}
-			else
-			{
-				OutError = XsollaHttpRequestError("Failed to deserialize response");
-			}
-		}
-	}
-	else
-	{
-		OutError = XsollaHttpRequestError("No response");
+		OutError = XsollaHttpRequestError(ConversionErrorMsg);
 	}
 
 	return false;
@@ -226,3 +189,5 @@ bool XsollaUtilsHttpRequestHelper::ParseError(TSharedPtr<FJsonObject> JsonObject
 	// No error
 	return false;
 }
+
+

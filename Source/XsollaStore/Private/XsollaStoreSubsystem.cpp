@@ -345,13 +345,13 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 									  : DefaultBrowserWidgetClass;
 
 		PengindPaystationUrl = PaystationUrl;
-		
-		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled()) 
+
+		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
 		{
 			MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
 			MyBrowser->AddToViewport(MAX_int32);
 		}
-		else 
+		else
 		{
 			MyBrowser->SetVisibility(ESlateVisibility::Visible);
 		}
@@ -691,289 +691,187 @@ void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
+	XsollaHttpRequestError OutError;
 
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreItemsData::StaticStruct(), &ItemsData))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	// Update categories now
-	for (auto& Item : ItemsData.Items)
-	{
-		for (auto& ItemGroup : Item.groups)
+		// Update categories
+		for (auto& Item : ItemsData.Items)
 		{
-			ItemsData.GroupIds.Add(ItemGroup.external_id);
+			for (auto& ItemGroup : Item.groups)
+			{
+				ItemsData.GroupIds.Add(ItemGroup.external_id);
+			}
 		}
+
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	// Deserialize to new object
+	XsollaHttpRequestError OutError;
 	FStoreItemsData GroupsData;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreItemsData::StaticStruct(), &GroupsData))
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &GroupsData, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		ItemsData.Groups = GroupsData.Groups;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	// Cache data as it should now
-	ItemsData.Groups = GroupsData.Groups;
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages, OutError))
 	{
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+	FStoreItemsList Items;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsList::StaticStruct(), &Items, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(Items);
+	}
+	else
 	{
 		ProcessNextCartRequest();
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FStoreItemsList Items;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreItemsList::StaticStruct(), &Items))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(Items);
 }
 
 void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
 	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		FString AccessToken = JsonObject->GetStringField(TEXT("token"));
+		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+
+		SuccessCallback.ExecuteIfBound(AccessToken, OrderId);
 		return;
 	}
 
-	FString AccessToken = JsonObject->GetStringField(TEXT("token"));
-	int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
-	SuccessCallback.ExecuteIfBound(AccessToken, OrderId);
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
 	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+		FString Status = JsonObject->GetStringField(TEXT("status"));
+		EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
+
+		if (Status == TEXT("new"))
+		{
+			OrderStatus = EXsollaOrderStatus::New;
+		}
+		else if (Status == TEXT("paid"))
+		{
+			OrderStatus = EXsollaOrderStatus::Paid;
+		}
+		else if (Status == TEXT("done"))
+		{
+			OrderStatus = EXsollaOrderStatus::Done;
+		}
+		else
+		{
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Status, OrderId);
+		}
+
+		SuccessCallback.ExecuteIfBound(OrderId, OrderStatus);
 		return;
 	}
 
-	int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-	FString Status = JsonObject->GetStringField(TEXT("status"));
-	EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
-
-	if (Status == TEXT("new"))
-	{
-		OrderStatus = EXsollaOrderStatus::New;
-	}
-	else if (Status == TEXT("paid"))
-	{
-		OrderStatus = EXsollaOrderStatus::Paid;
-	}
-	else if (Status == TEXT("done"))
-	{
-		OrderStatus = EXsollaOrderStatus::Done;
-	}
-	else
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Status, OrderId);
-	}
-
-	SuccessCallback.ExecuteIfBound(OrderId, OrderStatus);
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		ProcessNextCartRequest();
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
 	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		Cart = FStoreCart(JsonObject->GetStringField(TEXT("cart_id")));
+		OnCartUpdate.Broadcast(Cart);
+
+		SaveData();
+
+		SuccessCallback.ExecuteIfBound();
 		return;
 	}
 
-	Cart = FStoreCart(JsonObject->GetStringField(TEXT("cart_id")));
-	OnCartUpdate.Broadcast(Cart);
-
-	SaveData();
-
-	SuccessCallback.ExecuteIfBound();
+	ProcessNextCartRequest();
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		ProcessNextCartRequest();
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 
 	ProcessNextCartRequest();
 }
@@ -982,34 +880,17 @@ void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
-		ProcessNextCartRequest();
-		return;
+		OnCartUpdate.Broadcast(Cart);
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCart::StaticStruct(), &Cart))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	OnCartUpdate.Broadcast(Cart);
-
-	SuccessCallback.ExecuteIfBound();
 
 	ProcessNextCartRequest();
 }
@@ -1018,351 +899,188 @@ void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
+	{
+		ProcessNextCartRequest();
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
 	{
 		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-
-	ProcessNextCartRequest();
 }
 
 void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
+	{
+		ProcessNextCartRequest();
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
 	{
 		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-
-	ProcessNextCartRequest();
 }
 
 void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
-		return;
+		SuccessCallback.ExecuteIfBound();
 	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCart::StaticStruct(), &Cart))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
 }
 
 void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
+	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreListOfBundles::StaticStruct(), &ListOfBundles))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
 
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	for (auto Bundle : ListOfBundles.items)
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreListOfBundles::StaticStruct(), &ListOfBundles, OutError))
 	{
-		ItemsData.Items.Add(Bundle);
-	}
-
-	for (auto Bundle : ListOfBundles.items)
-	{
-		for (auto BundleGroup : Bundle.groups)
+		for (auto Bundle : ListOfBundles.items)
 		{
-			ItemsData.GroupIds.Add(BundleGroup.external_id);
+			ItemsData.Items.Add(Bundle);
 		}
-	}
 
-	SuccessCallback.ExecuteIfBound(ListOfBundles);
+		for (auto Bundle : ListOfBundles.items)
+		{
+			for (auto BundleGroup : Bundle.groups)
+			{
+				ItemsData.GroupIds.Add(BundleGroup.external_id);
+			}
+		}
+
+		SuccessCallback.ExecuteIfBound(ListOfBundles);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
+	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
 
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreBundle::StaticStruct(), &Bundle, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
+		SuccessCallback.ExecuteIfBound(Bundle);
 	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreBundle::StaticStruct(), &Bundle))
+	else
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(Bundle);
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+	FVirtualCurrency currency;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrency::StaticStruct(), &currency, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(currency);
+	}
+	else
 	{
 		ProcessNextCartRequest();
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FVirtualCurrency currency;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrency::StaticStruct(), &currency))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	SuccessCallback.ExecuteIfBound(currency);
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+	FVirtualCurrencyPackage currencyPackage;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackage::StaticStruct(), &currencyPackage, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(currencyPackage);
+	}
+	else
 	{
 		ProcessNextCartRequest();
-		return;
+		HandleRequestError(OutError, ErrorCallback);
 	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	FVirtualCurrencyPackage currencyPackage;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FVirtualCurrencyPackage::StaticStruct(), &currencyPackage))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	SuccessCallback.ExecuteIfBound(currencyPackage);
 }
 
 void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
 	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
+		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+		SuccessCallback.ExecuteIfBound(OrderId);
 		return;
 	}
 
-	int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
-	SuccessCallback.ExecuteIfBound(OrderId);
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
-	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
+	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStorePromocodeRewardData::StaticStruct(), &PromocodeRewardData))
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStorePromocodeRewardData::StaticStruct(), &PromocodeRewardData, OutError))
 	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
+		SuccessCallback.ExecuteIfBound(PromocodeRewardData);
 	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound(PromocodeRewardData);
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
-	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	XsollaHttpRequestError OutError;
+	FStorePromocodeRewardData PromocodeRewardData;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
-		return;
-	}
-
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*HttpResponse->GetContentAsString());
-	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't deserialize server response"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't deserialize server response"));
-		return;
-	}
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), FStoreCart::StaticStruct(), &Cart))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert server response to struct"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(HttpResponse->GetResponseCode(), 0, TEXT("Can't convert server response to struct"));
-		return;
-	}
-
-	const FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaStore, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	SuccessCallback.ExecuteIfBound();
-}
-
-bool UXsollaStoreSubsystem::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreError ErrorCallback)
-{
-	FString ErrorStr;
-	int32 ErrorCode = 0;
-	int32 StatusCode = 204;
-	FString ResponseStr = TEXT("invalid");
-
-	if (bSucceeded && HttpResponse.IsValid())
-	{
-		ResponseStr = HttpResponse->GetContentAsString();
-
-		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
-		{
-			StatusCode = HttpResponse->GetResponseCode();
-			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
-
-			// Example: {"statusCode":403,"errorCode":0,"errorMessage":"Token not found"}
-			TSharedPtr<FJsonObject> JsonObject;
-			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
-			if (FJsonSerializer::Deserialize(Reader, JsonObject))
-			{
-				static const FString ErrorFieldName = TEXT("errorMessage");
-				if (JsonObject->HasTypedField<EJson::String>(ErrorFieldName))
-				{
-					StatusCode = JsonObject->GetNumberField(TEXT("statusCode"));
-					ErrorCode = JsonObject->GetNumberField(TEXT("errorCode"));
-					ErrorStr = JsonObject->GetStringField(ErrorFieldName);
-				}
-				else
-				{
-					ErrorStr = FString::Printf(TEXT("Can't deserialize error json: no field '%s' found"), *ErrorFieldName);
-				}
-			}
-			else
-			{
-				ErrorStr = TEXT("Can't deserialize error json");
-			}
-		}
+		SuccessCallback.ExecuteIfBound();
 	}
 	else
 	{
-		ErrorStr = TEXT("No response");
+		HandleRequestError(OutError, ErrorCallback);
 	}
+}
 
-	if (!ErrorStr.IsEmpty())
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: request failed (%s): %s"), *VA_FUNC_LINE, *ErrorStr, *ResponseStr);
-		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorStr);
-		return true;
-	}
-
-	return false;
+void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback)
+{
+	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
+	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 }
 
 void UXsollaStoreSubsystem::LoadData()

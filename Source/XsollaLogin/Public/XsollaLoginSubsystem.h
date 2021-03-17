@@ -601,7 +601,7 @@ protected:
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
 	/** Returns true if the error occurs. */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
