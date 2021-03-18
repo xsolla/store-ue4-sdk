@@ -2237,6 +2237,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpR
 	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
 	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("LOGIN"));
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_LOGIN_VERSION);
+	UXsollaUtilsLibrary::PatchRequestWithPartnerInfo(HttpRequest);
 
 	return HttpRequest;
 }

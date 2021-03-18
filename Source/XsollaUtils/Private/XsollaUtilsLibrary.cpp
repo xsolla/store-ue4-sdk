@@ -105,3 +105,22 @@ FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
 {
 	return FXsollaJsonVariant(Value);
 }
+
+void UXsollaUtilsLibrary::PatchRequestWithPartnerInfo(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest) 
+{
+	FString XRef = "";
+	FString XRefV = "0.0.1";
+
+	if (XRef.IsEmpty() || XRefV.IsEmpty())
+	{
+		return;
+	}
+
+	FString PatchUrl = FString::Printf(TEXT("&ref=%s&ref_v=%s"), *XRef.ToLower(), *XRefV.ToLower());
+
+	FString CurrentUrl = HttpRequest->GetURL();
+	HttpRequest->SetURL(CurrentUrl + PatchUrl);
+
+	HttpRequest->SetHeader(TEXT("X-REF"), XRef);
+	HttpRequest->SetHeader(TEXT("X-REF-V"), XRefV);
+}
