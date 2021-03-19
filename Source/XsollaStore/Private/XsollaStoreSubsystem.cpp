@@ -1427,6 +1427,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpR
 	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
 	HttpRequest->SetHeader(TEXT("X-SDK"), TEXT("STORE"));
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), XSOLLA_STORE_VERSION);
+	UXsollaUtilsLibrary::PatchRequestWithPartnerInfo(HttpRequest);
 
 	switch (Verb)
 	{
