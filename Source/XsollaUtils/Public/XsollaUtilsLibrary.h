@@ -4,6 +4,7 @@
 
 #include "Components/CheckBox.h"
 #include "EngineMinimal.h"
+#include "Http.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaUtilsLibrary.generated.h"
@@ -72,4 +73,6 @@ public:
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
 	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
+
+	static void PatchRequestWithPartnerInfo(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest);
 };
