@@ -4,6 +4,7 @@
 
 #include "Components/CheckBox.h"
 #include "EngineMinimal.h"
+#include "Http.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaUtilsLibrary.generated.h"
