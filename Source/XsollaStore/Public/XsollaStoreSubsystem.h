@@ -17,10 +17,10 @@
 UENUM(BlueprintType)
 enum class EXsollaRequestVerb : uint8
 {
-	GET,
-	POST,
-	PUT,
-	DELETE
+	VERB_GET,
+	VERB_POST,
+	VERB_PUT,
+	VERB_DELETE
 };
 
 class FJsonObject;
@@ -326,6 +326,9 @@ public:
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -390,7 +393,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
@@ -449,6 +452,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
 
+	/** Gets virtual currency from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FVirtualCurrency FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const;
+
+	/** Gets item from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FStoreItem FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
+
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
@@ -485,6 +496,8 @@ protected:
 
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
+
+	UUserWidget* MyBrowser;
 
 private:
 	UPROPERTY()

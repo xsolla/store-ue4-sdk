@@ -25,7 +25,8 @@
         "Mac",
         "IOS",
         "Android",
-        "Linux"
+        "Linux",
+        "XboxOne"
       ]
     },
     {
@@ -38,7 +39,8 @@
         "Mac",
         "IOS",
         "Android",
-        "Linux"
+        "Linux",
+        "XboxOne"
       ]
     },
     {
@@ -51,7 +53,8 @@
         "Mac",
         "IOS",
         "Android",
-        "Linux"
+        "Linux",
+        "XboxOne"
       ]
     },
     {
@@ -64,7 +67,8 @@
         "Mac",
         "IOS",
         "Android",
-        "Linux"
+        "Linux",
+        "XboxOne"
       ]
     },
     {
@@ -77,7 +81,22 @@
         "Mac",
         "IOS",
         "Android",
-        "Linux"
+        "Linux",
+        "XboxOne"
+      ]
+    },
+    {
+      "Name": "XsollaUiBuilder",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "XboxOne"
       ]
     }
   ],

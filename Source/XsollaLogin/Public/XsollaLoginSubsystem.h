@@ -7,9 +7,9 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
-#include "XsollaUtilsDataModel.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
+#include "XsollaUtilsDataModel.h"
 
 #include "XsollaLoginSubsystem.generated.h"
 
@@ -17,11 +17,11 @@
 UENUM(BlueprintType)
 enum class EXsollaLoginRequestVerb : uint8
 {
-	GET,
-	POST,
-	PUT,
-	DELETE,
-	PATCH
+	VERB_GET,
+	VERB_POST,
+	VERB_PUT,
+	VERB_DELETE,
+	VERB_PATCH
 };
 
 class FJsonObject;
@@ -77,6 +77,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Resend Account Confirmation Email
+	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
+	 *
+	 * @param Username Username. Required.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate User
 	 * Authenticates the user by the username and password specified via the authentication interface.
@@ -515,6 +525,9 @@ protected:
 	void RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	void ResendAccountConfirmationEmailJWT(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -602,7 +615,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::VERB_GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */

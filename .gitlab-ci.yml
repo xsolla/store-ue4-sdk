@@ -1,0 +1,14 @@
+
+stages:
+  - docs
+
+docs-generation:
+  stage: docs
+  image: alpine
+  script:
+  - apk update && apk add doxygen graphviz ttf-freefont
+  - doxygen Documentation/Autogen/Doxyfile
+  - mv Documentation/Autogen/html/ docs/
+  artifacts:
+    paths:
+    - docs
