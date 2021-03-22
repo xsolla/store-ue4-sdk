@@ -5,24 +5,14 @@
 
 #include "XsollaLoginTypes.h"
 
+#include "XsollaUtilsDataModel.h"
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Http.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
-#include "XsollaUtilsDataModel.h"
 
 #include "XsollaLoginSubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request */
-UENUM(BlueprintType)
-enum class EXsollaLoginRequestVerb : uint8
-{
-	VERB_GET,
-	VERB_POST,
-	VERB_PUT,
-	VERB_DELETE,
-	VERB_PATCH
-};
 
 class FJsonObject;
 
@@ -611,11 +601,11 @@ protected:
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
 	/** Returns true if the error occurs. */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaLoginRequestVerb Verb = EXsollaLoginRequestVerb::VERB_GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */

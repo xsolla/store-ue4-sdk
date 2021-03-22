@@ -5,22 +5,12 @@
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
 
-#include "Blueprint/UserWidget.h"
-#include "Http.h"
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaInventorySubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request */
-UENUM(BlueprintType)
-enum class EXsollaInventoryRequestVerb : uint8
-{
-	VERB_GET,
-	VERB_POST,
-	VERB_PUT,
-	VERB_DELETE
-};
 
 class FJsonObject;
 
@@ -133,18 +123,16 @@ protected:
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
-	/** Return true if error is happened */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnInventoryError ErrorCallback);
-
 	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnInventoryError ErrorCallback);
+
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::VERB_GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */

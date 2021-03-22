@@ -6,22 +6,13 @@
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Http.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaStoreSubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request. */
-UENUM(BlueprintType)
-enum class EXsollaRequestVerb : uint8
-{
-	VERB_GET,
-	VERB_POST,
-	VERB_PUT,
-	VERB_DELETE
-};
 
 class FJsonObject;
 
@@ -378,8 +369,7 @@ protected:
 		bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
 
 protected:
 	/** Load save game and extract data */
@@ -393,7 +383,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::VERB_GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
