@@ -1499,21 +1499,29 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 }
 
 void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{
-	TSharedPtr<FJsonObject> JsonObject;
+{	
 	XsollaHttpRequestError OutError;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		static const FString PhoneFieldName = TEXT("phone_number");
-		if (JsonObject->HasTypedField<EJson::String>(PhoneFieldName))
-		{
-			UserDetails.phone = JsonObject->GetStringField(PhoneFieldName);
-			SuccessCallback.ExecuteIfBound();
-			return;
-		}
+		const TArray<uint8> RequestContent = HttpRequest->GetContent();
+		FUTF8ToTCHAR Converter((ANSICHAR*)RequestContent.GetData(), RequestContent.Num());
+		FString RequestContentStr = FString(Converter.Length(), Converter.Get());
 
-		OutError.description = FString::Printf(TEXT("No field '%s' found"), *PhoneFieldName);
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*RequestContentStr);
+		if (FJsonSerializer::Deserialize(Reader, JsonObject))
+		{
+			static const FString PhoneFieldName = TEXT("phone_number");
+			if (JsonObject->HasTypedField<EJson::String>(PhoneFieldName))
+			{
+				UserDetails.phone = JsonObject->GetStringField(PhoneFieldName);
+				SuccessCallback.ExecuteIfBound();
+				return;
+			}
+
+			OutError.description = FString::Printf(TEXT("No field '%s' found"), *PhoneFieldName);
+		}		
 	}
 
 	HandleRequestError(OutError, ErrorCallback);
