@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Http.h"
+#include "JsonObjectConverter.h"
 
 class FJsonObject;
 
@@ -63,7 +64,7 @@ private:
 };
 
 template <typename OutStructType>
-static bool XsollaUtilsHttpRequestHelper::ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError)
+bool XsollaUtilsHttpRequestHelper::ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError)
 {
 	if (bSucceeded && HttpResponse.IsValid())
 	{
