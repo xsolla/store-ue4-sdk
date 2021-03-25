@@ -1378,6 +1378,25 @@ FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bH
 	return Item;
 }
 
+FVirtualCurrencyPackage UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const
+{
+	FVirtualCurrencyPackage Package;
+	bHasFound = false;
+	
+	const auto PackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem)
+	{
+		return InItem.sku == ItemSku;
+	});
+
+	if (PackageItem != nullptr)
+	{
+		Package = PackageItem[0];
+		bHasFound = true;
+	}
+
+	return Package;
+}
+
 bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 {
 	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {

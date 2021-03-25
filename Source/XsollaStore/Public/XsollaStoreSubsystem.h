@@ -450,6 +450,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FStoreItem FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
 
+	/** Gets package from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FVirtualCurrencyPackage FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
+
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
