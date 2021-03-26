@@ -41,7 +41,7 @@ current doc:
     - deploy doc
   environment:
     name: doc/current
-    url: https://developers.xsolla.com/sdk-code-references/unity-store
+    url: https://developers.xsolla.com/sdk-code-references/ue4-store
 
 stop doc:
   extends:      .stop doc
