@@ -1,14 +1,53 @@
+include:
+  - project: 'sysadm-docker/ubuntu-sshclient'
+    ref:     'master'
+    file:    'gitlab-ci-template.yml'
 
 stages:
-  - docs
+  - build
+  - deploy
+  - linking
 
-docs-generation:
-  stage: docs
+build doc:
+  stage: build
   image: alpine
   script:
-  - apk update && apk add doxygen graphviz ttf-freefont
+  - apk update && apk add doxygen graphviz ttf-freefont zip
   - doxygen Documentation/Autogen/Doxyfile
   - mv Documentation/Autogen/html/ docs/
+  - cd docs/ && zip -r ../build.zip *
   artifacts:
     paths:
-    - docs
+    - build.zip
+
+deploy doc:
+  stage: deploy
+  extends:      .deploy doc
+  only:
+    - /^v-.*/
+  dependencies:
+    - build doc
+  environment:
+    name: doc/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME.doc.srv.local/$URL_SLUG
+    on_stop: stop doc
+  when: manual
+
+current doc:
+  extends:      .current doc
+  only:
+    - /^v-.*/
+  dependencies:
+    - deploy doc
+  environment:
+    name: doc/current
+    url: https://developers.xsolla.com/sdk-code-references/unity-store
+
+stop doc:
+  extends:      .stop doc
+  environment:
+    name: doc/$CI_COMMIT_REF_SLUG
+    action: stop
+  only:
+    - /^v-.*/
+  dependencies: []
