@@ -359,6 +359,7 @@ public:
 		: sku(CurrencyPackage.sku)
 		, name(CurrencyPackage.name)
 		, is_free(CurrencyPackage.is_free)
+		, price(CurrencyPackage.price)
 		, image_url(CurrencyPackage.image_url)
 		, quantity(0){};
 
