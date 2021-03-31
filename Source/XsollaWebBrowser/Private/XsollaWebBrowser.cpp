@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Xsolla Inc. All Rights Reserved.
+﻿// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaWebBrowser.h"
@@ -93,7 +93,8 @@ TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 			.ShowControls(false)
 			.SupportsTransparency(bSupportsTransparency)
 			.OnUrlChanged(BIND_UOBJECT_DELEGATE(FOnTextChanged, HandleOnUrlChanged))
-			.OnBeforePopup(BIND_UOBJECT_DELEGATE(FOnBeforePopupDelegate, HandleOnBeforePopup));
+			.OnBeforePopup(BIND_UOBJECT_DELEGATE(FOnBeforePopupDelegate, HandleOnBeforePopup))
+			.OnLoadCompleted(BIND_UOBJECT_DELEGATE(FSimpleDelegate, HandleOnPageLoaded));
 
 		return WebBrowserWidget.ToSharedRef();
 	}
@@ -103,6 +104,11 @@ TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 void UXsollaWebBrowser::HandleOnUrlChanged(const FText& InText)
 {
 	OnUrlChanged.Broadcast(InText);
+}
+
+void UXsollaWebBrowser::HandleOnPageLoaded()
+{
+	OnPageLoaded.Broadcast();
 }
 
 bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)

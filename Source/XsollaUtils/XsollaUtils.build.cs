@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 namespace UnrealBuildTool.Rules
 {
@@ -23,6 +23,8 @@ namespace UnrealBuildTool.Rules
                     "JsonUtilities"
                 }
             );
+
+            PublicDefinitions.Add("WITH_XSOLLA_UTILS=1");
         }
     }
 }

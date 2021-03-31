@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0] - 2021-03-29
+
+### Added
+- UI themes support.
+- Battlepass demo.
+- Xbox One and PS4 support.
+
+### Changed
+- Mechanism for opening links in web browser.
+- Web request handling logic.
+
+### Fixed
+- Purchase status polling.
+
 ## [0.5.8] - 2021-03-19
 
 ### Added

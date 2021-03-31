@@ -1,8 +1,10 @@
-// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
+#include "XsollaUtilsSettings.h"
+#include "XsollaUtilsTheme.h"
 
 #include "Dom/JsonObject.h"
 
@@ -63,6 +65,41 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
 {
 	return FXsollaUtilsModule::Get().GetImageLoader();
+}
+
+UXsollaUtilsSettings* UXsollaUtilsLibrary::GetUtilsSettings()
+{
+	return FXsollaUtilsModule::Get().GetSettings();
+}
+
+void UXsollaUtilsLibrary::GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj)
+{
+	if (ObjectClass)
+		DefaultObj = ObjectClass->GetDefaultObject();
+}
+
+UXsollaUtilsTheme* UXsollaUtilsLibrary::GetCurrentTheme()
+{
+	UXsollaUtilsSettings* Settings = FXsollaUtilsModule::Get().GetSettings();
+	TSubclassOf<UXsollaUtilsTheme> CurrentThemeClass = Settings->InterfaceTheme;
+	if(!CurrentThemeClass)
+		return nullptr;
+	
+	UObject* CurrentTheme;
+	GetDefaultObject(CurrentThemeClass, CurrentTheme);
+	
+	return Cast<UXsollaUtilsTheme>(CurrentTheme);
+}
+
+UXsollaUtilsTheme* UXsollaUtilsLibrary::GetTheme(TSubclassOf<UXsollaUtilsTheme> ThemeClass)
+{
+	if(!ThemeClass)
+		return nullptr;
+	
+	UObject* Theme;
+	GetDefaultObject(ThemeClass, Theme);
+	
+	return Cast<UXsollaUtilsTheme>(Theme);
 }
 
 FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)

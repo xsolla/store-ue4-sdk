@@ -1,4 +1,4 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
@@ -6,22 +6,13 @@
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Http.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaStoreSubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request. */
-UENUM(BlueprintType)
-enum class EXsollaRequestVerb : uint8
-{
-	GET,
-	POST,
-	PUT,
-	DELETE
-};
 
 class FJsonObject;
 
@@ -326,6 +317,9 @@ public:
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -375,8 +369,7 @@ protected:
 		bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
 
 protected:
 	/** Load save game and extract data */
@@ -390,7 +383,7 @@ protected:
 
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaRequestVerb Verb = EXsollaRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
@@ -449,6 +442,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
 
+	/** Gets virtual currency from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FVirtualCurrency FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const;
+
+	/** Gets item from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FStoreItem FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
+
+	/** Gets package from the cache with the given SKU. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
+	FVirtualCurrencyPackage FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
+
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
@@ -485,6 +490,8 @@ protected:
 
 	/** Pending paystation url to be opened in browser */
 	FString PengindPaystationUrl;
+
+	UUserWidget* MyBrowser;
 
 private:
 	UPROPERTY()

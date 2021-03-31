@@ -1,4 +1,4 @@
-// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -62,20 +62,38 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaItemAttributeValue
+{
+	GENERATED_BODY()
+
+	/** Unique value ID for an attribute. The external_id may only contain lowercase Latin alphanumeric characters, dashes, and underscores. */
+	UPROPERTY(BlueprintReadOnly, Category = "Item Attribute Value")
+	FString external_id;
+
+	/* Value of attribute. */
+	UPROPERTY(BlueprintReadOnly, Category = "Item Attribute Value")
+	FString value;
+};
+
+/** Attribute and their values corresponding to the item. Can be used for catalog filtering. */
+USTRUCT(BlueprintType)
 struct XSOLLAUTILS_API FXsollaItemAttribute
 {
 	GENERATED_BODY()
 
+	/** Unique attribute ID. The `external_id` may only contain lowercase Latin alphanumeric characters, dashes, and underscores. */
 	UPROPERTY(BlueprintReadOnly, Category = "Item Attribute")
-	int32 stack_size;
+	FString external_id;
+
+	/* Name off attribute. */
+	UPROPERTY(BlueprintReadOnly, Category = "Item Attribute")
+	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Attribute")
-	bool licensed;
+	TArray<FXsollaItemAttributeValue> values;
 
 public:
-	FXsollaItemAttribute()
-		: stack_size(0)
-		, licensed(false){};
+	FXsollaItemAttribute(){}
 };
 
 USTRUCT(BlueprintType)
@@ -93,7 +111,7 @@ struct XSOLLAUTILS_API FXsollaPrice
 	FString currency;
 
 public:
-	FXsollaPrice(){};
+	FXsollaPrice(){}
 };
 
 USTRUCT(BlueprintType)
@@ -109,7 +127,7 @@ struct XSOLLAUTILS_API FXsollaExpirationPeriod
 
 public:
 	FXsollaExpirationPeriod()
-		: value(0){};
+		: value(0){}
 };
 
 USTRUCT(BlueprintType)
@@ -169,7 +187,7 @@ public:
 	FXsollaVirtualCurrencyPrice()
 		: is_default(false)
 		, amount(0)
-		, amount_without_discount(0){};
+		, amount_without_discount(0){}
 };
 
 USTRUCT(BlueprintType)

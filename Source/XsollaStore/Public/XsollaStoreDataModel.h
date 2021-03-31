@@ -1,4 +1,4 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
@@ -52,50 +52,68 @@ struct XSOLLASTORE_API FStoreItem
 {
 	GENERATED_BODY()
 
+	/* Unique item ID. The SKU may only contain lowercase Latin alphanumeric characters, periods, dashes, and underscores. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString sku;
 
+	/* Item name. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString name;
 
+	/* Item description. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString description;
 
+	/* Type of item: Consumable/Expiration/Permanent/Lootboxes/Physical. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString type;
 
+	/* Type of virtual item. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString virtual_item_type;
 
+	/* Groups the item belongs to. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FXsollaItemGroup> groups;
 
+	/* If `true`, the item is free. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	bool is_free;
 
+	/* Item prices */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FXsollaPrice price;
 
+	/* Virtual prices. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
 
+	/* Image URL. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString image_url;
 
+	/* Defines the inventory item options. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FXsollaItemOptions inventory_options;
 
+	/* Type off bundle. In this case, it is always `standart`. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	FString bundle_type;
 
+	/* Sum of the bundle content prices. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	FXsollaPrice total_content_price;
 
+	/* Bundle package content. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FStoreBundleContent> content;
 
+	/* List of attributes and their values corresponding to the item. Can be used for catalog filtering. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FString long_description;
 
 public:
 	FStoreItem()
@@ -117,6 +135,7 @@ public:
 		, total_content_price(Item.total_content_price)
 		, content(Item.content)
 		, attributes(Item.attributes)
+		, long_description(Item.long_description)
 	{
 	}
 
@@ -177,7 +196,7 @@ public:
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
-	TArray<FString> attributes;
+	TArray<FXsollaItemAttribute> attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	bool is_free;
@@ -340,6 +359,7 @@ public:
 		: sku(CurrencyPackage.sku)
 		, name(CurrencyPackage.name)
 		, is_free(CurrencyPackage.is_free)
+		, price(CurrencyPackage.price)
 		, image_url(CurrencyPackage.image_url)
 		, quantity(0){};
 
@@ -489,6 +509,54 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 	/** If 'true', the user should choose the bonus before redeeming a promo code. */
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
 	bool is_selectable;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassRewardItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	FString Sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	FString Promocode;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
+	int32 Quantity;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassLevel
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	int32 Tier;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	int32 Experience;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FStoreBattlepassRewardItem FreeItem;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
+	FStoreBattlepassRewardItem PremiumItem;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreBattlepassData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	FString Name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	FString ExpiryDate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
+	TArray<FStoreBattlepassLevel> Levels;
 };
 
 inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)

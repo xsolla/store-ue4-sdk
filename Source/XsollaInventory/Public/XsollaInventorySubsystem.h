@@ -1,26 +1,16 @@
-// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
 
-#include "Blueprint/UserWidget.h"
-#include "Http.h"
+#include "XsollaUtilsHttpRequestHelper.h"
+
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 
 #include "XsollaInventorySubsystem.generated.h"
-
-/** Verb (GET, PUT, POST) used by the request */
-UENUM(BlueprintType)
-enum class EXsollaInventoryRequestVerb : uint8
-{
-	GET,
-	POST,
-	PUT,
-	DELETE
-};
 
 class FJsonObject;
 
@@ -133,18 +123,16 @@ protected:
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
-	/** Return true if error is happened */
-	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnInventoryError ErrorCallback);
-
 	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnInventoryError ErrorCallback);
+
 private:
 	/** Create http request and add Xsolla API meta */
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaInventoryRequestVerb Verb = EXsollaInventoryRequestVerb::GET,
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(), const FString& Content = FString());
 
 	/** Serialize json object into string */
@@ -161,6 +149,9 @@ public:
 	/** Gets cached virtual currencies balance */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
 	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
+
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Inventory|VirtualCurrency")
+	FVirtualCurrencyBalance GetVirtualCurrencyBalanceBySku(const FString& CurrencySku, bool& bWasFound) const;
 
 	/** Gets cached user subscriptions */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions")

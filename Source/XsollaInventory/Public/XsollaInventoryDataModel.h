@@ -1,4 +1,4 @@
-// Copyright 2020 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -33,7 +33,7 @@ public:
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
-	TArray<FString> attributes;
+	TArray<FXsollaItemAttribute> attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
 	TArray<FXsollaItemGroup> groups;

@@ -1,4 +1,4 @@
-// Copyright 2019 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
@@ -15,6 +15,7 @@ class XSOLLAWEBBROWSER_API UXsollaWebBrowser : public UWidget
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUrlChanged, const FText&, Text);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeforePopup, FString, URL, FString, Frame);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPageLoaded);
 
 	/**
 	 * Loads the specified URL.
@@ -63,6 +64,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
 	FOnBeforePopup OnBeforePopup;
 
+	/** Called when page loaded. */
+	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
+	FOnPageLoaded OnPageLoaded;
+
 public:
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 
@@ -89,4 +94,5 @@ protected:
 
 	void HandleOnUrlChanged(const FText& Text);
 	bool HandleOnBeforePopup(FString URL, FString Frame);
+	void HandleOnPageLoaded();
 };
