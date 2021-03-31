@@ -89,5 +89,14 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
 	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
 
-	static void PatchRequestWithPartnerInfo(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest);
+	/** Set additional information for web request. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	static void SetPartnerInfo(const FString& Referral, const FString& ReferralVersion);
+
+	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
+
+private:
+
+	static FString XReferral;
+	static FString XReferralVersion;
 };
