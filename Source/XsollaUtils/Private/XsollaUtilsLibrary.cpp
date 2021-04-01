@@ -8,6 +8,9 @@
 
 #include "Dom/JsonObject.h"
 
+FString UXsollaUtilsLibrary::XReferral(TEXT(""));
+FString UXsollaUtilsLibrary::XReferralVersion(TEXT(""));
+
 UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -143,21 +146,14 @@ FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
 	return FXsollaJsonVariant(Value);
 }
 
-void UXsollaUtilsLibrary::PatchRequestWithPartnerInfo(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest) 
+void UXsollaUtilsLibrary::SetPartnerInfo(const FString& Referral, const FString& ReferralVersion)
 {
-	FString XRef = "";
-	FString XRefV = "0.0.1";
+	XReferral = Referral;
+	XReferralVersion = ReferralVersion;
+}
 
-	if (XRef.IsEmpty() || XRefV.IsEmpty())
-	{
-		return;
-	}
-
-	FString PatchUrl = FString::Printf(TEXT("&ref=%s&ref_v=%s"), *XRef.ToLower(), *XRefV.ToLower());
-
-	FString CurrentUrl = HttpRequest->GetURL();
-	HttpRequest->SetURL(CurrentUrl + PatchUrl);
-
-	HttpRequest->SetHeader(TEXT("X-REF"), XRef);
-	HttpRequest->SetHeader(TEXT("X-REF-V"), XRefV);
+void UXsollaUtilsLibrary::GetPartnerInfo(FString& Referral, FString& ReferralVersion)
+{
+	Referral = XReferral;
+	ReferralVersion = XReferralVersion;
 }

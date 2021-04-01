@@ -2,6 +2,7 @@
 
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaUtilsDefines.h"
+#include "XsollaUtilsLibrary.h"
 
 #include "Dom/JsonObject.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -25,6 +26,8 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	// Referral analytics meta
 	FString XRef = TEXT("");
 	FString XRefV = TEXT("");
+
+	UXsollaUtilsLibrary::GetPartnerInfo(XRef, XRefV);
 
 	bool IsReferralAnalyticsSet = !XRef.IsEmpty() && !XRefV.IsEmpty();
 
