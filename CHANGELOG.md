@@ -3,7 +3,7 @@
 ## [0.6.2] - 2021-04-12
 
 ### Changed
-- Monor settings improvements.
+- Minor settings improvements.
 
 ## [0.6.1] - 2021-03-31
 
