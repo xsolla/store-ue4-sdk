@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.2] - 2021-04-12
+
+### Changed
+- Monor settings improvements.
+
+## [0.6.1] - 2021-03-31
+
+### Changed
+- Web request analytics logic.
+
 ## [0.6.0] - 2021-03-29
 
 ### Added
