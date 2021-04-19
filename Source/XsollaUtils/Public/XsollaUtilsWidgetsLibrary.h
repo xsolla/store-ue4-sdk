@@ -17,8 +17,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
 	TSubclassOf<UUserWidget> GetWidget(const FString& WidgetName) const;
 
-public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
 	TMap<FString, TSubclassOf<UUserWidget>> Widgets;
 };
