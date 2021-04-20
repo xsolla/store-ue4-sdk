@@ -78,31 +78,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
 	FString ClientID;
 
-	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	bool UseCrossPlatformAccountLinking;
-
-	/**
-	 * URL used to link the user platform account to the main account with a generated code.
-	 * The main account is the Xsolla Login project which other Xsolla Login projects (platform accounts) are linked to.
-	 * Main and platform accounts are created in Publisher Account.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
-	FString AccountLinkingURL;
-
-	/** URL used for a target platform user account authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
-	FString PlatformAuthenticationURL;
-
-	/** Target platform for cross-platform account linking. If using Xsolla Store, make sure that in the Store settings the same platform is chosen. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
-	EXsollaTargetPlatform Platform;
-
-	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings",
-		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla && !bCustomAuthViaAccessToken"))
-	FString PlatformAccountID;
-
 	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool EncryptCachedCredentials;
@@ -119,6 +94,31 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	FString DemoLoginID;
 
+	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	bool UseCrossPlatformAccountLinking;
+
+	/**
+	 * URL used to link the user platform account to the main account with a generated code.
+	 * The main account is the Xsolla Login project which other Xsolla Login projects (platform accounts) are linked to.
+	 * Main and platform accounts are created in Publisher Account.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	FString AccountLinkingURL;
+
+	/** URL used for a target platform user account authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	FString PlatformAuthenticationURL;
+
+	/** Target platform for cross-platform account linking. If using Xsolla Store, make sure that in the Store settings the same platform is chosen. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	EXsollaTargetPlatform Platform;
+
+	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo",
+		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla && !bCustomAuthViaAccessToken"))
+	FString PlatformAccountID;
+
 	/** Request user nickname after successful authorization in case one is missing */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool RequestNickname;
@@ -130,7 +130,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla Login Demo")
 	void SetupDefaultDemoSettings();
 
-	/** If enabled, Inventory SDK will user auth via access token */ 
+	/** If enabled, Inventory SDK will user auth via access token */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Custom Auth")
 	bool bCustomAuthViaAccessToken;
 
