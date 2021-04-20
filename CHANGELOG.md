@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.3] - 2021-04-23
+
+### Added
+- Widgets manager.
+
+### Fixed
+- Battlepass warnings.
+- Account linking for Playstation platform.
+- Demo errors when using custom authentication system.
+
 ## [0.6.2] - 2021-04-12
 
 ### Changed
