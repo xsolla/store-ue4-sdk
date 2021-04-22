@@ -1848,7 +1848,7 @@ FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platf
 	switch (Platform)
 	{
 	case EXsollaTargetPlatform::PlaystationNetwork:
-		platform = TEXT("playstation");
+		platform = TEXT("playstation_network");
 		break;
 
 	case EXsollaTargetPlatform::XboxLive:
