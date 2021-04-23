@@ -9,6 +9,7 @@
 - Battlepass warnings.
 - Account linking for Playstation platform.
 - Demo errors when using custom authentication system.
+- Google authentication via embedded browser.
 
 ## [0.6.2] - 2021-04-12
 
