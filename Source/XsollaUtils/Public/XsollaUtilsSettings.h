@@ -6,6 +6,7 @@
 
 #include "XsollaUtilsDataModel.h"
 #include "XsollaUtilsTheme.h"
+#include "XsollaUtilsWidgetsLibrary.h"
 
 #include "XsollaUtilsSettings.generated.h"
 
@@ -19,4 +20,8 @@ public:
 	/** Interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Utils Settings")
 	TSubclassOf<UXsollaUtilsTheme> InterfaceTheme;
+
+	/* Widgets library. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Utils Settings")
+	TSubclassOf<UXsollaUtilsWidgetsLibrary> WidgetsLibrary;
 };
