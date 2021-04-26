@@ -15,7 +15,8 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");
 	InvalidateExistingSessions = false;
-	UseOAuth2 = false;
+	UseOAuth2 = true;
+	ClientID = TEXT("57");
 	UseCrossPlatformAccountLinking = false;
 	DemoProjectID = TEXT("77640");
 	DemoLoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
