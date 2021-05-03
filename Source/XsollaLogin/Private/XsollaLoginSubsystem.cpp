@@ -154,7 +154,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Userna
 	}
 }
 
-void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password,
+void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password, const FString& Payload,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
@@ -179,7 +179,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	}
 	else
 	{
-		AuthenticateUserJWT(Username, Password, bRememberMe, SuccessCallback, ErrorCallback);
+		AuthenticateUserJWT(Username, Password, Payload, bRememberMe, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -929,7 +929,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRememberMe,
+void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -945,11 +945,12 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
-	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s&with_logout=%s"),
+	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s&with_logout=%s&payload=%s"),
 		*Endpoint,
 		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
-		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"),
+		*Payload);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -1499,7 +1500,7 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 }
 
 void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{	
+{
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
@@ -1521,7 +1522,7 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 			}
 
 			OutError.description = FString::Printf(TEXT("No field '%s' found"), *PhoneFieldName);
-		}		
+		}
 	}
 
 	HandleRequestError(OutError, ErrorCallback);

@@ -60,9 +60,9 @@ public:
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
 	 * @param Email Email. Required.
+	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to the specified email.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
@@ -83,12 +83,13 @@ public:
 	 *
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim.
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticateUser(const FString& Username, const FString& Password,
+	void AuthenticateUser(const FString& Username, const FString& Password, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
 
 	/** Reset User Password
@@ -518,7 +519,7 @@ protected:
 	void ResendAccountConfirmationEmailJWT(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthenticateUserJWT(const FString& Username, const FString& Password, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
