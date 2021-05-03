@@ -295,6 +295,7 @@ public:
 	*
 	* @param AuthToken Access token received from a social network
 	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
+	* @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
 	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
 	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
@@ -302,7 +303,7 @@ public:
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret,
+	void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 		const FString& ProviderName, const FString& Payload, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -536,8 +537,10 @@ protected:
 	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& Payload,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& State,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);

@@ -540,7 +540,7 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 }
 
 void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
-	const FString& AuthToken, const FString& AuthTokenSecret,
+	const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 	const FString& ProviderName, const FString& Payload, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
@@ -555,11 +555,11 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 
 	if (Settings->UseOAuth2)
 	{
-		AuthViaAccessTokenOfSocialNetworkOAuth(AuthToken, AuthTokenSecret, ProviderName, State, SuccessCallback, ErrorCallback);
+		AuthViaAccessTokenOfSocialNetworkOAuth(AuthToken, AuthTokenSecret, OpenId, ProviderName, State, SuccessCallback, ErrorCallback);
 	}
 	else
 	{
-		AuthViaAccessTokenOfSocialNetworkJWT(AuthToken, AuthTokenSecret, ProviderName, Payload, SuccessCallback, ErrorCallback);
+		AuthViaAccessTokenOfSocialNetworkJWT(AuthToken, AuthTokenSecret, OpenId, ProviderName, Payload, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -1057,8 +1057,10 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName,
-	const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(
+	const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
+	const FString& ProviderName, const FString& Payload,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
@@ -1076,6 +1078,10 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& 
 	{
 		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);
 	}
+	if (ProviderName.Compare(TEXT("wechat")))
+	{
+		RequestDataJson->SetStringField(TEXT("openid"), *OpenId);
+	}
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1088,7 +1094,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(const FString& 
 }
 
 void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
-	const FString& AuthToken, const FString& AuthTokenSecret,
+	const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 	const FString& ProviderName, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
@@ -1107,6 +1113,10 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	if (ProviderName.Compare(TEXT("twitter")))
 	{
 		RequestDataJson->SetStringField(TEXT("access_token_secret"), *AuthTokenSecret);
+	}
+	if (ProviderName.Compare(TEXT("wechat")))
+	{
+		RequestDataJson->SetStringField(TEXT("openid"), *OpenId);
 	}
 
 	FString PostContent;
