@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaStoreSubsystem.h"
 
@@ -8,6 +7,7 @@
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
+#include "XsollaUtilsLibrary.h"
 
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
@@ -21,7 +21,6 @@
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
-#include "XsollaUtilsLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -32,7 +31,6 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 		TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 
-	// @TODO https://github.com/xsolla/store-ue4-sdk/issues/68
 	CachedCartCurrency = TEXT("USD");
 }
 
@@ -133,47 +131,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 	const FXsollaParameters CustomParameters,
 	const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	if (!Currency.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("currency"), Currency);
-	if (!Country.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("country"), Country);
-	if (!Locale.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("locale"), Locale);
-
-	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
-
-	FString Theme;
-
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	switch (Settings->PaymentInterfaceTheme)
-	{
-	case EXsollaPaymentUiTheme::Default:
-		Theme = TEXT("default");
-		break;
-
-	case EXsollaPaymentUiTheme::DefaultDark:
-		Theme = TEXT("default_dark");
-		break;
-
-	case EXsollaPaymentUiTheme::Dark:
-		Theme = TEXT("dark");
-		break;
-
-	default:
-		Theme = TEXT("dark");
-	}
-
-	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Theme);
-
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
-	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
-
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
 
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/payment/item/%s"),
 		*ProjectID,
@@ -181,30 +139,17 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+
 	if (Settings->BuildForSteam)
 	{
-		TSharedPtr<FJsonObject> PayloadJsonObject;
-		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
-		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't parse token payload"));
-			return;
-		}
-
-		FString SteamIdUrl;
-		if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
-		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find Steam profile ID in token payload"), *VA_FUNC_LINE);
-			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't find Steam profile ID in token payload"));
-			return;
-		}
-
-		// Extract ID value from user's Steam profile URL
 		FString SteamId;
-		int SteamIdIndex;
-		if (SteamIdUrl.FindLastChar('/', SteamIdIndex))
+		FString OutError;
+
+		if (!GetSteamUserId(AuthToken, SteamId, OutError))
 		{
-			SteamId = SteamIdUrl.RightChop(SteamIdIndex + 1);
+			ErrorCallback.ExecuteIfBound(0, 0, OutError);
+			return;
 		}
 
 		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
@@ -223,47 +168,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
 
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	if (!Currency.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("currency"), Currency);
-	if (!Country.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("country"), Country);
-	if (!Locale.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("locale"), Locale);
-
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
-
-	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-
-	FString Theme;
-
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
-	switch (Settings->PaymentInterfaceTheme)
-	{
-	case EXsollaPaymentUiTheme::Default:
-		Theme = TEXT("default");
-		break;
-
-	case EXsollaPaymentUiTheme::DefaultDark:
-		Theme = TEXT("default_dark");
-		break;
-
-	case EXsollaPaymentUiTheme::Dark:
-		Theme = TEXT("dark");
-		break;
-
-	default:
-		Theme = TEXT("dark");
-	}
-
-	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Theme);
-
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
-	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
-
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
 
 	FString Url;
 	if (CartId.IsEmpty())
@@ -280,30 +185,17 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+
 	if (Settings->BuildForSteam)
 	{
-		TSharedPtr<FJsonObject> PayloadJsonObject;
-		if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
-		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't parse token payload"));
-			return;
-		}
-
-		FString SteamIdUrl;
-		if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
-		{
-			UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find Steam profile ID in token payload"), *VA_FUNC_LINE);
-			ErrorCallback.ExecuteIfBound(0, 0, TEXT("Can't find Steam profile ID in token payload"));
-			return;
-		}
-
-		// Extract ID value from user's Steam profile URL
 		FString SteamId;
-		int SteamIdIndex;
-		if (SteamIdUrl.FindLastChar('/', SteamIdIndex))
+		FString OutError;
+
+		if (!GetSteamUserId(AuthToken, SteamId, OutError))
 		{
-			SteamId = SteamIdUrl.RightChop(SteamIdIndex + 1);
+			ErrorCallback.ExecuteIfBound(0, 0, OutError);
+			return;
 		}
 
 		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
@@ -657,7 +549,8 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode, const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
+	const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/promocode/code/%s/rewards"),
 		*ProjectID,
@@ -669,7 +562,8 @@ void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode, const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
+	const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/promocode/redeem"), *ProjectID);
 
@@ -962,8 +856,8 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 }
 
 void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-	FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
@@ -992,8 +886,8 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 }
 
 void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-	FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
@@ -1061,7 +955,9 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
@@ -1076,7 +972,9 @@ void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(FHttpRequest
 	}
 }
 
-void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
+void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
@@ -1093,7 +991,8 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(FHttpRequestPtr 
 
 void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback)
 {
-	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
+	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
+		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
 	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 }
 
@@ -1193,6 +1092,66 @@ void UXsollaStoreSubsystem::ProcessNextCartRequest()
 	}
 }
 
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(
+	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters)
+{
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+
+	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+
+	// General
+	if (!Currency.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("currency"), Currency);
+	if (!Country.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("country"), Country);
+	if (!Locale.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("locale"), Locale);
+
+	// Sandbox
+	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+
+	// Custom parameters
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
+
+	// PayStation settings
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
+
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"),
+		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiTheme", Settings->PaymentInterfaceTheme));
+	PaymentUiSettingsJson->SetStringField(TEXT("size"),
+		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiSize", Settings->PaymentInterfaceSize));
+
+	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
+		PaymentUiSettingsJson->SetStringField(TEXT("version"),
+			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiVersion", Settings->PaymentInterfaceVersion));
+
+	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	if (Settings->OverrideRedirectPolicy)
+	{
+		if (!Settings->ReturnUrl.IsEmpty())
+			PaymentSettingsJson->SetStringField(TEXT("return_url"), Settings->ReturnUrl);
+
+		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
+
+		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
+			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", Settings->RedirectCondition));
+		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
+			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", Settings->RedirectStatusManual));
+
+		RedirectSettingsJson->SetNumberField(TEXT("delay"), Settings->RedirectDelay);
+		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), Settings->RedirectButtonCaption);
+
+		PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
+	}
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+
+	return RequestDataJson;
+}
+
 FString UXsollaStoreSubsystem::GetPublishingPlatformName()
 {
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
@@ -1255,10 +1214,38 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName()
 		break;
 
 	default:
-		platform = TEXT("");
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: There is no default publishing platform value"), *VA_FUNC_LINE);
 	}
 
 	return platform;
+}
+
+bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
+{
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
+	{
+		OutError = TEXT("Can't parse token payload");
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
+		return false;
+	}
+
+	FString SteamIdUrl;
+	if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
+	{
+		OutError = TEXT("Can't find Steam profile ID in token payload");
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
+		return false;
+	}
+
+	// Extract ID value from user's Steam profile URL
+	int SteamIdIndex;
+	if (SteamIdUrl.FindLastChar('/', SteamIdIndex))
+	{
+		SteamId = SteamIdUrl.RightChop(SteamIdIndex + 1);
+	}
+
+	return true;
 }
 
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItems(const FString& GroupFilter) const
@@ -1382,9 +1369,8 @@ FVirtualCurrencyPackage UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(c
 {
 	FVirtualCurrencyPackage Package;
 	bHasFound = false;
-	
-	const auto PackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem)
-	{
+
+	const auto PackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem) {
 		return InItem.sku == ItemSku;
 	});
 

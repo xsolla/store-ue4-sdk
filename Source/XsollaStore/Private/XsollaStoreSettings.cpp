@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaStoreSettings.h"
 
@@ -17,5 +16,13 @@ void UXsollaStoreSettings::SetupDefaultDemoSettings()
 	BuildForSteam = false;
 	UseCrossPlatformAccountLinking = false;
 	DemoProjectID = TEXT("77640");
-	PaymentInterfaceTheme = EXsollaPaymentUiTheme::Dark;
+	PaymentInterfaceTheme = EXsollaPaymentUiTheme::dark;
+	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
+	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
+	OverrideRedirectPolicy = false;
+	ReturnUrl = TEXT("");
+	RedirectCondition = EXsollaPaymentRedirectCondition::none;
+	RedirectDelay = 0;
+	RedirectStatusManual = EXsollaPaymentRedirectStatusManual::none;
+	RedirectButtonCaption = TEXT("");
 }

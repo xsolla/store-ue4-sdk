@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
 
@@ -395,8 +394,14 @@ private:
 	/** Try to execute next request in queue */
 	void ProcessNextCartRequest();
 
+	/** Prepare payload for payment token request */
+	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters);
+
 	/** Get name of publishing platform */
 	FString GetPublishingPlatformName();
+
+	/** Extract Steam user ID from auth token */
+	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
 	/** Queue to store cart change requests */
 	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
@@ -429,7 +434,7 @@ public:
 	/** Gets cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	FStoreCart GetCart() const;
-	
+
 	/** Gets the pending PayStation URL to be opened in browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetPendingPaystationUrl() const;
@@ -488,7 +493,7 @@ protected:
 	/** Cached cart identifier (used for silent cart update) */
 	FString CachedCartId;
 
-	/** Pending paystation url to be opened in browser */
+	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
 
 	UUserWidget* MyBrowser;
