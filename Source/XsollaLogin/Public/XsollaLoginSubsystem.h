@@ -83,7 +83,7 @@ public:
 	 *
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
-	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
@@ -182,13 +182,16 @@ public:
 	 *
 	 * @param ProviderName Platform on which session ticket was obtained.
 	 * @param SessionTicket Session ticket.
+	 * @param Code Code received from the platform.
 	 * @param AppId Platform application identifier.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	 * @param SuccessCallback Callback function called after successful user authentication with a platform session ticket. Authentication data including a JWT will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FString& State,
+	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& Code,
+		const FString& AppId, const FString& State, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Attributes
@@ -290,7 +293,7 @@ public:
 	* @param AuthToken Access token received from a social network
 	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
 	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
-	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim.
+	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
 	* @param SuccessCallback Callback function called after successful user authentication on the specified platform.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
@@ -525,9 +528,9 @@ protected:
 	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket,
+	void AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& State,
+	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& ProviderName, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);

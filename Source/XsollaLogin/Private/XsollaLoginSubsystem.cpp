@@ -362,18 +362,19 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& AppId, const FString& State,
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& Code,
+	const FString& AppId, const FString& State, const FString& Payload,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	if (Settings->UseOAuth2)
 	{
-		AuthenticateWithSessionTicketOAuth(ProviderName, AppId, SessionTicket, State, SuccessCallback, ErrorCallback);
+		AuthenticateWithSessionTicketOAuth(ProviderName, AppId, SessionTicket, Code, State, SuccessCallback, ErrorCallback);
 	}
 	else
 	{
-		AuthenticateWithSessionTicketJWT(ProviderName, AppId, SessionTicket, SuccessCallback, ErrorCallback);
+		AuthenticateWithSessionTicketJWT(ProviderName, AppId, SessionTicket, Code, Payload, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -1012,37 +1013,43 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket,
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId,
+	const FString& SessionTicket, const FString& Code, const FString& Payload,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/%s/cross_auth?projectId=%s&app_id=%s&session_ticket=%s&is_redirect=false&with_logout=%s"),
+	const FString Url = FString::Printf(TEXT("%s/%s/cross_auth?projectId=%s&app_id=%s&session_ticket=%s&is_redirect=false&with_logout=%s&payload=%s&login_url=%s&code=%s"),
 		*CrossAuthEndpoint,
 		*ProviderName,
 		*LoginID,
 		*AppId,
 		*SessionTicket,
-		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"),
+		*Payload,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		*Code);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& State,
+void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId,
+	const FString& SessionTicket, const FString& Code, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/social/%s/cross_auth?client_id=%s&response_type=code&redirect_uri=%s&state=%s&app_id=%s&scope=offline&session_ticket=%s&is_redirect=false"),
+	const FString Url = FString::Printf(TEXT("%s/social/%s/cross_auth?client_id=%s&response_type=code&redirect_uri=%s&state=%s&app_id=%s&scope=offline&session_ticket=%s&is_redirect=false&code=%s"),
 		*LoginEndpointOAuth,
 		*ProviderName,
 		*Settings->ClientID,
 		*BlankRedirectEndpoint,
 		*State,
 		*AppId,
-		*SessionTicket);
+		*SessionTicket,
+		*Code);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
