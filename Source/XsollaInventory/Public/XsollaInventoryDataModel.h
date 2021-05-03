@@ -148,6 +148,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString sku;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Balance")
+	FString type;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Virtual Currency Balance")
 	FString name;
 
@@ -194,13 +197,13 @@ public:
 	FString type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	FString virtual_item_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
 	FString image_url;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
-	FString Class;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
 	int64 expired_at;
