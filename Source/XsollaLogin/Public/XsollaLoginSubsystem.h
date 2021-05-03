@@ -413,10 +413,12 @@ public:
 	 * @param SortOrder Condition for sorting users (ascending / descending).
 	 * @param SuccessCallback Callback function called after successful user friends data local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param After Parameter that is used for API pagination.
+	 * @param Limit Maximum number of friends that can be received at a time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
-		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, int Limit = 20);
+		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, const int Limit = 20);
 
 	/** Modify Friends
 	 * Modifies relationships with the specified user.
