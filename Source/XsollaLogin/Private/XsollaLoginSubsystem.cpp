@@ -323,6 +323,7 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("refresh_token"));
 	RequestDataJson->SetStringField(TEXT("refresh_token"), RefreshToken);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
