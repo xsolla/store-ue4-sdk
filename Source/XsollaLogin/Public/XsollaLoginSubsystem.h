@@ -114,12 +114,15 @@ public:
 	 * Gets URL for authentication via the specified social network.
 	 *
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
+	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload,
+		const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Launch social authentication
 	 * Opens social authentication URL in the browser.
@@ -525,7 +528,7 @@ protected:
 	void AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FString& Payload, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& Payload,

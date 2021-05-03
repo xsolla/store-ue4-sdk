@@ -222,7 +222,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State,
+void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload,
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
@@ -233,7 +233,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	}
 	else
 	{
-		GetSocialAuthenticationUrlJWT(ProviderName, SuccessCallback, ErrorCallback);
+		GetSocialAuthenticationUrlJWT(ProviderName, Payload, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -980,16 +980,17 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FString& Payload, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s&with_logout=%s"),
+	const FString Url = FString::Printf(TEXT("%s/%s/login_url?projectId=%s&login_url=%s&with_logout=%s&payload=%s"),
 		*LoginSocialEndpoint,
 		*ProviderName,
 		*LoginID,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
-		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"));
+		Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"),
+		*Payload);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
