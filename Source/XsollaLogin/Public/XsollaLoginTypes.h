@@ -194,6 +194,9 @@ struct FXsollaUserDetails
 	FString id;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
+	bool is_anonymous;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Details")
 	FString last_login;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Details")
@@ -219,6 +222,11 @@ struct FXsollaUserDetails
 
 	UPROPERTY(BlueprintReadWrite, Category = "Friend Details")
 	FString presence;
+
+	FXsollaUserDetails()
+		: is_anonymous(false)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -284,6 +292,9 @@ struct FXsollaSocialFriend
 
 	UPROPERTY(BlueprintReadWrite, Category = "Social Friend")
 	FString platform;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Social Friend")
+	FString tag;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Social Friend")
 	FString user_id;

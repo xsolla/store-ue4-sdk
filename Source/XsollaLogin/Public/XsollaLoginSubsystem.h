@@ -416,7 +416,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
-		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, int Limit = 20);
 
 	/** Modify Friends
 	 * Modifies relationships with the specified user.
