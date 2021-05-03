@@ -141,7 +141,8 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	}
 }
 
-void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -151,7 +152,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Userna
 	}
 	else
 	{
-		ResendAccountConfirmationEmailJWT(Username, SuccessCallback, ErrorCallback);
+		ResendAccountConfirmationEmailJWT(Username, Payload, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -894,7 +895,8 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Username, const FString& Payload,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -907,10 +909,11 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
-	const FString Url = FString::Printf(TEXT("%s/resend_confirmation_link?projectId=%s&login_url=%s"),
+	const FString Url = FString::Printf(TEXT("%s/resend_confirmation_link?projectId=%s&login_url=%s&payload=%s"),
 		*Endpoint,
 		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		*Payload);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
