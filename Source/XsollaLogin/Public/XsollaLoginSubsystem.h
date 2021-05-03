@@ -61,11 +61,16 @@ public:
 	 * @param Password Password. Required.
 	 * @param Email Email. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param PersonalDataProcessingConsent Whether the user gave consent to processing of their personal data.
+	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
+	 * @param AdditionalFields Parameters used for extended registration forms.
 	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to the specified email.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
+		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Resend Account Confirmation Email
@@ -518,9 +523,11 @@ public:
 	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
-	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email,
+	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
+		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void ResendAccountConfirmationEmailJWT(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);

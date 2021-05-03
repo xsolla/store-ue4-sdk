@@ -118,7 +118,8 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 #endif
 }
 
-void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
+	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
@@ -132,11 +133,11 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 
 	if (Settings->UseOAuth2)
 	{
-		RegisterUserOAuth(Username, Password, Email, State, SuccessCallback, ErrorCallback);
+		RegisterUserOAuth(Username, Password, Email, State, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
 	else
 	{
-		RegisterUserJWT(Username, Password, Email, SuccessCallback, ErrorCallback);
+		RegisterUserJWT(Username, Password, Email, Payload, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
 }
 
@@ -830,7 +831,8 @@ void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email,
+void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
+	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -838,6 +840,9 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 	RequestDataJson->SetStringField(TEXT("username"), Username);
 	RequestDataJson->SetStringField(TEXT("password"), Password);
 	RequestDataJson->SetStringField(TEXT("email"), Email);
+	RequestDataJson->SetBoolField(TEXT("accept_consent"), PersonalDataProcessingConsent);
+	RequestDataJson->SetNumberField(TEXT("promo_email_agreement"), ReceiveNewsConsent ? 1 : 0);
+	SetStringArrayField(RequestDataJson, TEXT("fields"), AdditionalFields);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -846,10 +851,11 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
-	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
+	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s&payload=%s"),
 		*Endpoint,
 		*LoginID,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL),
+		*Payload);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -857,6 +863,7 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 }
 
 void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -864,6 +871,9 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	RequestDataJson->SetStringField(TEXT("username"), Username);
 	RequestDataJson->SetStringField(TEXT("password"), Password);
 	RequestDataJson->SetStringField(TEXT("email"), Email);
+	RequestDataJson->SetBoolField(TEXT("accept_consent"), PersonalDataProcessingConsent);
+	RequestDataJson->SetNumberField(TEXT("promo_email_agreement"), ReceiveNewsConsent ? 1 : 0);
+	SetStringArrayField(RequestDataJson, TEXT("fields"), AdditionalFields);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
