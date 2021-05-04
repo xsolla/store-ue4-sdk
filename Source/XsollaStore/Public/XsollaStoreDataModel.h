@@ -380,10 +380,22 @@ struct XSOLLASTORE_API FStoreCartItem
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString virtual_item_type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	bool is_free;
@@ -399,6 +411,9 @@ struct XSOLLASTORE_API FStoreCartItem
 
 	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FXsollaItemOptions inventory_options;
 
 public:
 	FStoreCartItem()

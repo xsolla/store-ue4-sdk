@@ -55,6 +55,8 @@ public:
 	 * Updates the list of virtual items available for the configured project (cached locally).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -81,6 +83,8 @@ public:
 	 * Updates the list of virtual currencies (cached locally).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -94,6 +98,8 @@ public:
 	 * Updates the list of virtual currency packages (cached locally).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -108,7 +114,8 @@ public:
 	 *
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'purchase_limit', 'promotion', 'order', and 'long_description'.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -193,11 +200,14 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart to be updated. The current user cart will be updated if empty.
+	 * @param Currency The currency which prices are displayed in (USDD by default). Three-letter currency code per ISO 4217.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after local cache of cart items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateCart(const FString& AuthToken, const FString& CartId,
+		const FString& Currency, const FString& Locale,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Add to Cart
@@ -255,12 +265,16 @@ public:
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	* @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	* @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	* @param SuccessCallback Callback function called after cart is successfully filled .
 	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Limit Limit for the number of elements on the page.
+	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateBundles(const FString& Locale,
-		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Virtual Currency
 	 * Gets virtual currency with specified SKU.
@@ -501,6 +515,9 @@ protected:
 
 	/** Cached cart identifier (used for silent cart update) */
 	FString CachedCartId;
+
+	/** Cached cart locale (used for silent cart update) */
+	FString CachedCartLocale;
 
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;

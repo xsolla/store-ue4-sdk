@@ -30,8 +30,6 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(
 		TEXT("/Xsolla/Store/Components/W_StoreBrowser.W_StoreBrowser_C"));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
-
-	CachedCartCurrency = TEXT("USD");
 }
 
 void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -60,16 +58,16 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 
 void UXsollaStoreSubsystem::UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
-{	
+{
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?locale=%s&country=%s%s&offset=%d&limit=%d"),
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_items?locale=%s&country=%s%s&limit=%d&offset=%d"),
 		*ProjectID,
 		*UsedLocale,
 		*Country,
 		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString,
-		Offset,
-		Limit);
+		Limit,
+		Offset);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -81,11 +79,11 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s&offset=%d&limit=%d"),
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/groups?locale=%s&limit=%d&offset=%d"),
 		*ProjectID,
 		*UsedLocale,
-		Offset,
-		Limit);
+		Limit,
+		Offset);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -98,13 +96,13 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency?locale=%s&country=%s%s&offset=%d&limit=%d"),
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency?locale=%s&country=%s%s&limit=%d&offset=%d"),
 		*ProjectID,
 		*UsedLocale,
 		*Country,
 		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString,
-		Offset, 
-		Limit);
+		Limit,
+		Offset);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -117,13 +115,13 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FString& Locale,
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package?locale=%s&country=%s%s&offset=%d&limit=%d"),
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package?locale=%s&country=%s%s&limit=%d&offset=%d"),
 		*ProjectID,
 		*UsedLocale,
 		*Country,
 		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString,
-		Offset,
-		Limit);
+		Limit,
+		Offset);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -325,22 +323,30 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 }
 
 void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& CartId,
+	const FString& Currency, const FString& Locale,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
+	CachedCartCurrency = Currency;
+	CachedCartLocale = Locale;
 
+	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 	FString Url;
 	if (CartId.IsEmpty())
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart"),
-			*ProjectID);
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart?currency=%s&locale=%s"),
+			*ProjectID,
+			*Currency,
+			*UsedLocale);
 	}
 	else
 	{
-		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s"),
+		Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/cart/%s?currency=%s&locale=%s"),
 			*ProjectID,
-			*Cart.cart_id);
+			*Cart.cart_id,
+			*Currency,
+			*UsedLocale);
 	}
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
@@ -515,10 +521,18 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/bundle?locale=%s"), *ProjectID, *UsedLocale);
+	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/bundle?locale=%s&country=%s%s&limit=%d&offset=%d"),
+		*ProjectID,
+		*UsedLocale,
+		*Country,
+		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString,
+		Limit,
+		Offset);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -842,7 +856,7 @@ void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 	}
 	else
 	{
-		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
+		UpdateCart(CachedAuthToken, CachedCartId, CachedCartCurrency, CachedCartLocale, SuccessCallback, ErrorCallback);
 		HandleRequestError(OutError, ErrorCallback);
 	}
 }
@@ -860,7 +874,7 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	}
 	else
 	{
-		UpdateCart(CachedAuthToken, CachedCartId, SuccessCallback, ErrorCallback);
+		UpdateCart(CachedAuthToken, CachedCartId, CachedCartCurrency, CachedCartLocale, SuccessCallback, ErrorCallback);
 		HandleRequestError(OutError, ErrorCallback);
 	}
 }
