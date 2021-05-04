@@ -280,22 +280,30 @@ public:
 	 * Gets virtual currency with specified SKU.
 	 *
 	 * @param CurrencySKU Desired currency SKU
+	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU,
+		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Virtual Currency Package
 	 * Gets virtual currency package with specified SKU.
 	 *
 	 * @param PackageSKU Desired currency package SKU
+	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU,
+		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Buy Item with Virtual Currency

@@ -541,11 +541,17 @@ void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FString& 
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
+	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/sku/%s"),
+	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
+	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/sku/%s?locale=%s&country=%s%s"),
 		*ProjectID,
-		*CurrencySKU);
+		*CurrencySKU,
+		*UsedLocale,
+		*Country,
+		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -554,11 +560,17 @@ void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
+	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package/sku/%s"),
+	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
+	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
+	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency/package/sku/%s?locale=%s&country=%s%s"),
 		*ProjectID,
-		*PackageSKU);
+		*PackageSKU,
+		*UsedLocale,
+		*Country,
+		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
