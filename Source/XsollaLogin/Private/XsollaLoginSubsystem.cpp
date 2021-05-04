@@ -283,32 +283,6 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #endif
 }
 
-void UXsollaLoginSubsystem::AuthenticateViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
-	const FOnAuthenticateViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("access_token"), AuthToken);
-
-	FString PostContent;
-	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/cross/%s/login?client_id=%s&scope=%s"),
-		*LoginEndpointOAuth,
-		*PlatformProviderProject,
-		*Settings->ClientID,
-		*Scope);
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
-	HttpRequest->SetContentAsString(EncodeFormData(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
 void UXsollaLoginSubsystem::SetToken(const FString& Token)
 {
 	LoginData.AuthToken.JWT = Token;
@@ -1360,28 +1334,6 @@ void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequ
 	}
 
 	HandleRequestError(OutError, ErrorCallback);
-}
-
-void UXsollaLoginSubsystem::AuthenticateViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-	FOnAuthenticateViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{
-	XsollaHttpRequestError OutError;
-	FXsollaProviderToken ProviderToken;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaProviderToken::StaticStruct(), &ProviderToken, OutError))
-	{
-		LoginData.AuthToken.JWT = ProviderToken.access_token;
-		LoginData.AuthToken.RefreshToken = ProviderToken.refresh_token;
-		LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + ProviderToken.expires_in;
-
-		SaveData();
-
-		SuccessCallback.ExecuteIfBound(ProviderToken);
-	}
-	else
-	{
-		HandleRequestError(OutError, ErrorCallback);
-	}
 }
 
 void UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,

@@ -29,7 +29,6 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSocialFriendsUpdate, const FXsollaSocia
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicProfile&, UserProfile);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthenticateViaProviderProjectSuccess, const FXsollaProviderToken&, ProviderToken);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
@@ -153,19 +152,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
-
-	/** Authentication Via Provider Project
-	* Calls to exchange the provider JWT with the client JWT.
-	*
-	* @param AuthToken User authorization token.
-	* @param PlatformProviderProject Name of a social network. Provider must be connected to Login in Publisher Account. Required.
-	* @param Scope Scope is a mechanism in OAuth 2.0 to limit an application's access to a user's account. Can be "email", "offline", "playfab", or you own, if you pass you own scope then the Xsolla Login server doesn't process these values, but returns them in the received JWT. 
-	* @param SuccessCallback Callback function called after URL for social authentication was successfully received.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void AuthenticateViaProviderProject(const FString& AuthToken, const FString& PlatformProviderProject, const FString& Scope,
-		const FOnAuthenticateViaProviderProjectSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -576,8 +562,6 @@ protected:
 		FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthenticateViaProviderProject_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-		FOnAuthenticateViaProviderProjectSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,

@@ -115,6 +115,21 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaConsumable
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Consumable")
+	int32 usages_count;
+
+public:
+	FXsollaConsumable()
+		: usages_count(0)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLAUTILS_API FXsollaExpirationPeriod
 {
 	GENERATED_BODY()
@@ -134,6 +149,9 @@ USTRUCT(BlueprintType)
 struct XSOLLAUTILS_API FXsollaItemOptions
 {
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Options")
+	FXsollaConsumable consumable;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Options")
 	FXsollaExpirationPeriod expiration_period;
