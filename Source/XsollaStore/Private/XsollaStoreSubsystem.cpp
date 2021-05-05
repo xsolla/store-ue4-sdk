@@ -763,33 +763,37 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
 {
-	TSharedPtr<FJsonObject> JsonObject;
+	FXsollaOrder Order;
 	XsollaHttpRequestError OutError;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaOrder::StaticStruct(), &Order, OutError))
 	{
-		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-		FString Status = JsonObject->GetStringField(TEXT("status"));
+		FString OrderStatusStr = Order.status;
+
 		EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
 
-		if (Status == TEXT("new"))
+		if (OrderStatusStr == TEXT("new"))
 		{
 			OrderStatus = EXsollaOrderStatus::New;
 		}
-		else if (Status == TEXT("paid"))
+		else if (OrderStatusStr == TEXT("paid"))
 		{
 			OrderStatus = EXsollaOrderStatus::Paid;
 		}
-		else if (Status == TEXT("done"))
+		else if (OrderStatusStr == TEXT("done"))
 		{
 			OrderStatus = EXsollaOrderStatus::Done;
 		}
+		else if (OrderStatusStr == TEXT("canceled"))
+		{
+			OrderStatus = EXsollaOrderStatus::Canceled;
+		}
 		else
 		{
-			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Status, OrderId);
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, Order.order_id);
 		}
 
-		SuccessCallback.ExecuteIfBound(OrderId, OrderStatus);
+		SuccessCallback.ExecuteIfBound(Order.order_id, OrderStatus, Order.content);
 		return;
 	}
 

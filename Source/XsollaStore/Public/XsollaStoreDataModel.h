@@ -14,7 +14,62 @@ enum class EXsollaOrderStatus : uint8
 	Unknown,
 	New,
 	Paid,
-	Done
+	Done,
+	Canceled
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrderItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FXsollaPrice price;
+
+	FXsollaOrderItem()
+		: quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrderContent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FXsollaVirtualCurrencyPrice virtual_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	TArray<FXsollaOrderItem> items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrder
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	int32 order_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	FString status;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	FXsollaOrderContent content;
 };
 
 USTRUCT(BlueprintType)
