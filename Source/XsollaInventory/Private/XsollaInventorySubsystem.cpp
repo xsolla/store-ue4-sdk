@@ -50,10 +50,12 @@ void UXsollaInventorySubsystem::Initialize(const FString& InProjectId)
 }
 
 void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit, const int Offset)
 {
-	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items"),
-		*ProjectID);
+	FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/user/inventory/items?offset=%d&limit=%d"),
+		*ProjectID,
+		Offset,
+		Limit);
 
 	const FString Platform = GetPublishingPlatformName();
 	if (!Platform.IsEmpty())

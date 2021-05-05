@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus, FXsollaOrderContent, OrderContent);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurrencyPackage&, CurrencyPackage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
@@ -54,13 +54,17 @@ public:
 	/** Update Virtual Items
 	 * Updates the list of virtual items available for the configured project (cached locally).
 	 *
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualItems(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Item Groups
 	 * Updates the list of virtual item groups (cached locally).
@@ -68,50 +72,59 @@ public:
 	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after local cache of virtual item groups was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateItemGroups(const FString& Locale, const FOnStoreUpdate& SuccessCallback,
-		const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void UpdateItemGroups(const FString& Locale,
+		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Currencies
 	 * Updates the list of virtual currencies (cached locally).
 	 *
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencies(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Currency Packages
 	 * Updates the list of virtual currency packages (cached locally).
 	 *
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyPackages(const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void UpdateVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Items List By Specified Group
 	 * Gets an items list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
-	 * @param Limit Limit for the number of elements on the page.
-	 * @param Offset Number of the element from which the list is generated (the count start from 0).
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'purchase_limit', 'promotion', 'order', and 'long_description'.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count start from 0).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const int Limit, const int Offset,
-		const FString& Locale, const TArray<FString>& AdditionalFields,
-		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetItemsListBySpecifiedGroup(const FString& ExternalId,
+		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Fetch Payment Token
 	 * Initiates an item purchase session and fetches token for payment console.
@@ -187,11 +200,14 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of cart to be updated. The current user cart will be updated if empty.
+	 * @param Currency The currency which prices are displayed in (USDD by default). Three-letter currency code per ISO 4217.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after local cache of cart items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateCart(const FString& AuthToken, const FString& CartId,
+		const FString& Currency, const FString& Locale,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Add to Cart
@@ -249,33 +265,45 @@ public:
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	* @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	* @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	* @param SuccessCallback Callback function called after cart is successfully filled .
 	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Limit Limit for the number of elements on the page.
+	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateBundles(const FString& Locale,
-		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Virtual Currency
 	 * Gets virtual currency with specified SKU.
 	 *
 	 * @param CurrencySKU Desired currency SKU
+	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU,
+		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Virtual Currency Package
 	 * Gets virtual currency package with specified SKU.
 	 *
 	 * @param PackageSKU Desired currency package SKU
+	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU,
+		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Buy Item with Virtual Currency
@@ -400,6 +428,9 @@ private:
 	/** Get name of publishing platform */
 	FString GetPublishingPlatformName();
 
+	/** Convert list of additional fields to be requested to single string */
+	FString ConvertAdditionalFieldsToString(const TArray<FString>& AdditionalFields);
+
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
@@ -492,6 +523,9 @@ protected:
 
 	/** Cached cart identifier (used for silent cart update) */
 	FString CachedCartId;
+
+	/** Cached cart locale (used for silent cart update) */
+	FString CachedCartLocale;
 
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
