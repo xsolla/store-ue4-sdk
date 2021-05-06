@@ -8,6 +8,7 @@
 
 #include "XsollaStoreSettings.generated.h"
 
+// TEXTREVIEW
 /** User interface size for the payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiSize : uint8
@@ -17,6 +18,7 @@ enum class EXsollaPaymentUiSize : uint8
 	large UMETA(DisplayName = "Large")
 };
 
+// TEXTREVIEW
 /** User interface theme for the payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiTheme : uint8
@@ -26,6 +28,7 @@ enum class EXsollaPaymentUiTheme : uint8
 	dark UMETA(DisplayName = "Dark")
 };
 
+// TEXTREVIEW
 /** Device type used to present payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiVersion : uint8
@@ -35,6 +38,7 @@ enum class EXsollaPaymentUiVersion : uint8
 	mobile UMETA(DisplayName = "Mobile")
 };
 
+// TEXTREVIEW
 /** Payment status triggering user redirect to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectCondition : uint8
@@ -45,6 +49,7 @@ enum class EXsollaPaymentRedirectCondition : uint8
 	any UMETA(DisplayName = "Any")
 };
 
+// TEXTREVIEW
 /** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectStatusManual : uint8
@@ -94,38 +99,47 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Settings")
 	bool BuildForSteam;
 
+	// TEXTREVIEW
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Payments UI")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
+	// TEXTREVIEW
 	/** Payment user interface size (desktop only).*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Payments UI")
 	EXsollaPaymentUiSize PaymentInterfaceSize;
 
+	// TEXTREVIEW
 	/** Device type used to present payment interface. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Payments UI")
 	EXsollaPaymentUiVersion PaymentInterfaceVersion;
 
+	// TEXTREVIEW
 	/** Enable to override default redirect policy for payments. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy")
 	bool OverrideRedirectPolicy;
 
+	// TEXTREVIEW
 	/** Page to redirect user to after payment. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString ReturnUrl;
 
+	// TEXTREVIEW
 	/** Payment status triggering user redirect to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
+	// TEXTREVIEW
 	/** Delay after which user will be automatically redirected to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	int32 RedirectDelay;
 
+	// TEXTREVIEW
 	/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
 
+	// TEXTREVIEW
 	/** Redirect button caption. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString RedirectButtonCaption;

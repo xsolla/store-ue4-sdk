@@ -53,6 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginId);
 
+	// TEXTREVIEW
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
 	 *
@@ -72,6 +73,7 @@ public:
 		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Resend Account Confirmation Email
 	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
 	 *
@@ -85,6 +87,7 @@ public:
 	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Authenticate User
 	 * Authenticates the user by the username and password specified via the authentication interface.
 	 *
@@ -117,6 +120,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Get Social Authentication URL
 	 * Gets URL for authentication via the specified social network.
 	 *
@@ -152,7 +156,8 @@ public:
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
-	void LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
+	void LaunchNativeSocialAuthentication(const FString& ProviderName,
+		const FOnAuthUpdate& SuccessCallback,const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -175,6 +180,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Authenticate With Session Ticket
 	 * Authenticates a user by exchanging platform specific session ticket to token.
 	 *
@@ -285,6 +291,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Auth Via Access Token of Social Network
 	* Authenticates the user with the access token using social network credentials.
 	*

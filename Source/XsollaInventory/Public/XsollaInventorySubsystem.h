@@ -40,14 +40,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	void Initialize(const FString& InProjectId);
 
+	// TEXTREVIEW
 	/** Update List of Purchased Virtual Items
 	 * Updates the list of purchased virtual items (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Limit Limit for the number of elements on the page.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateInventory(const FString& AuthToken,
