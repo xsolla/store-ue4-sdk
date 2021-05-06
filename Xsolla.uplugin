@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 13,
-  "VersionName": "0.6.3",
+  "Version": 14,
+  "VersionName": "0.6.4",
   "EngineVersion": "4.26.0",
   "FriendlyName": "Xsolla SDK",
   "Description": "Xsolla SDK for Unreal Engine 4",
@@ -27,7 +27,8 @@
         "Android",
         "Linux",
         "XboxOne",
-        "PS4"
+        "PS4",
+        "PS5"
       ]
     },
     {
@@ -42,7 +43,8 @@
         "Android",
         "Linux",
         "XboxOne",
-        "PS4"
+        "PS4",
+        "PS5"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "Android",
         "Linux",
         "XboxOne",
-        "PS4"
+        "PS4",
+        "PS5"
       ]
     },
     {
@@ -72,7 +75,8 @@
         "Android",
         "Linux",
         "XboxOne",
-        "PS4"
+        "PS4",
+        "PS5"
       ]
     },
     {
@@ -87,7 +91,8 @@
         "Android",
         "Linux",
         "XboxOne",
-        "PS4"
+        "PS4",
+        "PS5"
       ]
     }
   ],
