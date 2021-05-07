@@ -40,7 +40,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	void Initialize(const FString& InProjectId);
 
-	// TEXTREVIEW
 	/** Update List of Purchased Virtual Items
 	 * Updates the list of purchased virtual items (cached locally).
 	 *

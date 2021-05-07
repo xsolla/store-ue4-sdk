@@ -51,7 +51,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
-	// TEXTREVIEW
 	/** Update Virtual Items
 	 * Updates the list of virtual items available for the configured project (cached locally).
 	 *
@@ -67,7 +66,6 @@ public:
 	void UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// TEXTREVIEW
 	/** Update Item Groups
 	 * Updates the list of virtual item groups (cached locally).
 	 *
@@ -81,7 +79,6 @@ public:
 	void UpdateItemGroups(const FString& Locale,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// TEXTREVIEW
 	/** Update Virtual Currencies
 	 * Updates the list of virtual currencies (cached locally).
 	 *
@@ -97,7 +94,6 @@ public:
 	void UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// TEXTREVIEW
 	/** Update Virtual Currency Packages
 	 * Updates the list of virtual currency packages (cached locally).
 	 *
@@ -113,7 +109,6 @@ public:
 	void UpdateVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// TEXTREVIEW
 	/** Get Items List By Specified Group
 	 * Gets an item list from the specified group for building a catalog.
 	 *
@@ -266,7 +261,6 @@ public:
 	void GetSpecifiedBundle(const FString& Sku,
 		const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Update Bundles
 	* Gets a list of bundles for building a catalog.
 	*
