@@ -29,7 +29,7 @@ enum class EXsollaPaymentUiTheme : uint8
 };
 
 // TEXTREVIEW
-/** Device type used to present payment interface. */
+/** Device type used to display the payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiVersion : uint8
 {
@@ -39,7 +39,7 @@ enum class EXsollaPaymentUiVersion : uint8
 };
 
 // TEXTREVIEW
-/** Payment status triggering user redirect to the return URL. */
+/** Payment status that triggers user redirect to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectCondition : uint8
 {
@@ -50,7 +50,7 @@ enum class EXsollaPaymentRedirectCondition : uint8
 };
 
 // TEXTREVIEW
-/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
+/** Payment status that triggers the display of a button clicking which redirects the user to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectStatusManual : uint8
 {
@@ -120,17 +120,17 @@ public:
 	bool OverrideRedirectPolicy;
 
 	// TEXTREVIEW
-	/** Page to redirect user to after payment. */
+	/** Page to redirect user to after the payment. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString ReturnUrl;
 
 	// TEXTREVIEW
-	/** Payment status triggering user redirect to the return URL. */
+	/** Payment status that triggers user redirect to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
 	// TEXTREVIEW
-	/** Delay after which user will be automatically redirected to the return URL. */
+	/** Delay after which the user will be automatically redirected to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	int32 RedirectDelay;
 
