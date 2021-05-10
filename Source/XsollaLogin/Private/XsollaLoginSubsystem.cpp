@@ -23,6 +23,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsUrlBuilder.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
@@ -857,16 +858,15 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
-	const FString Url = FString::Printf(TEXT("%s/user?response_type=code&client_id=%s&state=%s&redirect_uri=%s"),
-		*LoginEndpointOAuth,
-		*Settings->ClientID,
-		*State,
-		*BlankRedirectEndpoint);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
+	XsollaUtilsUrlBuilder UrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user"));
+	UrlBuilder.AddStringQueryParam(TEXT("client_id"), Settings->ClientID);
+	UrlBuilder.AddStringQueryParam(TEXT("response_type"), TEXT("code"));
+	UrlBuilder.AddStringQueryParam(TEXT("state"), State);
+	UrlBuilder.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint);
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UrlBuilder.Build(), EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }

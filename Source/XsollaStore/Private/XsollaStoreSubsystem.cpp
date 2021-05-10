@@ -8,6 +8,7 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsUrlBuilder.h"
 
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
@@ -95,16 +96,16 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-	const FString AdditionalFieldsString = ConvertAdditionalFieldsToString(AdditionalFields);
-	const FString Url = FString::Printf(TEXT("https://store.xsolla.com/api/v2/project/%s/items/virtual_currency?locale=%s&country=%s%s&limit=%d&offset=%d"),
-		*ProjectID,
-		*UsedLocale,
-		*Country,
-		AdditionalFieldsString.IsEmpty() ? TEXT("") : *AdditionalFieldsString,
-		Limit,
-		Offset);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	XsollaUtilsUrlBuilder UrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"));
+	UrlBuilder.SetPathParam(TEXT("ProjectId"), ProjectID);
+	UrlBuilder.AddStringQueryParam(TEXT("locale"), UsedLocale);
+	UrlBuilder.AddStringQueryParam(TEXT("country"), Country);
+	UrlBuilder.AddStringArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields);
+	UrlBuilder.AddNumberQueryParam(TEXT("limit"), Limit);
+	UrlBuilder.AddNumberQueryParam(TEXT("offset"), Offset);
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UrlBuilder.Build(), EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
