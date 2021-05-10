@@ -1175,7 +1175,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"),
-		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiTheme", Settings->PaymentInterfaceTheme));
+		Settings->PaymentInterfaceTheme != EXsollaPaymentUiTheme::default_light
+			? UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiTheme", Settings->PaymentInterfaceTheme)
+			: TEXT("default"));
 	PaymentUiSettingsJson->SetStringField(TEXT("size"),
 		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiSize", Settings->PaymentInterfaceSize));
 

@@ -21,7 +21,7 @@ enum class EXsollaPaymentUiSize : uint8
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiTheme : uint8
 {
-	default UMETA(DisplayName = "Default"),
+	default_light UMETA(DisplayName = "Default"),
 	default_dark UMETA(DisplayName = "Default Dark"),
 	dark UMETA(DisplayName = "Dark")
 };
