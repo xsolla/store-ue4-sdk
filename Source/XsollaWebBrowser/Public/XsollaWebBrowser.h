@@ -56,6 +56,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
 	void ClearCache() const;
 
+	/**
+	 * Return to previous page.
+	 *
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void GoBack() const;
+
+	/**
+	 * Go to next page.
+	 *
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Web Browser")
+	void GoForward() const;
+
 	/** Called when the URL changes. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Web Browser")
 	FOnUrlChanged OnUrlChanged;

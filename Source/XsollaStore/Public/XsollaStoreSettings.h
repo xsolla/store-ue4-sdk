@@ -21,12 +21,12 @@ enum class EXsollaPaymentUiSize : uint8
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiTheme : uint8
 {
-	default UMETA(DisplayName = "Default"),
+	default_light UMETA(DisplayName = "Default"),
 	default_dark UMETA(DisplayName = "Default Dark"),
 	dark UMETA(DisplayName = "Dark")
 };
 
-/** Device type used to present payment interface. */
+/** Device type used to display the payment interface. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentUiVersion : uint8
 {
@@ -35,7 +35,7 @@ enum class EXsollaPaymentUiVersion : uint8
 	mobile UMETA(DisplayName = "Mobile")
 };
 
-/** Payment status triggering user redirect to the return URL. */
+/** Payment status that triggers user redirect to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectCondition : uint8
 {
@@ -45,7 +45,7 @@ enum class EXsollaPaymentRedirectCondition : uint8
 	any UMETA(DisplayName = "Any")
 };
 
-/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
+/** Payment status that triggers the display of a button clicking which redirects the user to the return URL. */
 UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectStatusManual : uint8
 {
@@ -110,15 +110,15 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy")
 	bool OverrideRedirectPolicy;
 
-	/** Page to redirect user to after payment. */
+	/** Page to redirect user to after the payment. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString ReturnUrl;
 
-	/** Payment status triggering user redirect to the return URL. */
+	/** Payment status that triggers user redirect to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
-	/** Delay after which user will be automatically redirected to the return URL. */
+	/** Delay after which the user will be automatically redirected to the return URL. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Store Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	int32 RedirectDelay;
 

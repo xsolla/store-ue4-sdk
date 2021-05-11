@@ -100,7 +100,7 @@ public:
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
 
 	/** Reset User Password
-	 * Resets the user's password.
+	 * Resets the user password.
 	 *
 	 * @param User User identifier (name or email depending on user data storage type). Required.
 	 * @param SuccessCallback Callback function called after successful user password reset.
@@ -123,35 +123,37 @@ public:
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param AdditionalFields List of parameters which should be requested from the user or social network additionally and written to the token (JWT only).
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload, const TArray<FString>& AdditionalFields,
 		const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Launch social authentication
 	 * Opens social authentication URL in the browser.
 	 *
-	 * @param SocialAuthenticationUrl URL with social network authentication form.
-	 * @param BrowserWidget Widget to represent social network authentication form. Can be set in the project settings.
+	 * @param SocialAuthenticationUrl URL with the social network authentication form.
+	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
 
 	/** Launch native authentication via social network
-	 * Opens specified social network mobile app (if available) in order to authenticate user.
+	 * Opens the specified social network mobile app (if available) in order to authenticate the user.
 	 *
-	 * @param ProviderName  Name of a social network. Provider must be connected to Login in Publisher Account. Required.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account. Required.
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
-	 * @param CancelCallback Callback function called after user authentication was cancelled.
+	 * @param CancelCallback Callback function called after user authentication was canceled.
 	 * @param ErrorCallback Callback function called after user authentication resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
-	void LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
+	void LaunchNativeSocialAuthentication(const FString& ProviderName,
+		const FOnAuthUpdate& SuccessCallback,const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -162,7 +164,7 @@ public:
 
 	/** Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
 	 *
-	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing user with username/password for the first time.
+	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing the user with username/password for the first time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -175,9 +177,9 @@ public:
 	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate With Session Ticket
-	 * Authenticates a user by exchanging platform specific session ticket to token.
+	 * Authenticates a user by exchanging the platform specific session ticket for a token.
 	 *
-	 * @param ProviderName Platform on which session ticket was obtained.
+	 * @param ProviderName Platform on which the session ticket was obtained.
 	 * @param SessionTicket Session ticket.
 	 * @param Code Code received from the platform.
 	 * @param AppId Platform application identifier.
@@ -192,11 +194,11 @@ public:
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Attributes
-	 * Updates locally cached list of user attributes.
+	 * Updates the locally cached list of user attributes.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
-	 * @param AttributeKeys Keys of attributes that should be updated.
+	 * @param AttributeKeys Keys of the attributes that should be updated.
 	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -209,7 +211,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
-	 * @param AttributeKeys Keys of attributes that should be updated.
+	 * @param AttributeKeys Keys of the attributes that should be updated.
 	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -251,7 +253,7 @@ public:
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Check User Age
-	* Checks user’s age for a particular region. The age requirements depend on the region. Service determines the user’s location by the IP address.
+	* Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
 	*
 	* @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
 	* @param SuccessCallback Callback function called after successful check of the user age.
@@ -290,7 +292,7 @@ public:
 	* @param AuthToken Access token received from a social network
 	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
 	* @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
-	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', 'baidu'.
+	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
 	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
 	* @param SuccessCallback Callback function called after successful user authentication on the specified platform.
@@ -315,7 +317,7 @@ public:
 	 * Modifies specified user details.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Birthday User  birth date in format (YYYY-MM-DD). Can be changed only once.
+	 * @param Birthday User birth date in format (YYYY-MM-DD). Can be changed only once.
 	 * @param FirstName User first name. Pass empty string to remove the current first name.
 	 * @param LastName User last name. Pass empty string to remove the current last name.
 	 * @param Gender User gender (f - for female, m - for male).
@@ -352,7 +354,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param PhoneNumber New user phone number.
-	 * @param SuccessCallback Callback function called after user phone number modified successfully.
+	 * @param SuccessCallback Callback function called after user phone number was successfully modified.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -362,8 +364,8 @@ public:
 	 * Removes the user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param PhoneNumber User phone number for removal. If the parameter isn't specified, locally cached phone number will be used instead.
-	 * @param SuccessCallback Callback function called after the user phone number was removed successfully.
+	 * @param PhoneNumber User phone number for removal. If the parameter isn't specified, the locally cached phone number will be used instead.
+	 * @param SuccessCallback Callback function called after the user phone number was successfully removed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -374,7 +376,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Picture New user profile picture.
-	 * @param SuccessCallback Callback function called after the user profile picture was modified successfully.
+	 * @param SuccessCallback Callback function called after the user profile picture was successfully modified.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -384,7 +386,7 @@ public:
 	 * Removes user profile picture.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after user profile picture was removed successfully.
+	 * @param SuccessCallback Callback function called after user profile picture was successfully removed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -395,8 +397,8 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Type Friends type.
-	 * @param SortBy Condition for sorting users (by name / by update).
-	 * @param SortOrder Condition for sorting users (ascending / descending).
+	 * @param SortBy Condition for sorting users (by name/by update).
+	 * @param SortOrder Condition for sorting users (ascending/descending).
 	 * @param SuccessCallback Callback function called after successful user friends data local cache update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param After Parameter that is used for API pagination.
@@ -423,7 +425,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Locale Locale.
-	 * @param SuccessCallback Callback function called after locally cached list of links for social authentication was updated successfully.
+	 * @param SuccessCallback Callback function called after locally cached list of links for social authentication was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -436,7 +438,7 @@ public:
 	 * @param Platform Name of social provider. If empty, friends from all available social providers will be fetched.
 	 * @param SuccessCallback Callback function called after successful update of the user friends data from the social provider local cache.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of the element from which list is generated.
+	 * @param Offset Number of the element from which the list is generated.
 	 * @param Limit Maximum number of friends that can be received at a time.
 	 * @param FromThisGame Flag indicating whether social friends are from this game.
 	 */
@@ -455,11 +457,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Get Access Token By Email 
+	/** Get Access Token By Email
 	 * Get Access token by email from your own backend service.
 	 *
-	 * @param Parameters Parameters for custom auth
-	 * @param SuccessCallback Callback function called after access token received successfully.
+	 * @param Parameters Parameters for custom auth.
+	 * @param SuccessCallback Callback function called after the access token is successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -471,7 +473,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserID User identifier of public profile information to be received.
-	 * @param SuccessCallback Callback function called after user profile data received successfully.
+	 * @param SuccessCallback Callback function called after user profile data was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -482,9 +484,9 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Nickname User nickname used as search criteria.
-	 * @param SuccessCallback Callback function called after user search completed successfully.
+	 * @param SuccessCallback Callback function called after user search is successfully completed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param Offset Number of elements from which list is generated.
+	 * @param Offset Number of elements from which the list is generated.
 	 * @param Limit Maximum number of users that can be received at a time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -527,8 +529,10 @@ protected:
 	void AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FString& Payload, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
-	void GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State, const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FString& Payload, const TArray<FString>& AdditionalFields,
+		const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State,
+		const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void AuthenticateWithSessionTicketJWT(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);

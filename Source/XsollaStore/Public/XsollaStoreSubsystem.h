@@ -43,7 +43,7 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** 
+	/**
 	 * Initializes the controller with the provided Project ID (used to override project settings).
 	 *
 	 * @param InProjectId New Project ID value form Publisher Account > Project settings > Project ID.
@@ -56,7 +56,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -84,7 +84,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -110,12 +110,12 @@ public:
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Items List By Specified Group
-	 * Gets an items list from the specified group for building a catalog.
+	 * Gets an item list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -199,8 +199,8 @@ public:
 	 * Updates cart content (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of cart to be updated. The current user cart will be updated if empty.
-	 * @param Currency The currency which prices are displayed in (USDD by default). Three-letter currency code per ISO 4217.
+	 * @param CartId (optional) Identifier of the cart to be updated. The current user cart will be updated if empty.
+	 * @param Currency The currency in which prices are displayed (USD by default). Three-letter currency code per ISO 4217.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after local cache of cart items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -217,7 +217,7 @@ public:
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
 	 * @param Quantity Amount of items to be added to a cart.
-	 * @param SuccessCallback Callback function called after adding a new item to the cart successfully.
+	 * @param SuccessCallback Callback function called after successfully adding a new item to the cart.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -238,12 +238,12 @@ public:
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Fill Cart By ID
-	 * Fills the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
+	 * Fills out the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of cart which will fill. The current user cart will be filled if empty.
-	 * @param Items Item for fill cart.
-	 * @param SuccessCallback Callback function called after cart filled successfully.
+	 * @param CartId (optional) Identifier of cart which will be filled. The current user cart will be filled if empty.
+	 * @param Items Item for filling the cart.
+	 * @param SuccessCallback Callback function called after cart is successfully filled.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -254,7 +254,7 @@ public:
 	* Gets a specified bundle.
 	*
 	* @param Sku Bundle SKU.
-	* @param SuccessCallback Callback function called after the cart is filled successfully.
+	* @param SuccessCallback Callback function called after the cart is successfully filled.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -264,10 +264,10 @@ public:
 	/** Update Bundles
 	* Gets a list of bundles for building a catalog.
 	*
-	* @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
-	* @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	* @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	* @param SuccessCallback Callback function called after cart is successfully filled .
+	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
+	* @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	* @param SuccessCallback Callback function called after the cart is successfully filled.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
@@ -279,10 +279,10 @@ public:
 	/** Get Virtual Currency
 	 * Gets virtual currency with specified SKU.
 	 *
-	 * @param CurrencySKU Desired currency SKU
-	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param CurrencySKU Desired currency SKU.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -297,7 +297,7 @@ public:
 	 * @param PackageSKU Desired currency package SKU
 	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. This fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -308,7 +308,7 @@ public:
 
 	/** Buy Item with Virtual Currency
 	 * Buys an item using virtual currency.
-	 * 
+	 *
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
 	 * @param CurrencySKU Currency to buy virtual items with.
@@ -320,12 +320,12 @@ public:
 		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Promocode Rewards
-	* Gets promo code rewards by its code. Can be used to allow users to choose one of many items as a bonus.
+	* Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
 	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
-	* 
+	*
 	* @param AuthToken User authorization token.
 	* @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after receiving promocode rewards successfully.
+	* @param SuccessCallback Callback function called after successfully receiving promocode rewards.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -334,9 +334,9 @@ public:
 
 	/** Redeem Promocode
 	* Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
-	* 
+	*
 	* @param AuthToken User authorization token.
-	* @param PromocodeCode Uniques case sensitive code. Contains letters and numbers.
+	* @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
 	* @param SuccessCallback Callback function called after successful promocode redemption.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/

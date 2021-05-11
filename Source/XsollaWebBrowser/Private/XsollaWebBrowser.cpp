@@ -66,6 +66,22 @@ void UXsollaWebBrowser::ClearCache() const
 	}
 }
 
+void UXsollaWebBrowser::GoBack() const
+{
+	if (WebBrowserWidget.IsValid() && WebBrowserWidget->CanGoBack())
+	{
+		return WebBrowserWidget->GoBack();
+	}
+}
+
+void UXsollaWebBrowser::GoForward() const
+{
+	if (WebBrowserWidget.IsValid() && WebBrowserWidget->CanGoForward())
+	{
+		return WebBrowserWidget->GoForward();
+	}
+}
+
 void UXsollaWebBrowser::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
