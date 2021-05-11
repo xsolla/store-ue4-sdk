@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.4] - 2021-05-07
+
+### Added
+- PayStation widget settings.
+- PayStation redirect policy settings.
+- New parameters for API methods.
+
+### Fixed
+- Navigation to external links in embedded browser for PayStation
+- Minor demo issues.
+
 ## [0.6.3] - 2021-04-23
 
 ### Added

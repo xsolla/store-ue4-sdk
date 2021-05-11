@@ -14,7 +14,62 @@ enum class EXsollaOrderStatus : uint8
 	Unknown,
 	New,
 	Paid,
-	Done
+	Done,
+	Canceled
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrderItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Item")
+	FXsollaPrice price;
+
+	FXsollaOrderItem()
+		: quantity(0){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrderContent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FXsollaVirtualCurrencyPrice virtual_price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	FString is_free;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order Content")
+	TArray<FXsollaOrderItem> items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaOrder
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	int32 order_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	FString status;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Order")
+	FXsollaOrderContent content;
 };
 
 USTRUCT(BlueprintType)
@@ -38,13 +93,25 @@ struct XSOLLASTORE_API FStoreBundleContent
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
-	int quantity;
+	int32 quantity;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	FXsollaPrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemMediaList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Media List")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Media List")
+	FString url;
 };
 
 USTRUCT(BlueprintType)
@@ -112,12 +179,22 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item Bundle")
 	TArray<FXsollaItemAttribute> attributes;
 
+	/* Item long description. */
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	FString long_description;
 
+	/* Value that defines arrangement order. */
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	int32 order;
+
+	/* List of additional item assets such as screenshots, gameplay video etc.. */
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	TArray<FStoreItemMediaList> media_list;
+
 public:
 	FStoreItem()
-		: is_free(false){};
+		: is_free(false)
+		, order(0){};
 
 	FStoreItem(const FStoreItem& Item)
 		: sku(Item.sku)
@@ -136,6 +213,8 @@ public:
 		, content(Item.content)
 		, attributes(Item.attributes)
 		, long_description(Item.long_description)
+		, order(Item.order)
+		, media_list(Item.media_list)
 	{
 	}
 
@@ -190,30 +269,44 @@ public:
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FString> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
-	TArray<FXsollaItemAttribute> attributes;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	bool is_free;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
-	int order;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
-	TArray<FString> groups;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	FXsollaPrice price;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FXsollaItemOptions inventory_options;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	int32 order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FStoreItemMediaList> media_list;
+
 public:
 	FVirtualCurrency()
-		: is_free(false)
-		, order(0){};
+		: is_free(false){};
 };
 
 USTRUCT(BlueprintType)
@@ -242,13 +335,19 @@ public:
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
-	int quantity;
+	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package Content")
+	FXsollaItemOptions inventory_options;
 
 public:
 	FVirtualCurrencyPackageContent()
@@ -268,19 +367,25 @@ public:
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
-	bool is_free;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
-	int order;
+	TArray<FXsollaItemAttribute> attributes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString bundle_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	bool is_free;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FXsollaPrice price;
@@ -291,10 +396,18 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	FVirtualCurrencyPackageContent content;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	int32 order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	TArray<FStoreItemMediaList> media_list;
+
 public:
 	FVirtualCurrencyPackage()
-		: is_free(false)
-		, order(0){};
+		: is_free(false){};
 };
 
 USTRUCT(BlueprintType)
@@ -322,10 +435,22 @@ struct XSOLLASTORE_API FStoreCartItem
 	FString name;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FString long_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FString virtual_item_type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	bool is_free;
@@ -341,6 +466,9 @@ struct XSOLLASTORE_API FStoreCartItem
 
 	UPROPERTY(BlueprintReadWrite, Category = "Cart Item")
 	int32 quantity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	FXsollaItemOptions inventory_options;
 
 public:
 	FStoreCartItem()

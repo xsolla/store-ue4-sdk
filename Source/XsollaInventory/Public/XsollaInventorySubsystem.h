@@ -32,7 +32,7 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
-	/** 
+	/**
 	 * Initialize the controller with provided Project ID (use to override project settings)
 	 *
 	 * @param InProjectId New Project ID value form Publisher Account Project settings > Project ID.
@@ -46,10 +46,12 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateInventory(const FString& AuthToken,
-		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Curency Balance
 	 * Updates virtual currency balance (cached locally).
@@ -78,7 +80,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Items quantity. If the item is uncountable, should be zero.
+	 * @param Quantity Item quantity. If the item is uncountable, should be zero.
 	 * @param InstanceID Instance item ID. If the item is countable, should be empty.
 	 * @param SuccessCallback Callback function called after successful inventory item consumption.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -88,11 +90,11 @@ public:
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Get Coupon Rewards
-	 * Gets coupons rewards by its code. Can be used to allow users to choose one of many items as a bonus.
+	 * Gets coupon rewards by its code. Can be used to let users choose one of many items as a bonus.
 	 * The usual case is choosing a DRM if the coupon contains a game as a bonus.
-	 * 
+	 *
 	 * @param AuthToken User authorization token.
-	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
+	 * @param CouponCode Unique case sensitive code. Contains letters and numbers.
 	 * @param SuccessCallback Callback function called after receiving coupon rewards successfully.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -102,10 +104,10 @@ public:
 
 	/** Redeem Coupon
 	 * Redeems a coupon code. The user gets a bonus after a coupon is redeemed.
-	 * 
+	 *
 	 * @param AuthToken User authorization token.
-	 * @param CouponCode Uniques case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successful coupon redeem.
+	 * @param CouponCode Unique case sensitive code. Contains letters and numbers.
+	 * @param SuccessCallback Callback function called after successful coupon redemption.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Coupons", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))

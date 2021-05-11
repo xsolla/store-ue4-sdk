@@ -21,7 +21,7 @@ public:
 			WebBrowserAssetMgr->LoadDefaultMaterials();
 
 			FWebBrowserInitSettings WebBrowserInitSettings;
-			WebBrowserInitSettings.ProductVersion = TEXT("Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Mobile Safari/537.36");
+			WebBrowserInitSettings.ProductVersion = TEXT("Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36");
 			IWebBrowserModule::Get().CustomInitialize(WebBrowserInitSettings);
 
 			IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
