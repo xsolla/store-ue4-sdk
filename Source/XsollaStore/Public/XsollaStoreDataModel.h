@@ -306,7 +306,8 @@ public:
 
 public:
 	FVirtualCurrency()
-		: is_free(false){};
+		: is_free(false)
+		, order(0){};
 };
 
 USTRUCT(BlueprintType)
@@ -407,7 +408,8 @@ public:
 
 public:
 	FVirtualCurrencyPackage()
-		: is_free(false){};
+		: is_free(false)
+		, order(0){};
 };
 
 USTRUCT(BlueprintType)
