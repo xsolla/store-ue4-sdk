@@ -860,13 +860,14 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	XsollaUtilsUrlBuilder UrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user"));
-	UrlBuilder.AddStringQueryParam(TEXT("client_id"), Settings->ClientID);
-	UrlBuilder.AddStringQueryParam(TEXT("response_type"), TEXT("code"));
-	UrlBuilder.AddStringQueryParam(TEXT("state"), State);
-	UrlBuilder.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user"))
+		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+		.AddStringQueryParam(TEXT("state"), State)
+		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+		.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UrlBuilder.Build(), EXsollaHttpRequestVerb::VERB_POST, PostContent);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }

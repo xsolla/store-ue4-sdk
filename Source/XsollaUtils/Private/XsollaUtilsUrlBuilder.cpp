@@ -37,30 +37,38 @@ FString XsollaUtilsUrlBuilder::Build()
 	return ResultUrl;
 }
 
-void XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, const FString& ParamValue)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, const FString& ParamValue)
 {
 	PathParams.Add(TPair<FString, FString>(ParamName, ParamValue));
+
+	return *this;
 }
 
-void XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty)
 {
 	if (IgnoreEmpty && ParamValue.IsEmpty())
 	{
-		return;
+		return *this;
 	}
 
 	StringQueryParams.Add(TPair<FString, FString>(ParamName, ParamValue));
+
+	return *this;
 }
 
-void XsollaUtilsUrlBuilder::AddStringArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty)
 {
 	for (const auto& Param : ParamValueArray)
 	{
 		AddStringArrayQueryParam(ParamName, ParamValueArray, IgnoreEmpty);
 	}
+
+	return *this;
 }
 
-void XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString& ParamName, int32 ParamValue)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString& ParamName, int32 ParamValue)
 {
 	NumberQueryParams.Add(TPair<FString, int32>(ParamName, ParamValue));
+
+	return *this;
 }

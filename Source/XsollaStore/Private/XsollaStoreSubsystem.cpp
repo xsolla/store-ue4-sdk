@@ -97,15 +97,16 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const
 {
 	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
 
-	XsollaUtilsUrlBuilder UrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"));
-	UrlBuilder.SetPathParam(TEXT("ProjectId"), ProjectID);
-	UrlBuilder.AddStringQueryParam(TEXT("locale"), UsedLocale);
-	UrlBuilder.AddStringQueryParam(TEXT("country"), Country);
-	UrlBuilder.AddStringArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields);
-	UrlBuilder.AddNumberQueryParam(TEXT("limit"), Limit);
-	UrlBuilder.AddNumberQueryParam(TEXT("offset"), Offset);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
+		.SetPathParam(TEXT("ProjectId"), ProjectID)
+		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("country"), Country)		
+		.AddNumberQueryParam(TEXT("limit"), Limit)
+		.AddNumberQueryParam(TEXT("offset"), Offset)
+		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+		.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UrlBuilder.Build(), EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
