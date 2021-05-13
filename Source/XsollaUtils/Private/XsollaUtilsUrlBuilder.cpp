@@ -56,11 +56,11 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString&
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty)
 {
 	for (const auto& Param : ParamValueArray)
 	{
-		AddStringArrayQueryParam(ParamName, ParamValueArray, IgnoreEmpty);
+		AddArrayQueryParam(ParamName, ParamValueArray, IgnoreEmpty);
 	}
 
 	return *this;

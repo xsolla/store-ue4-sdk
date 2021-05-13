@@ -17,7 +17,7 @@ public:
 	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, const FString& ParamValue);
 
 	XsollaUtilsUrlBuilder& AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty = true);
-	XsollaUtilsUrlBuilder& AddStringArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty = true);
+	XsollaUtilsUrlBuilder& AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty = true);
 	XsollaUtilsUrlBuilder& AddNumberQueryParam(const FString& ParamName, int32 ParamValue);
 
 private:
