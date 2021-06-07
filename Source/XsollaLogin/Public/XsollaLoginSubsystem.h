@@ -322,9 +322,21 @@ public:
 	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
+	
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Cross-Authenticate
+	* Authenticates a platform account user via deviceId.
+	* @param PlatformName name of mobile platform . Could be android or ios
+	* @param DeviceName name of mobile device.
+	* @param DeviceId Platform specific unique device id.
+	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
+	* @param SuccessCallback Callback function called after successful user authentication via device id.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AuthenticateViaDeviceId(const FString& PlatformName, const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	
 	/** Auth Via Access Token of Social Network
 	* Authenticates the user with the access token using social network credentials.
 	*

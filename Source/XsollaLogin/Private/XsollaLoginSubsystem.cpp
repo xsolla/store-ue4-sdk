@@ -524,8 +524,8 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/%s"),
-		*UsersDevicesEndpoint,
+	const FString Url = FString::Printf(TEXT("%s/devices/%s"),
+		*UserDetailsEndpoint,
 		*PlatformName.ToLower());
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
@@ -536,8 +536,8 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, const FString& DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/%s"),
-		*UsersDevicesEndpoint,
+	const FString Url = FString::Printf(TEXT("%s/devices/%s"),
+		*UserDetailsEndpoint,
 		*DeviceId);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
@@ -861,7 +861,10 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 
 void UXsollaLoginSubsystem::GetUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(UserDetailsEndpoint + "/devices", EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	// Generate endpoint url
+	const FString Url = FString::Printf(TEXT("%s/devices"),
+		*UserDetailsEndpoint);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
