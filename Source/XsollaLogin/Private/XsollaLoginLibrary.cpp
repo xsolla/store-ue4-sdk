@@ -105,3 +105,13 @@ FString UXsollaLoginLibrary::GetUrlParameter(const FString& URL, const FString& 
 
 	return ParameterValue;
 }
+
+FString UXsollaLoginLibrary::GetDeviceName()
+{
+	return FGenericPlatformMisc::GetDefaultDeviceProfileName();
+}
+
+FString UXsollaLoginLibrary::GetDeviceId()
+{
+	return UKismetSystemLibrary::GetDeviceId();
+}

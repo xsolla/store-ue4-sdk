@@ -44,4 +44,12 @@ public:
 	/** Gets the specified parameter from a given URL. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetUrlParameter(const FString& URL, const FString& Parameter);
+
+	/** Gets the specified device name */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetDeviceName();
+
+	/** Gets the specified device id */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetDeviceId();
 };
