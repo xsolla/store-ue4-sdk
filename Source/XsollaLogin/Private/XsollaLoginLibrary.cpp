@@ -108,7 +108,13 @@ FString UXsollaLoginLibrary::GetUrlParameter(const FString& URL, const FString& 
 
 FString UXsollaLoginLibrary::GetDeviceName()
 {
-	return FGenericPlatformMisc::GetDefaultDeviceProfileName();
+#if PLATFORM_ANDROID
+	return FAndroidMisc::GetDeviceMake() + FAndroidMisc::GetDeviceModel();
+#elif PLATFORM_IOS
+	return FIOSPlatformMisc::GetDefaultDeviceProfileName();
+#else
+	return FPlatformMisc::GetDefaultDeviceProfileName();
+#endif
 }
 
 FString UXsollaLoginLibrary::GetDeviceId()

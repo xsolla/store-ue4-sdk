@@ -311,7 +311,7 @@ public:
     	* @param ErrorCallback Callback function called after the request resulted with an error.
     	*/
     	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    	void UnlinkDeviceFromAccount(const FString& AuthToken, const FString& DeviceId,
+    	void UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId,
     		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	
 	/** Cross-Authenticate

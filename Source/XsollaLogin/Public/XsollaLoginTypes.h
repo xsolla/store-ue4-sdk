@@ -445,7 +445,7 @@ struct FXsollaUserDevice
 	FString device;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Device")
-	int32 id;
+	int64 id;
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Device")
 	FString last_used_at;

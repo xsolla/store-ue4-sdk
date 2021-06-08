@@ -533,12 +533,12 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, const FString& DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/devices/%s"),
+	const FString Url = FString::Printf(TEXT("%s/devices/%llu"),
 		*UserDetailsEndpoint,
-		*DeviceId);
+		DeviceId);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -1861,7 +1861,7 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpReques
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
 		static const FString ConfirmationRequiredFieldName = TEXT("email_confirmation_required");
-		if (JsonObject->HasTypedField<EJson::String>(ConfirmationRequiredFieldName))
+		if (JsonObject->HasTypedField<EJson::Boolean>(ConfirmationRequiredFieldName))
 		{
 			const bool bNeedToConfirmEmail = JsonObject->GetBoolField(ConfirmationRequiredFieldName);
 			SuccessCallback.ExecuteIfBound(bNeedToConfirmEmail);
