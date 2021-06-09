@@ -49,9 +49,10 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
+	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
 
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -635,6 +636,9 @@ private:
 
 	/** Cached Xsolla Login project. */
 	FString LoginID;
+
+	/** Cached Xsolla client ID. */
+	FString ClientID;
 
 public:
 	/** Gets user login state data. */

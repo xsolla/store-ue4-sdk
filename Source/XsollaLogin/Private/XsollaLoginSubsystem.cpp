@@ -63,7 +63,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID);
+	Initialize(Settings->ProjectID, Settings->LoginID, Settings->ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -74,10 +74,11 @@ void UXsollaLoginSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId)
+void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId)
 {
 	ProjectID = InProjectId;
 	LoginID = InLoginId;
+	ClientID = InClientId;
 
 	// Check token override from Xsolla Launcher
 	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-token"));
@@ -98,7 +99,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
-				XsollaJavaConvertor::GetJavaString(Settings->ClientID),
+				XsollaJavaConvertor::GetJavaString(ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
 				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
@@ -291,11 +292,9 @@ void UXsollaLoginSubsystem::SetToken(const FString& Token)
 
 void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
+	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("refresh_token"));
 	RequestDataJson->SetStringField(TEXT("refresh_token"), RefreshToken);
 	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
@@ -316,11 +315,9 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
+	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("authorization_code"));
 	RequestDataJson->SetStringField(TEXT("code"), AuthenticationCode);
 	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
@@ -862,7 +859,7 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s/user?response_type=code&client_id=%s&state=%s&redirect_uri=%s"),
 		*LoginEndpointOAuth,
-		*Settings->ClientID,
+		*ClientID,
 		*State,
 		*BlankRedirectEndpoint);
 
@@ -911,7 +908,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s/user/resend_confirmation_link?client_id=%s&state=%s&redirect_uri=%s"),
 		*LoginEndpointOAuth,
-		*Settings->ClientID,
+		*ClientID,
 		*State,
 		*BlankRedirectEndpoint);
 
@@ -960,10 +957,9 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/login/token?client_id=%s&scope=offline"),
 		*LoginEndpointOAuth,
-		*Settings->ClientID);
+		*ClientID);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -996,11 +992,10 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/social/%s/login_url?client_id=%s&redirect_uri=%s&response_type=code&state=%s&scope=offline"),
 		*LoginEndpointOAuth,
 		*ProviderName,
-		*Settings->ClientID,
+		*ClientID,
 		*BlankRedirectEndpoint,
 		*State);
 
@@ -1036,11 +1031,10 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/social/%s/cross_auth?client_id=%s&response_type=code&redirect_uri=%s&state=%s&app_id=%s&scope=offline&session_ticket=%s&is_redirect=false&code=%s"),
 		*LoginEndpointOAuth,
 		*ProviderName,
-		*Settings->ClientID,
+		*ClientID,
 		*BlankRedirectEndpoint,
 		*State,
 		*AppId,
@@ -1094,11 +1088,10 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = FString::Printf(TEXT("%s/social/%s/login_with_token?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=offline"),
 		*LoginEndpointOAuth,
 		*ProviderName,
-		*Settings->ClientID,
+		*ClientID,
 		*BlankRedirectEndpoint,
 		*State);
 
