@@ -45,11 +45,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetUrlParameter(const FString& URL, const FString& Parameter);
 
-	/** Gets the specified device name */
+	// TEXTREVIEW
+	/** Gets the device name */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceName();
 
-	/** Gets the specified device id */
+	// TEXTREVIEW
+	/** Gets the device id */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceId();
 };

@@ -488,7 +488,8 @@ void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCh
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, bool ReceiveNewsConsent, const FString& Username, const FOnLinkViaEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, bool ReceiveNewsConsent, const FString& Username,
+	const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -512,7 +513,8 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -573,8 +575,10 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& PlatformName, const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback,
+	const FOnAuthError& ErrorCallback)
 {
+	const FString& PlatformName = UGameplayStatics::GetPlatformName();
 	if(PlatformName != "Android" && PlatformName != "IOS")
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: User authentication should be handled via android mobile or ios mobile"), *VA_FUNC_LINE);
@@ -859,13 +863,13 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::GetUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = FString::Printf(TEXT("%s/devices"),
 		*UserDetailsEndpoint);
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersDevices_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1835,9 +1839,8 @@ void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete(
-	const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	TArray<FXsollaUserDevice> userDevicesData;
@@ -1853,7 +1856,8 @@ void UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete(
 	}
 }
 
-void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnLinkViaEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;

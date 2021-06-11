@@ -30,7 +30,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicPro
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkViaEmailAndPasswordSuccess, bool, bNeedToConfirmEmail);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkEmailAndPasswordSuccess, bool, bNeedToConfirmEmail);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -254,12 +254,12 @@ public:
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Check User Age
-	* Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
-	*
-	* @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
-	* @param SuccessCallback Callback function called after successful check of the user age.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
+	 *
+	 * @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
+	 * @param SuccessCallback Callback function called after successful check of the user age.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -276,44 +276,50 @@ public:
 	void LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Link email, password and username to account
-	* Adds the username/email and password authentication to the existing user account. This call is used if the account is created via device ID or phone number.
-	* @param AuthToken User authorization token.
-	* @param Email user email.
-	* @param Password user password.
-	* @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
-	* @param Username username.
-	* @param SuccessCallback Callback function called after successful email and password linking.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Adds the username/email and password authentication to the existing user account. This call is used if the account is created via device ID or phone number.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param Email user email.
+	 * @param Password user password.
+	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
+	 * @param Username username.
+	 * @param SuccessCallback Callback function called after successful email and password linking.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, bool ReceiveNewsConsent, const FString& Username,
-		const FOnLinkViaEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Link device to account
-	* Links the specified device to the user account.
-	* @param AuthToken User authorization token.
-	* @param PlatformName name of mobile platform . Could be android or ios
-	* @param DeviceName name of mobile device.
-	* @param DeviceId Platform specific unique device id.
-	* @param SuccessCallback Callback function called after successful device linking.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Links the specified device to the user account.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param PlatformName name of mobile platform . Could be android or ios
+	 * @param DeviceName name of mobile device.
+	 * @param DeviceId Platform specific unique device id.
+	 * @param SuccessCallback Callback function called after successful device linking.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-		/** Link device to account
-    	* Unlinks the specified device from the user account.
-    	* @param AuthToken User authorization token.
-    	* @param DeviceId Platform specific unique device id. It is generated by Xsolla Login server. It is not the same as the device_id parameter from the Auth via device ID
-    	* @param SuccessCallback Callback function called after successful device unlinking.
-    	* @param ErrorCallback Callback function called after the request resulted with an error.
-    	*/
-    	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-    	void UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId,
-    		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-	
+	// TEXTREVIEW
+	/** Unlink device from account
+	 * Unlinks the specified device from the user account.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param DeviceId Platform specific unique device id. It is generated by Xsolla Login server. It is not the same as the device_id parameter from the Auth via device ID
+	 * @param SuccessCallback Callback function called after successful device unlinking.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Cross-Authenticate
 	 * Authenticates a platform account user.
 	 *
@@ -322,33 +328,34 @@ public:
 	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Cross-Authenticate
-	* Authenticates a platform account user via deviceId.
-	* @param PlatformName name of mobile platform . Could be android or ios
-	* @param DeviceName name of mobile device.
-	* @param DeviceId Platform specific unique device id.
-	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
-	* @param SuccessCallback Callback function called after successful user authentication via device id.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticateViaDeviceId(const FString& PlatformName, const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-	
+	 * Authenticates a platform account user via deviceId.
+	 * 
+	 * @param DeviceName name of mobile device.
+	 * @param DeviceId Platform specific unique device id.
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
+	 * @param SuccessCallback Callback function called after successful user authentication via device id.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Auth Via Access Token of Social Network
-	* Authenticates the user with the access token using social network credentials.
-	*
-	* @param AuthToken Access token received from a social network
-	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
-	* @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
-	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
-	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
-	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
-	* @param SuccessCallback Callback function called after successful user authentication on the specified platform.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Authenticates the user with the access token using social network credentials.
+	 *
+	 * @param AuthToken Access token received from a social network
+	 * @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
+	 * @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
+	 * @param SuccessCallback Callback function called after successful user authentication on the specified platform.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 		const FString& ProviderName, const FString& Payload, const FString& State,
@@ -530,15 +537,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Get Users devices
-	* Gets a list of user’s devices.
-	* 
-	* @param AuthToken User authorization token.
-	* @param SuccessCallback Callback function called after users devices data was successfully received.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	// TEXTREVIEW
+	/** Update Users devices
+	 * Updates a list of user’s devices.
+	 * 
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after users devices data was successfully received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	
 	/** Search Users By Nickname
 	 * Searches for users with the specified nickname.
@@ -667,10 +675,10 @@ protected:
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void GetUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
+	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
-			FOnLinkViaEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
+			FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
