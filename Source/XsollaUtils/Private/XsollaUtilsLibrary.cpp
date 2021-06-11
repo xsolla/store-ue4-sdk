@@ -192,3 +192,25 @@ void UXsollaUtilsLibrary::GetPartnerInfo(FString& Referral, FString& ReferralVer
 	Referral = XReferral;
 	ReferralVersion = XReferralVersion;
 }
+
+FString UXsollaUtilsLibrary::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson)
+{
+	FString EncodedFormData = "";
+	uint16 ParamIndex = 0;
+
+	for (auto FormDataIt = FormDataJson->Values.CreateIterator(); FormDataIt; ++FormDataIt)
+	{
+		FString Key = FormDataIt.Key();
+		FString Value = FormDataIt.Value().Get()->AsString();
+
+		if (!Key.IsEmpty() && !Value.IsEmpty())
+		{
+			EncodedFormData += ParamIndex == 0 ? "" : "&";
+			EncodedFormData += FGenericPlatformHttp::UrlEncode(Key) + "=" + FGenericPlatformHttp::UrlEncode(Value);
+		}
+
+		ParamIndex++;
+	}
+
+	return EncodedFormData;
+}

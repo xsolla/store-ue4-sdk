@@ -44,6 +44,13 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamN
 	return *this;
 }
 
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, int32 ParamValue)
+{
+	PathParams.Add(TPair<FString, FString>(ParamName, FString::FromInt(ParamValue)));
+
+	return *this;
+}
+
 XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty)
 {
 	if (IgnoreEmpty && ParamValue.IsEmpty())
@@ -56,11 +63,25 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString&
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty, bool AsOneParam)
 {
-	for (const auto& Param : ParamValueArray)
+	if(IgnoreEmpty && ParamValueArray.Num() == 0)
 	{
-		AddArrayQueryParam(ParamName, ParamValueArray, IgnoreEmpty);
+		return *this;
+	}
+
+	if(AsOneParam)
+	{
+		FString AdditionalFieldsString = FString::Join(ParamValueArray, TEXT(","));
+		AdditionalFieldsString.RemoveFromEnd(",");
+		AddStringQueryParam(ParamName, AdditionalFieldsString, IgnoreEmpty);
+	}
+	else
+	{
+		for (const auto& Param : ParamValueArray)
+		{
+			AddStringQueryParam(ParamName, Param, IgnoreEmpty);
+		}
 	}
 
 	return *this;

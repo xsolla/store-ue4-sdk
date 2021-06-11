@@ -102,6 +102,8 @@ public:
 
 	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
 
+	/** Encodes the request body to match x-www-form-urlencoded data format. */
+    static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 private:
 
 	static FString XReferral;
