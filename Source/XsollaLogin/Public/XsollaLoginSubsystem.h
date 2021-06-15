@@ -691,9 +691,6 @@ private:
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
-	/** Encodes the request body to match x-www-form-urlencoded data format. */
-	FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
-
 	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
 
@@ -833,22 +830,7 @@ protected:
 	/** Cached list of user devices. */
 	TArray<FXsollaUserDevice> UserDevices;
 	
-protected:
-	static const FString RegistrationEndpoint;
-	static const FString LoginEndpoint;
-	static const FString LoginSocialEndpoint;
-	static const FString ResetPasswordEndpoint;
-	static const FString ProxyRegistrationEndpoint;
-	static const FString ProxyLoginEndpoint;
-	static const FString ProxyResetPasswordEndpoint;
-	static const FString ValidateTokenEndpoint;
-	static const FString UserAttributesEndpoint;
-	static const FString CrossAuthEndpoint;
-	static const FString AccountLinkingCodeEndpoint;
-	static const FString LoginEndpointOAuth;
 	static const FString BlankRedirectEndpoint;
-	static const FString UserDetailsEndpoint;
-	static const FString UsersEndpoint;
 
 private:
 	UPROPERTY()

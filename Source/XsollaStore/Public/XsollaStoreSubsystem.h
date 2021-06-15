@@ -428,9 +428,6 @@ private:
 	/** Get name of publishing platform */
 	FString GetPublishingPlatformName();
 
-	/** Convert list of additional fields to be requested to single string */
-	FString ConvertAdditionalFieldsToString(const TArray<FString>& AdditionalFields);
-
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
