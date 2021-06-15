@@ -566,7 +566,7 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback,
+void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FString& Payload, const FOnAuthUpdate& SuccessCallback,
 	const FOnAuthError& ErrorCallback)
 {
 	const FString& PlatformName = UGameplayStatics::GetPlatformName();
@@ -576,30 +576,17 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 		ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("User authentication should be handled via Android mobile or IOS mobile"));
 		return;
 	}
-	
-	// Prepare request payload
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("device"), DeviceName);
-	RequestDataJson->SetStringField(TEXT("device_id"), DeviceId);
-	
-	FString PostContent;
-	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
-	.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
-	.AddStringQueryParam(TEXT("client_id"), ClientID)
-	.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-	.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
-	.AddStringQueryParam(TEXT("state"), State)
-	.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
-	.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	if (Settings->UseOAuth2)
+	{
+		AuthenticateViaDeviceIdOAuth(DeviceName, DeviceId, State, SuccessCallback, ErrorCallback);
+	}
+	else
+	{
+		AuthenticateViaDeviceIdJWT(DeviceName, DeviceId, Payload, SuccessCallback, ErrorCallback);
+	}
 }
 
 void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
@@ -1104,8 +1091,6 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_url"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -1149,8 +1134,6 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -1165,6 +1148,59 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticateViaDeviceIdJWT(const FString& DeviceName, const FString& DeviceId, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("device"), DeviceName);
+	RequestDataJson->SetStringField(TEXT("device_id"), DeviceId);
+	
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	// Generate endpoint url
+	const FString& PlatformName = UGameplayStatics::GetPlatformName();
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/login/device/{PlatformName}"))
+	.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
+	.AddStringQueryParam(TEXT("projectId"), LoginID)
+	.AddStringQueryParam(TEXT("payload"), Payload)
+	.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
+	.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("device"), DeviceName);
+	RequestDataJson->SetStringField(TEXT("device_id"), DeviceId);
+	
+	FString PostContent;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const FString& PlatformName = UGameplayStatics::GetPlatformName();
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
+	.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
+	.AddStringQueryParam(TEXT("client_id"), ClientID)
+	.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+	.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+	.AddStringQueryParam(TEXT("state"), State)
+	.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
+	.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -1211,7 +1247,6 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_with_token"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("client_id"), ClientID)

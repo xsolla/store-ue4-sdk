@@ -339,11 +339,13 @@ public:
 	 * @param DeviceName name of mobile device.
 	 * @param DeviceId Platform specific unique device id.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	 * @param SuccessCallback Callback function called after successful user authentication via device id.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FString& Payload,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Auth Via Access Token of Social Network
 	 * Authenticates the user with the access token using social network credentials.
@@ -609,6 +611,11 @@ protected:
 	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	void AuthenticateViaDeviceIdJWT(const FString& DeviceName, const FString& DeviceId, const FString& Payload,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	
 	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& State,
