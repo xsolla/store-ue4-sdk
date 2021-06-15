@@ -20,6 +20,7 @@ public:
 	XsollaUtilsUrlBuilder& AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty = true);
 	XsollaUtilsUrlBuilder& AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty = true, bool AsOneParam = false);
 	XsollaUtilsUrlBuilder& AddNumberQueryParam(const FString& ParamName, int32 ParamValue);
+	XsollaUtilsUrlBuilder& AddBoolQueryParam(const FString& ParamName, const bool ParamValue, const bool AsNumber = true);
 
 private:
 	FString Url;

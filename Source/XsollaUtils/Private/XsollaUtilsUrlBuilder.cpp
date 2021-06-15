@@ -93,3 +93,17 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString&
 
 	return *this;
 }
+
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddBoolQueryParam(const FString& ParamName, const bool ParamValue, const bool AsNumber)
+{
+	if(AsNumber)
+	{
+		AddStringQueryParam(ParamName, ParamValue ? TEXT("1") : TEXT("0"), true);
+	}
+	else
+	{
+		AddStringQueryParam(ParamName, ParamValue ? TEXT("true") : TEXT("false"), true);
+	}
+
+	return *this;
+}

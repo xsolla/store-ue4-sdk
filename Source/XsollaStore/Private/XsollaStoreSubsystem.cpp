@@ -143,7 +143,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/group/{ExternalId}"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? *FString(TEXT("all")) : *ExternalId)
+		.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? TEXT("all") : ExternalId)
 		.AddStringQueryParam(TEXT("locale"), UsedLocale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)

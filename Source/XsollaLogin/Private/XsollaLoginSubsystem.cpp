@@ -485,7 +485,8 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTarg
 	const FString Url = XsollaUtilsUrlBuilder(Settings->AccountLinkingURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
-		.AddStringQueryParam(TEXT("code"), Code).Build();
+		.AddStringQueryParam(TEXT("code"), Code)
+		.Build();
 	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -497,12 +498,12 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	const FString bWithLogout = Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0");
 	const FString PlatformName = GetTargetPlatformName(Platform);
 	const FString Url = XsollaUtilsUrlBuilder(Settings->PlatformAuthenticationURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
-		.AddStringQueryParam(TEXT("with_logout"), bWithLogout).Build();
+		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
+		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -535,7 +536,8 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 
 void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(TEXT("https://login.xsolla.com/api/users/me"), EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me")).Build();
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserDetails_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -717,7 +719,7 @@ void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const 
 	 const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_friends"))
 		.AddNumberQueryParam(TEXT("limit"), Limit)
 		.AddNumberQueryParam(TEXT("offset"), Offset)
-		.AddStringQueryParam(TEXT("with_xl_uid"), FromThisGame ? TEXT("true") : TEXT("false"))
+		.AddBoolQueryParam(TEXT("with_xl_uid"), FromThisGame, false)
 		.AddStringQueryParam(TEXT("platform"), Platform)
 		.Build();
 	
@@ -742,7 +744,9 @@ void UXsollaLoginSubsystem::GetAccessTokenFromCustomAuthServer(const FXsollaPara
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	const FString Url = XsollaUtilsUrlBuilder(FString::Printf(TEXT("%slogin"), *Settings->CustomAuthServerURL)).Build();
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("{CustomAuthServer}login"))
+		.SetPathParam(TEXT("CustomAuthServer"), Settings->CustomAuthServerURL)
+		.Build();
 
 	const TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	UXsollaUtilsLibrary::AddParametersToJsonObject(RequestDataJson, Parameters);
@@ -942,7 +946,7 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 		.AddStringQueryParam(TEXT("projectId"), LoginID)
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
-		.AddStringQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"))
+		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.Build();
 	
@@ -984,7 +988,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& Provide
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("projectId"), LoginID)
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
-		.AddStringQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"))
+		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.AddArrayQueryParam(TEXT("fields"), AdditionalFields, true, true)
 		.Build();
@@ -1026,8 +1030,8 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketJWT(const FString& Prov
 		.AddStringQueryParam(TEXT("projectId"), LoginID)
 		.AddStringQueryParam(TEXT("app_id"), AppId)
 		.AddStringQueryParam(TEXT("session_ticket"), SessionTicket)
-		.AddStringQueryParam(TEXT("is_redirect"), TEXT("false"))
-		.AddStringQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"))
+		.AddBoolQueryParam(TEXT("is_redirect"), false, false)
+		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
 		.AddStringQueryParam(TEXT("code"), Code)
@@ -1054,7 +1058,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 		.AddStringQueryParam(TEXT("app_id"), AppId)
 		.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 		.AddStringQueryParam(TEXT("session_ticket"), SessionTicket)
-		.AddStringQueryParam(TEXT("is_redirect"), TEXT("false"))
+		.AddBoolQueryParam(TEXT("is_redirect"), false, false)
 		.AddStringQueryParam(TEXT("code"), Code)
 		.Build();
 
@@ -1074,7 +1078,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT(
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("projectId"), LoginID)
 		.AddStringQueryParam(TEXT("payload"), Payload)
-		.AddStringQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions ? TEXT("1") : TEXT("0"))
+		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
 		.Build();
 
 	// Prepare request payload
