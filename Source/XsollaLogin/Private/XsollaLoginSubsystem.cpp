@@ -50,7 +50,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID, Settings->ClientID);
+	Initialize(Settings->ProjectID, Settings->LoginID, ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -590,7 +590,7 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
 	.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
-	.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+	.AddStringQueryParam(TEXT("client_id"), ClientID)
 	.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 	.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 	.AddStringQueryParam(TEXT("state"), State)
@@ -966,7 +966,7 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user"))
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 		.AddStringQueryParam(TEXT("state"), State)
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
@@ -1019,7 +1019,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user/resend_confirmation_link"))
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("state"), State)
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 		.Build();
@@ -1071,7 +1071,7 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/token"))
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 		.Build();
 	
@@ -1108,7 +1108,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& Provi
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_url"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 		.AddStringQueryParam(TEXT("state"), State)
@@ -1153,7 +1153,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 		.AddStringQueryParam(TEXT("state"), State)
@@ -1214,7 +1214,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_with_token"))
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
-		.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 		.AddStringQueryParam(TEXT("state"), State)
