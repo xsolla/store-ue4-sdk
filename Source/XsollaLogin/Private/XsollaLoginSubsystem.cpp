@@ -50,7 +50,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID);
+	Initialize(Settings->ProjectID, Settings->LoginID, Settings->ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -61,10 +61,11 @@ void UXsollaLoginSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId)
+void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId)
 {
 	ProjectID = InProjectId;
 	LoginID = InLoginId;
+	ClientID = InClientId;
 
 	// Check token override from Xsolla Launcher
 	const FString LauncherLoginJwt = UXsollaLoginLibrary::GetStringCommandLineParam(TEXT("xsolla-login-token"));
@@ -85,7 +86,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
-				XsollaJavaConvertor::GetJavaString(Settings->ClientID),
+				XsollaJavaConvertor::GetJavaString(ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
 				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
@@ -278,11 +279,9 @@ void UXsollaLoginSubsystem::SetToken(const FString& Token)
 
 void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
+	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("refresh_token"));
 	RequestDataJson->SetStringField(TEXT("refresh_token"), RefreshToken);
 	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
@@ -303,11 +302,9 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField(TEXT("client_id"), Settings->ClientID);
+	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("authorization_code"));
 	RequestDataJson->SetStringField(TEXT("code"), AuthenticationCode);
 	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
