@@ -493,9 +493,9 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/link_email_password?login_url=%s"),
-		*UserDetailsEndpoint,
-		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/link_email_password"))
+		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
+		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -515,9 +515,9 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/devices/%s"),
-		*UserDetailsEndpoint,
-		*PlatformName.ToLower());
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices/{PlatformName}"))
+		.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
+		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -527,9 +527,9 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/devices/%llu"),
-		*UserDetailsEndpoint,
-		DeviceId);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices/{DeviceId}"))
+		.SetPathParam(TEXT("DeviceId"), DeviceId)
+		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -591,12 +591,14 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Url = FString::Printf(TEXT("%s/login/device/%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=offline"),
-		*LoginEndpointOAuth,
-		*PlatformName.ToLower(),
-		*Settings->ClientID,
-		*BlankRedirectEndpoint,
-		*State);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
+	.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
+	.AddStringQueryParam(TEXT("client_id"), Settings->ClientID)
+	.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+	.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+	.AddStringQueryParam(TEXT("state"), State)
+	.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
+	.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -868,8 +870,8 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 void UXsollaLoginSubsystem::UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString Url = FString::Printf(TEXT("%s/devices"),
-		*UserDetailsEndpoint);
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices")).Build();
+	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UpdateUsersDevices_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();

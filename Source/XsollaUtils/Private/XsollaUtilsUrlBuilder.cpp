@@ -51,6 +51,13 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamN
 	return *this;
 }
 
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, int64 ParamValue)
+{
+	PathParams.Add(TPair<FString, FString>(ParamName, FString::Printf(TEXT("%llu"), ParamValue)));
+
+	return *this;
+}
+
 XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty)
 {
 	if (IgnoreEmpty && ParamValue.IsEmpty())
