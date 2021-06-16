@@ -129,11 +129,6 @@ public:
 
 	/** If enabled, Login SDK will use Steam as default authorization mechanism */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	bool bUseSteamAuthorization;
-
-	// TEXTREVIEW
-	/** If enabled, Login SDK will force Steam as authorization mechanism*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken && bUseSteamAuthorization"))
 	bool bForceSteamAuthorization;
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla Login Demo")
