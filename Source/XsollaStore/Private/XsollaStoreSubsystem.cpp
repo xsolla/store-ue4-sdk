@@ -60,11 +60,9 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 void UXsollaStoreSubsystem::UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.AddNumberQueryParam(TEXT("limit"), Limit)
@@ -80,11 +78,9 @@ void UXsollaStoreSubsystem::UpdateVirtualItems(const FString& Locale, const FStr
 void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/groups"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddNumberQueryParam(TEXT("limit"), Limit)
 		.AddNumberQueryParam(TEXT("offset"), Offset)
 		.Build();
@@ -98,11 +94,9 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
 		.SetPathParam(TEXT("ProjectId"), ProjectID)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)		
 		.AddNumberQueryParam(TEXT("limit"), Limit)
 		.AddNumberQueryParam(TEXT("offset"), Offset)
@@ -118,11 +112,9 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const
 void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.AddNumberQueryParam(TEXT("limit"), Limit)
@@ -139,12 +131,10 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/group/{ExternalId}"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
 		.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? TEXT("all") : ExternalId)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.AddNumberQueryParam(TEXT("limit"), Limit)
@@ -329,15 +319,13 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 	CachedCartCurrency = Currency;
 	CachedCartLocale = Locale;
 
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(CartId.IsEmpty() ?
 		TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/cart") :
 		TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/cart/{CartID}"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
 		.SetPathParam(TEXT("CartID"), Cart.cart_id)
 		.AddStringQueryParam(TEXT("currency"), Currency)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
@@ -499,11 +487,9 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.AddNumberQueryParam(TEXT("limit"), Limit)
@@ -520,12 +506,10 @@ void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/sku/{CurrencySKU}"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
 		.SetPathParam(TEXT("CurrencySKU"), CurrencySKU)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.Build();
@@ -540,12 +524,10 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
-	const FString UsedLocale = Locale.IsEmpty() ? TEXT("en") : Locale;
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package/sku/{PackageSKU}"))
 		.SetPathParam(TEXT("ProjectID"), ProjectID)
 		.SetPathParam(TEXT("PackageSKU"), PackageSKU)
-		.AddStringQueryParam(TEXT("locale"), UsedLocale)
+		.AddStringQueryParam(TEXT("locale"), Locale)
 		.AddStringQueryParam(TEXT("country"), Country)
 		.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 		.Build();
