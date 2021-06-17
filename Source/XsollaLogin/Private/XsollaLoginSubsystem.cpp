@@ -108,7 +108,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
 	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -119,6 +119,10 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 		return;
 	}
 
+	LoginData = FXsollaLoginData();
+	LoginData.Username = Username;
+	LoginData.Password = Password;
+	
 	if (Settings->UseOAuth2)
 	{
 		RegisterUserOAuth(Username, Password, Email, State, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
@@ -903,7 +907,7 @@ void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken,
 
 void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -929,13 +933,13 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 		.Build();
 	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -950,8 +954,6 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user"))
 		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
@@ -960,7 +962,7 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1929,6 +1931,57 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpReques
 	HandleRequestError(OutError, ErrorCallback);
 }
 
+void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
+	{
+		if(HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::Ok)
+		{
+			TSharedPtr<FJsonObject> JsonObject;
+			if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+			{
+				static const FString LoginUrlFieldName = TEXT("login_url");
+				if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
+				{
+					const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+					const FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+					const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+					
+					if(Settings->UseOAuth2)
+					{
+						const FString Code = UGameplayStatics::ParseOption(UrlOptions, TEXT("code"));
+
+						ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
+						return;
+					}
+					LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
+
+					SaveData();
+
+					SuccessCallback.ExecuteIfBound(LoginData);
+					return;
+				}
+				OutError.description = FString::Printf(TEXT("No field '%s' found"), *LoginUrlFieldName);
+			}
+		}
+		else if(HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::NoContent)
+		{
+			SuccessCallback.ExecuteIfBound(LoginData);
+			return;
+		}
+		else
+		{
+			//TEXTREVIEW
+			OutError.description = TEXT("response code is successful, but different was expected");
+		}
+	}
+	
+	HandleRequestError(OutError, ErrorCallback);
+}
+
 void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 	FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback)
 {
@@ -1947,7 +2000,6 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 			SaveData();
 
 			SuccessCallback.ExecuteIfBound(LoginData);
-
 			return;
 		}
 

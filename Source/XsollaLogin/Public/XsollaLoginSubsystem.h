@@ -72,7 +72,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
 		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Resend Account Confirmation Email
 	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
@@ -590,10 +590,10 @@ public:
 protected:
 	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
 		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void ResendAccountConfirmationEmailJWT(const FString& Username, const FString& Payload, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -687,6 +687,8 @@ protected:
 		const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
 			FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
