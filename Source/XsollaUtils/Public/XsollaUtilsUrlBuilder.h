@@ -15,12 +15,12 @@ public:
 	FString Build();
 
 	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, const FString& ParamValue);
-	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, int32 ParamValue);
-	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, int64 ParamValue);
+	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, const int32 ParamValue);
+	XsollaUtilsUrlBuilder& SetPathParam(const FString& ParamName, const int64 ParamValue);
 
-	XsollaUtilsUrlBuilder& AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty = true);
-	XsollaUtilsUrlBuilder& AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty = true, bool AsOneParam = false);
-	XsollaUtilsUrlBuilder& AddNumberQueryParam(const FString& ParamName, int32 ParamValue);
+	XsollaUtilsUrlBuilder& AddStringQueryParam(const FString& ParamName, const FString& ParamValue, const bool IgnoreEmpty = true);
+	XsollaUtilsUrlBuilder& AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, const bool IgnoreEmpty = true, const bool AsOneParam = false);
+	XsollaUtilsUrlBuilder& AddNumberQueryParam(const FString& ParamName, const int32 ParamValue);
 	XsollaUtilsUrlBuilder& AddBoolQueryParam(const FString& ParamName, const bool ParamValue, const bool AsNumber = true);
 
 private:

@@ -52,7 +52,7 @@ void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(const UTexture2D* Texture)
 {
 	int Width = Texture->GetSizeX();
 	int Height = Texture->GetSizeY();
