@@ -22,11 +22,11 @@ class XSOLLAUTILS_API UXsollaUtilsImageLoader : public UObject
 public:
 	/** */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
+	void LoadImage(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
 protected:
 	/** */
-	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback);
+	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback);
 
 private:
 	FName GetCacheName(const FString& URL) const;

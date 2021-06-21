@@ -96,7 +96,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	return HttpRequest;
 }
 
-bool XsollaUtilsHttpRequestHelper::ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, XsollaHttpRequestError& OutError)
+bool XsollaUtilsHttpRequestHelper::ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, XsollaHttpRequestError& OutError)
 {
 	if (bSucceeded && HttpResponse.IsValid())
 	{
@@ -132,7 +132,7 @@ bool XsollaUtilsHttpRequestHelper::ParseResponse(FHttpRequestPtr HttpRequest, FH
 	return false;
 }
 
-bool XsollaUtilsHttpRequestHelper::ParseResponseAsJson(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, TSharedPtr<FJsonObject>& OutResponse, XsollaHttpRequestError& OutError)
+bool XsollaUtilsHttpRequestHelper::ParseResponseAsJson(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, TSharedPtr<FJsonObject>& OutResponse, XsollaHttpRequestError& OutError)
 {
 	if (bSucceeded && HttpResponse.IsValid())
 	{
@@ -169,7 +169,7 @@ bool XsollaUtilsHttpRequestHelper::ParseResponseAsJson(FHttpRequestPtr HttpReque
 	return false;
 }
 
-bool XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, const UStruct* OutResponseDefinition, void* OutResponse, XsollaHttpRequestError& OutError)
+bool XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, const UStruct* OutResponseDefinition, void* OutResponse, XsollaHttpRequestError& OutError)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	if (ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))

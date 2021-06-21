@@ -269,7 +269,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 	}
 }
 
-void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, int32 OrderId,
+void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
 	const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
@@ -337,7 +337,7 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 }
 
 void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& CartId,
-	const FString& ItemSKU, int32 Quantity,
+	const FString& ItemSKU, const int32 Quantity,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
@@ -608,16 +608,16 @@ FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& Battl
 
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
 		// Update categories
-		for (auto& Item : ItemsData.Items)
+		for (const auto& Item : ItemsData.Items)
 		{
-			for (auto& ItemGroup : Item.groups)
+			for (const auto& ItemGroup : Item.groups)
 			{
 				ItemsData.GroupIds.Add(ItemGroup.external_id);
 			}
@@ -633,7 +633,7 @@ void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsData GroupsData;
@@ -651,7 +651,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -667,7 +667,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -683,7 +683,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsList Items;
@@ -701,7 +701,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -720,7 +720,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
 {
 	FXsollaOrder Order;
 	XsollaHttpRequestError OutError;
@@ -761,7 +761,7 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -783,7 +783,7 @@ void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -801,7 +801,7 @@ void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -820,7 +820,7 @@ void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -838,7 +838,7 @@ void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -856,7 +856,7 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -872,21 +872,21 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreListOfBundles::StaticStruct(), &ListOfBundles, OutError))
 	{
-		for (auto Bundle : ListOfBundles.items)
+		for (const auto& Bundle : ListOfBundles.items)
 		{
 			ItemsData.Items.Add(Bundle);
 		}
 
-		for (auto Bundle : ListOfBundles.items)
+		for (const auto& Bundle : ListOfBundles.items)
 		{
-			for (auto BundleGroup : Bundle.groups)
+			for (const auto& BundleGroup : Bundle.groups)
 			{
 				ItemsData.GroupIds.Add(BundleGroup.external_id);
 			}
@@ -902,7 +902,7 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
@@ -919,7 +919,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrency currency;
@@ -937,7 +937,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackage currencyPackage;
@@ -955,7 +955,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -972,7 +972,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
@@ -989,7 +989,7 @@ void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
@@ -1108,7 +1108,7 @@ void UXsollaStoreSubsystem::ProcessNextCartRequest()
 }
 
 TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(
-	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters)
+	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
@@ -1169,7 +1169,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-FString UXsollaStoreSubsystem::GetPublishingPlatformName()
+FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 {
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 
@@ -1293,27 +1293,27 @@ TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
 	});
 }
 
-FStoreItemsData UXsollaStoreSubsystem::GetItemsData() const
+const FStoreItemsData& UXsollaStoreSubsystem::GetItemsData() const
 {
 	return ItemsData;
 }
 
-TArray<FVirtualCurrency> UXsollaStoreSubsystem::GetVirtualCurrencyData() const
+const TArray<FVirtualCurrency>& UXsollaStoreSubsystem::GetVirtualCurrencyData() const
 {
 	return VirtualCurrencyData.Items;
 }
 
-TArray<FVirtualCurrencyPackage> UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
+const TArray<FVirtualCurrencyPackage>& UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
 {
 	return VirtualCurrencyPackages.Items;
 }
 
-FStoreCart UXsollaStoreSubsystem::GetCart() const
+const FStoreCart& UXsollaStoreSubsystem::GetCart() const
 {
 	return Cart;
 }
 
-FString UXsollaStoreSubsystem::GetPendingPaystationUrl() const
+const FString& UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 {
 	return PengindPaystationUrl;
 }
@@ -1364,9 +1364,8 @@ FVirtualCurrency UXsollaStoreSubsystem::FindVirtualCurrencyBySku(const FString& 
 	return VirtualCurrency;
 }
 
-FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
+const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
 {
-	FStoreItem Item;
 	bHasFound = false;
 
 	const auto StoreItem = ItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem) {
@@ -1375,16 +1374,16 @@ FStoreItem UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bH
 
 	if (StoreItem != nullptr)
 	{
-		Item = StoreItem[0];
 		bHasFound = true;
+		return StoreItem[0];
 	}
 
-	return Item;
+	static const FStoreItem DefaultItem;
+	return DefaultItem;
 }
 
-FVirtualCurrencyPackage UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const
+const FVirtualCurrencyPackage& UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const
 {
-	FVirtualCurrencyPackage Package;
 	bHasFound = false;
 
 	const auto PackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem) {
@@ -1393,11 +1392,12 @@ FVirtualCurrencyPackage UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(c
 
 	if (PackageItem != nullptr)
 	{
-		Package = PackageItem[0];
 		bHasFound = true;
+		return PackageItem[0];
 	}
 
-	return Package;
+	static const FVirtualCurrencyPackage DefaultPackage;
+	return DefaultPackage;
 }
 
 bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const

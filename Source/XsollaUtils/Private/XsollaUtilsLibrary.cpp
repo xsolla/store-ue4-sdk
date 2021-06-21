@@ -18,7 +18,7 @@ UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitial
 }
 
 void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
-	FXsollaParameters CustomParameters, const FString& FieldName)
+	const FXsollaParameters& CustomParameters, const FString& FieldName)
 {
 	if (CustomParameters.Parameters.Num() == 0)
 	{
@@ -35,7 +35,7 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 		JsonRequestObject = MakeShareable(new FJsonObject);
 	}
 
-	for (auto Parameter : CustomParameters.Parameters)
+	for (auto& Parameter : CustomParameters.Parameters)
 	{
 		const FVariant Variant = Parameter.Value.Variant;
 
@@ -145,28 +145,28 @@ FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
 	return FDateTime::FromUnixTimestamp(Time);
 }
 
-int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime DateTime)
+int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime& DateTime)
 {
 	return DateTime.ToUnixTimestamp();
 }
 
-void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters CustomParameters)
+void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters& CustomParameters)
 {
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters);
 }
 
 void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName,
-	const FXsollaParameters CustomParameters)
+	const FXsollaParameters& CustomParameters)
 {
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(int Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(const int Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(float Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(const float Value)
 {
 	return FXsollaJsonVariant(Value);
 }
@@ -176,7 +176,7 @@ FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(const FSt
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(const bool Value)
 {
 	return FXsollaJsonVariant(Value);
 }

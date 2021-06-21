@@ -107,7 +107,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 }
 
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
-	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
+	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
@@ -149,7 +149,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Userna
 }
 
 void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FString& Password, const FString& Payload,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -231,7 +231,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	}
 }
 
-void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe)
+void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
@@ -252,7 +252,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 }
 
 void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
-	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
+	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
 #if PLATFORM_ANDROID
 
@@ -355,7 +355,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 	}
 
 	TArray<TSharedPtr<FJsonValue>> KeysJsonArray;
-	for (auto Key : AttributeKeys)
+	for (auto& Key : AttributeKeys)
 	{
 		KeysJsonArray.Push(MakeShareable(new FJsonValueString(Key)));
 	}
@@ -385,7 +385,7 @@ void UXsollaLoginSubsystem::UpdateUserReadOnlyAttributes(const FString& AuthToke
 	}
 
 	TArray<TSharedPtr<FJsonValue>> KeysJsonArray;
-	for (auto Key : AttributeKeys)
+	for (auto& Key : AttributeKeys)
 	{
 		KeysJsonArray.Push(MakeShareable(new FJsonValueString(Key)));
 	}
@@ -410,7 +410,7 @@ void UXsollaLoginSubsystem::ModifyUserAttributes(const FString& AuthToken, const
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 
 	TArray<TSharedPtr<FJsonValue>> AttributesJsonArray;
-	for (auto Attribute : AttributesToModify)
+	for (auto& Attribute : AttributesToModify)
 	{
 		TSharedRef<FJsonObject> AttributeJson = MakeShareable(new FJsonObject());
 		if (FJsonObjectConverter::UStructToJsonObject(FXsollaUserAttribute::StaticStruct(), &Attribute, AttributeJson, 0, 0))
@@ -478,7 +478,7 @@ void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCh
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, bool ReceiveNewsConsent, const FString& Username,
+void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, const bool ReceiveNewsConsent, const FString& Username,
 	const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
@@ -525,7 +525,7 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, int64 DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices/{DeviceId}"))
@@ -699,7 +699,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture,
+void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	if (!IsValid(Picture))
@@ -743,7 +743,7 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
+void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
 	const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, const int Limit)
 {
 	const FString FriendType = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendsType", Type);
@@ -764,7 +764,7 @@ void UXsollaLoginSubsystem::UpdateFriends(const FString& AuthToken, EXsollaFrien
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID,
+void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, const EXsollaFriendAction Action, const FString& UserID,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -796,7 +796,7 @@ void UXsollaLoginSubsystem::UpdateSocialAuthLinks(const FString& AuthToken, cons
 }
 
 void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const FString& Platform,
-	const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit, bool FromThisGame)
+	const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const int Offset, const int Limit, const bool FromThisGame)
 {
 	// Generate endpoint url
 	 const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_friends"))
@@ -866,7 +866,7 @@ void UXsollaLoginSubsystem::UpdateUsersDevices(const FString& AuthToken, const F
 }
 
 void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, const FString& Nickname,
-	const FOnUserSearchUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset, int Limit)
+	const FOnUserSearchUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const int Offset, const int Limit)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/search/by_nickname"))
@@ -906,7 +906,7 @@ void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken,
 }
 
 void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
-	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
+	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -938,7 +938,7 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 }
 
 void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
-	bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
+	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -1018,7 +1018,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe,
+void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, const bool bRememberMe,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -1058,7 +1058,6 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/token"))
 		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
@@ -1154,7 +1153,8 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateViaDeviceIdJWT(const FString& DeviceName, const FString& DeviceId, const FString& Payload, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateViaDeviceIdJWT(const FString& DeviceName, const FString& DeviceId, const FString& Payload,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1180,7 +1180,8 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceIdJWT(const FString& DeviceName
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1279,7 +1280,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1294,7 +1295,7 @@ void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequ
 	}
 }
 
-void UXsollaLoginSubsystem::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1322,13 +1323,13 @@ void UXsollaLoginSubsystem::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRe
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
 }
 
-void UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1345,7 +1346,7 @@ void UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete(FHttpRequestPtr Http
 	}
 }
 
-void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1367,7 +1368,7 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1398,7 +1399,7 @@ void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1415,7 +1416,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpReques
 	}
 }
 
-void UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1432,7 +1433,7 @@ void UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete(FHt
 	}
 }
 
-void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1454,7 +1455,7 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1470,7 +1471,7 @@ void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr Htt
 	}
 }
 
-void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1497,13 +1498,13 @@ void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequ
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
 }
 
-void UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1531,7 +1532,7 @@ void UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete(FHttpRequestP
 }
 
 void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1539,7 +1540,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComp
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		const FString TokenField = TEXT("token");
+		static const FString TokenField = TEXT("token");
 		if (JsonObject->HasTypedField<EJson::String>(TokenField))
 		{
 			const FString Token = JsonObject->GetStringField(TokenField);
@@ -1559,14 +1560,14 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComp
 
 void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+	const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
-		const FString LoginUrlFieldName = TEXT("login_url");
+		static const FString LoginUrlFieldName = TEXT("login_url");
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
@@ -1585,7 +1586,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestCo
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1602,7 +1603,7 @@ void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr Http
 	}
 }
 
-void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1624,7 +1625,7 @@ void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRe
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1646,7 +1647,8 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1675,7 +1677,8 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1690,7 +1693,7 @@ void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPt
 	}
 }
 
-void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1712,7 +1715,7 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1728,7 +1731,7 @@ void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRe
 	}
 }
 
-void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1748,7 +1751,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	}
 }
 
-void UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1765,7 +1768,7 @@ void UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr 
 	}
 }
 
-void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1783,7 +1786,7 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 }
 
 void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1798,7 +1801,7 @@ void UXsollaLoginSubsystem::UpdateUsersFriends_HttpRequestComplete(
 	}
 }
 
-void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1814,7 +1817,7 @@ void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr Http
 	}
 }
 
-void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserSearchUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1830,7 +1833,7 @@ void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpR
 	}
 }
 
-void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1852,7 +1855,7 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1909,7 +1912,7 @@ void UXsollaLoginSubsystem::UpdateUsersDevices_HttpRequestComplete(const FHttpRe
 	}
 }
 
-void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -1931,7 +1934,7 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpReques
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
@@ -1982,7 +1985,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
@@ -2056,7 +2059,7 @@ bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<F
 	return true;
 }
 
-FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platform)
+FString UXsollaLoginSubsystem::GetTargetPlatformName(const EXsollaTargetPlatform Platform) const
 {
 	FString platform;
 
@@ -2117,12 +2120,12 @@ FString UXsollaLoginSubsystem::GetTargetPlatformName(EXsollaTargetPlatform Platf
 	return platform;
 }
 
-FXsollaLoginData UXsollaLoginSubsystem::GetLoginData()
+FXsollaLoginData UXsollaLoginSubsystem::GetLoginData() const
 {
 	return LoginData;
 }
 
-void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, bool ClearCache)
+void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, const bool ClearCache)
 {
 	// Refresh saved data in memory
 	LoginData = Data;
@@ -2134,7 +2137,7 @@ void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, bool Clea
 	}
 }
 
-void UXsollaLoginSubsystem::DropLoginData(bool ClearCache)
+void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
 {
 	// Drop saved data in memory
 	LoginData = FXsollaLoginData();
@@ -2239,37 +2242,37 @@ void UXsollaLoginSubsystem::SaveData()
 	}
 }
 
-FString UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
+const FString& UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
 {
 	return PendingSocialAuthenticationUrl;
 }
 
-FString UXsollaLoginSubsystem::GetSocialAccountLinkingHtml() const
+const FString& UXsollaLoginSubsystem::GetSocialAccountLinkingHtml() const
 {
 	return SocialAccountLinkingHtml;
 }
 
-TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserAttributes()
+const TArray<FXsollaUserAttribute>& UXsollaLoginSubsystem::GetUserAttributes()
 {
 	return UserAttributes;
 }
 
-TArray<FXsollaUserAttribute> UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
+const TArray<FXsollaUserAttribute>& UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
 {
 	return UserReadOnlyAttributes;
 }
 
-FXsollaUserDetails UXsollaLoginSubsystem::GetUserDetails() const
+const FXsollaUserDetails& UXsollaLoginSubsystem::GetUserDetails() const
 {
 	return UserDetails;
 }
 
-TArray<FXsollaSocialAuthLink> UXsollaLoginSubsystem::GetSocialAuthLinks() const
+const TArray<FXsollaSocialAuthLink>& UXsollaLoginSubsystem::GetSocialAuthLinks() const
 {
 	return SocialAuthLinks;
 }
 
-FXsollaSocialFriendsData UXsollaLoginSubsystem::GetSocialFriends() const
+const FXsollaSocialFriendsData& UXsollaLoginSubsystem::GetSocialFriends() const
 {
 	return SocialFriendsData;
 }
@@ -2283,7 +2286,7 @@ TArray<FXsollaSocialFriend> UXsollaLoginSubsystem::GetSocialProfiles(const FStri
 	return SocialProfiles;
 }
 
-TArray<FXsollaLinkedSocialNetworkData> UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
+const TArray<FXsollaLinkedSocialNetworkData>& UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
 {
 	return LinkedSocialNetworks;
 }
@@ -2297,7 +2300,7 @@ bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
 	return SocialNetwork != nullptr;
 }
 
-TArray<FXsollaUserDevice> UXsollaLoginSubsystem::GetUserDevices()
+const TArray<FXsollaUserDevice>& UXsollaLoginSubsystem::GetUserDevices()
 {
 	return UserDevices;
 }

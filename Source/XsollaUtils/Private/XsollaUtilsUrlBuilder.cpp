@@ -44,21 +44,21 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamN
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, int32 ParamValue)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, const int32 ParamValue)
 {
 	PathParams.Add(TPair<FString, FString>(ParamName, FString::FromInt(ParamValue)));
 
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, int64 ParamValue)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::SetPathParam(const FString& ParamName, const int64 ParamValue)
 {
 	PathParams.Add(TPair<FString, FString>(ParamName, FString::Printf(TEXT("%llu"), ParamValue)));
 
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, bool IgnoreEmpty)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString& ParamName, const FString& ParamValue, const bool IgnoreEmpty)
 {
 	if (IgnoreEmpty && ParamValue.IsEmpty())
 	{
@@ -70,7 +70,7 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString&
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, bool IgnoreEmpty, bool AsOneParam)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, const bool IgnoreEmpty, const bool AsOneParam)
 {
 	if(IgnoreEmpty && ParamValueArray.Num() == 0)
 	{
@@ -94,7 +94,7 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& 
 	return *this;
 }
 
-XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString& ParamName, int32 ParamValue)
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString& ParamName, const int32 ParamValue)
 {
 	NumberQueryParams.Add(TPair<FString, int32>(ParamName, ParamValue));
 

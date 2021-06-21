@@ -180,7 +180,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CheckOrder(const FString& AuthToken, int32 OrderId,
+	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Clear Cart
@@ -221,7 +221,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, int32 Quantity,
+	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Remove from Cart
@@ -349,51 +349,51 @@ public:
 
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetItemsListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
 	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void ClearCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void UpdateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void AddToCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetListOfBundles_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetSpecifiedBundle_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetVirtualCurrencyPackage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void BuyItemWithVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
@@ -423,10 +423,10 @@ private:
 	void ProcessNextCartRequest();
 
 	/** Prepare payload for payment token request */
-	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters);
+	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters);
 
 	/** Get name of publishing platform */
-	FString GetPublishingPlatformName();
+	FString GetPublishingPlatformName() const;
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
@@ -449,23 +449,23 @@ public:
 
 	/** Gets cached items data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FStoreItemsData GetItemsData() const;
+	const FStoreItemsData& GetItemsData() const;
 
 	/** Gets the list of cached virtual currencies. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FVirtualCurrency> GetVirtualCurrencyData() const;
+	const TArray<FVirtualCurrency>& GetVirtualCurrencyData() const;
 
 	/** Gets the list of cached virtual currency packages. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	TArray<FVirtualCurrencyPackage> GetVirtualCurrencyPackages() const;
+	const TArray<FVirtualCurrencyPackage>& GetVirtualCurrencyPackages() const;
 
 	/** Gets cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
-	FStoreCart GetCart() const;
+	const FStoreCart& GetCart() const;
 
 	/** Gets the pending PayStation URL to be opened in browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FString GetPendingPaystationUrl() const;
+	const FString& GetPendingPaystationUrl() const;
 
 	/** Gets name of the cached item with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
@@ -481,11 +481,11 @@ public:
 
 	/** Gets item from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FStoreItem FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
+	const FStoreItem& FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
 
 	/** Gets package from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FVirtualCurrencyPackage FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
+	const FVirtualCurrencyPackage& FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
 
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
