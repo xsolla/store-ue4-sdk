@@ -10,6 +10,8 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
+FString FXsollaStoreModule::ModuleName = "XsollaStore";
+
 void FXsollaStoreModule::StartupModule()
 {
 	XsollaStoreSettings = NewObject<UXsollaStoreSettings>(GetTransientPackage(), "XsollaStoreSettings", RF_Standalone);

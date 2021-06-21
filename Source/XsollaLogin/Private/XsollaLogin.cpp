@@ -10,6 +10,8 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
+FString FXsollaLoginModule::ModuleName = "XsollaLogin";
+
 void FXsollaLoginModule::StartupModule()
 {
 	XsollaLoginSettings = NewObject<UXsollaLoginSettings>(GetTransientPackage(), "XsollaLoginSettings", RF_Standalone);

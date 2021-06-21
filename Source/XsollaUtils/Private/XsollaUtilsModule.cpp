@@ -10,6 +10,8 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaUtilsModule"
 
+FString FXsollaUtilsModule::ModuleName = "XsollaUtils";
+
 void FXsollaUtilsModule::StartupModule()
 {
 	// Initialize image loader

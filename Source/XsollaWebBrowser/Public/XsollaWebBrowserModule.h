@@ -29,4 +29,9 @@ public:
 	{
 		return FModuleManager::Get().IsModuleLoaded("XsollaWebBrowser");
 	}
+
+	/** Module name. */
+	static FString ModuleName;
 };
+
+FString IXsollaWebBrowserModule::ModuleName = "XsollaWebBrowser";

@@ -43,6 +43,9 @@ public:
 	/** Getter for internal settings object to support runtime configuration changes. */
 	UXsollaLoginSettings* GetSettings() const;
 
+	/** Module name. */
+	static FString ModuleName;
+
 private:
 	/** Module settings */
 	UXsollaLoginSettings* XsollaLoginSettings;

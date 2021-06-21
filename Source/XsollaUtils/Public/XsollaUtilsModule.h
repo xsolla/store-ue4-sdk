@@ -46,6 +46,9 @@ public:
 	/** Getter for internal settings object to support runtime configuration changes */
 	UXsollaUtilsSettings* GetSettings() const;
 
+	/** Module name. */
+	static FString ModuleName;
+
 private:
 	/** Image loader. */
 	UXsollaUtilsImageLoader* ImageLoader;

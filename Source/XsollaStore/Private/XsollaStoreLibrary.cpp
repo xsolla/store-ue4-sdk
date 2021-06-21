@@ -5,6 +5,7 @@
 #include "XsollaStore.h"
 #include "XsollaStoreCurrencyFormat.h"
 #include "XsollaStoreDataModel.h"
+#include "XsollaUtilsLibrary.h"
 
 #include "Engine/DataTable.h"
 #include "Kismet/KismetTextLibrary.h"
@@ -15,8 +16,9 @@ UDataTable* UXsollaStoreLibrary::CurrencyLibrary;
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(
-		TEXT("DataTable'/Xsolla/Store/Misc/currency-format.currency-format'"));
+	const FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName);
+    const FString Path = FString::Printf(TEXT("DataTable'/%s/Store/Misc/currency-format.currency-format'"), *PluginName);
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*Path);
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
 

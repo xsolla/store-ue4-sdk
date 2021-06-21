@@ -8,6 +8,7 @@
 #include "XsollaUtilsWidgetsLibrary.h"
 
 #include "Dom/JsonObject.h"
+#include "Interfaces/IPluginManager.h"
 
 FString UXsollaUtilsLibrary::XReferral(TEXT(""));
 FString UXsollaUtilsLibrary::XReferralVersion(TEXT(""));
@@ -213,4 +214,22 @@ FString UXsollaUtilsLibrary::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson
 	}
 
 	return EncodedFormData;
+}
+
+const FString& UXsollaUtilsLibrary::GetPluginName(const FString ModuleName)
+{
+	TMap<FString, FString> ModuleToPluginMap;
+	for (auto Plugin : IPluginManager::Get().GetEnabledPlugins())
+	{
+		for (auto& PluginModule : Plugin->GetDescriptor().Modules)
+		{
+			if(PluginModule.Name.ToString() == ModuleName)
+			{
+				return Plugin->GetName();
+			}
+		}
+	}
+
+	static const FString DefaultName = FString();
+	return DefaultName;
 }
