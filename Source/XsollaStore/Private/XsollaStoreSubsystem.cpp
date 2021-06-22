@@ -1056,26 +1056,6 @@ FString UXsollaStoreSubsystem::SerializeJson(const TSharedPtr<FJsonObject> DataJ
 	return JsonContent;
 }
 
-bool UXsollaStoreSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
-{
-	TArray<FString> TokenParts;
-	Token.ParseIntoArray(TokenParts, TEXT("."));
-
-	FString PayloadStr;
-	if (!FBase64::Decode(TokenParts[1], PayloadStr))
-	{
-		return false;
-	}
-
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
-	if (!FJsonSerializer::Deserialize(Reader, PayloadJsonObject))
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void UXsollaStoreSubsystem::ProcessNextCartRequest()
 {
 	// Cleanup finished requests firts
@@ -1240,7 +1220,7 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(AuthToken, PayloadJsonObject))
+	if (!UXsollaUtilsLibrary::ParseTokenPayload(AuthToken, PayloadJsonObject))
 	{
 		OutError = TEXT("Can't parse token payload");
 		UE_LOG(LogXsollaStore, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);

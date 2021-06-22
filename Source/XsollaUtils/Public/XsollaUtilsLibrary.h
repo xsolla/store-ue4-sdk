@@ -103,7 +103,20 @@ public:
 	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
-    static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+	static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+
+	/** Parses a JWT token and gets its payload as a JSON object. */
+	static bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject);
+	
+	/** Get the Token Parameter
+	 * Gets a value of the specified JWT token parameter.
+	 *
+	 * @param Token User authorization token.
+	 * @param Parameter Name of parameter which value should be extracted from token.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	static FString GetTokenParameter(const FString& Token, const FString& Parameter);
+	
 private:
 
 	static FString XReferral;

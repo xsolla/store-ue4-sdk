@@ -1546,7 +1546,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComp
 			const FString Token = JsonObject->GetStringField(TokenField);
 
 			LoginData.AuthToken.JWT = Token;
-			LoginData.Username = GetTokenParameter(Token, "username");
+			LoginData.Username = UXsollaUtilsLibrary::GetTokenParameter(Token, "username");
 
 			SuccessCallback.ExecuteIfBound(LoginData);
 			return;
@@ -2034,31 +2034,6 @@ void UXsollaLoginSubsystem::SetStringArrayField(TSharedPtr<FJsonObject> Object, 
 	Object->SetArrayField(FieldName, StringJsonArray);
 }
 
-bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const
-{
-	TArray<FString> TokenParts;
-
-	Token.ParseIntoArray(TokenParts, TEXT("."));
-	if (TokenParts.Num() <= 1)
-	{
-		return false;
-	}
-
-	FString PayloadStr;
-	if (!FBase64::Decode(TokenParts[1], PayloadStr))
-	{
-		return false;
-	}
-
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
-	if (!FJsonSerializer::Deserialize(Reader, PayloadJsonObject))
-	{
-		return false;
-	}
-
-	return true;
-}
-
 FString UXsollaLoginSubsystem::GetTargetPlatformName(const EXsollaTargetPlatform Platform) const
 {
 	FString platform;
@@ -2152,7 +2127,7 @@ void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
 FString UXsollaLoginSubsystem::GetUserId(const FString& Token)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return FString();
@@ -2171,7 +2146,7 @@ FString UXsollaLoginSubsystem::GetUserId(const FString& Token)
 FString UXsollaLoginSubsystem::GetTokenProvider(const FString& Token)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return FString();
@@ -2187,29 +2162,10 @@ FString UXsollaLoginSubsystem::GetTokenProvider(const FString& Token)
 	return Provider;
 }
 
-FString UXsollaLoginSubsystem::GetTokenParameter(const FString& Token, const FString& Parameter)
-{
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(Token, PayloadJsonObject))
-	{
-		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	FString ParameterValue;
-	if (!PayloadJsonObject->TryGetStringField(Parameter, ParameterValue))
-	{
-		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Can't find parameter %s in token payload"), *VA_FUNC_LINE, *Parameter);
-		return FString();
-	}
-
-	return ParameterValue;
-}
-
 bool UXsollaLoginSubsystem::IsMasterAccount(const FString& Token)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return false;

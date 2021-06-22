@@ -705,9 +705,6 @@ private:
 	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
 
-	/** Parses a JWT token and gets its payload as a JSON object. */
-	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
-
 	/** Gets the name of a target platform. */
 	FString GetTargetPlatformName(const EXsollaTargetPlatform Platform) const;
 
@@ -746,15 +743,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	FString GetTokenProvider(const FString& Token);
-
-	/** Get the Token Parameter
-	 * Gets a value of the specified JWT token parameter.
-	 *
-	 * @param Token User authorization token.
-	 * @param Parameter Name of parameter which value should be extracted from token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenParameter(const FString& Token, const FString& Parameter);
 
 	/** Checks if the specified JWT token represents the master account.
 	 *
