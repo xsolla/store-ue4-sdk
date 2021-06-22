@@ -541,7 +541,7 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTarg
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaTargetPlatform", Platform);
 	const FString Url = XsollaUtilsUrlBuilder(Settings->AccountLinkingURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
@@ -558,7 +558,7 @@ void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserI
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	const FString PlatformName = GetTargetPlatformName(Platform);
+	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaTargetPlatform", Platform);
 	const FString Url = XsollaUtilsUrlBuilder(Settings->PlatformAuthenticationURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
@@ -2057,67 +2057,6 @@ bool UXsollaLoginSubsystem::ParseTokenPayload(const FString& Token, TSharedPtr<F
 	}
 
 	return true;
-}
-
-FString UXsollaLoginSubsystem::GetTargetPlatformName(const EXsollaTargetPlatform Platform) const
-{
-	FString platform;
-
-	switch (Platform)
-	{
-	case EXsollaTargetPlatform::PlaystationNetwork:
-		platform = TEXT("playstation_network");
-		break;
-
-	case EXsollaTargetPlatform::XboxLive:
-		platform = TEXT("xbox_live");
-		break;
-
-	case EXsollaTargetPlatform::Xsolla:
-		platform = TEXT("xsolla");
-		break;
-
-	case EXsollaTargetPlatform::PcStandalone:
-		platform = TEXT("pc_standalone");
-		break;
-
-	case EXsollaTargetPlatform::NintendoShop:
-		platform = TEXT("nintendo_shop");
-		break;
-
-	case EXsollaTargetPlatform::GooglePlay:
-		platform = TEXT("google_play");
-		break;
-
-	case EXsollaTargetPlatform::AppStoreIos:
-		platform = TEXT("app_store_ios");
-		break;
-
-	case EXsollaTargetPlatform::AndroidStandalone:
-		platform = TEXT("android_standalone");
-		break;
-
-	case EXsollaTargetPlatform::IosStandalone:
-		platform = TEXT("ios_standalone");
-		break;
-
-	case EXsollaTargetPlatform::AndroidOther:
-		platform = TEXT("android_other");
-		break;
-
-	case EXsollaTargetPlatform::IosOther:
-		platform = TEXT("ios_other");
-		break;
-
-	case EXsollaTargetPlatform::PcOther:
-		platform = TEXT("pc_other");
-		break;
-
-	default:
-		platform = TEXT("");
-	}
-
-	return platform;
 }
 
 FXsollaLoginData UXsollaLoginSubsystem::GetLoginData() const

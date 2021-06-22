@@ -25,7 +25,7 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bForceSteamAuthorization = false;
-	Platform = EXsollaTargetPlatform::PlaystationNetwork;
+	Platform = EXsollaTargetPlatform::playstation_network;
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;

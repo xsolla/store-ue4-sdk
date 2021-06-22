@@ -708,9 +708,6 @@ private:
 	/** Parses a JWT token and gets its payload as a JSON object. */
 	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
 
-	/** Gets the name of a target platform. */
-	FString GetTargetPlatformName(const EXsollaTargetPlatform Platform) const;
-
 	/** Cached Xsolla project ID. */
 	FString ProjectID;
 

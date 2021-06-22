@@ -22,18 +22,18 @@ enum class EUserDataStorage : uint8
 UENUM(BlueprintType)
 enum class EXsollaTargetPlatform : uint8
 {
-	PlaystationNetwork,
-	XboxLive,
-	Xsolla,
-	PcStandalone,
-	NintendoShop,
-	GooglePlay,
-	AppStoreIos,
-	AndroidStandalone,
-	IosStandalone,
-	AndroidOther,
-	IosOther,
-	PcOther
+	playstation_network UMETA(DisplayName = "PlaystationNetwork"),
+	xbox_live UMETA(DisplayName = "XboxLive"),
+	xsolla UMETA(DisplayName = "Xsolla"),
+	pc_standalone UMETA(DisplayName = "PcStandalone"),
+	nintendo_shop UMETA(DisplayName = "NintendoShop"),
+	google_play UMETA(DisplayName = "GooglePlay"),
+	app_store_ios UMETA(DisplayName = "AppStoreIos"),
+	android_standalone UMETA(DisplayName = "AndroidStandalone"),
+	ios_standalone UMETA(DisplayName = "IosStandalone"),
+	android_other UMETA(DisplayName = "AndroidOther"),
+	ios_other UMETA(DisplayName = "IosOther"),
+	pc_other UMETA(DisplayName = "PcOther")
 };
 
 UCLASS(config = Engine, defaultconfig)
