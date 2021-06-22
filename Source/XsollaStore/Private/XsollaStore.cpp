@@ -10,7 +10,7 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
-FString FXsollaStoreModule::ModuleName = "XsollaStore";
+const FName FXsollaStoreModule::ModuleName = "XsollaStore";
 
 void FXsollaStoreModule::StartupModule()
 {
@@ -20,7 +20,7 @@ void FXsollaStoreModule::StartupModule()
 	// Register settings
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaStore",
+		SettingsModule->RegisterSettings("Project", "Plugins", ModuleName,
 			LOCTEXT("RuntimeSettingsName", "Xsolla Store"),
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Store"),
 			XsollaStoreSettings);
@@ -33,7 +33,7 @@ void FXsollaStoreModule::ShutdownModule()
 {
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "XsollaStore");
+		SettingsModule->UnregisterSettings("Project", "Plugins", ModuleName);
 	}
 
 	if (!GExitPurge)

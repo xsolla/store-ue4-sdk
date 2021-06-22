@@ -216,20 +216,18 @@ FString UXsollaUtilsLibrary::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson
 	return EncodedFormData;
 }
 
-const FString& UXsollaUtilsLibrary::GetPluginName(const FString ModuleName)
+FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
 {
-	TMap<FString, FString> ModuleToPluginMap;
-	for (auto Plugin : IPluginManager::Get().GetEnabledPlugins())
+	for (const auto& Plugin : IPluginManager::Get().GetEnabledPlugins())
 	{
-		for (auto& PluginModule : Plugin->GetDescriptor().Modules)
+		for (const auto& PluginModule : Plugin->GetDescriptor().Modules)
 		{
-			if(PluginModule.Name.ToString() == ModuleName)
+			if(PluginModule.Name == ModuleName)
 			{
 				return Plugin->GetName();
 			}
 		}
 	}
 
-	static const FString DefaultName = FString();
-	return DefaultName;
+	return TEXT("");
 }

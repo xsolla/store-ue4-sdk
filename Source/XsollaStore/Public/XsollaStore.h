@@ -26,7 +26,7 @@ public:
 	 */
 	static inline FXsollaStoreModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FXsollaStoreModule>("XsollaStore");
+		return FModuleManager::LoadModuleChecked<FXsollaStoreModule>(ModuleName);
 	}
 
 	/**
@@ -36,14 +36,14 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("XsollaStore");
+		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
 
 	/** Getter for internal settings object to support runtime configuration changes. */
 	UXsollaStoreSettings* GetSettings() const;
 
 	/** Module name. */
-	static FString ModuleName;
+	static const FName ModuleName;
 
 private:
 	/** Module settings. */

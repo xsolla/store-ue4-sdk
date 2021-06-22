@@ -105,8 +105,7 @@ public:
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
     static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
-	static const FString& GetPluginName(const FString ModuleName);
+	static FString GetPluginName(const FName& ModuleName);
 private:
 
 	static FString XReferral;

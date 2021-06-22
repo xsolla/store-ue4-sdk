@@ -9,11 +9,12 @@
 UXsollaUtilsSettings::UXsollaUtilsSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	const FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaUtilsModule::ModuleName);
-	const FString ThemePath = FString::Printf(TEXT("/%s/Utils/BP_DefaultTheme.BP_DefaultTheme_C"), *PluginName);
-	const FString WidgetsLibraryPath = FString::Printf(TEXT("/%s/Utils/BP_DefaultWidgetsLibrary.BP_DefaultWidgetsLibrary_C"), *PluginName);
-	static ConstructorHelpers::FClassFinder<UXsollaUtilsTheme> ThemeFinder(*ThemePath);
-	static ConstructorHelpers::FClassFinder<UXsollaUtilsWidgetsLibrary> WidgetsLibraryFinder(*WidgetsLibraryPath);
+	static ConstructorHelpers::FClassFinder<UXsollaUtilsTheme> ThemeFinder(
+		*FString::Printf(TEXT("/%s/Utils/BP_DefaultTheme.BP_DefaultTheme_C"), *UXsollaUtilsLibrary::GetPluginName(FXsollaUtilsModule::ModuleName))
+		);
+	static ConstructorHelpers::FClassFinder<UXsollaUtilsWidgetsLibrary> WidgetsLibraryFinder(
+		*FString::Printf(TEXT("/%s/Utils/BP_DefaultWidgetsLibrary.BP_DefaultWidgetsLibrary_C"), *UXsollaUtilsLibrary::GetPluginName(FXsollaUtilsModule::ModuleName))
+		);
 	InterfaceTheme = ThemeFinder.Class;
 	WidgetsLibrary = WidgetsLibraryFinder.Class;
 }

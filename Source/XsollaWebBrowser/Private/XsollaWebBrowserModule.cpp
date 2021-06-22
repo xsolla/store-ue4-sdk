@@ -10,6 +10,8 @@
 #include "Modules/ModuleManager.h"
 #include "WebBrowserModule.h"
 
+const FName IXsollaWebBrowserModule::ModuleName = "XsollaWebBrowser";
+
 class FXsollaWebBrowserModule : public IXsollaWebBrowserModule
 {
 public:

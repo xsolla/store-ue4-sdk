@@ -28,9 +28,9 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
-	const FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName);
-	const FString Path = FString::Printf(TEXT("/%s/Store/Components/W_StoreBrowser.W_StoreBrowser_C"), *PluginName);
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*Path);
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(
+		*FString::Printf(TEXT("/%s/Store/Components/W_StoreBrowser.W_StoreBrowser_C"), *UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName))
+		);
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
