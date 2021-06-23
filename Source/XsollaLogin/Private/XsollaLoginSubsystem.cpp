@@ -537,11 +537,11 @@ void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, co
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code,
+void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaTargetPlatform", Platform);
+	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	const FString Url = XsollaUtilsUrlBuilder(Settings->AccountLinkingURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
@@ -553,12 +553,12 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaTarg
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform,
+void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaPublishingPlatform Platform,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaTargetPlatform", Platform);
+	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	const FString Url = XsollaUtilsUrlBuilder(Settings->PlatformAuthenticationURL)
 		.AddStringQueryParam(TEXT("user_id"), UserId)
 		.AddStringQueryParam(TEXT("platform"), PlatformName)

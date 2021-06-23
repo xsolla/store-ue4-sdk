@@ -274,7 +274,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code,
+	void LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	// TEXTREVIEW
@@ -330,7 +330,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaPublishingPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	// TEXTREVIEW
 	/** Cross-Authenticate

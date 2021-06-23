@@ -11,6 +11,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
+#include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsUrlBuilder.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
@@ -286,67 +287,12 @@ FString UXsollaInventorySubsystem::GetPublishingPlatformName() const
 {
 	const UXsollaInventorySettings* Settings = FXsollaInventoryModule::Get().GetSettings();
 
-	FString platform;
-
 	if (!Settings->UseCrossPlatformAccountLinking)
 	{
-		return platform;
+		return TEXT("");
 	}
 
-	switch (Settings->Platform)
-	{
-	case EXsollaPublishingPlatform::PlaystationNetwork: platform = TEXT("playstation_network");
-		break;
-
-	case EXsollaPublishingPlatform::XboxLive:
-		platform = TEXT("xbox_live");
-		break;
-
-	case EXsollaPublishingPlatform::Xsolla:
-		platform = TEXT("xsolla");
-		break;
-
-	case EXsollaPublishingPlatform::PcStandalone:
-		platform = TEXT("pc_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::NintendoShop:
-		platform = TEXT("nintendo_shop");
-		break;
-
-	case EXsollaPublishingPlatform::GooglePlay:
-		platform = TEXT("google_play");
-		break;
-
-	case EXsollaPublishingPlatform::AppStoreIos:
-		platform = TEXT("app_store_ios");
-		break;
-
-	case EXsollaPublishingPlatform::AndroidStandalone:
-		platform = TEXT("android_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::IosStandalone:
-		platform = TEXT("ios_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::AndroidOther:
-		platform = TEXT("android_other");
-		break;
-
-	case EXsollaPublishingPlatform::IosOther:
-		platform = TEXT("ios_other");
-		break;
-
-	case EXsollaPublishingPlatform::PcOther:
-		platform = TEXT("pc_other");
-		break;
-
-	default:
-		platform = TEXT("");
-	}
-
-	return platform;
+	return UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Settings->Platform);
 }
 
 FInventoryItemsData UXsollaInventorySubsystem::GetInventory() const
