@@ -730,27 +730,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData(const bool ClearCache = true);
 
-	/** Gets user ID from the specified JWT token.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetUserId(const FString& Token);
-
-	/** Gets a token provider.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenProvider(const FString& Token);
-
-	/** Checks if the specified JWT token represents the master account.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	bool IsMasterAccount(const FString& Token);
-
 	/** Loads save game and extract data. */
 	void LoadSavedData();
 

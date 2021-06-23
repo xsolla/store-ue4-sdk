@@ -14,6 +14,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
+#include "XsollaUtilsTokenParser.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -1219,19 +1220,9 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
 {
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!UXsollaUtilsLibrary::ParseTokenPayload(AuthToken, PayloadJsonObject))
-	{
-		OutError = TEXT("Can't parse token payload");
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
-		return false;
-	}
-
 	FString SteamIdUrl;
-	if (!PayloadJsonObject->TryGetStringField(TEXT("id"), SteamIdUrl))
+	if(!UXsollaUtilsTokenParser::GetStringTokenParam(AuthToken, TEXT("id"), SteamIdUrl, OutError))
 	{
-		OutError = TEXT("Can't find Steam profile ID in token payload");
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
 		return false;
 	}
 

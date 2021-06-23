@@ -23,6 +23,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Package.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
 
 #if PLATFORM_ANDROID
@@ -1546,7 +1547,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComp
 			const FString Token = JsonObject->GetStringField(TokenField);
 
 			LoginData.AuthToken.JWT = Token;
-			LoginData.Username = UXsollaUtilsLibrary::GetTokenParameter(Token, "username");
+			UXsollaUtilsTokenParser::GetStringTokenParam(Token, TEXT("username"), LoginData.Username);
 
 			SuccessCallback.ExecuteIfBound(LoginData);
 			return;
@@ -2122,62 +2123,6 @@ void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
 		// Drop saved data in cache
 		UXsollaLoginSave::Save(LoginData);
 	}
-}
-
-FString UXsollaLoginSubsystem::GetUserId(const FString& Token)
-{
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	FString UserId;
-	if (!PayloadJsonObject->TryGetStringField(TEXT("sub"), UserId))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find user ID in token payload"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	return UserId;
-}
-
-FString UXsollaLoginSubsystem::GetTokenProvider(const FString& Token)
-{
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	FString Provider;
-	if (!PayloadJsonObject->TryGetStringField(TEXT("provider"), Provider))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't find provider in token payload"), *VA_FUNC_LINE);
-		return FString();
-	}
-
-	return Provider;
-}
-
-bool UXsollaLoginSubsystem::IsMasterAccount(const FString& Token)
-{
-	TSharedPtr<FJsonObject> PayloadJsonObject;
-	if (!UXsollaUtilsLibrary::ParseTokenPayload(Token, PayloadJsonObject))
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
-		return false;
-	}
-
-	bool ParameterValue = false;
-	if (!PayloadJsonObject->TryGetBoolField(TEXT("is_master"), ParameterValue))
-	{
-		return false;
-	}
-
-	return ParameterValue;
 }
 
 void UXsollaLoginSubsystem::LoadSavedData()
