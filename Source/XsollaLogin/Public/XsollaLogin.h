@@ -27,7 +27,7 @@ public:
 	 */
 	static inline FXsollaLoginModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FXsollaLoginModule>("XsollaLogin");
+		return FModuleManager::LoadModuleChecked<FXsollaLoginModule>(ModuleName);
 	}
 
 	/**
@@ -37,11 +37,14 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("XsollaLogin");
+		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
 
 	/** Getter for internal settings object to support runtime configuration changes. */
 	UXsollaLoginSettings* GetSettings() const;
+
+	/** Module name. */
+	static const FName ModuleName;
 
 private:
 	/** Module settings */

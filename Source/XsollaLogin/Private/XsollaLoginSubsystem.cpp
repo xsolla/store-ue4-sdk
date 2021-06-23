@@ -38,7 +38,9 @@
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(TEXT("/Xsolla/Login/Components/W_LoginBrowser.W_LoginBrowser_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(
+		*FString::Printf(TEXT("/%s/Login/Components/W_LoginBrowser.W_LoginBrowser_C"), *UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName))
+	);
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 

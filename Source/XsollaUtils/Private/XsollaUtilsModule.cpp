@@ -10,6 +10,8 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaUtilsModule"
 
+const FName FXsollaUtilsModule::ModuleName = "XsollaUtils";
+
 void FXsollaUtilsModule::StartupModule()
 {
 	// Initialize image loader
@@ -22,7 +24,7 @@ void FXsollaUtilsModule::StartupModule()
 
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaUtils",
+		SettingsModule->RegisterSettings("Project", "Plugins", ModuleName,
 			LOCTEXT("RuntimeSettingsName", "Xsolla Utils"),
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Utils"),
 			XsollaUtilsSettings);
@@ -33,7 +35,7 @@ void FXsollaUtilsModule::ShutdownModule()
 {
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "XsollaUtils");
+		SettingsModule->UnregisterSettings("Project", "Plugins", ModuleName);
 	}
 
 	if (!GExitPurge)

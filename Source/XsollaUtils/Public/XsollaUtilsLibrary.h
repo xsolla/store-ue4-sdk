@@ -104,6 +104,8 @@ public:
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
     static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+
+	static FString GetPluginName(const FName& ModuleName);
 private:
 
 	static FString XReferral;

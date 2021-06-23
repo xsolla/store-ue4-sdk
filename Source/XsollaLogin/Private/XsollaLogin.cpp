@@ -10,6 +10,8 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
+const FName FXsollaLoginModule::ModuleName = "XsollaLogin";
+
 void FXsollaLoginModule::StartupModule()
 {
 	XsollaLoginSettings = NewObject<UXsollaLoginSettings>(GetTransientPackage(), "XsollaLoginSettings", RF_Standalone);
@@ -18,7 +20,7 @@ void FXsollaLoginModule::StartupModule()
 	// Register settings
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaLogin",
+		SettingsModule->RegisterSettings("Project", "Plugins", ModuleName,
 			LOCTEXT("RuntimeSettingsName", "Xsolla Login"),
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login"),
 			XsollaLoginSettings);
@@ -31,7 +33,7 @@ void FXsollaLoginModule::ShutdownModule()
 {
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "XsollaLogin");
+		SettingsModule->UnregisterSettings("Project", "Plugins", ModuleName);
 	}
 
 	if (!GExitPurge)
