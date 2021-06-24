@@ -19,9 +19,6 @@ public:
 	/** Parses a JWT token and gets its payload as a JSON object. */
 	static bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject);
 
-	/** Extract Param from token */
-	static bool GetStringTokenParam(const FString& Token, const FString& ParamName, FString& ParamValue, FString& OutError);
-
 	//TEXTREVIEW
 	/** Extract Param from token
 	 * Extracts string param with specified name from Token string

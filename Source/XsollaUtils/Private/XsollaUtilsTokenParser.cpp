@@ -33,29 +33,22 @@ bool UXsollaUtilsTokenParser::ParseTokenPayload(const FString& Token, TSharedPtr
 	return true;
 }
 
-bool UXsollaUtilsTokenParser::GetStringTokenParam(const FString& Token, const FString& ParamName, FString& ParamValue, FString& OutError)
+bool UXsollaUtilsTokenParser::GetStringTokenParam(const FString& Token, const FString& ParamName, FString& ParamValue)
 {
 	TSharedPtr<FJsonObject> PayloadJsonObject;
 	if (!ParseTokenPayload(Token, PayloadJsonObject))
 	{
-		OutError = TEXT("Can't parse token payload");
-		UE_LOG(LogXsollaUtils, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
 		return false;
 	}
 
 	if (!PayloadJsonObject->TryGetStringField(ParamName, ParamValue))
 	{
-		OutError = FString::Printf(TEXT("Can't find %s in token payload"), *ParamName);
-		UE_LOG(LogXsollaUtils, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *OutError);
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
+	
 	return true;
-}
-
-bool UXsollaUtilsTokenParser::GetStringTokenParam(const FString& Token, const FString& ParamName, FString& ParamValue)
-{
-	FString OutError;
-	return GetStringTokenParam(Token, ParamName, ParamValue, OutError);
 }
 
 bool UXsollaUtilsTokenParser::GetBoolTokenParam(const FString& Token, const FString& ParamName, bool& ParamValue)

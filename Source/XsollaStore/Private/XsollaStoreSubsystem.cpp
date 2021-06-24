@@ -1221,8 +1221,9 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
 {
 	FString SteamIdUrl;
-	if(!UXsollaUtilsTokenParser::GetStringTokenParam(AuthToken, TEXT("id"), SteamIdUrl, OutError))
+	if(!UXsollaUtilsTokenParser::GetStringTokenParam(AuthToken, TEXT("id"), SteamIdUrl))
 	{
+		OutError = TEXT("Can't parse token payload or can't find id in token payload");
 		return false;
 	}
 
