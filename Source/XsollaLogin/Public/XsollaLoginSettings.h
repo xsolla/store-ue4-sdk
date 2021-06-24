@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "XsollaUtilsDataModel.h"
 #include "Blueprint/UserWidget.h"
 
 #include "XsollaLoginSettings.generated.h"
@@ -16,24 +17,6 @@ enum class EUserDataStorage : uint8
 
 	/** If the user data is stored on your side, proxy requests are used. */
 	Custom UMETA(DisplayName = "Custom storage"),
-};
-
-/** Target platform name */
-UENUM(BlueprintType)
-enum class EXsollaTargetPlatform : uint8
-{
-	PlaystationNetwork,
-	XboxLive,
-	Xsolla,
-	PcStandalone,
-	NintendoShop,
-	GooglePlay,
-	AppStoreIos,
-	AndroidStandalone,
-	IosStandalone,
-	AndroidOther,
-	IosOther,
-	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)
@@ -116,11 +99,11 @@ public:
 
 	/** Target platform for cross-platform account linking. If using Xsolla Store, make sure that in the Store settings the same platform is chosen. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
-	EXsollaTargetPlatform Platform;
+	EXsollaPublishingPlatform Platform;
 
 	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo",
-		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla && !bCustomAuthViaAccessToken"))
+		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaPublishingPlatform::xsolla && !bCustomAuthViaAccessToken"))
 	FString PlatformAccountID;
 
 	/** Request user nickname after successful authorization in case one is missing */

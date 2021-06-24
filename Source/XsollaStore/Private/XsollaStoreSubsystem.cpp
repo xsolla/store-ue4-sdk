@@ -1174,68 +1174,12 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 {
 	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
 
-	FString platform;
-
 	if (!Settings->UseCrossPlatformAccountLinking)
 	{
-		return platform;
+		return TEXT("");
 	}
 
-	switch (Settings->Platform)
-	{
-	case EXsollaPublishingPlatform::PlaystationNetwork:
-		platform = TEXT("playstation_network");
-		break;
-
-	case EXsollaPublishingPlatform::XboxLive:
-		platform = TEXT("xbox_live");
-		break;
-
-	case EXsollaPublishingPlatform::Xsolla:
-		platform = TEXT("xsolla");
-		break;
-
-	case EXsollaPublishingPlatform::PcStandalone:
-		platform = TEXT("pc_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::NintendoShop:
-		platform = TEXT("nintendo_shop");
-		break;
-
-	case EXsollaPublishingPlatform::GooglePlay:
-		platform = TEXT("google_play");
-		break;
-
-	case EXsollaPublishingPlatform::AppStoreIos:
-		platform = TEXT("app_store_ios");
-		break;
-
-	case EXsollaPublishingPlatform::AndroidStandalone:
-		platform = TEXT("android_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::IosStandalone:
-		platform = TEXT("ios_standalone");
-		break;
-
-	case EXsollaPublishingPlatform::AndroidOther:
-		platform = TEXT("android_other");
-		break;
-
-	case EXsollaPublishingPlatform::IosOther:
-		platform = TEXT("ios_other");
-		break;
-
-	case EXsollaPublishingPlatform::PcOther:
-		platform = TEXT("pc_other");
-		break;
-
-	default:
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: There is no default publishing platform value"), *VA_FUNC_LINE);
-	}
-
-	return platform;
+	return UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Settings->Platform);
 }
 
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)

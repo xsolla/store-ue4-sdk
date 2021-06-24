@@ -3,6 +3,8 @@
 
 #include "XsollaLoginSettings.h"
 
+#include "XsollaUtilsDataModel.h"
+
 UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -25,7 +27,7 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bForceSteamAuthorization = false;
-	Platform = EXsollaTargetPlatform::PlaystationNetwork;
+	Platform = EXsollaPublishingPlatform::playstation_network;
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
