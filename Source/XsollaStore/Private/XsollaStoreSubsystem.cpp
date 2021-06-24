@@ -8,13 +8,13 @@
 #include "XsollaStoreSave.h"
 #include "XsollaStoreSettings.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
 
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
-#include "XsollaUtilsTokenParser.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -29,9 +29,8 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(
-		*FString::Printf(TEXT("/%s/Store/Components/W_StoreBrowser.W_StoreBrowser_C"), *UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName))
-		);
+	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Store/Components/W_StoreBrowser.W_StoreBrowser_C"),
+		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 }
 
@@ -1166,7 +1165,7 @@ FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
 {
 	FString SteamIdUrl;
-	if(!UXsollaUtilsTokenParser::GetStringTokenParam(AuthToken, TEXT("id"), SteamIdUrl))
+	if (!UXsollaUtilsTokenParser::GetStringTokenParam(AuthToken, TEXT("id"), SteamIdUrl))
 	{
 		OutError = TEXT("Can't parse token payload or can't find id in token payload");
 		return false;

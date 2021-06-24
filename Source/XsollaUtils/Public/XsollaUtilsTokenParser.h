@@ -7,7 +7,7 @@
 #include "XsollaUtilsTokenParser.generated.h"
 
 /**
- * 
+ * JWT parsing utility.
  */
 UCLASS()
 class XSOLLAUTILS_API UXsollaUtilsTokenParser : public UBlueprintFunctionLibrary

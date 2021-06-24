@@ -16,9 +16,8 @@ UDataTable* UXsollaStoreLibrary::CurrencyLibrary;
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(
-		*FString::Printf(TEXT("DataTable'/%s/Store/Misc/currency-format.currency-format'"), *UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName))
-		);
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Store/Misc/currency-format.currency-format'"),
+		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
 
@@ -50,7 +49,7 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 	{
 		const FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
 			false, true, 1, 324, Row->fractionSize, Row->fractionSize)
-									  .ToString();
+											.ToString();
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
 	}
 

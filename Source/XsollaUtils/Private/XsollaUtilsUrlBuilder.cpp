@@ -72,12 +72,12 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddStringQueryParam(const FString&
 
 XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<FString>& ParamValueArray, const bool IgnoreEmpty, const bool AsOneParam)
 {
-	if(IgnoreEmpty && ParamValueArray.Num() == 0)
+	if (IgnoreEmpty && ParamValueArray.Num() == 0)
 	{
 		return *this;
 	}
 
-	if(AsOneParam)
+	if (AsOneParam)
 	{
 		FString AdditionalFieldsString = FString::Join(ParamValueArray, TEXT(","));
 		AdditionalFieldsString.RemoveFromEnd(",");
@@ -103,7 +103,7 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString&
 
 XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddBoolQueryParam(const FString& ParamName, const bool ParamValue, const bool AsNumber)
 {
-	if(AsNumber)
+	if (AsNumber)
 	{
 		AddStringQueryParam(ParamName, ParamValue ? TEXT("1") : TEXT("0"), true);
 	}

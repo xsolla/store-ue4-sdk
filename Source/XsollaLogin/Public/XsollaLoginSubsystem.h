@@ -155,7 +155,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
-		const FOnAuthUpdate& SuccessCallback,const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -319,7 +319,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Cross-Authenticate
 	 * Authenticates a platform account user.
@@ -550,7 +550,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-	
+
 	/** Search Users By Nickname
 	 * Searches for users with the specified nickname.
 	 *
@@ -616,7 +616,7 @@ protected:
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-	
+
 	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& State,
@@ -687,10 +687,10 @@ protected:
 	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-			FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	
+
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
@@ -776,7 +776,7 @@ public:
 	/** Gets user devices. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const TArray<FXsollaUserDevice>& GetUserDevices();
-	
+
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
@@ -807,7 +807,7 @@ protected:
 
 	/** Cached list of user devices. */
 	TArray<FXsollaUserDevice> UserDevices;
-	
+
 	static const FString BlankRedirectEndpoint;
 
 private:

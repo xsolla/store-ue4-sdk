@@ -1,6 +1,5 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
 
-
 #include "XsollaUtilsTokenParser.h"
 
 UXsollaUtilsTokenParser::UXsollaUtilsTokenParser(const FObjectInitializer& ObjectInitializer)
@@ -47,7 +46,7 @@ bool UXsollaUtilsTokenParser::GetStringTokenParam(const FString& Token, const FS
 		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -63,6 +62,7 @@ bool UXsollaUtilsTokenParser::GetBoolTokenParam(const FString& Token, const FStr
 
 	if (!PayloadJsonObject->TryGetBoolField(ParamName, ParamValue))
 	{
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
 

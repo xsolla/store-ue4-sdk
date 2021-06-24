@@ -6,13 +6,13 @@
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
 #include "XsollaInventorySettings.h"
+#include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsUrlBuilder.h"
 
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "JsonObjectConverter.h"
-#include "XsollaUtilsLibrary.h"
-#include "XsollaUtilsUrlBuilder.h"
 #include "Misc/Base64.h"
 #include "Modules/ModuleManager.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -332,8 +332,7 @@ TArray<FSubscriptionItem> UXsollaInventorySubsystem::GetSubscriptions() const
 
 FString UXsollaInventorySubsystem::GetItemName(const FString& ItemSKU) const
 {
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem)
-	{
+	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
 		return InItem.sku == ItemSKU;
 	});
 
@@ -347,8 +346,7 @@ FString UXsollaInventorySubsystem::GetItemName(const FString& ItemSKU) const
 
 bool UXsollaInventorySubsystem::IsItemInInventory(const FString& ItemSKU) const
 {
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem)
-	{
+	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
 		return InItem.sku == ItemSKU;
 	});
 
