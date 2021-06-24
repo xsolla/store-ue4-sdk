@@ -705,9 +705,6 @@ private:
 	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
 
-	/** Parses a JWT token and gets its payload as a JSON object. */
-	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
-
 	/** Cached Xsolla project ID. */
 	FString ProjectID;
 
@@ -729,36 +726,6 @@ public:
 	/** Drops cache and cleans login data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData(const bool ClearCache = true);
-
-	/** Gets user ID from the specified JWT token.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetUserId(const FString& Token);
-
-	/** Gets a token provider.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenProvider(const FString& Token);
-
-	/** Get the Token Parameter
-	 * Gets a value of the specified JWT token parameter.
-	 *
-	 * @param Token User authorization token.
-	 * @param Parameter Name of parameter which value should be extracted from token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenParameter(const FString& Token, const FString& Parameter);
-
-	/** Checks if the specified JWT token represents the master account.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	bool IsMasterAccount(const FString& Token);
 
 	/** Loads save game and extract data. */
 	void LoadSavedData();
