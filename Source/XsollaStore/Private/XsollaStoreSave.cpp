@@ -3,8 +3,6 @@
 
 #include "XsollaStoreSave.h"
 
-#include "XsollaStoreDefines.h"
-
 #include "Kismet/GameplayStatics.h"
 
 const FString UXsollaStoreSave::SaveSlotName = "XsollaStoreSaveSlot";

@@ -12,18 +12,15 @@
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
 
-#include "Developer/Settings/Public/ISettingsModule.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
-#include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
-#include "UObject/Package.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
