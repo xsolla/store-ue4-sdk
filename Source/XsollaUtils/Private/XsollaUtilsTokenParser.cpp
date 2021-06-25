@@ -1,6 +1,12 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsTokenParser.h"
+#include "XsollaUtilsDefines.h"
+
+#include "Dom/JsonObject.h"
+#include "Misc/Base64.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 UXsollaUtilsTokenParser::UXsollaUtilsTokenParser(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

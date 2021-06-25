@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsTokenParser.generated.h"
 
+class FJsonObject;
+
 /**
  * JWT parsing utility.
  */

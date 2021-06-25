@@ -17,7 +17,6 @@
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
 #include "Kismet/GameplayStatics.h"
-#include "Misc/Base64.h"
 #include "OnlineSubsystem.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
