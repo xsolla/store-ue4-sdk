@@ -204,7 +204,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 		.AddStringQueryParam(TEXT("projectId"), LoginID)
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -549,7 +549,7 @@ void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaPubl
 		.AddStringQueryParam(TEXT("platform"), PlatformName)
 		.AddStringQueryParam(TEXT("code"), Code)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -695,7 +695,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone/{phoneNumber}"))
 		.SetPathParam(TEXT("phoneNumber"), PhoneNumberParam)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -807,7 +807,7 @@ void UXsollaLoginSubsystem::UpdateSocialFriends(const FString& AuthToken, const 
 		.AddBoolQueryParam(TEXT("with_xl_uid"), FromThisGame, false)
 		.AddStringQueryParam(TEXT("platform"), Platform)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -891,7 +891,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 		.SetPathParam(TEXT("ProviderName"), ProviderName)
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -933,7 +933,7 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -990,8 +990,8 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 		.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.Build();
-	
-	
+
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1015,7 +1015,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 		.AddStringQueryParam(TEXT("state"), State)
 		.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1043,7 +1043,7 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 		.AddBoolQueryParam(TEXT("with_logout"), Settings->InvalidateExistingSessions)
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1065,7 +1065,7 @@ void UXsollaLoginSubsystem::AuthenticateUserOAuth(const FString& Username, const
 		.AddStringQueryParam(TEXT("client_id"), ClientID)
 		.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLoginOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1085,7 +1085,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& Provide
 		.AddStringQueryParam(TEXT("payload"), Payload)
 		.AddArrayQueryParam(TEXT("fields"), AdditionalFields, true, true)
 		.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1261,7 +1261,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 		.AddStringQueryParam(TEXT("state"), State)
 		.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 		.Build();
-	
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("access_token"), *AuthToken);
@@ -1980,8 +1980,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 		}
 		else
 		{
-			//TEXTREVIEW
-			OutError.description = TEXT("Response code is successful, but different was expected");
+			OutError.description = TEXT("Response code is successful, outcome is unexpexted");
 		}
 	}
 
