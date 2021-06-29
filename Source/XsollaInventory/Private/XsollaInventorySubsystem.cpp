@@ -47,11 +47,11 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/items"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddNumberQueryParam(TEXT("offset"), Offset)
-		.AddNumberQueryParam(TEXT("limit"), Limit)
-		.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
-		.Build();
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
@@ -62,10 +62,10 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
 void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/virtual_currency_balance"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
-		.Build();
-	
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.Build();
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -76,10 +76,10 @@ void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/subscriptions"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
-		.Build();
-	
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.Build();
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -113,10 +113,10 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 	}
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/item/consume"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
-		.Build();
-	
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.Build();
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -128,10 +128,10 @@ void UXsollaInventorySubsystem::GetCouponRewards(const FString& AuthToken, const
 	const FOnCouponRewardsUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/code/{CouponCode}/rewards"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.SetPathParam(TEXT("CouponCode"), CouponCode)
-		.Build();
-	
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("CouponCode"), CouponCode)
+							.Build();
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -142,9 +142,9 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	const FOnCouponRedeemUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/redeem"))
-		.SetPathParam(TEXT("ProjectID"), ProjectID)
-		.Build();
-	
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.Build();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("coupon_code"), CouponCode);
