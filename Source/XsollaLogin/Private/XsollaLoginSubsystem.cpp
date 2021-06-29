@@ -1976,7 +1976,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 		}
 		else
 		{
-			OutError.description = TEXT("Response code is successful, outcome is unexpexted");
+			OutError.description = TEXT("Response code is successful, outcome is unexpected");
 		}
 	}
 
