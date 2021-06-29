@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.0] - 2021-06-25
+## [0.7.0] - 2021-06-29
 
 ### Added
 - Authentication via device ID.
