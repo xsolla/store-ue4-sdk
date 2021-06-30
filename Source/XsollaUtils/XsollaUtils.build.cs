@@ -20,7 +20,8 @@ namespace UnrealBuildTool.Rules
                     "ImageWrapper",
                     "HTTP",
                     "Json",
-                    "JsonUtilities"
+                    "JsonUtilities",
+                    "Projects"
                 }
             );
 

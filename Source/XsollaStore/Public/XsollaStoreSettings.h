@@ -23,7 +23,9 @@ enum class EXsollaPaymentUiTheme : uint8
 {
 	default_light UMETA(DisplayName = "Default"),
 	default_dark UMETA(DisplayName = "Default Dark"),
-	dark UMETA(DisplayName = "Dark")
+	dark UMETA(DisplayName = "Dark"),
+	ps4_default_light UMETA(DisplayName = "PS4 Default Light"),
+	ps4_default_dark UMETA(DisplayName = "PS4 Default Dark")
 };
 
 /** Device type used to display the payment interface. */

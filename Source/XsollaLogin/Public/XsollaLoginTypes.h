@@ -435,3 +435,22 @@ struct FXsollaProviderToken
 	UPROPERTY(BlueprintReadWrite, Category = "Social Network")
 	FString token_type;
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaUserDevice
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Device")
+	FString device;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Device")
+	int64 id;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Device")
+	FString last_used_at;
+
+	UPROPERTY(BlueprintReadWrite, Category = "User Device")
+	FString type;
+
+};

@@ -8,6 +8,7 @@
 #include "XsollaUtilsWidgetsLibrary.h"
 
 #include "Dom/JsonObject.h"
+#include "Interfaces/IPluginManager.h"
 
 FString UXsollaUtilsLibrary::XReferral(TEXT(""));
 FString UXsollaUtilsLibrary::XReferralVersion(TEXT(""));
@@ -18,7 +19,7 @@ UXsollaUtilsLibrary::UXsollaUtilsLibrary(const FObjectInitializer& ObjectInitial
 }
 
 void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject,
-	FXsollaParameters CustomParameters, const FString& FieldName)
+	const FXsollaParameters& CustomParameters, const FString& FieldName)
 {
 	if (CustomParameters.Parameters.Num() == 0)
 	{
@@ -35,7 +36,7 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 		JsonRequestObject = MakeShareable(new FJsonObject);
 	}
 
-	for (auto Parameter : CustomParameters.Parameters)
+	for (auto& Parameter : CustomParameters.Parameters)
 	{
 		const FVariant Variant = Parameter.Value.Variant;
 
@@ -145,28 +146,28 @@ FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
 	return FDateTime::FromUnixTimestamp(Time);
 }
 
-int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime DateTime)
+int64 UXsollaUtilsLibrary::GetSecondsFromUnixTimestamp(const FDateTime& DateTime)
 {
 	return DateTime.ToUnixTimestamp();
 }
 
-void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters CustomParameters)
+void UXsollaUtilsLibrary::AddParametersToJsonObject(TSharedPtr<FJsonObject> JsonObject, const FXsollaParameters& CustomParameters)
 {
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters);
 }
 
 void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName,
-	const FXsollaParameters CustomParameters)
+	const FXsollaParameters& CustomParameters)
 {
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(int Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(const int Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(float Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(const float Value)
 {
 	return FXsollaJsonVariant(Value);
 }
@@ -176,7 +177,7 @@ FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(const FSt
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(const bool Value)
 {
 	return FXsollaJsonVariant(Value);
 }
@@ -191,4 +192,42 @@ void UXsollaUtilsLibrary::GetPartnerInfo(FString& Referral, FString& ReferralVer
 {
 	Referral = XReferral;
 	ReferralVersion = XReferralVersion;
+}
+
+FString UXsollaUtilsLibrary::EncodeFormData(TSharedPtr<FJsonObject> FormDataJson)
+{
+	FString EncodedFormData = "";
+	uint16 ParamIndex = 0;
+
+	for (auto FormDataIt = FormDataJson->Values.CreateIterator(); FormDataIt; ++FormDataIt)
+	{
+		FString Key = FormDataIt.Key();
+		FString Value = FormDataIt.Value().Get()->AsString();
+
+		if (!Key.IsEmpty() && !Value.IsEmpty())
+		{
+			EncodedFormData += ParamIndex == 0 ? "" : "&";
+			EncodedFormData += FGenericPlatformHttp::UrlEncode(Key) + "=" + FGenericPlatformHttp::UrlEncode(Value);
+		}
+
+		ParamIndex++;
+	}
+
+	return EncodedFormData;
+}
+
+FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
+{
+	for (const auto& Plugin : IPluginManager::Get().GetEnabledPlugins())
+	{
+		for (const auto& PluginModule : Plugin->GetDescriptor().Modules)
+		{
+			if(PluginModule.Name == ModuleName)
+			{
+				return Plugin->GetName();
+			}
+		}
+	}
+
+	return TEXT("");
 }

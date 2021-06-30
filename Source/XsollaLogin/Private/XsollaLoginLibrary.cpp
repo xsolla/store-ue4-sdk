@@ -5,13 +5,11 @@
 
 #include "XsollaLogin.h"
 
-#include "Engine/Engine.h"
 #include "Engine/Texture2D.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
 #include "Kismet/GameplayStatics.h"
-#include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
 #include "OnlineSubsystem.h"
@@ -52,7 +50,7 @@ void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(const UTexture2D* Texture)
 {
 	int Width = Texture->GetSizeX();
 	int Height = Texture->GetSizeY();
@@ -104,4 +102,20 @@ FString UXsollaLoginLibrary::GetUrlParameter(const FString& URL, const FString& 
 	}
 
 	return ParameterValue;
+}
+
+FString UXsollaLoginLibrary::GetDeviceName()
+{
+#if PLATFORM_ANDROID
+	return FAndroidMisc::GetDeviceMake() + FAndroidMisc::GetDeviceModel();
+#elif PLATFORM_IOS
+	return FIOSPlatformMisc::GetDefaultDeviceProfileName();
+#else
+	return FPlatformMisc::GetDefaultDeviceProfileName();
+#endif
+}
+
+FString UXsollaLoginLibrary::GetDeviceId()
+{
+	return UKismetSystemLibrary::GetDeviceId();
 }

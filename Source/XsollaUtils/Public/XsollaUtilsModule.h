@@ -27,7 +27,7 @@ public:
 	 */
 	static inline FXsollaUtilsModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FXsollaUtilsModule>("XsollaUtils");
+		return FModuleManager::LoadModuleChecked<FXsollaUtilsModule>(ModuleName);
 	}
 
 	/**
@@ -37,7 +37,7 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("XsollaUtils");
+		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
 
 	/** Getter for the image loader object. */
@@ -45,6 +45,9 @@ public:
 
 	/** Getter for internal settings object to support runtime configuration changes */
 	UXsollaUtilsSettings* GetSettings() const;
+
+	/** Module name. */
+	static const FName ModuleName;
 
 private:
 	/** Image loader. */

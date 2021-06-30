@@ -3,15 +3,21 @@
 
 #include "XsollaWebBrowserAssetManager.h"
 
+#include "XsollaUtilsLibrary.h"
+#include "XsollaWebBrowserModule.h"
+
 #if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
 #include "WebBrowserTexture.h"
 #endif
 
 UXsollaWebBrowserAssetManager::UXsollaWebBrowserAssetManager(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, DefaultMaterial(FString(TEXT("/Xsolla/Common/Browser/M_WebTexture.M_WebTexture")))
-	, DefaultTranslucentMaterial(FString(TEXT("/Xsolla/Common/Browser/M_WebTexture_Translucent.M_WebTexture_Translucent")))
 {
+	DefaultMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture.M_WebTexture"),
+		*UXsollaUtilsLibrary::GetPluginName(IXsollaWebBrowserModule::ModuleName));
+	DefaultTranslucentMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture_Translucent.M_WebTexture_Translucent"),
+		*UXsollaUtilsLibrary::GetPluginName(IXsollaWebBrowserModule::ModuleName));
+
 #if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
 	// Add a hard reference to UXsollaWebBrowserTexture, without this the WebBrowserTexture DLL never gets loaded on Windows.
 	UWebBrowserTexture::StaticClass();

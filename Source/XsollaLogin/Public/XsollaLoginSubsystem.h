@@ -30,6 +30,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserProfileReceived, const FXsollaPublicPro
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchResult&, SearchResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkEmailAndPasswordSuccess, bool, bNeedToConfirmEmail);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -49,9 +50,10 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
+	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
 
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -69,8 +71,8 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Payload,
-		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Resend Account Confirmation Email
 	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
@@ -97,7 +99,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticateUser(const FString& Username, const FString& Password, const FString& Payload,
-		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
 	/** Reset User Password
 	 * Resets the user password.
@@ -140,7 +142,7 @@ public:
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, bool bRememberMe = false);
+	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
 
 	/** Launch native authentication via social network
 	 * Opens the specified social network mobile app (if available) in order to authenticate the user.
@@ -153,7 +155,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
-		const FOnAuthUpdate& SuccessCallback,const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -253,12 +255,12 @@ public:
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Check User Age
-	* Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
-	*
-	* @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
-	* @param SuccessCallback Callback function called after successful check of the user age.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
+	 *
+	 * @param DateOfBirth User's birth date in the 'YYYY-MM-DD' format.
+	 * @param SuccessCallback Callback function called after successful check of the user age.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -272,7 +274,48 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkAccount(const FString& UserId, const EXsollaTargetPlatform Platform, const FString& Code,
+	void LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
+		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Link email, password, and username to account
+	 * Adds the username/email and password authentication to the existing user account. This call is used if the account is created via the device ID or phone number.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Email User email.
+	 * @param Password User password.
+	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
+	 * @param Username User's username.
+	 * @param SuccessCallback Callback function called after successful email and password linking.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, const bool ReceiveNewsConsent, const FString& Username,
+		const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Link device to account
+	 * Links the specified device to the user account.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param PlatformName Name of the mobile platform. Can be Android or iOS.
+	 * @param DeviceName Name of mobile device.
+	 * @param DeviceId Platform specific unique device ID.
+	 * @param SuccessCallback Callback function called after successful linking of the device.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId,
+		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Unlink device from account
+	 * Unlinks the specified device from the user account.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param DeviceId Platform specific unique device ID. It is generated by the Xsolla Login server. It is not the same as the device_id parameter from the Auth via device ID call.
+	 * @param SuccessCallback Callback function called after successful unlinking of the device.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Cross-Authenticate
@@ -284,20 +327,34 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaTargetPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaPublishingPlatform Platform, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Cross-Authenticate
+	 * Authenticates a platform account user via deviceId.
+	 *
+	 * @param DeviceName Name of the mobile device.
+	 * @param DeviceId Platform specific unique device ID.
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param SuccessCallback Callback function called after successful user authentication via the device ID.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State, const FString& Payload,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Auth Via Access Token of Social Network
-	* Authenticates the user with the access token using social network credentials.
-	*
-	* @param AuthToken Access token received from a social network
-	* @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
-	* @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
-	* @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
-	* @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
-	* @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
-	* @param SuccessCallback Callback function called after successful user authentication on the specified platform.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Authenticates the user with the access token using social network credentials.
+	 *
+	 * @param AuthToken Access token received from a social network
+	 * @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
+	 * @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
+	 * @param SuccessCallback Callback function called after successful user authentication on the specified platform.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 		const FString& ProviderName, const FString& Payload, const FString& State,
@@ -380,7 +437,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* Picture, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Profile Picture
 	 * Removes user profile picture.
@@ -405,7 +462,7 @@ public:
 	 * @param Limit Maximum number of friends that can be received at a time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateFriends(const FString& AuthToken, EXsollaFriendsType Type, EXsollaUsersSortCriteria SortBy, EXsollaUsersSortOrder SortOrder,
+	void UpdateFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
 		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, const int Limit = 20);
 
 	/** Modify Friends
@@ -418,7 +475,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyFriends(const FString& AuthToken, EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyFriends(const FString& AuthToken, const EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update Social Authentication Links
 	 * Updates locally cached list of links for social authentication enabled in Publisher Account.
@@ -444,7 +501,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateSocialFriends(const FString& AuthToken, const FString& Platform,
-		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 500, bool FromThisGame = false);
+		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const int Offset = 0, const int Limit = 500, const bool FromThisGame = false);
 
 	/** Update Users Friends
 	 * Updates friends on the server.
@@ -479,6 +536,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Update Users devices
+	 * Updates a list of user’s devices.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after users devices data was successfully received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Search Users By Nickname
 	 * Searches for users with the specified nickname.
 	 *
@@ -491,7 +558,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void SearchUsersByNickname(const FString& AuthToken, const FString& Nickname,
-		const FOnUserSearchUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, int Offset = 0, int Limit = 100);
+		const FOnUserSearchUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const int Offset = 0, const int Limit = 100);
 
 	/** Link Social Network To User's Account
 	 * Links the social network, which is used by the player for authentication, to the user account.
@@ -517,16 +584,17 @@ public:
 
 protected:
 	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
-		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void RegisterUserOAuth(const FString& Username, const FString& Password, const FString& Email, const FString& State,
-		bool PersonalDataProcessingConsent, bool ReceiveNewsConsent, TArray<FString> AdditionalFields,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void ResendAccountConfirmationEmailJWT(const FString& Username, const FString& Payload, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, bool bRememberMe, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateUserJWT(const FString& Username, const FString& Password, const FString& Payload, const bool bRememberMe,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthenticateUserOAuth(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	void GetSocialAuthenticationUrlJWT(const FString& ProviderName, const FString& Payload, const TArray<FString>& AdditionalFields,
@@ -539,73 +607,84 @@ protected:
 	void AuthenticateWithSessionTicketOAuth(const FString& ProviderName, const FString& AppId, const FString& SessionTicket, const FString& Code, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	void AuthenticateViaDeviceIdJWT(const FString& DeviceName, const FString& DeviceId, const FString& Payload,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void AuthenticateViaDeviceIdOAuth(const FString& DeviceName, const FString& DeviceId, const FString& State,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	void AuthViaAccessTokenOfSocialNetworkJWT(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UserLoginOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserLoginOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void AuthViaAccessTokenOfSocialNetworkJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UpdateUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void UserSearch_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserSearchUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded,
+	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
@@ -618,17 +697,8 @@ private:
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& Content = FString(), const FString& AuthToken = FString());
 
-	/** Encodes the request body to match x-www-form-urlencoded data format. */
-	FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
-
 	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
-
-	/** Parses a JWT token and gets its payload as a JSON object. */
-	bool ParseTokenPayload(const FString& Token, TSharedPtr<FJsonObject>& PayloadJsonObject) const;
-
-	/** Gets the name of a target platform. */
-	FString GetTargetPlatformName(EXsollaTargetPlatform Platform);
 
 	/** Cached Xsolla project ID. */
 	FString ProjectID;
@@ -636,48 +706,21 @@ private:
 	/** Cached Xsolla Login project. */
 	FString LoginID;
 
+	/** Cached Xsolla client ID. */
+	FString ClientID;
+
 public:
 	/** Gets user login state data. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
-	FXsollaLoginData GetLoginData();
+	FXsollaLoginData GetLoginData() const;
 
 	/** Sets user login state data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void SetLoginData(const FXsollaLoginData& Data, bool ClearCache = true);
+	void SetLoginData(const FXsollaLoginData& Data, const bool ClearCache = true);
 
 	/** Drops cache and cleans login data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void DropLoginData(bool ClearCache = true);
-
-	/** Gets user ID from the specified JWT token.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetUserId(const FString& Token);
-
-	/** Gets a token provider.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenProvider(const FString& Token);
-
-	/** Get the Token Parameter
-	 * Gets a value of the specified JWT token parameter.
-	 *
-	 * @param Token User authorization token.
-	 * @param Parameter Name of parameter which value should be extracted from token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetTokenParameter(const FString& Token, const FString& Parameter);
-
-	/** Checks if the specified JWT token represents the master account.
-	 *
-	 * @param Token User authorization token.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	bool IsMasterAccount(const FString& Token);
+	void DropLoginData(const bool ClearCache = true);
 
 	/** Loads save game and extract data. */
 	void LoadSavedData();
@@ -687,31 +730,31 @@ public:
 
 	/** Gets the pending social authentication URL to be opened in the browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetPendingSocialAuthenticationUrl() const;
+	const FString& GetPendingSocialAuthenticationUrl() const;
 
 	/** Gets cached HTML page for social account linking. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FString GetSocialAccountLinkingHtml() const;
+	const FString& GetSocialAccountLinkingHtml() const;
 
 	/** Gets user attributes. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaUserAttribute> GetUserAttributes();
+	const TArray<FXsollaUserAttribute>& GetUserAttributes();
 
 	/** Gets user read-only attributes. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaUserAttribute> GetUserReadOnlyAttributes();
+	const TArray<FXsollaUserAttribute>& GetUserReadOnlyAttributes();
 
 	/** Gets user details. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FXsollaUserDetails GetUserDetails() const;
+	const FXsollaUserDetails& GetUserDetails() const;
 
 	/** Gets user friends. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaSocialAuthLink> GetSocialAuthLinks() const;
+	const TArray<FXsollaSocialAuthLink>& GetSocialAuthLinks() const;
 
 	/** Gets user friends from social networks. Returns the list of users obtained during last UpdateSocialFriends method call. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	FXsollaSocialFriendsData GetSocialFriends() const;
+	const FXsollaSocialFriendsData& GetSocialFriends() const;
 
 	/** Gets social profiles associated with specified user. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
@@ -719,11 +762,15 @@ public:
 
 	/** Gets linked social networks. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaLinkedSocialNetworkData> GetLinkedSocialNetworks() const;
+	const TArray<FXsollaLinkedSocialNetworkData>& GetLinkedSocialNetworks() const;
 
 	/** Checks if the specified social network is linked to user profile. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	bool IsSocialNetworkLinked(const FString& Provider) const;
+
+	/** Gets user devices. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	const TArray<FXsollaUserDevice>& GetUserDevices();
 
 protected:
 	/** Keeps state of user login. */
@@ -753,22 +800,10 @@ protected:
 	/** Cached list of linked social networks. */
 	TArray<FXsollaLinkedSocialNetworkData> LinkedSocialNetworks;
 
-protected:
-	static const FString RegistrationEndpoint;
-	static const FString LoginEndpoint;
-	static const FString LoginSocialEndpoint;
-	static const FString ResetPasswordEndpoint;
-	static const FString ProxyRegistrationEndpoint;
-	static const FString ProxyLoginEndpoint;
-	static const FString ProxyResetPasswordEndpoint;
-	static const FString ValidateTokenEndpoint;
-	static const FString UserAttributesEndpoint;
-	static const FString CrossAuthEndpoint;
-	static const FString AccountLinkingCodeEndpoint;
-	static const FString LoginEndpointOAuth;
+	/** Cached list of user devices. */
+	TArray<FXsollaUserDevice> UserDevices;
+
 	static const FString BlankRedirectEndpoint;
-	static const FString UserDetailsEndpoint;
-	static const FString UsersEndpoint;
 
 private:
 	UPROPERTY()

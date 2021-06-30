@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include "XsollaUtilsDataModel.h"
 
 #include "XsollaLoginSettings.generated.h"
 
@@ -16,24 +17,6 @@ enum class EUserDataStorage : uint8
 
 	/** If the user data is stored on your side, proxy requests are used. */
 	Custom UMETA(DisplayName = "Custom storage"),
-};
-
-/** Target platform name */
-UENUM(BlueprintType)
-enum class EXsollaTargetPlatform : uint8
-{
-	PlaystationNetwork,
-	XboxLive,
-	Xsolla,
-	PcStandalone,
-	NintendoShop,
-	GooglePlay,
-	AppStoreIos,
-	AndroidStandalone,
-	IosStandalone,
-	AndroidOther,
-	IosOther,
-	PcOther
 };
 
 UCLASS(config = Engine, defaultconfig)
@@ -94,6 +77,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	FString DemoLoginID;
 
+	/** Demo application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
+	FString DemoClientID;
+
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool UseCrossPlatformAccountLinking;
@@ -112,11 +99,11 @@ public:
 
 	/** Target platform for cross-platform account linking. If using Xsolla Store, make sure that in the Store settings the same platform is chosen. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
-	EXsollaTargetPlatform Platform;
+	EXsollaPublishingPlatform Platform;
 
 	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo",
-		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaTargetPlatform::Xsolla && !bCustomAuthViaAccessToken"))
+		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaPublishingPlatform::xsolla && !bCustomAuthViaAccessToken"))
 	FString PlatformAccountID;
 
 	/** Request user nickname after successful authorization in case one is missing */
@@ -125,7 +112,7 @@ public:
 
 	/** If enabled, Login SDK will use Steam as default authorization mechanism */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	bool bUseSteamAuthorization;
+	bool bForceSteamAuthorization;
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla Login Demo")
 	void SetupDefaultDemoSettings();

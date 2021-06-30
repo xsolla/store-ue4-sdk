@@ -17,7 +17,7 @@ public:
 	 */
 	static inline IXsollaWebBrowserModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<IXsollaWebBrowserModule>("XsollaWebBrowser");
+		return FModuleManager::LoadModuleChecked<IXsollaWebBrowserModule>(ModuleName);
 	}
 
 	/**
@@ -27,6 +27,9 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("XsollaWebBrowser");
+		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
+
+	/** Module name. */
+	static const FName ModuleName;
 };

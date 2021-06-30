@@ -16,7 +16,7 @@ UXsollaUtilsImageLoader::UXsollaUtilsImageLoader(const FObjectInitializer& Objec
 {
 }
 
-void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
+void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
 	if (URL.IsEmpty())
 	{
@@ -64,7 +64,8 @@ void UXsollaUtilsImageLoader::LoadImage(FString URL, const FOnImageLoaded& Succe
 	}
 }
 
-void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
+void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
 {
 	const FName ResourceName = GetCacheName(HttpRequest->GetURL());
 

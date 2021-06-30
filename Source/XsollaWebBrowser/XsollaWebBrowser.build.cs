@@ -18,7 +18,8 @@ namespace UnrealBuildTool.Rules
                     "Slate",
                     "SlateCore",
                     "UMG",
-                    "Engine"
+                    "Engine",
+                    "XsollaUtils"
                 }
             );
             
