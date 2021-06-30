@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "XsollaUtilsDataModel.h"
 #include "Blueprint/UserWidget.h"
+#include "XsollaUtilsDataModel.h"
 
 #include "XsollaLoginSettings.generated.h"
 
@@ -80,7 +80,7 @@ public:
 	/** Demo application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
 	FString DemoClientID;
-	
+
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool UseCrossPlatformAccountLinking;

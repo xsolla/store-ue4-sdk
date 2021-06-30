@@ -5,13 +5,11 @@
 
 #include "XsollaLogin.h"
 
-#include "Engine/Engine.h"
 #include "Engine/Texture2D.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
 #include "Kismet/GameplayStatics.h"
-#include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
 #include "OnlineSubsystem.h"

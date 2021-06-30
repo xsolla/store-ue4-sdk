@@ -1,7 +1,6 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsHttpRequestHelper.h"
-#include "XsollaUtilsDefines.h"
 #include "XsollaUtilsLibrary.h"
 
 #include "Dom/JsonObject.h"

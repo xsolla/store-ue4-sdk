@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0] - 2021-06-29
+
+### Added
+- Authentication via device ID.
+
+### Fixed
+- Catalog default locale.
+
+### Changed
+- Minor demo tweaks.
+- Plugin settings (Demo Client ID).
+- SDK code improvements.
+
 ## [0.6.4] - 2021-05-07
 
 ### Added

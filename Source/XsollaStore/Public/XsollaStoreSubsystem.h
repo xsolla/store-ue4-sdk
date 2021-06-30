@@ -425,6 +425,9 @@ private:
 	/** Get name of publishing platform */
 	FString GetPublishingPlatformName() const;
 
+	/** Get payment interface theme */
+	FString GetPaymentInerfaceTheme() const;
+
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
