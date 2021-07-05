@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "Misc/Variant.h"
-#include "XsollaInventoryDefines.h"
 #include "XsollaUtilsDataModel.h"
 
 #include "XsollaInventoryDataModel.generated.h"

@@ -6,7 +6,6 @@
 #include "Modules/ModuleManager.h"
 
 class UXsollaUtilsImageLoader;
-class UXsollaUtilsSettings;
 
 /**
  * Xsolla Utils Module
@@ -43,15 +42,10 @@ public:
 	/** Getter for the image loader object. */
 	UXsollaUtilsImageLoader* GetImageLoader();
 
-	/** Getter for internal settings object to support runtime configuration changes */
-	UXsollaUtilsSettings* GetSettings() const;
-
 	/** Module name. */
 	static const FName ModuleName;
 
 private:
 	/** Image loader. */
 	UXsollaUtilsImageLoader* ImageLoader;
-	/** Settings. */
-	UXsollaUtilsSettings* XsollaUtilsSettings;
 };

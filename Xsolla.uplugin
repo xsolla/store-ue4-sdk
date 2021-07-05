@@ -15,6 +15,21 @@
   "IsBetaVersion": false,
   "Installed": false,
   "Modules": [
+	{
+      "Name": "XsollaUIBuilder",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "XboxOne",
+        "PS4"
+      ]
+    },
     {
       "Name": "XsollaWebBrowser",
       "Type": "Runtime",
