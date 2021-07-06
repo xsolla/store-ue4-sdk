@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "EngineMinimal.h"
+
 #include "XsollaUIBuilderLibrary.generated.h"
 
 class UXsollaUIBuilderSettings;
