@@ -3,7 +3,6 @@
 #pragma once
 
 #include "XsollaInventoryDataModel.h"
-#include "XsollaInventoryDefines.h"
 
 #include "XsollaUtilsHttpRequestHelper.h"
 
