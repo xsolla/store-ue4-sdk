@@ -23,38 +23,50 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	check(XsollaUIBuilderSettings);
 
 	// widget types
-	IDetailCategoryBuilder& WidgetTypesCategory = DetailBuilder.EditCategory("Widget types", FText::GetEmpty(), ECategoryPriority::Important);
-	WidgetTypeEnum = StaticEnum<EWidgetType>();
-	check(WidgetTypeEnum);
-
-	TSharedPtr<IPropertyHandle> WidgetTypeProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UXsollaUIBuilderSettings, WidgetTypes));
-
-	TSharedRef<FXsollaEntityTypeList> WidgetTypesListCustomization = MakeShareable(new FXsollaEntityTypeList(XsollaUIBuilderSettings->WidgetTypes, WidgetTypeEnum, WidgetTypeProperty));
-	WidgetTypesListCustomization->UpdateConfig.BindRaw(this, &FXsollaUIBuilderSettingsDetails::UpdateDefaultConfigFile);
-
-	WidgetTypesListCustomization->ReloadTypes.BindLambda([&]
-	{
-		UXsollaUIBuilderSettings::LoadType(StaticEnum<EWidgetType>(), XsollaUIBuilderSettings->WidgetTypes);
-	});
-	WidgetTypesListCustomization->RefreshItemsList();
+	FTypeParametersStruct WidgetTypeParameters;
+	WidgetTypeParameters.CategoryName = TEXT("Widget types");
+	WidgetTypeParameters.PropertyPath = GET_MEMBER_NAME_CHECKED(UXsollaUIBuilderSettings, WidgetTypes);
+	WidgetTypeParameters.DocLink = TEXT("Shared/WidgetTypes");
+	WidgetTypeParameters.TitleFilterString = LOCTEXT("FXsollaUIBuildersSettingsDetails_WidgetTypes", "Widget types");
+	WidgetTypeParameters.TooltipText = LOCTEXT("WidgetTypes", "Edit widget types.");
+	WidgetTypeParameters.TooltipExcerptName = TEXT("WidgetType");
+	WidgetTypeParameters.TitleText = LOCTEXT("WidgetTypes_Menu_Description", " You can have up to 30 custom widget types for your project. \nOnce you name each type, they will show up as new type for xsolla widgets library.");
 	
-	const FString WidgetTypeDocLink = TEXT("Shared/WidgetTypes");
-	TSharedPtr<SToolTip> WidgetTypesTooltip = IDocumentation::Get()->CreateToolTip(LOCTEXT("WidgetTypes", "Edit widget types."), NULL, WidgetTypeDocLink, TEXT("WidgetType"));
-	// Customize collision section
-	WidgetTypesCategory.AddCustomRow(LOCTEXT("FXsollaUIBuildersSettingsDetails_WidgetTypes", "Widget types"))
-		[SNew(STextBlock)
-				.Font(IDetailLayoutBuilder::GetDetailFont())
-				.ToolTip(WidgetTypesTooltip)
-				.AutoWrapText(true)
-				.Text(LOCTEXT("WidgetTypes_Menu_Description", " You can have up to 30 custom widget types for your project. \nOnce you name each type, they will show up as new type for xsolla widgets library."))];
-
-	WidgetTypesCategory.AddCustomBuilder(WidgetTypesListCustomization);
+	CustomizeOneType(DetailBuilder, StaticEnum<EWidgetType>(), XsollaUIBuilderSettings->WidgetTypes, WidgetTypeParameters);
 	// end of widget types
+}
+
+void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& DetailBuilder, UEnum* TypeEnum, TArray<FEntityTypeName>& TypesArray, const FTypeParametersStruct& Parameters)
+{
+	check(TypeEnum);
+	
+	IDetailCategoryBuilder& EntityTypesCategory = DetailBuilder.EditCategory(*Parameters.CategoryName, FText::GetEmpty(), ECategoryPriority::Important);
+	TSharedPtr<IPropertyHandle> EntityTypeProperty = DetailBuilder.GetProperty(Parameters.PropertyPath);
+
+	TSharedRef<FXsollaEntityTypeList> EntityTypesListCustomization = MakeShareable(new FXsollaEntityTypeList(TypesArray, TypeEnum, EntityTypeProperty));
+	EntityTypesListCustomization->UpdateConfig.BindStatic(&FXsollaUIBuilderSettingsDetails::UpdateDefaultConfigFile);
+
+	EntityTypesListCustomization->ReloadTypes.BindLambda([&] {
+		UXsollaUIBuilderSettings::LoadType(TypeEnum, TypesArray);
+	});
+	EntityTypesListCustomization->RefreshItemsList();
+
+	const TSharedPtr<SToolTip> EntityTypesTooltip = IDocumentation::Get()->CreateToolTip(Parameters.TooltipText, NULL, Parameters.DocLink, Parameters.TooltipExcerptName);
+	EntityTypesCategory.AddCustomRow(Parameters.TitleFilterString)
+		[
+		SNew(STextBlock)
+		.Font(IDetailLayoutBuilder::GetDetailFont())
+		.ToolTip(EntityTypesTooltip)
+		.AutoWrapText(true)
+		.Text(Parameters.TitleText)
+		];
+
+	EntityTypesCategory.AddCustomBuilder(EntityTypesListCustomization);
 }
 
 void FXsollaUIBuilderSettingsDetails::UpdateDefaultConfigFile()
 {
-	XsollaUIBuilderSettings->UpdateDefaultConfigFile();
+	UXsollaUIBuilderSettings::Get()->UpdateDefaultConfigFile();
 }
 
 #undef LOCTEXT_NAMESPACE

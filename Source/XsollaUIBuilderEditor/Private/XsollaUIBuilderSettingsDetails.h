@@ -8,6 +8,17 @@
 class UXsollaUIBuilderSettings;
 class UPhysicsSettings;
 
+struct FTypeParametersStruct
+{
+	FName PropertyPath;
+	FString CategoryName;
+	FString DocLink;
+	FText TitleFilterString;
+	FText TooltipText;
+	FString TooltipExcerptName;
+	FText TitleText;
+};
+
 class FXsollaUIBuilderSettingsDetails: public IDetailCustomization
 {
 public:
@@ -21,11 +32,8 @@ private:
 	
 	UXsollaUIBuilderSettings* XsollaUIBuilderSettings;
 
-	// widget types
-	TArray<TSharedPtr<FXsollaEntityListItem>> WidgetTypeList;
-	UEnum* WidgetTypeEnum;
+	static void CustomizeOneType(IDetailLayoutBuilder& DetailBuilder, UEnum* TypeEnum, TArray<FEntityTypeName>& TypesArray, const FTypeParametersStruct& Parameters);
+	static void UpdateDefaultConfigFile();
 
-	void UpdateDefaultConfigFile();
-	
 };
 
