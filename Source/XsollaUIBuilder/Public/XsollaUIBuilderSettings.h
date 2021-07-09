@@ -6,30 +6,27 @@
 
 #include "XsollaUIBuilderTheme.h"
 #include "XsollaUIBuilderWidgetsLibrary.h"
-#include "XsollaUIBuilderTypes.h"
 
 #include "XsollaUIBuilderSettings.generated.h"
 
-/**
- * Structure that represents the name of widget types.
- */
 USTRUCT(BlueprintType)
-struct FWidgetTypeName
+struct FEntityTypeName
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY()
-	TEnumAsByte<enum EWidgetType> Type;
+	int32 TypeAsInt;
 
 	UPROPERTY()
 	FName Name;
 
-	FWidgetTypeName()
-		: Type(WidgetType_Max)
+	FEntityTypeName()
+		:TypeAsInt(INT32_MAX)
 	{
 	}
-	FWidgetTypeName(EWidgetType InType, const FName& InName)
-		: Type(InType)
+	
+	FEntityTypeName(int32 InTypeAsInt, const FName& InName)
+		: TypeAsInt(InTypeAsInt)
 		, Name(InName)
 	{
 	}
@@ -45,8 +42,8 @@ public:
 
 	/** Widget types. */
 	UPROPERTY(config, EditAnywhere, Category = "Xsolla UIBuilder Settings", AdvancedDisplay)
-	TArray<FWidgetTypeName> WidgetTypes;
-	
+	TArray<FEntityTypeName> WidgetTypes;
+
 	/** Interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla UIBuilder Settings")
 	TSubclassOf<UXsollaUIBuilderTheme> InterfaceTheme;
@@ -58,7 +55,7 @@ public:
 	static UXsollaUIBuilderSettings* Get() { return CastChecked<UXsollaUIBuilderSettings>(StaticClass()->GetDefaultObject()); }
 
 #if WITH_EDITOR
-	void LoadWidgetType();
+	static void LoadType(UEnum* Enum, const TArray<FEntityTypeName>& Types);
 #endif
 	
 };

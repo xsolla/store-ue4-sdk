@@ -1,16 +1,16 @@
 #pragma once
 #include "Widgets/Input/SEditableTextBox.h"
-struct FWidgetTypeName;
 
 DECLARE_DELEGATE(FOnCommitChange)
 
-class SWidgetTypeEditBox : public SCompoundWidget
+class SXsollaEntityTypeEditBox : public SCompoundWidget
 {
 public:
 
-	SLATE_BEGIN_ARGS(SWidgetTypeEditBox) { }
-		SLATE_ARGUMENT(TSharedPtr<FWidgetTypeName>, WidgetType)
-		SLATE_ARGUMENT(UEnum*, WidgetTypeEnum)
+	SLATE_BEGIN_ARGS(SXsollaEntityTypeEditBox) { }
+		SLATE_ARGUMENT(int32, TypeAsInt)
+		SLATE_ARGUMENT(FName*, Name)
+		SLATE_ARGUMENT(UEnum*, EntityTypeEnum)
 		SLATE_EVENT(FOnCommitChange, OnCommitChange)
 	SLATE_END_ARGS()
 
@@ -30,8 +30,8 @@ public:
 	void OnTextChanged(const FText& NewText);
 
 private:
-	TSharedPtr<FWidgetTypeName>			WidgetType;
-	UEnum*								WidgetTypeEnum;
+	FName*								Name;
+	UEnum*								EntityTypeEnum;
 	FOnCommitChange						OnCommitChange;
 	TSharedPtr<SEditableTextBox>		NameEditBox;
 };

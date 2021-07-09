@@ -4,6 +4,7 @@
 
 #include "UObject/ConstructorHelpers.h"
 #include "XsollaUIBuilderModule.h"
+#include "XsollaUIBuilderTypes.h"
 #include "XsollaUtilsLibrary.h"
 
 UXsollaUIBuilderSettings::UXsollaUIBuilderSettings(const FObjectInitializer& ObjectInitializer)
@@ -16,33 +17,28 @@ UXsollaUIBuilderSettings::UXsollaUIBuilderSettings(const FObjectInitializer& Obj
 	InterfaceTheme = ThemeFinder.Class;
 	WidgetsLibrary = WidgetsLibraryFinder.Class;
 
-	WidgetTypes.Add(FWidgetTypeName(WidgetType1, FName("Button")));
-	WidgetTypes.Add(FWidgetTypeName(WidgetType2, FName("ButtonCounter")));
-	WidgetTypes.Add(FWidgetTypeName(WidgetType3, FName("IconTextButton")));
+	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType1), FName("Button")));
+	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType2), FName("ButtonCounter")));
+	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType3), FName("IconTextButton")));
 }
 
 void UXsollaUIBuilderSettings::PostInitProperties()
 {
 	Super::PostInitProperties();
 #if WITH_EDITOR
-	LoadWidgetType();
+	LoadType(StaticEnum<EWidgetType>(), WidgetTypes);
 #endif
 }
 
 #if WITH_EDITOR
-void UXsollaUIBuilderSettings::LoadWidgetType()
+void UXsollaUIBuilderSettings::LoadType(UEnum* Enum, const TArray<FEntityTypeName>& Types)
 {
-	// read "WidgetTYpe" defines and set meta data for the enum
-	// find the enum
-	UEnum* Enum = StaticEnum<EWidgetType>();
-	// we need this Enum
 	check(Enum);
 
 	const FString KeyName = TEXT("DisplayName");
 	const FString HiddenMeta = TEXT("Hidden");
 	const FString UnusedDisplayName = TEXT("Unused");
 
-	// remainders, set to be unused
 	for (int32 EnumIndex = 1; EnumIndex < Enum->NumEnums(); ++EnumIndex)
 	{
 		if (!Enum->HasMetaData(*HiddenMeta, EnumIndex))
@@ -52,11 +48,13 @@ void UXsollaUIBuilderSettings::LoadWidgetType()
 		}
 	}
 
-	for (auto Iter = WidgetTypes.CreateConstIterator(); Iter; ++Iter)
+	for (auto Iter = Types.CreateConstIterator(); Iter; ++Iter)
 	{
-		Enum->SetMetaData(*KeyName, *Iter->Name.ToString(), Iter->Type);
-		// also need to remove "Hidden"
-		Enum->RemoveMetaData(*HiddenMeta, Iter->Type);
+		if (Iter->TypeAsInt > 0 && Iter->TypeAsInt < INT32_MAX)
+		{
+			Enum->SetMetaData(*KeyName, *Iter->Name.ToString(), Iter->TypeAsInt);
+			Enum->RemoveMetaData(*HiddenMeta, Iter->TypeAsInt);
+		}
 	}
 }
 #endif

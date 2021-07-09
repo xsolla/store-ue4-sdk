@@ -3,7 +3,7 @@
 #pragma once
 
 #include "IDetailCustomization.h"
-#include "WidgetTypeList.h"
+#include "XsollaEntityTypeList.h"
 
 class UXsollaUIBuilderSettings;
 class UPhysicsSettings;
@@ -18,11 +18,14 @@ public:
 	static TSharedRef< IDetailCustomization > MakeInstance();
 
 private:
-	TArray<TSharedPtr<FWidgetTypeListItem>> WidgetTypeList;
-
+	
 	UXsollaUIBuilderSettings* XsollaUIBuilderSettings;
+
+	// widget types
+	TArray<TSharedPtr<FXsollaEntityListItem>> WidgetTypeList;
 	UEnum* WidgetTypeEnum;
-	// functions
-	void OnCommitChange();
+
+	void UpdateDefaultConfigFile();
+	
 };
 
