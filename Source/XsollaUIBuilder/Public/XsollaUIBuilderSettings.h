@@ -44,6 +44,18 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = "Xsolla UIBuilder Settings", AdvancedDisplay)
 	TArray<FEntityTypeName> WidgetTypes;
 
+	/** Color types. */
+	UPROPERTY(config, EditAnywhere, Category = "Xsolla UIBuilder Settings", AdvancedDisplay)
+	TArray<FEntityTypeName> ColorTypes;
+
+	/** Font types. */
+	UPROPERTY(config, EditAnywhere, Category = "Xsolla UIBuilder Settings", AdvancedDisplay)
+	TArray<FEntityTypeName> FontTypes;
+
+	/** Brush types. */
+	UPROPERTY(config, EditAnywhere, Category = "Xsolla UIBuilder Settings", AdvancedDisplay)
+	TArray<FEntityTypeName> BrushTypes;
+
 	/** Interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla UIBuilder Settings")
 	TSubclassOf<UXsollaUIBuilderTheme> InterfaceTheme;

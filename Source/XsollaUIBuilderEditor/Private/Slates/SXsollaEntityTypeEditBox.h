@@ -1,3 +1,4 @@
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 #pragma once
 #include "Widgets/Input/SEditableTextBox.h"
 
@@ -23,8 +24,6 @@ public:
 	*/
 	void Construct(const FArguments& InArgs);
 	
-	FString GetTypeString() const;
-
 	FText GetName() const;
 	void NewNameEntered(const FText& NewText, ETextCommit::Type CommitInfo);
 	void OnTextChanged(const FText& NewText);

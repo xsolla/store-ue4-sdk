@@ -6,25 +6,13 @@
 #include "XsollaEntityTypeList.h"
 
 class UXsollaUIBuilderSettings;
-class UPhysicsSettings;
-
-struct FTypeParametersStruct
-{
-	FName PropertyPath;
-	FString CategoryName;
-	FString DocLink;
-	FText TitleFilterString;
-	FText TooltipText;
-	FString TooltipExcerptName;
-	FText TitleText;
-};
+struct FTypeParametersStruct;
 
 class FXsollaUIBuilderSettingsDetails: public IDetailCustomization
 {
 public:
 	// IDetailCustomization interface
 	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
-	//
 
 	static TSharedRef< IDetailCustomization > MakeInstance();
 
