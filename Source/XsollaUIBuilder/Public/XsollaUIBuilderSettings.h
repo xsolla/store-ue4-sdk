@@ -5,32 +5,10 @@
 #include "Blueprint/UserWidget.h"
 
 #include "XsollaUIBuilderTheme.h"
+#include "XsollaUIBuilderTypes.h"
 #include "XsollaUIBuilderWidgetsLibrary.h"
 
 #include "XsollaUIBuilderSettings.generated.h"
-
-USTRUCT(BlueprintType)
-struct FEntityTypeName
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	int32 TypeAsInt;
-
-	UPROPERTY()
-	FName Name;
-
-	FEntityTypeName()
-		:TypeAsInt(INT32_MAX)
-	{
-	}
-	
-	FEntityTypeName(int32 InTypeAsInt, const FName& InName)
-		: TypeAsInt(InTypeAsInt)
-		, Name(InName)
-	{
-	}
-};
 
 UCLASS(config = Engine, defaultconfig)
 class XSOLLAUIBUILDER_API UXsollaUIBuilderSettings : public UObject

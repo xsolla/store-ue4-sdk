@@ -1,10 +1,11 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
+
 #pragma once
 #include "DetailLayoutBuilder.h"
 #include "IDetailChildrenBuilder.h"
 #include "IDetailCustomNodeBuilder.h"
-#include "XsollaUIBuilderSettings.h"
 
+struct FEntityTypeName;
 class FXsollaEntityListItem;
 
 class FXsollaEntityTypeList : public IDetailCustomNodeBuilder, public TSharedFromThis<FXsollaEntityTypeList>

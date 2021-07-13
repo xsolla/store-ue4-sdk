@@ -4,12 +4,13 @@
 
 #include "IDocumentation.h"
 #include "PropertyEditing.h"
-#include "XsollaUIBuilderSettings.h"
 #include "Widgets/SToolTip.h"
 #include "XsollaEntityTypeList.h"
 #include "DetailLayoutBuilder.h"
 #include "XsollaUIBuilderEditorTypes.h"
+#include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderTypes.h"
+#include "UObject/StrongObjectPtr.h"
 
 #define LOCTEXT_NAMESPACE "XsollaUIBuilderSettingsDetails"
 
@@ -84,7 +85,8 @@ void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& Det
 {
 	check(TypeEnum);
 	
-	IDetailCategoryBuilder& EntityTypesCategory = DetailBuilder.EditCategory(*Parameters.CategoryName, FText::GetEmpty(), ECategoryPriority::Important);
+	IDetailCategoryBuilder& EntityTypesCategory = DetailBuilder.EditCategory(*Parameters.CategoryName, FText::GetEmpty(), ECategoryPriority::Uncommon);
+	EntityTypesCategory.InitiallyCollapsed(true);
 	TSharedPtr<IPropertyHandle> EntityTypeProperty = DetailBuilder.GetProperty(Parameters.PropertyPath);
 
 	TSharedRef<FXsollaEntityTypeList> EntityTypesListCustomization = MakeShareable(new FXsollaEntityTypeList(TypesArray, TypeEnum, EntityTypeProperty));
@@ -95,7 +97,7 @@ void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& Det
 	});
 	EntityTypesListCustomization->RefreshItemsList();
 
-	const TSharedPtr<SToolTip> EntityTypesTooltip = IDocumentation::Get()->CreateToolTip(Parameters.TooltipText, NULL, Parameters.DocLink, Parameters.TooltipExcerptName);
+	const TSharedPtr<SToolTip> EntityTypesTooltip = IDocumentation::Get()->CreateToolTip(Parameters.TooltipText, nullptr, Parameters.DocLink, Parameters.TooltipExcerptName);
 	EntityTypesCategory.AddCustomRow(Parameters.TitleFilterString)
 	[
 		SNew(STextBlock)

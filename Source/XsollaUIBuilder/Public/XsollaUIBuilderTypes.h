@@ -4,6 +4,29 @@
 
 #include "XsollaUIBuilderTypes.generated.h"
 
+USTRUCT(BlueprintType)
+struct FEntityTypeName
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 TypeAsInt;
+
+	UPROPERTY()
+	FName Name;
+
+	FEntityTypeName()
+		:TypeAsInt(INT32_MAX)
+	{
+	}
+	
+	FEntityTypeName(int32 InTypeAsInt, const FName& InName)
+		: TypeAsInt(InTypeAsInt)
+		, Name(InName)
+	{
+	}
+};
+
 UENUM(BlueprintType)
 enum EWidgetType
 {

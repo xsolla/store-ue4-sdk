@@ -1,8 +1,10 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
+
 #include "XsollaEntityTypeList.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailWidgetRow.h"
 #include "XsollaUIBuilderEditorTypes.h"
+#include "XsollaUIBuilderTypes.h"
 #include "Slates/SXsollaEntityTypeEditBox.h"
 #include "Misc/MessageDialog.h"
 

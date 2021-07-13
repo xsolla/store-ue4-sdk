@@ -3,8 +3,9 @@
 #pragma once
 
 #include "IDetailCustomization.h"
-#include "XsollaEntityTypeList.h"
+#include "DetailLayoutBuilder.h"
 
+struct FEntityTypeName;
 class UXsollaUIBuilderSettings;
 struct FTypeParametersStruct;
 

@@ -1,4 +1,5 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
+
 #pragma once
 #include "Widgets/Input/SEditableTextBox.h"
 

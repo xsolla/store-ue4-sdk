@@ -1,8 +1,8 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
+
 #include "SXsollaEntityTypeEditBox.h"
 
 #include "DetailLayoutBuilder.h"
-#include "XsollaUIBuilderSettings.h"
 #include "Misc/MessageDialog.h"
 
 #define LOCTEXT_NAMESPACE "SXsollaEntityTypeEditBox"
