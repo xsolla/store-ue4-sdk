@@ -70,3 +70,15 @@ UXsollaUIBuilderWidgetsLibrary* UXsollaUIBuilderLibrary::GetWidgetsLibrary(TSubc
 
 	return Cast<UXsollaUIBuilderWidgetsLibrary>(WidgetLibrary);
 }
+
+void UXsollaUIBuilderLibrary::Clear(FThemeParameters& Parameters)
+{
+	Parameters.Colors.Empty();
+	Parameters.Fonts.Empty();
+	Parameters.Brushes.Empty();
+}
+
+bool UXsollaUIBuilderLibrary::IsEmpty(const FThemeParameters& Parameters)
+{
+	return Parameters.Colors.Num() == 0 && Parameters.Fonts.Num() == 0 && Parameters.Brushes.Num() == 0;
+}

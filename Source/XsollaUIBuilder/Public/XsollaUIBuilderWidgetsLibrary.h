@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "XsollaUIBuilderTypes.h"
 #include "Blueprint/UserWidget.h"
 
 #include "XsollaUIBuilderWidgetsLibrary.generated.h"
@@ -19,4 +20,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
 	TMap<FString, TSubclassOf<UUserWidget>> Widgets;
+
+	/** Get widget class. */
+	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
+	TSubclassOf<UUserWidget> GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
+	TMap<TEnumAsByte<EWidgetType>, TSubclassOf<UUserWidget>> WidgetWrappers;
 };

@@ -11,3 +11,13 @@ TSubclassOf<UUserWidget> UXsollaUIBuilderWidgetsLibrary::GetWidget(const FString
 
 	return nullptr;
 }
+
+TSubclassOf<UUserWidget> UXsollaUIBuilderWidgetsLibrary::GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const
+{
+	if (WidgetWrappers.Contains(WidgetType))
+	{
+		return WidgetWrappers[WidgetType];
+	}
+
+	return nullptr;
+}
