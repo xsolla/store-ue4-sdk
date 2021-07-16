@@ -28,7 +28,7 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 	{
 		for (const auto& KeyValue : InParameters.Colors)
 		{
-			if(Parameters.Colors.Contains(KeyValue.Key))
+			if(!Parameters.Colors.Contains(KeyValue.Key))
 			{
 				Parameters = InParameters;
 				return;
@@ -37,7 +37,7 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 
 		for (const auto& KeyValue : InParameters.Fonts)
 		{
-			if (Parameters.Fonts.Contains(KeyValue.Key))
+			if (!Parameters.Fonts.Contains(KeyValue.Key))
 			{
 				Parameters = InParameters;
 				return;
@@ -46,7 +46,7 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 
 		for (const auto& KeyValue : InParameters.Brushes)
 		{
-			if (Parameters.Brushes.Contains(KeyValue.Key))
+			if (!Parameters.Brushes.Contains(KeyValue.Key))
 			{
 				Parameters = InParameters;
 				return;

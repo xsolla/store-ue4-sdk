@@ -13,13 +13,6 @@ class UXsollaUIBuilderWidgetsLibrary : public UObject
 	GENERATED_BODY()
 
 public:
-	
-	/** Get theme brush with specified name. */
-	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
-	TSubclassOf<UUserWidget> GetWidget(const FString& WidgetName) const;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
-	TMap<FString, TSubclassOf<UUserWidget>> Widgets;
 
 	/** Get widget class. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
