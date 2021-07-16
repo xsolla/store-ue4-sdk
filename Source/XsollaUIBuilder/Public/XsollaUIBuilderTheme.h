@@ -15,15 +15,15 @@ class UXsollaUIBuilderTheme : public UObject
 public:
 	/** Get theme color with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FColor GetColorByType(const EColorType ColorType) const;
+	FColor GetColorByType(const EColorType ColorType, bool& bIsFound) const;
 
 	/** Get theme font with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FSlateFontInfo GetFontByType(const EFontType FontType) const;
+	FSlateFontInfo GetFontByType(const EFontType FontType, bool& bIsFound) const;
 
 	/** Get theme brush with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FSlateBrush GetBrushByType(const EBrushThemeType BrushType) const;
+	FSlateBrush GetBrushByType(const EBrushThemeType BrushType, bool& bIsFound) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
 	TMap<TEnumAsByte<EColorType>, FColor> ColorsMap;

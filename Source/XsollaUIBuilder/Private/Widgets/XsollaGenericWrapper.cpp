@@ -19,38 +19,39 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 	if (UXsollaUIBuilderLibrary::IsEmpty(InParameters))
 	{
 		UXsollaUIBuilderLibrary::Clear(Parameters);
+		return;
 	}
-	else if (UXsollaUIBuilderLibrary::IsEmpty(Parameters))
+	
+	if (UXsollaUIBuilderLibrary::IsEmpty(Parameters))
 	{
 		Parameters = InParameters;
+		return;
 	}
-	else
+	
+	for (const auto& KeyValue : InParameters.Colors)
 	{
-		for (const auto& KeyValue : InParameters.Colors)
+		if(!Parameters.Colors.Contains(KeyValue.Key))
 		{
-			if(!Parameters.Colors.Contains(KeyValue.Key))
-			{
-				Parameters = InParameters;
-				return;
-			}
+			Parameters = InParameters;
+			return;
 		}
+	}
 
-		for (const auto& KeyValue : InParameters.Fonts)
+	for (const auto& KeyValue : InParameters.Fonts)
+	{
+		if (!Parameters.Fonts.Contains(KeyValue.Key))
 		{
-			if (!Parameters.Fonts.Contains(KeyValue.Key))
-			{
-				Parameters = InParameters;
-				return;
-			}
+			Parameters = InParameters;
+			return;
 		}
+	}
 
-		for (const auto& KeyValue : InParameters.Brushes)
+	for (const auto& KeyValue : InParameters.Brushes)
+	{
+		if (!Parameters.Brushes.Contains(KeyValue.Key))
 		{
-			if (!Parameters.Brushes.Contains(KeyValue.Key))
-			{
-				Parameters = InParameters;
-				return;
-			}
+			Parameters = InParameters;
+			return;
 		}
 	}
 }
