@@ -7,6 +7,7 @@
 #include "XsollaUIBuilderTypes.h"
 #include "Slates/SXsollaEntityTypeEditBox.h"
 #include "Misc/MessageDialog.h"
+#include "Widgets/Text/STextBlock.h"
 
 #define LOCTEXT_NAMESPACE "XsollaUIBuilderEntityTypeList"
 

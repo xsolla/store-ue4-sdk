@@ -206,3 +206,18 @@ enum EBrushThemeType
 	BrushType62 UMETA(Hidden),
 	BrushType_Max UMETA(Hidden)
 };
+
+USTRUCT(BlueprintType)
+struct FThemeParameters
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<FString, TEnumAsByte<EColorType>> Colors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<FString, TEnumAsByte<EFontType>> Fonts;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<FString, TEnumAsByte<EBrushThemeType>> Brushes;
+};

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "XsollaUIBuilderTypes.h"
 #include "Blueprint/UserWidget.h"
 
 #include "XsollaUIBuilderWidgetsLibrary.generated.h"
@@ -12,11 +13,11 @@ class UXsollaUIBuilderWidgetsLibrary : public UObject
 	GENERATED_BODY()
 
 public:
-	
-	/** Get theme brush with specified name. */
+
+	/** Get widget class. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
-	TSubclassOf<UUserWidget> GetWidget(const FString& WidgetName) const;
+	TSubclassOf<UUserWidget> GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
-	TMap<FString, TSubclassOf<UUserWidget>> Widgets;
+	TMap<TEnumAsByte<EWidgetType>, TSubclassOf<UUserWidget>> WidgetWrappers;
 };

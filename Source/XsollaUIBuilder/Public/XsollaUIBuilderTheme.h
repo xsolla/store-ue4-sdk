@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "XsollaUIBuilderTypes.h"
 #include "Fonts/SlateFontInfo.h"
 #include "Styling/SlateBrush.h"
 #include "XsollaUIBuilderTheme.generated.h"
@@ -14,23 +15,22 @@ class UXsollaUIBuilderTheme : public UObject
 public:
 	/** Get theme color with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FColor GetColor(const FString& ColorName) const;
-	
+	FColor GetColorByType(const EColorType ColorType, bool& bIsFound) const;
+
 	/** Get theme font with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FSlateFontInfo GetFont(const FString& FontName) const;
-	
+	FSlateFontInfo GetFontByType(const EFontType FontType, bool& bIsFound) const;
+
 	/** Get theme brush with specified name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla UI Theme")
-	FSlateBrush GetBrush(const FString& BrushName) const;
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
-	TMap<FString, FColor> Colors;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
-	TMap<FString, FSlateFontInfo> Fonts;
+	FSlateBrush GetBrushByType(const EBrushThemeType BrushType, bool& bIsFound) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
-	TMap<FString, FSlateBrush> Brushes;
+	TMap<TEnumAsByte<EColorType>, FColor> ColorsMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
+	TMap<TEnumAsByte<EFontType>, FSlateFontInfo> FontsMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla UI Theme")
+	TMap<TEnumAsByte<EBrushThemeType>, FSlateBrush> BrushesMap;
 };

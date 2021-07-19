@@ -2,33 +2,37 @@
 
 #include "XsollaUIBuilderTheme.h"
 
-FColor UXsollaUIBuilderTheme::GetColor(const FString& ColorName) const
+#include "XsollaUIBuilderTypes.h"
+
+FColor UXsollaUIBuilderTheme::GetColorByType(const EColorType ColorType, bool& bIsFound) const
 {
-	if (Colors.Contains(ColorName))
+	if (ColorsMap.Contains(ColorType))
 	{
-		return Colors[ColorName];
+		bIsFound = true;
+		return ColorsMap[ColorType];
 	}
 
 	return FColor();
 }
 
-FSlateFontInfo UXsollaUIBuilderTheme::GetFont(const FString& FontName) const
+FSlateFontInfo UXsollaUIBuilderTheme::GetFontByType(const EFontType FontType, bool& bIsFound) const
 {
-	if (Fonts.Contains(FontName))
+	if (FontsMap.Contains(FontType))
 	{
-		return Fonts[FontName];
+		bIsFound = true;
+		return FontsMap[FontType];
 	}
 
 	return FSlateFontInfo();
 }
 
-FSlateBrush UXsollaUIBuilderTheme::GetBrush(const FString& BrushName) const
+FSlateBrush UXsollaUIBuilderTheme::GetBrushByType(const EBrushThemeType BrushType, bool& bIsFound) const
 {
-	if (Brushes.Contains(BrushName))
+	if (BrushesMap.Contains(BrushType))
 	{
-		return Brushes[BrushName];
+		bIsFound = true;
+		return BrushesMap[BrushType];
 	}
 
 	return FSlateBrush();
 }
-

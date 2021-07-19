@@ -2,11 +2,11 @@
 
 #include "XsollaUIBuilderWidgetsLibrary.h"
 
-TSubclassOf<UUserWidget> UXsollaUIBuilderWidgetsLibrary::GetWidget(const FString& WidgetName) const
+TSubclassOf<UUserWidget> UXsollaUIBuilderWidgetsLibrary::GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const
 {
-	if (Widgets.Contains(WidgetName))
+	if (WidgetWrappers.Contains(WidgetType))
 	{
-		return Widgets[WidgetName];
+		return WidgetWrappers[WidgetType];
 	}
 
 	return nullptr;

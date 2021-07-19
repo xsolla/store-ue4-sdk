@@ -67,7 +67,7 @@ UXsollaUIBuilderSettings::UXsollaUIBuilderSettings(const FObjectInitializer& Obj
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType15), FName("CheckBoxUncheckedPressed")));
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType16), FName("CheckBoxCheckedInitial")));
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType17), FName("CheckBoxCheckedHover")));
-	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType18), FName("CheckBoxCheckedPresses")));
+	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType18), FName("CheckBoxCheckedPressed")));
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType19), FName("PopupMenuButtonClosedInitial")));
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType20), FName("PopupMenuButtonClosedHover")));
 	BrushTypes.Add(FEntityTypeName(static_cast<int32>(BrushType21), FName("PopupMenuButtonClosedPressed")));

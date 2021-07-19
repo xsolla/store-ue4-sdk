@@ -4,6 +4,7 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EngineMinimal.h"
+#include "XsollaUIBuilderTypes.h"
 
 #include "XsollaUIBuilderLibrary.generated.h"
 
@@ -33,4 +34,10 @@ public:
 
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|UIBuilder")
 	static UXsollaUIBuilderWidgetsLibrary* GetWidgetsLibrary(TSubclassOf<UXsollaUIBuilderWidgetsLibrary> WidgetLibraryClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|UIBuilder")
+	static void Clear(UPARAM(ref) FThemeParameters& Parameters);
+
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|UIBuilder")
+	static bool IsEmpty(const FThemeParameters& Parameters);
 };
