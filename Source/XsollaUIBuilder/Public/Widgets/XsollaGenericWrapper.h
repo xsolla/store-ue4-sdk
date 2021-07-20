@@ -18,7 +18,7 @@ class XSOLLAUIBUILDER_API UXsollaGenericWrapper : public UUserWidget
 	GENERATED_BODY()
 public:
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Default, meta = (EditCondition = "OverrideWidget == nullptr"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Default, meta = (EditCondition = "OverrideWidget == nullptr", ExposeOnSpawn = "true"))
 	TEnumAsByte<EWidgetType> WidgetLibraryType;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Default, meta = (ExposeOnSpawn = "true"))
