@@ -121,3 +121,10 @@ void UXsollaUIBuilderSettings::LoadType(UEnum* Enum, const TArray<FEntityTypeNam
 	}
 }
 #endif
+
+void UXsollaUIBuilderSettings::UpdateTheme(TSubclassOf<UXsollaUIBuilderTheme> NewTheme)
+{
+	InterfaceTheme = NewTheme;
+	ThemeChanged.Broadcast(InterfaceTheme);
+	
+}

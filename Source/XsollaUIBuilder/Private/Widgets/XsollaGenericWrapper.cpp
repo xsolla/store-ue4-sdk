@@ -3,6 +3,7 @@
 #include "Widgets/XsollaGenericWrapper.h"
 
 #include "XsollaUIBuilderLibrary.h"
+#include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderWidgetsLibrary.h"
 
 TSubclassOf<UUserWidget> UXsollaGenericWrapper::GetWidgetClass() const
@@ -55,3 +56,13 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 		}
 	}
 }
+
+void UXsollaGenericWrapper::ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewTheme)
+{
+	UpdateWrapperTheme();
+}
+
+//void UXsollaGenericWrapper::NativeOnInitialized()
+//{
+//	UXsollaUIBuilderSettings::Get()->ThemeChanged.AddDynamic(this, &UXsollaGenericWrapper::ThemeUpdated);
+//}

@@ -39,7 +39,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Theme")
 	void UpdateThemeParameters(const FThemeParameters& InParameters);
 
-private:
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void UpdateWrapperTheme();
+protected:
 	
-
+	UFUNCTION()
+	void ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewTheme);
+	
+//	virtual void NativeOnInitialized() override;
 };
