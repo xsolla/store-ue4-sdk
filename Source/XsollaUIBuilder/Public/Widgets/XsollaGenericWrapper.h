@@ -46,5 +46,5 @@ protected:
 	UFUNCTION()
 	void ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewTheme);
 	
-//	virtual void NativeOnInitialized() override;
+	virtual void NativeOnInitialized() override;
 };

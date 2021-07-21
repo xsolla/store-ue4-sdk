@@ -8,6 +8,7 @@
 #include "XsollaEntityTypeList.h"
 #include "DetailLayoutBuilder.h"
 #include "XsollaUIBuilderEditorTypes.h"
+#include "XsollaUIBuilderLibrary.h"
 #include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderTypes.h"
 #include "UObject/StrongObjectPtr.h"
@@ -21,7 +22,7 @@ TSharedRef< IDetailCustomization > FXsollaUIBuilderSettingsDetails::MakeInstance
 
 void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
-	XsollaUIBuilderSettings = UXsollaUIBuilderSettings::Get();
+	XsollaUIBuilderSettings = UXsollaUIBuilderLibrary::GetUIBuilderSettings();
 	check(XsollaUIBuilderSettings);
 
 	// widget types
@@ -112,7 +113,7 @@ void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& Det
 
 void FXsollaUIBuilderSettingsDetails::UpdateDefaultConfigFile()
 {
-	UXsollaUIBuilderSettings::Get()->UpdateDefaultConfigFile();
+	UXsollaUIBuilderLibrary::GetUIBuilderSettings()->UpdateDefaultConfigFile();
 }
 
 #undef LOCTEXT_NAMESPACE

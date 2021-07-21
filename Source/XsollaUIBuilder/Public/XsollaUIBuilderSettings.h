@@ -20,8 +20,6 @@ class XSOLLAUIBUILDER_API UXsollaUIBuilderSettings : public UObject
 public:
 	virtual void PostInitProperties() override;
 
-	static UXsollaUIBuilderSettings* Get() { return CastChecked<UXsollaUIBuilderSettings>(StaticClass()->GetDefaultObject()); }
-
 #if WITH_EDITOR
 	static void LoadType(UEnum* Enum, const TArray<FEntityTypeName>& Types);
 #endif
