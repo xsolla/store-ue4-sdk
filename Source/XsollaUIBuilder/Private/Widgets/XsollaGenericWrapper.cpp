@@ -62,7 +62,8 @@ void UXsollaGenericWrapper::ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewT
 	UpdateWrapperTheme();
 }
 
-//void UXsollaGenericWrapper::NativeOnInitialized()
-//{
-//	UXsollaUIBuilderSettings::Get()->ThemeChanged.AddDynamic(this, &UXsollaGenericWrapper::ThemeUpdated);
-//}
+void UXsollaGenericWrapper::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	UXsollaUIBuilderLibrary::GetUIBuilderSettings()->ThemeChanged.AddDynamic(this, &UXsollaGenericWrapper::ThemeUpdated);
+}

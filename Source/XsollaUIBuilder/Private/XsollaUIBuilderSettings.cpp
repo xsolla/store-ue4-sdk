@@ -34,6 +34,7 @@ UXsollaUIBuilderSettings::UXsollaUIBuilderSettings(const FObjectInitializer& Obj
 	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType14), FName("EditableText")));
 	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType15), FName("Text")));
 	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType16), FName("RichText")));
+	WidgetTypes.Add(FEntityTypeName(static_cast<int32>(WidgetType17), FName("InputExecute")));
 
 	// default color types
 	ColorTypes.Add(FEntityTypeName(static_cast<int32>(ColorType1), FName("Transparent")));
