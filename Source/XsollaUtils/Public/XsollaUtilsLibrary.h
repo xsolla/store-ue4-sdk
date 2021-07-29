@@ -66,16 +66,16 @@ public:
 	static void AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName, const FXsollaParameters& CustomParameters);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (int)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(const int Value);
+	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(int Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (float)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(const float Value);
+	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(float Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (string)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(const FString& Value);
+	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(FString Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(const bool Value);
+	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
 
 	/** Set additional information for web request. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")

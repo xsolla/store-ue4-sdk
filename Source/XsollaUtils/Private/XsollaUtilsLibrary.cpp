@@ -98,22 +98,22 @@ void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonO
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(const int Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(int Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(const float Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(float Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(const FString& Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(FString Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(const bool Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
 {
 	return FXsollaJsonVariant(Value);
 }
