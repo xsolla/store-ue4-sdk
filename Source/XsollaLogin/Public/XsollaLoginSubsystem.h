@@ -364,6 +364,7 @@ public:
 	/** Start Auth by Phone Number
 	 * Starts authentication by the user phone number and sends a confirmation code to their phone number.
 	 * 
+	 * @param PhoneNumber User phone number.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
 	 * @param SuccessCallback Callback function called after successful phone number authentication start.

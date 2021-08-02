@@ -1368,7 +1368,7 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT(const FString& Code, co
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("code"), Code);
-	RequestDataJson->SetStringField(TEXT("operation_if"), OperationId);
+	RequestDataJson->SetStringField(TEXT("operation_id"), OperationId);
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
 
 	FString PostContent;
@@ -1392,7 +1392,7 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth(const FString& Code, 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("code"), Code);
-	RequestDataJson->SetStringField(TEXT("operation_if"), OperationId);
+	RequestDataJson->SetStringField(TEXT("operation_id"), OperationId);
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
 
 	FString PostContent;
