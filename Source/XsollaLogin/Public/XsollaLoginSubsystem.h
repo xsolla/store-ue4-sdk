@@ -768,6 +768,11 @@ protected:
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
+	/** Processes the request that returns URL with user token (JWT). */
+	void HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	/** Processes the request that returns URL with a code that can be exchanged to user token (OAuth 2.0). */
+	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+
 	/** Returns true if the error occurs. */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
