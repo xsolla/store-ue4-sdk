@@ -361,6 +361,7 @@ public:
 		const FString& ProviderName, const FString& Payload, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Start Auth by Phone Number
 	 * Starts authentication by the user phone number and sends a confirmation code to their phone number.
 	 * 
@@ -374,6 +375,7 @@ public:
 	void StartAuthByPhoneNumber(const FString& PhoneNumber, const FString& Payload, const FString& State,
 		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Complete Auth by Phone Number
 	 * Completes authentication by the user phone number and a confirmation code.
 	 * 
@@ -387,6 +389,7 @@ public:
 	void CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Start Auth by Email
 	 * Starts authentication by the user email address and sends a confirmation code to their email address.
 	 * 
@@ -400,6 +403,7 @@ public:
 	void StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
 		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Complete Auth by Email
 	 * Completes authentication by the user email address and a confirmation code.
 	 * 
