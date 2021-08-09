@@ -5,11 +5,16 @@
 #include "CoreMinimal.h"
 #include "XsollaWorldObject.generated.h"
 
-/**
- * 
- */
-UCLASS(Blueprintable, meta = (ShowWorldContextPin))
+class UUserWidget;
+
+UCLASS(Blueprintable)
 class XSOLLAUTILS_API UXsollaWorldObject : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	virtual UWorld* GetWorld() const override;
+
+	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = "true"))
+	UUserWidget* Owner;
 };
