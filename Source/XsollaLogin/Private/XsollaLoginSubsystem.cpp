@@ -1342,15 +1342,21 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 
 void UXsollaLoginSubsystem::StartAuthByPhoneNumberJWT(const FString& PhoneNumber, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
 
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
+
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/login/phone/request"))
@@ -1367,9 +1373,17 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumberJWT(const FString& PhoneNumber
 
 void UXsollaLoginSubsystem::StartAuthByPhoneNumberOAuth(const FString& PhoneNumber, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
+
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1435,15 +1449,21 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth(const FString& Code, 
 
 void UXsollaLoginSubsystem::StartAuthByEmailJWT(const FString& Email, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("email"), Email);
 
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
+
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/login/email/request"))
@@ -1460,9 +1480,17 @@ void UXsollaLoginSubsystem::StartAuthByEmailJWT(const FString& Email, const FStr
 
 void UXsollaLoginSubsystem::StartAuthByEmailOAuth(const FString& Email, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("email"), Email);
+
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
