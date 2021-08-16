@@ -12,6 +12,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/XsollaGenericWrapper.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
 
 #define LOCTEXT_NAMESPACE "XsollaGenericWrapperDetails"
 
