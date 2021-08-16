@@ -672,6 +672,22 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 	}
 }
 
+void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
+	// Generate endpoint url
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
+							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
+							.AddStringQueryParam(TEXT("login"), UserId)
+							.AddStringQueryParam(TEXT("operation_id"), OperationId)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me")).Build();
@@ -1810,6 +1826,27 @@ void UXsollaLoginSubsystem::CompleteAuthByEmailJWT_HttpRequestComplete(FHttpRequ
 void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		static const FString CodeFieldName = TEXT("code");
+		if (JsonObject->HasTypedField<EJson::String>(CodeFieldName))
+		{
+			const FString Code = JsonObject->GetStringField(CodeFieldName);
+			SuccessCallback.ExecuteIfBound(Code);
+			return;
+		}
+
+		OutError.description = FString::Printf(TEXT("No field '%s' found"), *CodeFieldName);
+	}
+
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,

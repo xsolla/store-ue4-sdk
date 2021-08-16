@@ -417,6 +417,18 @@ public:
 	void CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// TEXTREVIEW
+	/** Get Auth Confirmation Code
+	 * Gets confirmation code for completing authentication via email or phone number. User has to follow the link provided via email/SMS in order to receive the code.
+	 * 
+	 * @param UserId Identifier of the user (can be either email or phone number).
+	 * @param OperationId ID of the confirmation code.
+	 * @param SuccessCallback Callback function called after receiving confirmation code.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Update User Details
 	 * Updates locally cached user details.
 	 *
@@ -730,6 +742,8 @@ protected:
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
