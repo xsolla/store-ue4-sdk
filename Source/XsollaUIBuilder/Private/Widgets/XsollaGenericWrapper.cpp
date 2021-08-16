@@ -12,6 +12,11 @@ TSubclassOf<UXsollaGenericPrimitive> UXsollaGenericWrapper::GetWidgetClass() con
 	{
 		return OverrideWidget;
 	}
+	if (UXsollaUIBuilderLibrary::GetCurrentWidgetsLibrary() == nullptr)
+	{
+		return nullptr;
+	}
+	
 	return UXsollaUIBuilderLibrary::GetCurrentWidgetsLibrary()->GetWidgetByType(WidgetLibraryType);
 }
 
