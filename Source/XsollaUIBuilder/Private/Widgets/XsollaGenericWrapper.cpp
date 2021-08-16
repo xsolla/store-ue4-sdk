@@ -6,12 +6,17 @@
 #include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderWidgetsLibrary.h"
 
-TSubclassOf<UUserWidget> UXsollaGenericWrapper::GetWidgetClass() const
+TSubclassOf<UXsollaGenericPrimitive> UXsollaGenericWrapper::GetWidgetClass() const
 {
 	if (OverrideWidget != nullptr)
 	{
 		return OverrideWidget;
 	}
+	if (UXsollaUIBuilderLibrary::GetCurrentWidgetsLibrary() == nullptr)
+	{
+		return nullptr;
+	}
+	
 	return UXsollaUIBuilderLibrary::GetCurrentWidgetsLibrary()->GetWidgetByType(WidgetLibraryType);
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "XsollaGenericPrimitive.h"
 #include "XsollaUIBuilderTypes.h"
 #include "Blueprint/UserWidget.h"
 #include "XsollaGenericWrapper.generated.h"
@@ -22,7 +23,7 @@ public:
 	TEnumAsByte<EWidgetType> WidgetLibraryType;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Default, meta = (ExposeOnSpawn = "true"))
-	TSubclassOf<UUserWidget> OverrideWidget;
+	TSubclassOf<UXsollaGenericPrimitive> OverrideWidget;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Default|Theme", meta = (ExposeOnSpawn = "true"))
 	bool OverrideDefaultTheme;
@@ -34,7 +35,7 @@ public:
 	FThemeParameters Parameters;
 
 	UFUNCTION(BlueprintCallable, Category = "Theme")
-	TSubclassOf<UUserWidget> GetWidgetClass() const;
+	TSubclassOf<UXsollaGenericPrimitive> GetWidgetClass() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Theme")
 	void UpdateThemeParameters(const FThemeParameters& InParameters);

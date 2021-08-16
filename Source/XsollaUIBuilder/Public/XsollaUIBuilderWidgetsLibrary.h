@@ -3,7 +3,7 @@
 #pragma once
 
 #include "XsollaUIBuilderTypes.h"
-#include "Blueprint/UserWidget.h"
+#include "Widgets/XsollaGenericPrimitive.h"
 
 #include "XsollaUIBuilderWidgetsLibrary.generated.h"
 
@@ -16,8 +16,8 @@ public:
 
 	/** Get widget class. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
-	TSubclassOf<UUserWidget> GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const;
+	TSubclassOf<UXsollaGenericPrimitive> GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Xsolla Widgets Library")
-	TMap<TEnumAsByte<EWidgetType>, TSubclassOf<UUserWidget>> WidgetWrappers;
+	TMap<TEnumAsByte<EWidgetType>, TSubclassOf<UXsollaGenericPrimitive>> Widgets;
 };
