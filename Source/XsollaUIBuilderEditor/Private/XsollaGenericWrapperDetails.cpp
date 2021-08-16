@@ -48,11 +48,14 @@ void FXsollaGenericWrapperDetails::CustomizeDetails(IDetailLayoutBuilder& Detail
 	{
 		for (auto KeyValue : AvailablePrimitives)
 		{
-			for (const auto PrimitiveInterface : KeyValue.Value->Interfaces)
+			if (KeyValue.Value != nullptr)
 			{
-				if (WrapperInterface.Class == PrimitiveInterface.Class)
+				for (const auto PrimitiveInterface : KeyValue.Value->Interfaces)
 				{
-					KeyValues.Add(KeyValue.Key);
+					if (WrapperInterface.Class == PrimitiveInterface.Class)
+					{
+						KeyValues.Add(KeyValue.Key);
+					}
 				}
 			}
 		}
