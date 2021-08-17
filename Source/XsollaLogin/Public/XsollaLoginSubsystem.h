@@ -430,7 +430,8 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, TimeoutCallback, ErrorCallback"))
-	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
+	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
+		const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Details
 	 * Updates locally cached user details.
