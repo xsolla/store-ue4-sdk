@@ -683,7 +683,7 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
 							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
-							.AddStringQueryParam(TEXT("login"), UserId)
+							.AddStringQueryParam(TEXT("login"), FGenericPlatformHttp::UrlEncode(UserId))
 							.AddStringQueryParam(TEXT("operation_id"), OperationId)
 							.Build();
 
