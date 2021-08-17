@@ -158,7 +158,7 @@ FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
 	{
 		for (const auto& PluginModule : Plugin->GetDescriptor().Modules)
 		{
-			if(PluginModule.Name == ModuleName)
+			if (PluginModule.Name == ModuleName)
 			{
 				return Plugin->GetName();
 			}
@@ -166,4 +166,12 @@ FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
 	}
 
 	return TEXT("");
+}
+
+FString UXsollaUtilsLibrary::GetUrlParameter(const FString& Url, const FString& ParamName)
+{
+	const FString DecodedUrl = FGenericPlatformHttp::UrlDecode(Url);
+	const FString UrlOptions = DecodedUrl.RightChop(DecodedUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+
+	return UGameplayStatics::ParseOption(UrlOptions, ParamName);
 }

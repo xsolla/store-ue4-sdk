@@ -1849,10 +1849,7 @@ void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRe
 void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback)
 {
-	const FString RequestUrl = FGenericPlatformHttp::UrlDecode(HttpRequest->GetURL());
-	const FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-
-	const FString OperationId = UGameplayStatics::ParseOption(UrlOptions, TEXT("operation_id"));
+	const FString OperationId = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("operation_id"));
 
 	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::RequestTimeout)
 	{
@@ -2032,9 +2029,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaFriendsData::StaticStruct(), &receivedUserFriendsData, OutError))
 	{
-		FString RequestUrl = HttpRequest->GetURL();
-		FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-		FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
+		const FString Type = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("type"));
 
 		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 	}
@@ -2300,11 +2295,8 @@ void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpReques
 		static const FString LoginUrlFieldName = TEXT("login_url");
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
-			const FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString LoginUrl = FGenericPlatformHttp::UrlDecode(LoginUrlRaw);
-			const FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-
-			const FString Token = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
 
 			LoginData.AuthToken.JWT = Token;
 
@@ -2331,11 +2323,8 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		static const FString LoginUrlFieldName = TEXT("login_url");
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
-			const FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString LoginUrl = FGenericPlatformHttp::UrlDecode(LoginUrlRaw);
-			const FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-
-			const FString Code = UGameplayStatics::ParseOption(UrlOptions, TEXT("code"));
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
 
 			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
 			return;
