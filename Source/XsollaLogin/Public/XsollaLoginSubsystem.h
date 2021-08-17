@@ -32,6 +32,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUser
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkEmailAndPasswordSuccess, bool, bNeedToConfirmEmail);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStartAuthSuccess, FString, OperationId);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthCodeSuccess, const FString&, Code, const FString&, OperationId);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthCodeTimeout, const FString&, OperationId);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -424,10 +426,11 @@ public:
 	 * @param UserId Identifier of the user (can be either email or phone number).
 	 * @param OperationId ID of the confirmation code.
 	 * @param SuccessCallback Callback function called after receiving confirmation code.
+	 * @param TimeoutCallback Callback function called after request timeout.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, TimeoutCallback, ErrorCallback"))
+	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Details
 	 * Updates locally cached user details.
@@ -743,7 +746,7 @@ protected:
 	void CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
+		FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback);
 	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,

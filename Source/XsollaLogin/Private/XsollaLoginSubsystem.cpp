@@ -672,7 +672,7 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 	}
 }
 
-void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId, const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -684,7 +684,7 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete, SuccessCallback, TimeoutCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1828,8 +1828,19 @@ void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRe
 	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback)
 {
+	const FString RequestUrl = FGenericPlatformHttp::UrlDecode(HttpRequest->GetURL());
+	const FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+
+	const FString OperationId = UGameplayStatics::ParseOption(UrlOptions, TEXT("operation_id"));
+
+	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::RequestTimeout)
+	{
+		TimeoutCallback.ExecuteIfBound(OperationId);
+		return;
+	}
+
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
@@ -1839,7 +1850,7 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpReq
 		if (JsonObject->HasTypedField<EJson::String>(CodeFieldName))
 		{
 			const FString Code = JsonObject->GetStringField(CodeFieldName);
-			SuccessCallback.ExecuteIfBound(Code);
+			SuccessCallback.ExecuteIfBound(Code, OperationId);
 			return;
 		}
 
