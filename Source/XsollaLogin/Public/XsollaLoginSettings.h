@@ -69,6 +69,16 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "EncryptCachedCredentials && !bCustomAuthViaAccessToken"))
 	FString XsollaSaveEncryptionKey;
 
+	// TEXTREVIEW
+	/** Flag indicating whether authentication link should be send along with confirmation code for passwordless login */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	bool SendPasswordlessAuthURL;
+
+	// TEXTREVIEW
+	/** Authentication link used for passwordless login */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "SendPasswordlessAuthURL && !bCustomAuthViaAccessToken"))
+	FString PasswordlessAuthURL;
+
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	FString DemoProjectID;

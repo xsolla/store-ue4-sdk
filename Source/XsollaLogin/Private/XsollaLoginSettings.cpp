@@ -24,6 +24,7 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	DemoLoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
 	DemoClientID = TEXT("57");
 	EncryptCachedCredentials = false;
+	SendPasswordlessAuthURL = false;
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bForceSteamAuthorization = false;

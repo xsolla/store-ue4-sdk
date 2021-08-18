@@ -96,11 +96,14 @@ public:
 	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
-    static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+	static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 
 	static FString GetPluginName(const FName& ModuleName);
-private:
 
+	/** Gets URL query parameter with specified name. */
+	static FString GetUrlParameter(const FString& Url, const FString& ParamName);
+
+private:
 	static FString XReferral;
 	static FString XReferralVersion;
 };
