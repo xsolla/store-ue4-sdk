@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "XsollaUIBuilderTypes.h"
 #include "Fonts/SlateFontInfo.h"
 #include "Styling/SlateBrush.h"
+#include "XsollaUIBuilderTypes.h"
+
 #include "XsollaUIBuilderTheme.generated.h"
 
 UCLASS(abstract, Blueprintable, BlueprintType)

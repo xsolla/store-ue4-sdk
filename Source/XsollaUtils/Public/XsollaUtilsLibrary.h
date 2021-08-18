@@ -59,7 +59,7 @@ public:
 		const FString ValueStr = EnumPtr->GetDisplayNameTextByIndex(static_cast<int64>(Value)).ToString();
 		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
 	}
-	
+
 	template <typename EnumType>
 	static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
 	{

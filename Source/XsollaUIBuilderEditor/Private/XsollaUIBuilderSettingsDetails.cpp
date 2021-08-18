@@ -2,20 +2,20 @@
 
 #include "XsollaUIBuilderSettingsDetails.h"
 
+#include "DetailLayoutBuilder.h"
 #include "IDocumentation.h"
 #include "PropertyEditing.h"
+#include "UObject/StrongObjectPtr.h"
 #include "Widgets/SToolTip.h"
 #include "XsollaEntityTypeList.h"
-#include "DetailLayoutBuilder.h"
 #include "XsollaUIBuilderEditorTypes.h"
 #include "XsollaUIBuilderLibrary.h"
 #include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderTypes.h"
-#include "UObject/StrongObjectPtr.h"
 
 #define LOCTEXT_NAMESPACE "XsollaUIBuilderSettingsDetails"
 
-TSharedRef< IDetailCustomization > FXsollaUIBuilderSettingsDetails::MakeInstance()
+TSharedRef<IDetailCustomization> FXsollaUIBuilderSettingsDetails::MakeInstance()
 {
 	return MakeShareable(new FXsollaUIBuilderSettingsDetails);
 }
@@ -35,7 +35,7 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	WidgetTypeParameters.TooltipExcerptName = TEXT("WidgetType");
 	//TEXTREVIEW
 	WidgetTypeParameters.TitleText = LOCTEXT("WidgetTypes_Menu_Description", " You can have up to 30 custom widget types for your project. \nOnce you name each type, they will show up as new type for xsolla widgets library.");
-	
+
 	CustomizeOneType(DetailBuilder, StaticEnum<EWidgetType>(), XsollaUIBuilderSettings->WidgetTypes, WidgetTypeParameters);
 	// end of widget types
 
@@ -85,7 +85,7 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& DetailBuilder, UEnum* TypeEnum, TArray<FEntityTypeName>& TypesArray, const FTypeParametersStruct& Parameters)
 {
 	check(TypeEnum);
-	
+
 	IDetailCategoryBuilder& EntityTypesCategory = DetailBuilder.EditCategory(*Parameters.CategoryName, FText::GetEmpty(), ECategoryPriority::Uncommon);
 	EntityTypesCategory.InitiallyCollapsed(true);
 	TSharedPtr<IPropertyHandle> EntityTypeProperty = DetailBuilder.GetProperty(Parameters.PropertyPath);

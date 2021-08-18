@@ -93,7 +93,7 @@ struct XSOLLAUTILS_API FXsollaItemAttribute
 	TArray<FXsollaItemAttributeValue> values;
 
 public:
-	FXsollaItemAttribute(){}
+	FXsollaItemAttribute() {}
 };
 
 USTRUCT(BlueprintType)
@@ -111,7 +111,7 @@ struct XSOLLAUTILS_API FXsollaPrice
 	FString currency;
 
 public:
-	FXsollaPrice(){}
+	FXsollaPrice() {}
 };
 
 USTRUCT(BlueprintType)
@@ -142,7 +142,9 @@ struct XSOLLAUTILS_API FXsollaExpirationPeriod
 
 public:
 	FXsollaExpirationPeriod()
-		: value(0){}
+		: value(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -205,7 +207,9 @@ public:
 	FXsollaVirtualCurrencyPrice()
 		: is_default(false)
 		, amount(0)
-		, amount_without_discount(0){}
+		, amount_without_discount(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)

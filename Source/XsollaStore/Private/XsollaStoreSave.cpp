@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaStoreSave.h"
 
@@ -10,11 +9,11 @@ const int32 UXsollaStoreSave::UserIndex = 0;
 
 FXsollaStoreSaveData UXsollaStoreSave::Load()
 {
-	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+	if (!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
 	{
-		return FXsollaStoreSaveData();		
+		return FXsollaStoreSaveData();
 	}
-	
+
 	UXsollaStoreSave* SaveInstance = Cast<UXsollaStoreSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 	if (!SaveInstance)
 	{
