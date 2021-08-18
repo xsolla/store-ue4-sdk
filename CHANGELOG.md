@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0] - 2021-08-27
+
+### Added
+- Authentication via phone number and email.
+- Native authentication via WeChat and QQ on Android.
+- Dynamic UI theme switching support.
+
+### Changed
+- Widgets manager usability improvements.
+- UI themes usability improvements.
+- User authentication demo refactoring.
+- Minor demo improvements.
+
+### Fixed
+- Demo background sizing issue.
+
 ## [0.7.0] - 2021-06-29
 
 ### Added
