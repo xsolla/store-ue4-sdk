@@ -4,7 +4,10 @@
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
-    <log text="XsollaLogin UPL initialization"/>        
+    <log text="XsollaLogin UPL initialization"/>
+    
+    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName" default="com.xsolla.unrealdemo"/>
+    <setStringReplace result="PackageNamePath" source="$S(PackageName)" find="." with="/"/>
   </init>
 
   <!-- Enable AndroidX support -->
@@ -47,6 +50,24 @@
       }
     </insert>
   </baseBuildGradleAdditions>
+  
+  <!-- Replace package name in WeChat proxy activity script -->
+  <baseBuildGradleAdditions>
+    <insert>
+      allprojects {
+        beforeEvaluate { project ->
+          project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) { f ->
+            if (f.getText('UTF-8').contains('com.xsolla.login.wxapi')) {
+    </insert>
+    <insertValue value="ant.replace(file: f, token: 'com.xsolla.login.wxapi', value: '$S(PackageName).wxapi')"/>
+    <insertNewline/>
+    <insert>
+            }
+          }
+        }
+      }
+    </insert>
+  </baseBuildGradleAdditions>
 
   <buildGradleAdditions>
     <!-- Add dependencies -->
@@ -78,7 +99,8 @@
 
   <!-- Add native implementation wrapper -->
   <prebuildCopies>
-    <copyDir src="$S(PluginDir)/Private/Android/Java" dst="$S(BuildDir)/src/com/xsolla/login" />
+    <copyDir src="$S(PluginDir)/Private/Android/Java/Common" dst="$S(BuildDir)/src/com/xsolla/login" />
+    <copyDir src="$S(PluginDir)/Private/Android/Java/WeChat" dst="$S(BuildDir)/src/$S(PackageNamePath)/wxapi" />
   </prebuildCopies>
 
   <!-- Additions to proguard -->
@@ -100,10 +122,18 @@
 
   <!-- Add custom data to AndroidManifest.xml -->
   <androidManifestUpdates>
+
+    <setElement result="WeChatNativeAuthActivity" value="activity"/>
+    <addAttribute tag="$WeChatNativeAuthActivity" name="android:name" value="$S(PackageName).wxapi.WXEntryActivity"/>
+    <addAttribute tag="$WeChatNativeAuthActivity" name="android:exported" value="true"/>
+    <addAttribute tag="$WeChatNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+    <addElement tag="application" name="WeChatNativeAuthActivity"/>
+
     <addElements tag="application">
       <activity android:name="com.xsolla.login.XsollaNativeAuthActivity"
                 android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
     </addElements>
+
   </androidManifestUpdates>
 
 </root>
