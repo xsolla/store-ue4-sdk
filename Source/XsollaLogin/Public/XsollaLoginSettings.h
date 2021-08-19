@@ -145,4 +145,12 @@ public:
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
 	FString GoogleAppId;
+
+	/** WeChat app identifier (can be obtained on WeChat developer page). Used for native user authentication via WeChat Android application. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	FString WeChatAppId;
+
+	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	FString QQAppId;
 };
