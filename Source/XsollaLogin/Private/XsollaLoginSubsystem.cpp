@@ -87,7 +87,9 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				XsollaJavaConvertor::GetJavaString(ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 		else
 		{
@@ -97,7 +99,9 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 	}
 
