@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSubsystem.h"
@@ -678,11 +678,9 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
 	const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
-							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
+							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("login"), FGenericPlatformHttp::UrlEncode(UserId))
 							.AddStringQueryParam(TEXT("operation_id"), OperationId)
 							.Build();
