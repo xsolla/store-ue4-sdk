@@ -31,4 +31,5 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
+	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
 }
