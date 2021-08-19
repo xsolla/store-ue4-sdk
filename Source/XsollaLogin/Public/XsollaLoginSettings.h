@@ -74,7 +74,7 @@ public:
 	bool SendPasswordlessAuthURL;
 
 	// TEXTREVIEW
-	/** Authentication link used for passwordless login */
+	/** Authentication link used for passwordless login. It won't be send along with confirmation code for passwordless login if empty */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "SendPasswordlessAuthURL && !bCustomAuthViaAccessToken"))
 	FString PasswordlessAuthURL;
 
