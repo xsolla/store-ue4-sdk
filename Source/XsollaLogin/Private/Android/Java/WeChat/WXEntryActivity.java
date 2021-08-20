@@ -1,4 +1,4 @@
-package com.nekki.shadowfightarena_xsolla.wxapi;
+package com.xsolla.login.wxapi;
 
 import android.app.Activity;
 import android.os.Bundle;
