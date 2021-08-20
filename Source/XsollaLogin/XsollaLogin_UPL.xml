@@ -129,11 +129,11 @@
     <addAttribute tag="$WeChatNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
     <addElement tag="application" name="WeChatNativeAuthActivity"/>
 
-    <addElements tag="application">
-      <activity android:name="com.xsolla.login.XsollaNativeAuthActivity"
-                android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                android:configChanges="orientation|screenSize"/>
-    </addElements>
+    <setElement result="XsollaNativeAuthActivity" value="activity"/>
+    <addAttribute tag="$XsollaNativeAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeAuthActivity"/>
+    <addAttribute tag="$XsollaNativeAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
+    <addAttribute tag="$XsollaNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+    <addElement tag="application" name="XsollaNativeAuthActivity"/>
 
   </androidManifestUpdates>
 
