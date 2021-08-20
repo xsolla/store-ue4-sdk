@@ -6,7 +6,7 @@
   <init>
     <log text="XsollaLogin UPL initialization"/>
     
-    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName" default="com.xsolla.unrealdemo"/>
+    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName"/>
     <setStringReplace result="PackageNamePath" source="$S(PackageName)" find="." with="/"/>
   </init>
 
@@ -131,7 +131,8 @@
 
     <addElements tag="application">
       <activity android:name="com.xsolla.login.XsollaNativeAuthActivity"
-                android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:configChanges="orientation|screenSize"/>
     </addElements>
 
   </androidManifestUpdates>
