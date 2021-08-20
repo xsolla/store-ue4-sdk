@@ -60,29 +60,27 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
 	FString ClientID;
 
-	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key */
+	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool EncryptCachedCredentials;
 
-	/** AES-256 encryption key used for cached credentials encryption */
+	/** AES-256 encryption key used for cached credentials encryption. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "EncryptCachedCredentials && !bCustomAuthViaAccessToken"))
 	FString XsollaSaveEncryptionKey;
 
-	// TEXTREVIEW
-	/** Flag indicating whether authentication link should be send along with confirmation code for passwordless login */
+	/** Flag indicating whether the authentication link should be sent together with the confirmation code for passwordless login. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool SendPasswordlessAuthURL;
 
-	// TEXTREVIEW
-	/** Authentication link used for passwordless login. It won't be send along with confirmation code for passwordless login if empty */
+	/** Authentication link used for passwordless login. It won't be sent together with the confirmation code for passwordless login if empty. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "SendPasswordlessAuthURL && !bCustomAuthViaAccessToken"))
 	FString PasswordlessAuthURL;
 
-	/** Demo Project ID */
+	/** Demo Project ID. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	FString DemoProjectID;
 
-	/** Demo Login ID */
+	/** Demo Login ID. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	FString DemoLoginID;
 
