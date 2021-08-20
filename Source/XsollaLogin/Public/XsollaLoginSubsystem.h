@@ -362,10 +362,9 @@ public:
 		const FString& ProviderName, const FString& Payload, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Start Auth by Phone Number
 	 * Starts authentication by the user phone number and sends a confirmation code to their phone number.
-	 * 
+	 *
 	 * @param PhoneNumber User phone number.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
@@ -376,10 +375,9 @@ public:
 	void StartAuthByPhoneNumber(const FString& PhoneNumber, const FString& Payload, const FString& State,
 		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Complete Auth by Phone Number
 	 * Completes authentication by the user phone number and a confirmation code.
-	 * 
+	 *
 	 * @param Code Confirmation code.
 	 * @param OperationId ID of the confirmation code.
 	 * @param PhoneNumber User phone number.
@@ -390,10 +388,9 @@ public:
 	void CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Start Auth by Email
 	 * Starts authentication by the user email address and sends a confirmation code to their email address.
-	 * 
+	 *
 	 * @param Email User email address.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
@@ -404,10 +401,9 @@ public:
 	void StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
 		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Complete Auth by Email
 	 * Completes authentication by the user email address and a confirmation code.
-	 * 
+	 *
 	 * @param Code Confirmation code.
 	 * @param OperationId ID of the confirmation code.
 	 * @param Email User email address.
@@ -418,13 +414,12 @@ public:
 	void CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// TEXTREVIEW
 	/** Get Auth Confirmation Code
-	 * Gets confirmation code for completing authentication via email or phone number. User has to follow the link provided via email/SMS in order to receive the code.
-	 * 
+	 * Gets confirmation code for completing authentication via email or phone number. User must follow the link provided via email/SMS to receive the code.
+	 *
 	 * @param UserId Identifier of the user (can be either email or phone number).
 	 * @param OperationId ID of the confirmation code.
-	 * @param SuccessCallback Callback function called after receiving confirmation code.
+	 * @param SuccessCallback Callback function called after receiving the confirmation code.
 	 * @param TimeoutCallback Callback function called after request timeout.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
