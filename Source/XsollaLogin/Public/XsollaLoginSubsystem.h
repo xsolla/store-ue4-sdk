@@ -83,8 +83,8 @@ public:
 	 * @param Username Username. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param SuccessCallback Callback function called after successful request sending.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
@@ -131,7 +131,6 @@ public:
 	 * @param AdditionalFields List of parameters which should be requested from the user or social network additionally and written to the token (JWT only).
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload, const TArray<FString>& AdditionalFields,
@@ -167,16 +166,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& Token);
 
-	/** Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
-	 *
+	/** Refresh authentication token
+	 * Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
+	 * 
 	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing the user with username/password for the first time.
+	 * @param SuccessCallback Callback function called after successful token refreshing. Refresh data including the JWT will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Exchange the user authentication code to a valid JWT. Works only when OAuth 2.0 is enabled.
+	/** Exchange code to token
+	 * Exchanges the user authentication code to a valid JWT. Works only when OAuth 2.0 is enabled.
 	 *
 	 * @param AuthenticationCode User authentication code to be exchanged to a JWT.
+	 * @param SuccessCallback Callback function called after successful exchanging.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -271,7 +276,7 @@ public:
 	 * Links the user platform account to the existing main account by the code.
 	 *
 	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform name.
+	 * @param Platform Platform type.
 	 * @param Code Account linking code obtained from the master account.
 	 * @param SuccessCallback Callback function called after successful account linking.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -280,7 +285,7 @@ public:
 	void LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Link email, password, and username to account
+	/** Link Email, Password, and Username to Account
 	 * Adds the username/email and password authentication to the existing user account. This call is used if the account is created via the device ID or phone number.
 	 *
 	 * @param AuthToken User authorization token.
@@ -295,7 +300,7 @@ public:
 	void LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, const bool ReceiveNewsConsent, const FString& Username,
 		const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Link device to account
+	/** Link Device to Account
 	 * Links the specified device to the user account.
 	 *
 	 * @param AuthToken User authorization token.
@@ -309,7 +314,7 @@ public:
 	void LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Unlink device from account
+	/** Unlink Device from Account
 	 * Unlinks the specified device from the user account.
 	 *
 	 * @param AuthToken User authorization token.
@@ -325,7 +330,7 @@ public:
 	 * Authenticates a platform account user.
 	 *
 	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform name.
+	 * @param Platform Platform type.
 	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -609,7 +614,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Users devices
+	/** Update Users Devices
 	 * Updates a list of user’s devices.
 	 *
 	 * @param AuthToken User authorization token.
@@ -619,7 +624,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Search Users By Nickname
+	/** Search Users by Nickname
 	 * Searches for users with the specified nickname.
 	 *
 	 * @param AuthToken User authorization token.

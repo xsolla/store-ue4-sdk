@@ -27,7 +27,7 @@ public:
 	EXsollaPublishingPlatform Platform;
 
 	/** Web Store URL to be opened in order to purchase virtual items. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Inventory Demo")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Inventory Settings")
 	FString WebStoreURL;
 
 	/** Demo Project ID */
