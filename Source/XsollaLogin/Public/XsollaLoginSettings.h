@@ -92,7 +92,7 @@ public:
 	FString DemoClientID;
 
 	/** If enabled, Login SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool UseCrossPlatformAccountLinking;
 
 	/**
@@ -117,7 +117,7 @@ public:
 	FString PlatformAccountID;
 
 	/** Request user nickname after successful authorization in case one is missing */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool RequestNickname;
 
 	/** If enabled, Login SDK will use Steam as default authorization mechanism */
