@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.0] - 2021-08-27
+## [0.8.0] - 2021-08-25
 
 ### Added
 - Authentication via phone number and email.
