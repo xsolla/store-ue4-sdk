@@ -46,7 +46,7 @@ public:
 	/**
 	 * Initializes the controller with the provided Project ID (used to override project settings).
 	 *
-	 * @param InProjectId New Project ID value form Publisher Account > Project settings > Project ID.
+	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
@@ -55,7 +55,7 @@ public:
 	 * Updates the list of virtual items available for the configured project (cached locally).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -83,7 +83,7 @@ public:
 	 * Updates the list of virtual currencies (cached locally).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -97,8 +97,8 @@ public:
 	/** Update Virtual Currency Packages
 	 * Updates the list of virtual currency packages (cached locally).
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -113,8 +113,8 @@ public:
 	 * Gets an item list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -216,7 +216,7 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Amount of items to be added to a cart.
+	 * @param Quantity Amount of items to be added to the cart.
 	 * @param SuccessCallback Callback function called after successfully adding a new item to the cart.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -265,7 +265,7 @@ public:
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	* @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	* @param SuccessCallback Callback function called after the cart is successfully filled.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
@@ -280,8 +280,8 @@ public:
 	 * Gets virtual currency with specified SKU.
 	 *
 	 * @param CurrencySKU Desired currency SKU.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions for to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -295,8 +295,8 @@ public:
 	 * Gets virtual currency package with specified SKU.
 	 *
 	 * @param PackageSKU Desired currency package SKU
-	 * @param Locale Response language. Tow-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Tow-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
