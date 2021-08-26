@@ -14,9 +14,9 @@ UXsollaWebBrowserAssetManager::UXsollaWebBrowserAssetManager(const FObjectInitia
 	: Super(ObjectInitializer)
 {
 	DefaultMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture.M_WebTexture"),
-		*UXsollaUtilsLibrary::GetPluginName(IXsollaWebBrowserModule::ModuleName));
+		*UXsollaUtilsLibrary::GetPluginName(FXsollaWebBrowserModule::ModuleName));
 	DefaultTranslucentMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture_Translucent.M_WebTexture_Translucent"),
-		*UXsollaUtilsLibrary::GetPluginName(IXsollaWebBrowserModule::ModuleName));
+		*UXsollaUtilsLibrary::GetPluginName(FXsollaWebBrowserModule::ModuleName));
 
 #if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
 	// Add a hard reference to UXsollaWebBrowserTexture, without this the WebBrowserTexture DLL never gets loaded on Windows.
