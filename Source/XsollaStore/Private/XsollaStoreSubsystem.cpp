@@ -612,6 +612,23 @@ FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& Battl
 	return BattlepassData;
 }
 
+void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+	&UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1010,6 +1027,21 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	}
 }
 
+void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStorePromocodeRewardData PromocodeRewardData;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaGamesData::StaticStruct(), &GamesData, OutError))
+	{
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
 void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback)
 {
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
@@ -1355,6 +1387,11 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
+}
+
+const FXsollaGamesData& UXsollaStoreSubsystem::GetGamesData() const
+{
+	return GamesData;
 }
 
 #undef LOCTEXT_NAMESPACE

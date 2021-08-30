@@ -704,3 +704,82 @@ inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 	this->content = Bundle.content;
 	this->attributes = Bundle.attributes;
 }
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaGameUnitItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_free;
+  
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool has_keys;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString release_date;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaGameItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString unit_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FXsollaGameUnitItem> unit_items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaGamesData
+{
+	public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TArray<FXsollaGameItem> Items;
+};

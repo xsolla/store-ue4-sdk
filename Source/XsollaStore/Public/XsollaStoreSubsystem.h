@@ -320,26 +320,26 @@ public:
 		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Promocode Rewards
-	* Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
-	* The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
-	*
-	* @param AuthToken User authorization token.
-	* @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successfully receiving promocode rewards.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
+	 * The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
+	 * @param SuccessCallback Callback function called after successfully receiving promocode rewards.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Redeem Promocode
-	* Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
-	*
-	* @param AuthToken User authorization token.
-	* @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
-	* @param SuccessCallback Callback function called after successful promocode redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	*/
+	 * Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
+	 * @param SuccessCallback Callback function called after successful promocode redemption.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
@@ -347,6 +347,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
 
+	//TEXTREVIEW
+	/** Get Games List
+	 * Gets a games list for building a catalog.
+	 *
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param SuccessCallback Callback function called after successful request of specified games list data.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|GameKeys" , meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -395,6 +411,9 @@ protected:
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
+	void GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
 
@@ -491,6 +510,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
 
+	/** Gets games list data. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|GameKeys")
+	const FXsollaGamesData& GetGamesData() const;
+	
 public:
 	/** Event occurred when the cart was changed or updated. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -512,6 +535,9 @@ protected:
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
 
+	/** Cached list of games */
+	FXsollaGamesData GamesData;
+	
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
 
