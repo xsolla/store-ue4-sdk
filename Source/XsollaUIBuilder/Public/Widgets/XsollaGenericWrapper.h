@@ -40,9 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Theme")
 	void UpdateThemeParameters(const FThemeParameters& InParameters);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Theme")
 	void UpdateWrapperTheme();
 protected:
+	
 	
 	UFUNCTION()
 	void ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewTheme);

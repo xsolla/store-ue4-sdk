@@ -15,6 +15,6 @@ class XSOLLAUTILS_API UXsollaWorldObject : public UObject
 public:
 	virtual UWorld* GetWorld() const override;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = "true"), Category = "Xsolla|World object")
 	UUserWidget* Owner;
 };
