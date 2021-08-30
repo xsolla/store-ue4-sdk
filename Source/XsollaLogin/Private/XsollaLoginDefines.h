@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
 
@@ -14,4 +13,4 @@ DECLARE_LOG_CATEGORY_EXTERN(LogXsollaLogin, Log, All);
 #define VA_LINE (FString::FromInt(__LINE__))		 // Current Line Number in the code where this is called
 #define VA_FUNC_LINE (VA_FUNC + "(" + VA_LINE + ")") // Current Class and Line Number where this is called!
 
-#define XSOLLA_LOGIN_VERSION TEXT("0.5.0")
+#define XSOLLA_LOGIN_VERSION TEXT("0.6.0")

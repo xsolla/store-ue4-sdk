@@ -16,7 +16,7 @@ TSubclassOf<UXsollaGenericPrimitive> UXsollaGenericWrapper::GetWidgetClass() con
 	{
 		return nullptr;
 	}
-	
+
 	return UXsollaUIBuilderLibrary::GetCurrentWidgetsLibrary()->GetWidgetByType(WidgetLibraryType);
 }
 
@@ -27,16 +27,16 @@ void UXsollaGenericWrapper::UpdateThemeParameters(const FThemeParameters& InPara
 		UXsollaUIBuilderLibrary::Clear(Parameters);
 		return;
 	}
-	
+
 	if (UXsollaUIBuilderLibrary::IsEmpty(Parameters))
 	{
 		Parameters = InParameters;
 		return;
 	}
-	
+
 	for (const auto& KeyValue : InParameters.Colors)
 	{
-		if(!Parameters.Colors.Contains(KeyValue.Key))
+		if (!Parameters.Colors.Contains(KeyValue.Key))
 		{
 			Parameters = InParameters;
 			return;

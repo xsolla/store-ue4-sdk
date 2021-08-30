@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSubsystem.h"
@@ -81,23 +81,27 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 		if (Settings->UseOAuth2)
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitOauth",
-				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 		else
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitJwt",
-				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 	}
 
@@ -678,11 +682,9 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
 	const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
-							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
+							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("login"), FGenericPlatformHttp::UrlEncode(UserId))
 							.AddStringQueryParam(TEXT("operation_id"), OperationId)
 							.Build();

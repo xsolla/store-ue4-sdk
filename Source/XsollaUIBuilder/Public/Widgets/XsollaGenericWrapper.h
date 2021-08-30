@@ -4,21 +4,19 @@
 
 #include "CoreMinimal.h"
 
+#include "Blueprint/UserWidget.h"
 #include "XsollaGenericPrimitive.h"
 #include "XsollaUIBuilderTypes.h"
-#include "Blueprint/UserWidget.h"
+
 #include "XsollaGenericWrapper.generated.h"
 
 class UXsollaUIBuilderTheme;
-/**
- * 
- */
+
 UCLASS()
 class XSOLLAUIBUILDER_API UXsollaGenericWrapper : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Default, meta = (EditCondition = "OverrideWidget == nullptr", ExposeOnSpawn = "true"))
 	TEnumAsByte<EWidgetType> WidgetLibraryType;
 
@@ -42,11 +40,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Theme")
 	void UpdateWrapperTheme();
+
 protected:
-	
-	
 	UFUNCTION()
 	void ThemeUpdated(TSubclassOf<UXsollaUIBuilderTheme> NewTheme);
-	
+
 	virtual void NativeOnInitialized() override;
 };

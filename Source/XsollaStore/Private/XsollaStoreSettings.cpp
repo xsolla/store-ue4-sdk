@@ -16,7 +16,7 @@ void UXsollaStoreSettings::SetupDefaultDemoSettings()
 	BuildForSteam = false;
 	UseCrossPlatformAccountLinking = false;
 	DemoProjectID = TEXT("77640");
-	PaymentInterfaceTheme = EXsollaPaymentUiTheme::dark;
+	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
 	OverrideRedirectPolicy = false;

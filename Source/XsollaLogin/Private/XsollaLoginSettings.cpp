@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSettings.h"
 
@@ -32,4 +31,5 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
+	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
 }

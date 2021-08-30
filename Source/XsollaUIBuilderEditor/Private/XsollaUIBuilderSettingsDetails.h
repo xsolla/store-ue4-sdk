@@ -2,27 +2,25 @@
 
 #pragma once
 
-#include "IDetailCustomization.h"
 #include "DetailLayoutBuilder.h"
+#include "IDetailCustomization.h"
+
+class UXsollaUIBuilderSettings;
 
 struct FEntityTypeName;
-class UXsollaUIBuilderSettings;
 struct FTypeParametersStruct;
 
-class FXsollaUIBuilderSettingsDetails: public IDetailCustomization
+class FXsollaUIBuilderSettingsDetails : public IDetailCustomization
 {
 public:
 	// IDetailCustomization interface
 	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
 
-	static TSharedRef< IDetailCustomization > MakeInstance();
+	static TSharedRef<IDetailCustomization> MakeInstance();
 
 private:
-	
 	UXsollaUIBuilderSettings* XsollaUIBuilderSettings;
 
 	static void CustomizeOneType(IDetailLayoutBuilder& DetailBuilder, UEnum* TypeEnum, TArray<FEntityTypeName>& TypesArray, const FTypeParametersStruct& Parameters);
 	static void UpdateDefaultConfigFile();
-
 };
-

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "XsollaUIBuilderTypes.h"
 #include "Widgets/XsollaGenericPrimitive.h"
+#include "XsollaUIBuilderTypes.h"
 
 #include "XsollaUIBuilderWidgetsLibrary.generated.h"
 
@@ -13,7 +13,6 @@ class UXsollaUIBuilderWidgetsLibrary : public UObject
 	GENERATED_BODY()
 
 public:
-
 	/** Get widget class. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla Widgets Library")
 	TSubclassOf<UXsollaGenericPrimitive> GetWidgetByType(const TEnumAsByte<EWidgetType> WidgetType) const;
