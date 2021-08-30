@@ -1,10 +1,9 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSave.h"
 #include "XsollaLogin.h"
-#include "XsollaLoginSettings.h"
 #include "XsollaLoginDefines.h"
+#include "XsollaLoginSettings.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
@@ -14,11 +13,11 @@ const int32 UXsollaLoginSave::UserIndex = 0;
 
 FXsollaLoginData UXsollaLoginSave::Load()
 {
-	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+	if (!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
 	{
-		return FXsollaLoginData();		
+		return FXsollaLoginData();
 	}
-	
+
 	const UXsollaLoginSave* SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 	if (!SaveInstance)
 	{

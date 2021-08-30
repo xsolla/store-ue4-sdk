@@ -10,9 +10,6 @@
 #include "XsollaUtilsLibrary.generated.h"
 
 class UXsollaUtilsImageLoader;
-class UXsollaUtilsSettings;
-class UXsollaUtilsTheme;
-class UXsollaUtilsWidgetsLibrary;
 class FJsonObject;
 
 UCLASS()
@@ -28,24 +25,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static UXsollaUtilsImageLoader* GetImageLoader();
 
-	/** Gives direct access to the utils settings. */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
-	static UXsollaUtilsSettings* GetUtilsSettings();
-
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
 	static void GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj);
-	
-	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
-	static UXsollaUtilsTheme* GetCurrentTheme();
-	
-	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
-	static UXsollaUtilsTheme* GetTheme(TSubclassOf<UXsollaUtilsTheme> ThemeClass);
-
-	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
-	static UXsollaUtilsWidgetsLibrary* GetCurrentWidgetsLibrary();
-
-	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|Utils")
-	static UXsollaUtilsWidgetsLibrary* GetWidgetsLibrary(TSubclassOf<UXsollaUtilsWidgetsLibrary> WidgetLibraryClass);
 
 	/** Make FDateTime structure based on a given timestamp. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
@@ -67,6 +48,18 @@ public:
 		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
 	}
 
+	template <typename TEnum>
+	static FString GetEnumValueAsDisplayNameString(const FString& EnumName, TEnum Value)
+	{
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+		if (!EnumPtr)
+		{
+			return FString("Invalid");
+		}
+		const FString ValueStr = EnumPtr->GetDisplayNameTextByIndex(static_cast<int64>(Value)).ToString();
+		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+	}
+
 	template <typename EnumType>
 	static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
 	{
@@ -85,16 +78,16 @@ public:
 	static void AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonObject> JsonObject, const FString& FieldName, const FXsollaParameters& CustomParameters);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (int)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(const int Value);
+	static FXsollaJsonVariant Conv_IntToXsollaJsonVariant(int Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (float)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(const float Value);
+	static FXsollaJsonVariant Conv_FloatToXsollaJsonVariant(float Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (string)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(const FString& Value);
+	static FXsollaJsonVariant Conv_StringToXsollaJsonVariant(FString Value);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToXsollaJsonVariant (bool)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Xsolla|Utils")
-	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(const bool Value);
+	static FXsollaJsonVariant Conv_BoolToXsollaJsonVariant(bool Value);
 
 	/** Set additional information for web request. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
@@ -103,11 +96,14 @@ public:
 	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
-    static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+	static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 
 	static FString GetPluginName(const FName& ModuleName);
-private:
 
+	/** Gets URL query parameter with specified name. */
+	static FString GetUrlParameter(const FString& Url, const FString& ParamName);
+
+private:
 	static FString XReferral;
 	static FString XReferralVersion;
 };

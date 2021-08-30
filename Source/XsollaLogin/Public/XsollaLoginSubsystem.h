@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
 
@@ -31,6 +30,9 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserSearchUpdate, const FXsollaUserSearchRe
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCheckUserAgeSuccess, const FXsollaCheckUserAgeResult&, CheckUserAgeResult);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAccessTokenLoginSuccess, FString, AccessToken);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkEmailAndPasswordSuccess, bool, bNeedToConfirmEmail);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStartAuthSuccess, FString, OperationId);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthCodeSuccess, const FString&, Code, const FString&, OperationId);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthCodeTimeout, const FString&, OperationId);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -80,8 +82,8 @@ public:
 	 * @param Username Username. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param SuccessCallback Callback function called after successful request sending.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
@@ -128,7 +130,6 @@ public:
 	 * @param AdditionalFields List of parameters which should be requested from the user or social network additionally and written to the token (JWT only).
 	 * @param SuccessCallback Callback function called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload, const TArray<FString>& AdditionalFields,
@@ -164,16 +165,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetToken(const FString& Token);
 
-	/** Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
-	 *
+	/** Refresh authentication token
+	 * Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
+	 * 
 	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing the user with username/password for the first time.
+	 * @param SuccessCallback Callback function called after successful token refreshing. Refresh data including the JWT will be received.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Exchange the user authentication code to a valid JWT. Works only when OAuth 2.0 is enabled.
+	/** Exchange code to token
+	 * Exchanges the user authentication code to a valid JWT. Works only when OAuth 2.0 is enabled.
 	 *
 	 * @param AuthenticationCode User authentication code to be exchanged to a JWT.
+	 * @param SuccessCallback Callback function called after successful exchanging.
+	 * @param ErrorCallback Callback function called after request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
@@ -268,7 +275,7 @@ public:
 	 * Links the user platform account to the existing main account by the code.
 	 *
 	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform name.
+	 * @param Platform Platform type.
 	 * @param Code Account linking code obtained from the master account.
 	 * @param SuccessCallback Callback function called after successful account linking.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -277,7 +284,7 @@ public:
 	void LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Link email, password, and username to account
+	/** Link Email, Password, and Username to Account
 	 * Adds the username/email and password authentication to the existing user account. This call is used if the account is created via the device ID or phone number.
 	 *
 	 * @param AuthToken User authorization token.
@@ -292,7 +299,7 @@ public:
 	void LinkEmailAndPassword(const FString& AuthToken, const FString& Email, const FString& Password, const bool ReceiveNewsConsent, const FString& Username,
 		const FOnLinkEmailAndPasswordSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Link device to account
+	/** Link Device to Account
 	 * Links the specified device to the user account.
 	 *
 	 * @param AuthToken User authorization token.
@@ -306,7 +313,7 @@ public:
 	void LinkDeviceToAccount(const FString& AuthToken, const FString& PlatformName, const FString& DeviceName, const FString& DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Unlink device from account
+	/** Unlink Device from Account
 	 * Unlinks the specified device from the user account.
 	 *
 	 * @param AuthToken User authorization token.
@@ -322,7 +329,7 @@ public:
 	 * Authenticates a platform account user.
 	 *
 	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform name.
+	 * @param Platform Platform type.
 	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -359,6 +366,71 @@ public:
 	void AuthViaAccessTokenOfSocialNetwork(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId,
 		const FString& ProviderName, const FString& Payload, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Start Auth by Phone Number
+	 * Starts authentication by the user phone number and sends a confirmation code to their phone number.
+	 *
+	 * @param PhoneNumber User phone number.
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param SuccessCallback Callback function called after successful phone number authentication start.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void StartAuthByPhoneNumber(const FString& PhoneNumber, const FString& Payload, const FString& State,
+		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Complete Auth by Phone Number
+	 * Completes authentication by the user phone number and a confirmation code.
+	 *
+	 * @param Code Confirmation code.
+	 * @param OperationId ID of the confirmation code.
+	 * @param PhoneNumber User phone number.
+	 * @param SuccessCallback Callback function called after successful phone number authentication.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Start Auth by Email
+	 * Starts authentication by the user email address and sends a confirmation code to their email address.
+	 *
+	 * @param Email User email address.
+	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
+	 * @param Payload Your custom data. The value of the parameter will be returned in the user JWT > payload claim (JWT only).
+	 * @param SuccessCallback Callback function called after successful email authentication start.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
+		const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Complete Auth by Email
+	 * Completes authentication by the user email address and a confirmation code.
+	 *
+	 * @param Code Confirmation code.
+	 * @param OperationId ID of the confirmation code.
+	 * @param Email User email address.
+	 * @param SuccessCallback Callback function called after successful email authentication.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	/** Get Auth Confirmation Code
+	 * Gets confirmation code for completing authentication via email or phone number. User must follow the link provided via email/SMS to receive the code.
+	 *
+	 * @param UserId Identifier of the user (can be either email or phone number).
+	 * @param OperationId ID of the confirmation code.
+	 * @param SuccessCallback Callback function called after receiving the confirmation code.
+	 * @param TimeoutCallback Callback function called after request timeout.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, TimeoutCallback, ErrorCallback"))
+	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
+		const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Details
 	 * Updates locally cached user details.
@@ -536,7 +608,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Users devices
+	/** Update Users Devices
 	 * Updates a list of user’s devices.
 	 *
 	 * @param AuthToken User authorization token.
@@ -546,7 +618,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Search Users By Nickname
+	/** Search Users by Nickname
 	 * Searches for users with the specified nickname.
 	 *
 	 * @param AuthToken User authorization token.
@@ -617,6 +689,22 @@ protected:
 	void AuthViaAccessTokenOfSocialNetworkOAuth(const FString& AuthToken, const FString& AuthTokenSecret, const FString& OpenId, const FString& ProviderName, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	void StartAuthByPhoneNumberJWT(const FString& PhoneNumber, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void StartAuthByPhoneNumberOAuth(const FString& PhoneNumber, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	void CompleteAuthByPhoneNumberJWT(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void CompleteAuthByPhoneNumberOAuth(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	void StartAuthByEmailJWT(const FString& Email, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void StartAuthByEmailOAuth(const FString& Email, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
+	void CompleteAuthByEmailJWT(const FString& Code, const FString& OperationId, const FString& Email,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void CompleteAuthByEmailOAuth(const FString& Code, const FString& OperationId, const FString& Email,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -647,6 +735,18 @@ protected:
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void StartAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnStartAuthSuccess SuccessCallback, FOnAuthError ErrorCallback);
+	void CompleteAuthByPhoneNumberJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void CompleteAuthByPhoneNumberOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void CompleteAuthByEmailJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback);
 	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -688,6 +788,11 @@ protected:
 
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
+
+	/** Processes the request that returns URL with user token (JWT). */
+	void HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	/** Processes the request that returns URL with a code that can be exchanged to user token (OAuth 2.0). */
+	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Returns true if the error occurs. */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);

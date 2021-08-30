@@ -3,9 +3,6 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
-#include "XsollaUtilsSettings.h"
-#include "XsollaUtilsTheme.h"
-#include "XsollaUtilsWidgetsLibrary.h"
 
 #include "Dom/JsonObject.h"
 #include "Interfaces/IPluginManager.h"
@@ -72,73 +69,12 @@ UXsollaUtilsImageLoader* UXsollaUtilsLibrary::GetImageLoader()
 	return FXsollaUtilsModule::Get().GetImageLoader();
 }
 
-UXsollaUtilsSettings* UXsollaUtilsLibrary::GetUtilsSettings()
-{
-	return FXsollaUtilsModule::Get().GetSettings();
-}
-
 void UXsollaUtilsLibrary::GetDefaultObject(TSubclassOf<UObject> ObjectClass, UObject*& DefaultObj)
 {
 	if (ObjectClass)
 	{
 		DefaultObj = ObjectClass->GetDefaultObject();
 	}
-}
-
-UXsollaUtilsTheme* UXsollaUtilsLibrary::GetCurrentTheme()
-{
-	UXsollaUtilsSettings* Settings = FXsollaUtilsModule::Get().GetSettings();
-	TSubclassOf<UXsollaUtilsTheme> CurrentThemeClass = Settings->InterfaceTheme;
-	if (!CurrentThemeClass)
-	{
-		return nullptr;
-	}
-	
-	UObject* CurrentTheme;
-	GetDefaultObject(CurrentThemeClass, CurrentTheme);
-	
-	return Cast<UXsollaUtilsTheme>(CurrentTheme);
-}
-
-UXsollaUtilsTheme* UXsollaUtilsLibrary::GetTheme(TSubclassOf<UXsollaUtilsTheme> ThemeClass)
-{
-	if (!ThemeClass)
-	{
-		return nullptr;
-	}
-	
-	UObject* Theme;
-	GetDefaultObject(ThemeClass, Theme);
-	
-	return Cast<UXsollaUtilsTheme>(Theme);
-}
-
-UXsollaUtilsWidgetsLibrary* UXsollaUtilsLibrary::GetCurrentWidgetsLibrary()
-{
-	UXsollaUtilsSettings* Settings = FXsollaUtilsModule::Get().GetSettings();
-	TSubclassOf<UXsollaUtilsWidgetsLibrary> CurrentWidgetsLibraryClass = Settings->WidgetsLibrary;
-	if (!CurrentWidgetsLibraryClass)
-	{
-		return nullptr;
-	}
-
-	UObject* CurrentWidgetsLibrary;
-	GetDefaultObject(CurrentWidgetsLibraryClass, CurrentWidgetsLibrary);
-
-	return Cast<UXsollaUtilsWidgetsLibrary>(CurrentWidgetsLibrary);
-}
-
-UXsollaUtilsWidgetsLibrary* UXsollaUtilsLibrary::GetWidgetsLibrary(TSubclassOf<UXsollaUtilsWidgetsLibrary> WidgetLibraryClass)
-{
-	if (!WidgetLibraryClass)
-	{
-		return nullptr;
-	}
-
-	UObject* WidgetLibrary;
-	GetDefaultObject(WidgetLibraryClass, WidgetLibrary);
-
-	return Cast<UXsollaUtilsWidgetsLibrary>(WidgetLibrary);
 }
 
 FDateTime UXsollaUtilsLibrary::MakeDateTimeFromTimestamp(const int64 Time)
@@ -162,22 +98,22 @@ void UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(TSharedPtr<FJsonO
 	Internal_AddParametersToJsonObject(JsonObject, CustomParameters, FieldName);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(const int Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_IntToXsollaJsonVariant(int Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(const float Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_FloatToXsollaJsonVariant(float Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(const FString& Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_StringToXsollaJsonVariant(FString Value)
 {
 	return FXsollaJsonVariant(Value);
 }
 
-FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(const bool Value)
+FXsollaJsonVariant UXsollaUtilsLibrary::Conv_BoolToXsollaJsonVariant(bool Value)
 {
 	return FXsollaJsonVariant(Value);
 }
@@ -222,7 +158,7 @@ FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
 	{
 		for (const auto& PluginModule : Plugin->GetDescriptor().Modules)
 		{
-			if(PluginModule.Name == ModuleName)
+			if (PluginModule.Name == ModuleName)
 			{
 				return Plugin->GetName();
 			}
@@ -230,4 +166,12 @@ FString UXsollaUtilsLibrary::GetPluginName(const FName& ModuleName)
 	}
 
 	return TEXT("");
+}
+
+FString UXsollaUtilsLibrary::GetUrlParameter(const FString& Url, const FString& ParamName)
+{
+	const FString DecodedUrl = FGenericPlatformHttp::UrlDecode(Url);
+	const FString UrlOptions = DecodedUrl.RightChop(DecodedUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+
+	return UGameplayStatics::ParseOption(UrlOptions, ParamName);
 }

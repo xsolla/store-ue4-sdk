@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 14,
-  "VersionName": "0.7.0",
+  "Version": 15,
+  "VersionName": "0.8.0",
   "EngineVersion": "4.26.0",
   "FriendlyName": "Xsolla SDK",
   "Description": "Xsolla SDK for Unreal Engine 4",
@@ -15,6 +15,36 @@
   "IsBetaVersion": false,
   "Installed": false,
   "Modules": [
+    {
+      "Name": "XsollaUIBuilderEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "XboxOne",
+        "PS4"
+      ]
+    },	
+    {
+      "Name": "XsollaUIBuilder",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "XboxOne",
+        "PS4"
+      ]
+    },
     {
       "Name": "XsollaWebBrowser",
       "Type": "Runtime",

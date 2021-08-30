@@ -3,7 +3,6 @@
 #pragma once
 
 #include "XsollaInventoryDataModel.h"
-#include "XsollaInventoryDefines.h"
 
 #include "XsollaUtilsHttpRequestHelper.h"
 
@@ -35,7 +34,7 @@ public:
 	/**
 	 * Initialize the controller with provided Project ID (use to override project settings)
 	 *
-	 * @param InProjectId New Project ID value form Publisher Account Project settings > Project ID.
+	 * @param InProjectId New Project ID value from Publisher Account Project settings > Project ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	void Initialize(const FString& InProjectId);
@@ -53,7 +52,7 @@ public:
 	void UpdateInventory(const FString& AuthToken,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Update Virtual Curency Balance
+	/** Update Virtual Currency Balance
 	 * Updates virtual currency balance (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
