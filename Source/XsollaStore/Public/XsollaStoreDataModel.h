@@ -706,7 +706,7 @@ inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 }
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FXsollaGameUnitItem
+struct XSOLLASTORE_API FGameUnitItem
 {
 	GENERATED_BODY()
 
@@ -742,7 +742,7 @@ struct XSOLLASTORE_API FXsollaGameUnitItem
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FXsollaGameItem
+struct XSOLLASTORE_API FGameItem
 {
 	GENERATED_BODY()
 
@@ -771,15 +771,31 @@ struct XSOLLASTORE_API FXsollaGameItem
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
-	TArray<FXsollaGameUnitItem> unit_items;
+	TArray<FGameUnitItem> unit_items;
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FXsollaGamesData
+struct XSOLLASTORE_API FStoreGamesList
 {
-	public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game List")
+	TArray<FGameItem> Games;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGamesData
+{
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
-	TArray<FXsollaGameItem> Items;
+	TArray<FGameItem> Games;
+	
+	/** All category IDs used by games (calculated locally!). */
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TSet<FString> GroupIds;
+
+	/** All available game groups infos. */
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TArray<FXsollaItemGroup> Groups;
 };

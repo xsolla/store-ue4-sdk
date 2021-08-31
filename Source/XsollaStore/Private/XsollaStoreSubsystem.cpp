@@ -612,7 +612,7 @@ FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& Battl
 	return BattlepassData;
 }
 
-void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields, const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -625,7 +625,25 @@ void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& C
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields, const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/group/{ExternalId}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? TEXT("all") : ExternalId)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+	&UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1027,14 +1045,29 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaGamesData::StaticStruct(), &GamesData, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
 		SuccessCallback.ExecuteIfBound();
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStoreGamesList Games;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesList::StaticStruct(), &Games, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(Games);
 	}
 	else
 	{
@@ -1389,7 +1422,7 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	return CartItem != nullptr;
 }
 
-const FXsollaGamesData& UXsollaStoreSubsystem::GetGamesData() const
+const FStoreGamesData& UXsollaStoreSubsystem::GetGamesData() const
 {
 	return GamesData;
 }

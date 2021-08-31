@@ -29,6 +29,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, FStoreListOfBundles
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemPromocodeUpdate);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsListBySpecifiedGroup, FStoreItemsList, ItemsList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesList, GamesList);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -359,9 +360,26 @@ public:
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|GameKeys" , meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys" , meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+
+	//TEXTREVIEW
+	/** Get Games List By Specified Group
+	 * Gets a games list from the specified group for building a catalog.
+	 *
+	 * @param ExternalId Group external ID.
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param SuccessCallback Callback function called after successful request of specified games list data.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 	
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -411,8 +429,11 @@ protected:
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
-	void GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	void UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+
+	void GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
 	
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
@@ -511,8 +532,8 @@ public:
 	bool IsItemInCart(const FString& ItemSKU) const;
 
 	/** Gets games list data. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|GameKeys")
-	const FXsollaGamesData& GetGamesData() const;
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys")
+	const FStoreGamesData& GetGamesData() const;
 	
 public:
 	/** Event occurred when the cart was changed or updated. */
@@ -536,7 +557,7 @@ protected:
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
 
 	/** Cached list of games */
-	FXsollaGamesData GamesData;
+	FStoreGamesData GamesData;
 	
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
