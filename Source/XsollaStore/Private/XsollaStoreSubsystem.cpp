@@ -702,6 +702,18 @@ void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup(const FString& Exter
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/drm"))
+							.SetPathParam(TEXT("ProjectID"), 44056)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+	&UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1088,7 +1100,6 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-	FStorePromocodeRewardData PromocodeRewardData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
@@ -1104,7 +1115,6 @@ void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr 
 	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-	FStorePromocodeRewardData PromocodeRewardData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
@@ -1175,6 +1185,22 @@ void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete(
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGameKeysList::StaticStruct(), &GameKeys, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(GameKeys);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStoreDRMList DRMList;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreDRMList::StaticStruct(), &DRMList, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(DRMList);
 	}
 	else
 	{

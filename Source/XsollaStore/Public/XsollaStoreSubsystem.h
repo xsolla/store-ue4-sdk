@@ -33,6 +33,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesLi
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameUpdate, const FGameItem&, Game);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameKeyUpdate, const FGameKeyItem&, GameKey);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGameKeysList, GameKeysList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -430,6 +431,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+
+	//TEXTREVIEW
+	/** Get DRM List
+	 * Gets the list of available DRMs.
+	 *
+	 * @param SuccessCallback Callback function called after successful request of specified drm data.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 	
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -492,7 +503,10 @@ protected:
 		const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetGameKeysListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-			const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+
+	void GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);

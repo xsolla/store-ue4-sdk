@@ -824,3 +824,36 @@ struct XSOLLASTORE_API FStoreGameKeysList
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key List")
 	TArray<FGameKeyItem> GameKeys;
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FDRMItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString image;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString link;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString redeem_instruction_link;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	int32 drm_id;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreDRMList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM List")
+	TArray<FDRMItem> drm;
+};
