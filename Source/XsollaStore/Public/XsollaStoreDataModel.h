@@ -815,3 +815,12 @@ struct XSOLLASTORE_API FStoreGamesData
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
 	TArray<FXsollaItemGroup> Groups;
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGameKeysList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key List")
+	TArray<FGameKeyItem> GameKeys;
+};
