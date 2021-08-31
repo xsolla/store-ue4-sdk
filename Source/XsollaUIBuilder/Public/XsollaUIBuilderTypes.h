@@ -212,12 +212,12 @@ struct FThemeParameters
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EColorType>> Colors;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EFontType>> Fonts;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EBrushThemeType>> Brushes;
 };

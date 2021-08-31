@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.1] - 2021-08-30
+
+### Fixed
+- Purchase status polling when buying item with virtual currency.
+- Categories for editor module properties.
+
 ## [0.8.0] - 2021-08-25
 
 ### Added

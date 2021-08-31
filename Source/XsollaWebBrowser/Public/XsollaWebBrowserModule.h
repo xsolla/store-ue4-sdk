@@ -5,19 +5,25 @@
 
 #include "Modules/ModuleManager.h"
 
-class IXsollaWebBrowserModule : public IModuleInterface
+class UXsollaWebBrowserAssetManager;
+
+class FXsollaWebBrowserModule : public IModuleInterface
 {
 
 public:
+	/** IModuleInterface implementation. */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+	
 	/**
 	 * Singleton-like access to this module's interface.  This is just for convenience!
 	 * Beware of calling this during the shutdown phase, though.  Your module might be already unloaded.
 	 *
 	 * @return Returns singleton instance, loading the module on demand if needed
 	 */
-	static inline IXsollaWebBrowserModule& Get()
+	static inline FXsollaWebBrowserModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<IXsollaWebBrowserModule>(ModuleName);
+		return FModuleManager::LoadModuleChecked<FXsollaWebBrowserModule>(ModuleName);
 	}
 
 	/**
@@ -32,4 +38,7 @@ public:
 
 	/** Module name. */
 	static const FName ModuleName;
+
+private:
+	UXsollaWebBrowserAssetManager* WebBrowserAssetMgr;
 };
