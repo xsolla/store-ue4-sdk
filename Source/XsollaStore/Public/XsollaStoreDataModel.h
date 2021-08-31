@@ -706,38 +706,54 @@ inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 }
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FGameUnitItem
+struct XSOLLASTORE_API FGameKeyItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString sku;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString type;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	/* Groups the item belongs to. */
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString image_url;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	bool is_free;
   
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FXsollaPrice price;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString drm_name;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString drm_sku;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	bool has_keys;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	bool is_pre_order;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString release_date;
 };
 
@@ -771,7 +787,7 @@ struct XSOLLASTORE_API FGameItem
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
-	TArray<FGameUnitItem> unit_items;
+	TArray<FGameKeyItem> unit_items;
 };
 
 USTRUCT(BlueprintType)
