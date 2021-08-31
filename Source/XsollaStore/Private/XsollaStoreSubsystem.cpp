@@ -647,6 +647,22 @@ void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& External
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaStoreSubsystem::GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields, const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/sku/{GameSKU}"))
+							.SetPathParam(TEXT("ProjectID"), 44056)
+							.SetPathParam(TEXT("GameSKU"), GameSKU)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1071,6 +1087,24 @@ void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete(FHt
 	}
 	else
 	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FGameItem Game;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FGameItem::StaticStruct(), &Game, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(Game);
+	}
+	else
+	{
+		ProcessNextCartRequest();
 		HandleRequestError(OutError, ErrorCallback);
 	}
 }

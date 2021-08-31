@@ -30,6 +30,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bun
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemPromocodeUpdate);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsListBySpecifiedGroup, FStoreItemsList, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesList, GamesList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameUpdate, const FGameItem&, Game);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -380,6 +381,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+
+	//TEXTREVIEW
+	/** Get Game Item
+	* Gets a game item with specified sku for the catalog.
+	*
+	* @param GameSKU Desired game SKU.
+	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
+	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
+	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	* @param SuccessCallback Callback function called after successful request of specified game data.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 	
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -434,6 +450,9 @@ protected:
 
 	void GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+
+	void GetGameItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
