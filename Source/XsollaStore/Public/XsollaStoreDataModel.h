@@ -893,3 +893,48 @@ struct XSOLLASTORE_API FStoreDRMList
 	UPROPERTY(BlueprintReadOnly, Category = "DRM List")
 	TArray<FDRMItem> drm;
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FOwnedGameItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	int32 project_id;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString game_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString drm;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	TArray<FXsollaItemAttribute> attributes;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FOwnedGamesList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	bool has_more;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	int32 total_items_count;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	TArray<FOwnedGameItem> items;
+};
