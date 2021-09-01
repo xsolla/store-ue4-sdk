@@ -35,6 +35,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameKeyUpdate, const FGameKeyItem&, GameKey
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGameKeysList, GameKeysList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, GamesList);
+DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -449,7 +450,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after successful request of specified drm data.
+	 * @param SuccessCallback Callback function called after successful request of specified owned games data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
@@ -459,6 +460,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
 		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0, const int Sandbox = 0);
+
+	//TEXTREVIEW
+	/** Redeem Game Code By Client
+	* Grants entitlement by a provided game code.
+	*
+	* @param AuthToken User authorization token.
+	* @param Code Game code.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
+		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
 	
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -528,6 +542,9 @@ protected:
 
 	void GetOwnedGames_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FOnStoreError ErrorCallback);
+
+	void RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback);
 	
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);

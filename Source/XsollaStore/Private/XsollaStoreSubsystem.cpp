@@ -731,6 +731,24 @@ void UXsollaStoreSubsystem::GetOwnedGames(const FString& AuthToken, const TArray
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
+	const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement/redeem"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.Build();
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("code"), Code);
+	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+	
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+	&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
@@ -1243,6 +1261,21 @@ void UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete(FHttpRequestPtr Ht
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FOwnedGamesList::StaticStruct(), &OwnedGamesList, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(OwnedGamesList);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
+	{
+		SuccessCallback.ExecuteIfBound();
 	}
 	else
 	{
