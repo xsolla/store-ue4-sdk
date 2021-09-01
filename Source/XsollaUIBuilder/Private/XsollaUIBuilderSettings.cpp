@@ -127,5 +127,4 @@ void UXsollaUIBuilderSettings::UpdateTheme(TSubclassOf<UXsollaUIBuilderTheme> Ne
 {
 	InterfaceTheme = NewTheme;
 	ThemeChanged.Broadcast(InterfaceTheme);
-	
 }

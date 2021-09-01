@@ -49,14 +49,13 @@ public:
 	static bool ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, XsollaHttpRequestError& OutError);
 	static bool ParseResponseAsJson(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, TSharedPtr<FJsonObject>& OutResponse, XsollaHttpRequestError& OutError);
 	static bool ParseResponseAsStruct(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, const UStruct* OutResponseDefinition, void* OutResponse, XsollaHttpRequestError& OutError);
-	
+
 	template <typename OutStructType>
 	static bool ParseResponseAsArray(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, TArray<OutStructType>* OutResponse, XsollaHttpRequestError& OutError);
-	
+
 	static bool ParseError(TSharedPtr<FJsonObject> JsonObject, XsollaHttpRequestError& OutError);
 
 private:
-
 	static const FString NoResponseErrorMsg;
 	static const FString UnknownErrorMsg;
 	static const FString DeserializationErrorMsg;

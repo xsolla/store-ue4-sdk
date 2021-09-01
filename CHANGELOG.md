@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.8.1] - 2021-08-30
+
+### Fixed
+- Purchase status polling when buying item with virtual currency.
+- Categories for editor module properties.
+
+## [0.8.0] - 2021-08-25
+
+### Added
+- Authentication via phone number and email.
+- Native authentication via WeChat and QQ on Android.
+- Dynamic UI theme switching support.
+
+### Changed
+- Widgets manager usability improvements.
+- UI themes usability improvements.
+- User authentication demo refactoring.
+- Minor demo improvements.
+
+### Fixed
+- Demo background sizing issue.
+
 ## [0.7.0] - 2021-06-29
 
 ### Added

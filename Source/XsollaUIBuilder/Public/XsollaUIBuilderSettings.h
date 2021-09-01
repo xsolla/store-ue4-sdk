@@ -53,5 +53,4 @@ public:
 	/* Widgets library. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla UIBuilder Settings", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UXsollaUIBuilderWidgetsLibrary> WidgetsLibrary;
-	
 };

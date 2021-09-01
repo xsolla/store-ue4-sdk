@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSettings.h"
 
@@ -24,6 +23,7 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	DemoLoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
 	DemoClientID = TEXT("57");
 	EncryptCachedCredentials = false;
+	SendPasswordlessAuthURL = false;
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	bForceSteamAuthorization = false;
@@ -31,4 +31,5 @@ void UXsollaLoginSettings::SetupDefaultDemoSettings()
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
+	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
 }
