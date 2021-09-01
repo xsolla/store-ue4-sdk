@@ -706,6 +706,42 @@ inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 }
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FGameUnitItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_free;
+  
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool has_keys;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString release_date;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FGameKeyItem
 {
 	GENERATED_BODY()
@@ -787,7 +823,7 @@ struct XSOLLASTORE_API FGameItem
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
-	TArray<FGameKeyItem> unit_items;
+	TArray<FGameUnitItem> unit_items;
 };
 
 USTRUCT(BlueprintType)
@@ -805,7 +841,7 @@ struct XSOLLASTORE_API FStoreGamesData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
-	TArray<FGameItem> Games;
+	TArray<FGameItem> Items;
 	
 	/** All category IDs used by games (calculated locally!). */
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")

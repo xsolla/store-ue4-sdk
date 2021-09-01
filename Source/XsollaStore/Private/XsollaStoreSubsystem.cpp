@@ -1118,6 +1118,15 @@ void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr 
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
+		// Update categories
+		for (const auto& Item : GamesData.Items)
+		{
+			for (const auto& ItemGroup : Item.groups)
+			{
+				GamesData.GroupIds.Add(ItemGroup.external_id);
+			}
+		}
+		
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
