@@ -368,7 +368,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys" , meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	//TEXTREVIEW
 	/** Get Games List By Specified Group
@@ -385,7 +385,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	//TEXTREVIEW
 	/** Get Game Item
@@ -400,7 +400,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	//TEXTREVIEW
 	/** Get Game Key Item
@@ -415,7 +415,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	//TEXTREVIEW
 	/** Get Game Key List
@@ -432,7 +432,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	//TEXTREVIEW
 	/** Get DRM List
@@ -449,17 +449,17 @@ public:
 	 * Gets the list of games owned by the user. The response will contain an array of games owned by a particular user.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'attributes'.
 	 * @param SuccessCallback Callback function called after successful request of specified owned games data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
-	 * @param Sandbox What type of entitlements should be returned. If the parameter is set to 1, the entitlements received by the user in the sandbox mode only are returned.
-	 * If the parameter is set to 0, the entitlements received by the user in the live mode only are returned.
+	 * @param bIsSandbox What type of entitlements should be returned. If the parameter is set to true, the entitlements received by the user in the sandbox mode only are returned.
+	 * If the parameter is set to false, the entitlements received by the user in the live mode only are returned.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
-		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0, const int Sandbox = 0);
+		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
 
 	//TEXTREVIEW
 	/** Redeem Game Code By Client

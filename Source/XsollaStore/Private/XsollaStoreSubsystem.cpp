@@ -626,7 +626,7 @@ void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -645,7 +645,7 @@ void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& External
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -698,7 +698,7 @@ void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup(const FString& Exter
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -710,24 +710,24 @@ void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, 
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreSubsystem::GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
-	const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset, const int Sandbox)
+	const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset, const bool bIsSandbox)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
 							.AddNumberQueryParam(TEXT("limit"), Limit)
 							.AddNumberQueryParam(TEXT("offset"), Offset)
-							.AddNumberQueryParam(TEXT("sandbox"), Sandbox)
+							.AddBoolQueryParam(TEXT("sandbox"), bIsSandbox, true)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -745,7 +745,7 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, con
 	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-	&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
