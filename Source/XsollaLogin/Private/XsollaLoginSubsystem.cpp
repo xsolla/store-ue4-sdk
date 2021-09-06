@@ -243,7 +243,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	const TSubclassOf<UUserWidget> BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
 
 	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
-	MyBrowser->AddToViewport(MAX_int32);
+	MyBrowser->AddToViewport(100000);
 
 	BrowserWidget = MyBrowser;
 
