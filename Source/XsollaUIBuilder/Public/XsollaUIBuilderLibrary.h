@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "Kismet/BlueprintFunctionLibrary.h"
 #include "EngineMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUIBuilderTypes.h"
 
 #include "XsollaUIBuilderLibrary.generated.h"
@@ -18,14 +18,13 @@ class XSOLLAUIBUILDER_API UXsollaUIBuilderLibrary : public UBlueprintFunctionLib
 	GENERATED_UCLASS_BODY()
 
 public:
-
 	/** Gives direct access to the UIBuilder settings. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|UIBuilder")
 	static UXsollaUIBuilderSettings* GetUIBuilderSettings();
-	
+
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|UIBuilder")
 	static UXsollaUIBuilderTheme* GetCurrentTheme();
-	
+
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Xsolla|UIBuilder")
 	static UXsollaUIBuilderTheme* GetTheme(TSubclassOf<UXsollaUIBuilderTheme> ThemeClass);
 

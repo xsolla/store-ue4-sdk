@@ -23,10 +23,10 @@ UXsollaUIBuilderTheme* UXsollaUIBuilderLibrary::GetCurrentTheme()
 	{
 		return nullptr;
 	}
-	
+
 	UObject* CurrentTheme;
 	UXsollaUtilsLibrary::GetDefaultObject(CurrentThemeClass, CurrentTheme);
-	
+
 	return Cast<UXsollaUIBuilderTheme>(CurrentTheme);
 }
 
@@ -36,10 +36,10 @@ UXsollaUIBuilderTheme* UXsollaUIBuilderLibrary::GetTheme(TSubclassOf<UXsollaUIBu
 	{
 		return nullptr;
 	}
-	
+
 	UObject* Theme;
 	UXsollaUtilsLibrary::GetDefaultObject(ThemeClass, Theme);
-	
+
 	return Cast<UXsollaUIBuilderTheme>(Theme);
 }
 

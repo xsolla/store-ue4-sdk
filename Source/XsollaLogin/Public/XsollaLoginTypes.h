@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
 
@@ -452,5 +451,4 @@ struct FXsollaUserDevice
 
 	UPROPERTY(BlueprintReadWrite, Category = "User Device")
 	FString type;
-
 };

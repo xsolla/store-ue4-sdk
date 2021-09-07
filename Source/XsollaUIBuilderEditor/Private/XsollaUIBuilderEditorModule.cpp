@@ -2,6 +2,7 @@
 
 #include "XsollaUIBuilderEditorModule.h"
 #include "XsollaUIBuilderSettingsDetails.h"
+#include "XsollaGenericWrapperDetails.h"
 #include "Developer/Settings/Public/ISettingsModule.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaUIBuilderEditorModule"
@@ -16,6 +17,10 @@ void FXsollaUIBuilderEditorModule::StartupModule()
 		"XsollaUIBuilderSettings",
 		FOnGetDetailCustomizationInstance::CreateStatic(&FXsollaUIBuilderSettingsDetails::MakeInstance));
 
+	PropertyModule.RegisterCustomClassLayout(
+		"XsollaGenericWrapper",
+		FOnGetDetailCustomizationInstance::CreateStatic(&FXsollaGenericWrapperDetails::MakeInstance));
+
 	PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -26,6 +31,7 @@ void FXsollaUIBuilderEditorModule::ShutdownModule()
 		auto& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 		PropertyModule.UnregisterCustomClassLayout("XsollaUIBuilderSettings");
+		PropertyModule.UnregisterCustomClassLayout("XsollaGenericWrapper");
 	}
 }
 

@@ -16,10 +16,10 @@ struct FEntityTypeName
 	FName Name;
 
 	FEntityTypeName()
-		:TypeAsInt(INT32_MAX)
+		: TypeAsInt(INT32_MAX)
 	{
 	}
-	
+
 	FEntityTypeName(int32 InTypeAsInt, const FName& InName)
 		: TypeAsInt(InTypeAsInt)
 		, Name(InName)
@@ -30,7 +30,7 @@ struct FEntityTypeName
 UENUM(BlueprintType)
 enum EWidgetType
 {
-	WidgetType_Default UMETA(DisplayName="Default"),
+	WidgetType_Default UMETA(DisplayName = "Default"),
 	WidgetType1 UMETA(Hidden),
 	WidgetType2 UMETA(Hidden),
 	WidgetType3 UMETA(Hidden),
@@ -212,12 +212,12 @@ struct FThemeParameters
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EColorType>> Colors;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EFontType>> Fonts;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XSolla|UIBuilderTypes")
 	TMap<FString, TEnumAsByte<EBrushThemeType>> Brushes;
 };

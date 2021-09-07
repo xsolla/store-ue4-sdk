@@ -10,37 +10,30 @@
 #include "Modules/ModuleManager.h"
 #include "WebBrowserModule.h"
 
-const FName IXsollaWebBrowserModule::ModuleName = "XsollaWebBrowser";
+const FName FXsollaWebBrowserModule::ModuleName = "XsollaWebBrowser";
 
-class FXsollaWebBrowserModule : public IXsollaWebBrowserModule
+void FXsollaWebBrowserModule::StartupModule()
 {
-public:
-	virtual void StartupModule() override
+	if (WebBrowserAssetMgr == nullptr)
 	{
-		if (WebBrowserAssetMgr == nullptr)
+		WebBrowserAssetMgr = NewObject<UXsollaWebBrowserAssetManager>((UObject*)GetTransientPackage(), NAME_None, RF_Transient | RF_Public);
+		WebBrowserAssetMgr->LoadDefaultMaterials();
+
+		FWebBrowserInitSettings WebBrowserInitSettings;
+		WebBrowserInitSettings.ProductVersion = TEXT("Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36");
+		IWebBrowserModule::Get().CustomInitialize(WebBrowserInitSettings);
+
+		IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
+		if (WebBrowserSingleton)
 		{
-			WebBrowserAssetMgr = NewObject<UXsollaWebBrowserAssetManager>((UObject*)GetTransientPackage(), NAME_None, RF_Transient | RF_Public);
-			WebBrowserAssetMgr->LoadDefaultMaterials();
-
-			FWebBrowserInitSettings WebBrowserInitSettings;
-			WebBrowserInitSettings.ProductVersion = TEXT("Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36");
-			IWebBrowserModule::Get().CustomInitialize(WebBrowserInitSettings);
-
-			IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
-			if (WebBrowserSingleton)
-			{
-				WebBrowserSingleton->SetDefaultMaterial(WebBrowserAssetMgr->GetDefaultMaterial());
-				WebBrowserSingleton->SetDefaultTranslucentMaterial(WebBrowserAssetMgr->GetDefaultTranslucentMaterial());
-			}
+			WebBrowserSingleton->SetDefaultMaterial(WebBrowserAssetMgr->GetDefaultMaterial());
+			WebBrowserSingleton->SetDefaultTranslucentMaterial(WebBrowserAssetMgr->GetDefaultTranslucentMaterial());
 		}
 	}
+}
 
-	virtual void ShutdownModule() override
-	{
-	}
-
-private:
-	UXsollaWebBrowserAssetManager* WebBrowserAssetMgr;
-};
+void FXsollaWebBrowserModule::ShutdownModule()
+{
+}
 
 IMPLEMENT_MODULE(FXsollaWebBrowserModule, XsollaWebBrowser);

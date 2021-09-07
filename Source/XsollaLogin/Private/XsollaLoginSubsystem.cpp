@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2021 Xsolla Inc. All Rights Reserved.
 // @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSubsystem.h"
@@ -81,23 +81,27 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 		if (Settings->UseOAuth2)
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitOauth",
-				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(ClientID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 		else
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitJwt",
-				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 				FJavaWrapper::GameActivityThis,
 				XsollaJavaConvertor::GetJavaString(LoginID),
 				XsollaJavaConvertor::GetJavaString(Settings->CallbackURL),
 				XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId));
+				XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
 	}
 
@@ -630,7 +634,8 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumber(const FString& PhoneNumber, c
 	}
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -644,7 +649,8 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const
 	}
 }
 
-void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
+	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -658,7 +664,8 @@ void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString
 	}
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
@@ -670,6 +677,21 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 	{
 		CompleteAuthByEmailJWT(Code, OperationId, Email, SuccessCallback, ErrorCallback);
 	}
+}
+
+void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
+	const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback)
+{
+	// Generate endpoint url
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
+							.AddStringQueryParam(TEXT("projectId"), LoginID)
+							.AddStringQueryParam(TEXT("login"), FGenericPlatformHttp::UrlEncode(UserId))
+							.AddStringQueryParam(TEXT("operation_id"), OperationId)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete, SuccessCallback, TimeoutCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
@@ -1051,7 +1073,8 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1340,17 +1363,24 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::StartAuthByPhoneNumberJWT(const FString& PhoneNumber, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::StartAuthByPhoneNumberJWT(const FString& PhoneNumber, const FString& Payload,
+	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
 
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
+
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/login/phone/request"))
@@ -1365,11 +1395,20 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumberJWT(const FString& PhoneNumber
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::StartAuthByPhoneNumberOAuth(const FString& PhoneNumber, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::StartAuthByPhoneNumberOAuth(const FString& PhoneNumber, const FString& State,
+	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("phone_number"), PhoneNumber);
+
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1389,7 +1428,8 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumberOAuth(const FString& PhoneNumb
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT(const FString& Code, const FString& OperationId, const FString& PhoneNumber, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1411,7 +1451,8 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT(const FString& Code, co
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth(const FString& Code, const FString& OperationId, const FString& PhoneNumber, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1433,17 +1474,24 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth(const FString& Code, 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::StartAuthByEmailJWT(const FString& Email, const FString& Payload, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::StartAuthByEmailJWT(const FString& Email, const FString& Payload,
+	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("email"), Email);
 
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
+
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/login/email/request"))
@@ -1458,11 +1506,20 @@ void UXsollaLoginSubsystem::StartAuthByEmailJWT(const FString& Email, const FStr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::StartAuthByEmailOAuth(const FString& Email, const FString& State, const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::StartAuthByEmailOAuth(const FString& Email, const FString& State,
+	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("email"), Email);
+
+	if (Settings->SendPasswordlessAuthURL)
+	{
+		RequestDataJson->SetBoolField(TEXT("send_link"), true);
+		RequestDataJson->SetStringField(TEXT("link_url"), Settings->PasswordlessAuthURL);
+	}
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1482,7 +1539,8 @@ void UXsollaLoginSubsystem::StartAuthByEmailOAuth(const FString& Email, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByEmailJWT(const FString& Code, const FString& OperationId, const FString& Email, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByEmailJWT(const FString& Code, const FString& OperationId, const FString& Email,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1504,7 +1562,8 @@ void UXsollaLoginSubsystem::CompleteAuthByEmailJWT(const FString& Code, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth(const FString& Code, const FString& OperationId, const FString& Email, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth(const FString& Code, const FString& OperationId, const FString& Email,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1743,7 +1802,8 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth_HttpRequestCo
 	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::StartAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnStartAuthSuccess SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::StartAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnStartAuthSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1764,24 +1824,58 @@ void UXsollaLoginSubsystem::StartAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleUrlWithTokenRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByPhoneNumberOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByEmailJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByEmailJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleUrlWithTokenRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::CompleteAuthByEmailOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback)
+{
+	const FString OperationId = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("operation_id"));
+
+	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::RequestTimeout)
+	{
+		TimeoutCallback.ExecuteIfBound(OperationId);
+		return;
+	}
+
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		static const FString CodeFieldName = TEXT("code");
+		if (JsonObject->HasTypedField<EJson::String>(CodeFieldName))
+		{
+			const FString Code = JsonObject->GetStringField(CodeFieldName);
+			SuccessCallback.ExecuteIfBound(Code, OperationId);
+			return;
+		}
+
+		OutError.description = FString::Printf(TEXT("No field '%s' found"), *CodeFieldName);
+	}
+
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1937,9 +2031,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaFriendsData::StaticStruct(), &receivedUserFriendsData, OutError))
 	{
-		FString RequestUrl = HttpRequest->GetURL();
-		FString UrlOptions = RequestUrl.RightChop(RequestUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-		FString Type = UGameplayStatics::ParseOption(UrlOptions, TEXT("type"));
+		const FString Type = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("type"));
 
 		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
 	}
@@ -2194,7 +2286,8 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -2204,11 +2297,8 @@ void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpReques
 		static const FString LoginUrlFieldName = TEXT("login_url");
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
-			const FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString LoginUrl = FGenericPlatformHttp::UrlDecode(LoginUrlRaw);
-			const FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-
-			const FString Token = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
 
 			LoginData.AuthToken.JWT = Token;
 
@@ -2224,7 +2314,8 @@ void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpReques
 	HandleRequestError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -2234,11 +2325,8 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		static const FString LoginUrlFieldName = TEXT("login_url");
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
-			const FString LoginUrlRaw = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString LoginUrl = FGenericPlatformHttp::UrlDecode(LoginUrlRaw);
-			const FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
-
-			const FString Code = UGameplayStatics::ParseOption(UrlOptions, TEXT("code"));
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
 
 			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
 			return;

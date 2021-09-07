@@ -17,21 +17,20 @@ public:
 	SLATE_END_ARGS()
 
 public:
-
 	/**
 	* Constructs the application.
 	*
 	* @param InArgs - The Slate argument list.
 	*/
 	void Construct(const FArguments& InArgs);
-	
+
 	FText GetName() const;
 	void NewNameEntered(const FText& NewText, ETextCommit::Type CommitInfo);
 	void OnTextChanged(const FText& NewText);
 
 private:
-	FName*								Name;
-	UEnum*								EntityTypeEnum;
-	FOnCommitChange						OnCommitChange;
-	TSharedPtr<SEditableTextBox>		NameEditBox;
+	FName* Name;
+	UEnum* EntityTypeEnum;
+	FOnCommitChange OnCommitChange;
+	TSharedPtr<SEditableTextBox> NameEditBox;
 };

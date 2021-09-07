@@ -1,12 +1,11 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #pragma once
 
 #include "XsollaLoginTypes.h"
 
-#include "Runtime/Core/Public/Misc/AES.h"
 #include "GameFramework/SaveGame.h"
+#include "Runtime/Core/Public/Misc/AES.h"
 
 #include "XsollaLoginSave.generated.h"
 

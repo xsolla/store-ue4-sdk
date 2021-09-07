@@ -22,7 +22,8 @@ namespace UnrealBuildTool.Rules
                     "SlateCore",
                     "UMG",
                     "XsollaUIBuilder",
-                    "EditorStyle"
+                    "EditorStyle",
+                    "XsollaUtils"
                 }
             );
         }

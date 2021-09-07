@@ -48,6 +48,18 @@ public:
 		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
 	}
 
+	template <typename TEnum>
+	static FString GetEnumValueAsDisplayNameString(const FString& EnumName, TEnum Value)
+	{
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+		if (!EnumPtr)
+		{
+			return FString("Invalid");
+		}
+		const FString ValueStr = EnumPtr->GetDisplayNameTextByIndex(static_cast<int64>(Value)).ToString();
+		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+	}
+
 	template <typename EnumType>
 	static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
 	{
@@ -84,11 +96,14 @@ public:
 	static void GetPartnerInfo(FString& Referral, FString& ReferralVersion);
 
 	/** Encodes the request body to match x-www-form-urlencoded data format. */
-    static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
+	static FString EncodeFormData(TSharedPtr<FJsonObject> FormDataJson);
 
 	static FString GetPluginName(const FName& ModuleName);
-private:
 
+	/** Gets URL query parameter with specified name. */
+	static FString GetUrlParameter(const FString& Url, const FString& ParamName);
+
+private:
 	static FString XReferral;
 	static FString XReferralVersion;
 };

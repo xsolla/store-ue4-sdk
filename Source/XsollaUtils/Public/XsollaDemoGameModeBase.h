@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
 #include "XsollaDemoGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class XSOLLAUTILS_API AXsollaDemoGameModeBase : public AGameModeBase
 {

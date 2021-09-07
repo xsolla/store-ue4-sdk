@@ -2,20 +2,20 @@
 
 #include "XsollaUIBuilderSettingsDetails.h"
 
+#include "DetailLayoutBuilder.h"
 #include "IDocumentation.h"
 #include "PropertyEditing.h"
+#include "UObject/StrongObjectPtr.h"
 #include "Widgets/SToolTip.h"
 #include "XsollaEntityTypeList.h"
-#include "DetailLayoutBuilder.h"
 #include "XsollaUIBuilderEditorTypes.h"
 #include "XsollaUIBuilderLibrary.h"
 #include "XsollaUIBuilderSettings.h"
 #include "XsollaUIBuilderTypes.h"
-#include "UObject/StrongObjectPtr.h"
 
 #define LOCTEXT_NAMESPACE "XsollaUIBuilderSettingsDetails"
 
-TSharedRef< IDetailCustomization > FXsollaUIBuilderSettingsDetails::MakeInstance()
+TSharedRef<IDetailCustomization> FXsollaUIBuilderSettingsDetails::MakeInstance()
 {
 	return MakeShareable(new FXsollaUIBuilderSettingsDetails);
 }
@@ -33,9 +33,8 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	WidgetTypeParameters.TitleFilterString = LOCTEXT("FXsollaUIBuildersSettingsDetails_WidgetTypes", "Widget types");
 	WidgetTypeParameters.TooltipText = LOCTEXT("WidgetTypes", "Edit widget types.");
 	WidgetTypeParameters.TooltipExcerptName = TEXT("WidgetType");
-	//TEXTREVIEW
 	WidgetTypeParameters.TitleText = LOCTEXT("WidgetTypes_Menu_Description", " You can have up to 30 custom widget types for your project. \nOnce you name each type, they will show up as new type for xsolla widgets library.");
-	
+
 	CustomizeOneType(DetailBuilder, StaticEnum<EWidgetType>(), XsollaUIBuilderSettings->WidgetTypes, WidgetTypeParameters);
 	// end of widget types
 
@@ -47,7 +46,6 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	ColorTypeParameters.TitleFilterString = LOCTEXT("FXsollaUIBuildersSettingsDetails_ColorTypes", "Color types");
 	ColorTypeParameters.TooltipText = LOCTEXT("ColorTypes", "Edit color types.");
 	ColorTypeParameters.TooltipExcerptName = TEXT("ColorType");
-	//TEXTREVIEW
 	ColorTypeParameters.TitleText = LOCTEXT("ColorTypes_Menu_Description", " You can have up to 30 custom color types for your project. \nOnce you name each type, they will show up as new type for xsolla UI theme.");
 
 	CustomizeOneType(DetailBuilder, StaticEnum<EColorType>(), XsollaUIBuilderSettings->ColorTypes, ColorTypeParameters);
@@ -61,7 +59,6 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	FontTypeParameters.TitleFilterString = LOCTEXT("FXsollaUIBuildersSettingsDetails_FontTypes", "Font types");
 	FontTypeParameters.TooltipText = LOCTEXT("FontTypes", "Edit font types.");
 	FontTypeParameters.TooltipExcerptName = TEXT("FontType");
-	//TEXTREVIEW
 	FontTypeParameters.TitleText = LOCTEXT("FontTypes_Menu_Description", " You can have up to 30 custom font types for your project. \nOnce you name each type, they will show up as new type for xsolla UI theme.");
 
 	CustomizeOneType(DetailBuilder, StaticEnum<EFontType>(), XsollaUIBuilderSettings->FontTypes, FontTypeParameters);
@@ -75,7 +72,6 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 	BrushTypeParameters.TitleFilterString = LOCTEXT("FXsollaUIBuildersSettingsDetails_BrushTypes", "Brush types");
 	BrushTypeParameters.TooltipText = LOCTEXT("BrushTypes", "Edit brush types.");
 	BrushTypeParameters.TooltipExcerptName = TEXT("BrushType");
-	//TEXTREVIEW
 	BrushTypeParameters.TitleText = LOCTEXT("BrushTypes_Menu_Description", " You can have up to 62 custom brush types for your project. \nOnce you name each type, they will show up as new type for xsolla UI theme.");
 
 	CustomizeOneType(DetailBuilder, StaticEnum<EBrushThemeType>(), XsollaUIBuilderSettings->BrushTypes, BrushTypeParameters);
@@ -85,7 +81,7 @@ void FXsollaUIBuilderSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Det
 void FXsollaUIBuilderSettingsDetails::CustomizeOneType(IDetailLayoutBuilder& DetailBuilder, UEnum* TypeEnum, TArray<FEntityTypeName>& TypesArray, const FTypeParametersStruct& Parameters)
 {
 	check(TypeEnum);
-	
+
 	IDetailCategoryBuilder& EntityTypesCategory = DetailBuilder.EditCategory(*Parameters.CategoryName, FText::GetEmpty(), ECategoryPriority::Uncommon);
 	EntityTypesCategory.InitiallyCollapsed(true);
 	TSharedPtr<IPropertyHandle> EntityTypeProperty = DetailBuilder.GetProperty(Parameters.PropertyPath);
