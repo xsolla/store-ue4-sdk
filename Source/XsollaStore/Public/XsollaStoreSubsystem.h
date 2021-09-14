@@ -354,13 +354,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
 
-	//TEXTREVIEW
-	/** Get Games List
-	 * Gets a games list for building a catalog.
+	/** Get Games
+	 * Gets list of games for building a catalog.
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calcualtions are based on the user's IP address if the country is not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified games list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -370,15 +369,14 @@ public:
 	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	//TEXTREVIEW
-	/** Get Games List By Specified Group
-	 * Gets a games list from the specified group for building a catalog.
+	/** Get Games By Specified Group
+	 * Gets the list of games from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after successful request of specified games list data.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param SuccessCallback Callback function called after successful request of specified game list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
@@ -387,14 +385,13 @@ public:
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	//TEXTREVIEW
 	/** Get Game Item
-	 * Gets a game item with specified sku for the catalog.
+	 * Gets a game item with the specified SKU for the catalog.
 	 *
 	 * @param GameSKU Desired game SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -402,14 +399,13 @@ public:
 	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Get Game Key Item
-	 * Gets a game key item with specified sku for the catalog.
+	 * Gets a game key item with the specified SKU for the catalog.
 	 *
 	 * @param ItemSKU Desired game item SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -417,14 +413,13 @@ public:
 	void GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Get Game Key List
 	 * Gets a game key list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address in not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
 	 * @param SuccessCallback Callback function called after successful request of specified game key data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -434,17 +429,15 @@ public:
 	void GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	//TEXTREVIEW
 	/** Get DRM List
 	 * Gets the list of available DRMs.
 	 *
-	 * @param SuccessCallback Callback function called after successful request of specified drm data.
+	 * @param SuccessCallback Callback function called after successful request of specified DRM data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Get Owned Games
 	 * Gets the list of games owned by the user. The response will contain an array of games owned by a particular user.
 	 *
@@ -461,9 +454,8 @@ public:
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
 		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
 
-	//TEXTREVIEW
 	/** Redeem Game Code By Client
-	* Grants entitlement by a provided game code.
+	* Grants an entitlement by a provided game code.
 	*
 	* @param AuthToken User authorization token.
 	* @param Code Game code.
@@ -473,7 +465,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
 		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
-	
+
 protected:
 	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
@@ -545,7 +537,7 @@ protected:
 
 	void RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback);
-	
+
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
 
@@ -645,7 +637,7 @@ public:
 	/** Gets games list data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys")
 	const FStoreGamesData& GetGamesData() const;
-	
+
 public:
 	/** Event occurred when the cart was changed or updated. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -669,7 +661,7 @@ protected:
 
 	/** Cached list of games */
 	FStoreGamesData GamesData;
-	
+
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
 
