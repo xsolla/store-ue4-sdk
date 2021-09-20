@@ -383,9 +383,6 @@ void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& C
 		{
 			FStoreCartItem Item(*StoreItem);
 			Item.quantity = FMath::Max(0, Quantity);
-
-			// @TODO Predict price locally before cart sync https://github.com/xsolla/store-ue4-sdk/issues/68
-
 			Cart.Items.Add(Item);
 		}
 		else
