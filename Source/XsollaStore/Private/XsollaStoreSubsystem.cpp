@@ -254,7 +254,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
 		{
 			MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
-			MyBrowser->AddToViewport(MAX_int32);
+			MyBrowser->AddToViewport(100000);
 		}
 		else
 		{
@@ -610,6 +610,143 @@ FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& Battl
 	}
 
 	return BattlepassData;
+}
+
+void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/group/{ExternalId}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? TEXT("all") : ExternalId)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/sku/{GameSKU}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("GameSKU"), GameSKU)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/key/sku/{ItemSKU}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetGameKeyItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/key/group/{ExternalId}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("ExternalId"), ExternalId.IsEmpty() ? TEXT("all") : ExternalId)
+							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("country"), Country)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/drm"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
+	const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset, const bool bIsSandbox)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
+							.AddNumberQueryParam(TEXT("limit"), Limit)
+							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.AddBoolQueryParam(TEXT("sandbox"), bIsSandbox, true)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
+	const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement/redeem"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.Build();
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("code"), Code);
+	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+	
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
@@ -998,9 +1135,145 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-	FStorePromocodeRewardData PromocodeRewardData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
+	{
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
+	{
+		// Update categories
+		for (const auto& Item : GamesData.Items)
+		{
+			for (const auto& ItemGroup : Item.groups)
+			{
+				GamesData.GroupIds.Add(ItemGroup.external_id);
+			}
+		}
+		
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStoreGamesList Games;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesList::StaticStruct(), &Games, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(Games);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FGameItem Game;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FGameItem::StaticStruct(), &Game, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(Game);
+	}
+	else
+	{
+		ProcessNextCartRequest();
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGameKeyItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FGameKeyItem GameKey;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FGameKeyItem::StaticStruct(), &GameKey, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(GameKey);
+	}
+	else
+	{
+		ProcessNextCartRequest();
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStoreGameKeysList GameKeys;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGameKeysList::StaticStruct(), &GameKeys, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(GameKeys);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FStoreDRMList DRMList;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreDRMList::StaticStruct(), &DRMList, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(DRMList);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	FOwnedGamesList OwnedGamesList;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FOwnedGamesList::StaticStruct(), &OwnedGamesList, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(OwnedGamesList);
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
 		SuccessCallback.ExecuteIfBound();
 	}
@@ -1355,6 +1628,11 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
+}
+
+const FStoreGamesData& UXsollaStoreSubsystem::GetGamesData() const
+{
+	return GamesData;
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 #include "XsollaLoginSubsystem.h"
 
@@ -48,7 +47,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID, ClientID);
+	Initialize(Settings->ProjectID, Settings->LoginID, Settings->ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -243,7 +242,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	const TSubclassOf<UUserWidget> BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
 
 	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
-	MyBrowser->AddToViewport(MAX_int32);
+	MyBrowser->AddToViewport(100000);
 
 	BrowserWidget = MyBrowser;
 

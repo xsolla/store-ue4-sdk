@@ -704,3 +704,237 @@ inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 	this->content = Bundle.content;
 	this->attributes = Bundle.attributes;
 }
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FGameUnitItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_free;
+  
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString drm_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool has_keys;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
+	FString release_date;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FGameKeyItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString type;
+
+	/* Groups the item belongs to. */
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString image_url;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	bool is_free;
+  
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FXsollaPrice price;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString drm_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString drm_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	bool has_keys;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
+	FString release_date;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FGameItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FXsollaItemGroup> groups;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FXsollaItemAttribute> attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString unit_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Item")
+	TArray<FGameUnitItem> unit_items;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGamesList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game List")
+	TArray<FGameItem> Games;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGamesData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TArray<FGameItem> Items;
+	
+	/** All category IDs used by games (calculated locally!). */
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TSet<FString> GroupIds;
+
+	/** All available game groups infos. */
+	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
+	TArray<FXsollaItemGroup> Groups;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreGameKeysList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Game Key List")
+	TArray<FGameKeyItem> GameKeys;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FDRMItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString image;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString link;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	FString redeem_instruction_link;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
+	int32 drm_id;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreDRMList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "DRM List")
+	TArray<FDRMItem> drm;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FOwnedGameItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString name;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	int32 project_id;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString game_sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString drm;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	FString image_url;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	bool is_pre_order;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
+	TArray<FXsollaItemAttribute> attributes;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FOwnedGamesList
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	bool has_more;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	int32 total_items_count;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	TArray<FOwnedGameItem> items;
+};
