@@ -1,5 +1,4 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
-// @author Vladimir Alyamkin <ufna@ufna.ru>
 
 using System.IO;
 using UnrealBuildTool;
