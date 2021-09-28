@@ -119,11 +119,36 @@
         "XboxOne",
         "PS4"
       ]
+    },
+    {
+      "Name": "XsollaTests",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux"
+      ]
     }
   ],
   "Plugins": [
     {
       "Name": "OnlineSubsystem",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorTests",
+      "Enabled": true
+    },
+    {
+      "Name": "FunctionalTestingEditor",
+      "Enabled": true
+    },
+    {
+      "Name": "RuntimeTests",
       "Enabled": true
     }
   ]
