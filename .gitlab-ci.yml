@@ -7,6 +7,14 @@ stages:
   - build
   - deploy
   - linking
+  - build
+
+variables:
+    BUILD_SCRIPT_PATH: "CI\\ue_build_automation.py"
+    PROJECT_PATH: "%cd%"
+    BUILD_ROOT_PATH: "Builds"
+    COMMERCE_SDK_NAME: "UeCommerceSdk"
+    GIT_CLEAN_FLAGS: -ffdx
 
 build doc:
   stage: build
@@ -21,6 +29,8 @@ build doc:
   artifacts:
     paths:
     - build.zip
+  tags:
+    - devops
 
 deploy doc:
   stage: deploy
@@ -34,6 +44,8 @@ deploy doc:
     url: https://$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME.doc.srv.local/$URL_SLUG
     on_stop: stop doc
   when: manual
+  tags:
+    - sshclient
 
 current doc:
   extends:      .current doc
@@ -44,6 +56,8 @@ current doc:
   environment:
     name: doc/current
     url: https://developers.xsolla.com/sdk-code-references/ue4-store
+  tags:
+    - sshclient
 
 stop doc:
   extends:      .stop doc
@@ -53,3 +67,22 @@ stop doc:
   only:
     - /^v.*/
   dependencies: []
+  tags:
+    - sshclient
+    
+build:
+  stage: build
+  script:
+    - echo call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH%
+    - call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH%
+  artifacts:
+    name: "UE4_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+      - Inspect
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
