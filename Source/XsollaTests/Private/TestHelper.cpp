@@ -2,7 +2,7 @@
 
 #include "TestHelper.h"
 
-
+#include "Async/Async.h"
 #include "Engine/Engine.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
