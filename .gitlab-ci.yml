@@ -73,8 +73,8 @@ stop doc:
 build:
   stage: build
   script:
-    - echo call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
-    - call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
+    - echo call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch $CI_COMMIT_BRANCH --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
+    - call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch $CI_COMMIT_BRANCH --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
   artifacts:
     name: "UE4_%CI_COMMIT_REF_NAME%"
     when: always
