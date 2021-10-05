@@ -187,7 +187,7 @@ for temp_folder in temp_folders:
 
 # Clone UE plugin to demo project Plugins folder
 from git import Repo
-repo = Repo.clone_from(plugin_repo_link, os.path.join(demo_project_path, 'Plugins/Xsolla'), branch='qa/autotests', progress=CloneProgress())
+repo = Repo.clone_from('git@gitlab.loc:sdk_group/store-ue4-sdk.git', os.path.join(demo_project_path, 'Plugins/Xsolla'), branch='qa/autotests', progress=CloneProgress())
 
 # Check if Unreal Build Tool (UBT) exists
 ubt = os.path.join(engine_path, 'Engine/Binaries/DotNET/UnrealBuildTool.exe')
