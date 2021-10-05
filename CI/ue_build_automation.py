@@ -124,7 +124,7 @@ if not os.path.exists(demo_project_path):
     sys.exit(f'Error: Failed to locate demo project at {demo_project_path}')
 
 # Clear temporaries if any in demo project folder
-temp_folders = ['Binaries', 'Build', 'Intermediate', 'DerivedDataCache', 'Saved', 'Plugins', '.vs']
+temp_folders = ['Binaries', 'Build', 'Intermediate', 'DerivedDataCache', 'Saved', '.vs']
 for temp_folder in temp_folders:
     temp_folder_path = os.path.join(demo_project_path, temp_folder)
     if (os.path.exists(temp_folder_path)):
@@ -179,6 +179,7 @@ demo_project_sln = os.path.join(demo_project_path, demo_project_name + '.sln')
 inspection = subprocess.run([inspect_tool_path, demo_project_sln, '-o=' + os.path.join(inspect_path, 'InspectResult.xml'), '--project=' + demo_project_name], stdout=sys.stdout)
 
 # Clear temporaries if any in demo project folder
+temp_folders = ['Binaries', 'Build', 'Intermediate', 'DerivedDataCache', 'Saved', 'Plugins', '.vs']
 for temp_folder in temp_folders:
     temp_folder_path = os.path.join(demo_project_path, temp_folder)
     if (os.path.exists(temp_folder_path)):
