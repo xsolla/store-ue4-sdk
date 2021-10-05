@@ -219,7 +219,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget)
+void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -253,8 +253,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(const FString& AccessToken, UUs
 
 		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
 		{
-			MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
-			MyBrowser->AddToViewport(MAX_int32);
+			MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), BrowserWidgetClass);
+			MyBrowser->AddToViewport(MAX_int32/2);
 		}
 		else
 		{

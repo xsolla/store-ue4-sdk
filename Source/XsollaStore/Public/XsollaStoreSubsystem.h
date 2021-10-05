@@ -165,11 +165,12 @@ public:
 	/** Launch Payment Console
 	 * Opens payment console for the provided access token.
 	 *
+	 * @param WorldContextObject The world context.
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param BrowserWidget Widget to represent a payment form. Can be set in the project settings.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	void LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
+	void LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget);
 
 	/** Check Order
 	 * Checks pending order status by its ID.
