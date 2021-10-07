@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8.2] - 2021-10-07
+
+### Fixed
+- PayStation interface issue in multiplayer projects.
+
 ## [0.8.1] - 2021-08-30
 
 ### Fixed
