@@ -52,10 +52,11 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
+	 * @param bInUseOAuth2 bInUseOAuth2. If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user.
 	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId, const bool bInUseOAuth2, const FString& InClientId);
 
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -811,6 +812,10 @@ private:
 	/** Cached Xsolla Login project. */
 	FString LoginID;
 
+	/** Cached Xsolla UseOAuth flag. */
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla|Login", meta = (AllowPrivateAccess = true))
+	bool bUseOAuth2;
+	
 	/** Cached Xsolla client ID. */
 	FString ClientID;
 
