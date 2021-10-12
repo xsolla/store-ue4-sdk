@@ -452,3 +452,31 @@ struct FXsollaUserDevice
 	UPROPERTY(BlueprintReadWrite, Category = "User Device")
 	FString type;
 };
+
+USTRUCT(BlueprintType)
+struct FXsollaDevMenuData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "DevMenu Data")
+	FString LoginID;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DevMenu Data")
+	FString ProjectID;
+
+	UPROPERTY(BlueprintReadOnly, Category = "DevMenu Data")
+	bool bUseOAuth2;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "DevMenu Data")
+	FString ClientID;
+
+	FXsollaDevMenuData(const FString& InLoginId, const FString& InProjectId, const bool bInUseOAuth2, const FString& InClientId)
+		: LoginID(InLoginId)
+		, ProjectID(InProjectId)
+		, bUseOAuth2(bInUseOAuth2)
+		, ClientID(InClientId)
+	{
+	}
+
+	FXsollaDevMenuData() = default;
+};
