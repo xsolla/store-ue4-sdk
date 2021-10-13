@@ -813,7 +813,6 @@ private:
 	FString LoginID;
 
 	/** Cached Xsolla UseOAuth flag. */
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla|Login", meta = (AllowPrivateAccess = true))
 	bool bUseOAuth2;
 	
 	/** Cached Xsolla client ID. */
