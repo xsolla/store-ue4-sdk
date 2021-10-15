@@ -24,6 +24,7 @@ namespace UnrealBuildTool.Rules
                     "AutomationDriver",
                     "InputCore",
                     "XsollaStore",
+                    "XsollaInventory",
                     "XsollaLogin"
                 }
             );

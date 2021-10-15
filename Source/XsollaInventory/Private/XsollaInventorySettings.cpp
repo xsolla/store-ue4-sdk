@@ -5,6 +5,11 @@
 UXsollaInventorySettings::UXsollaInventorySettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetupDefaultDemoSettings();
+}
+
+void UXsollaInventorySettings::SetupDefaultDemoSettings()
+{
 	UseCrossPlatformAccountLinking = false;
 	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
 	DemoProjectID = TEXT("77640");

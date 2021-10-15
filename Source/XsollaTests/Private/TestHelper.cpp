@@ -14,6 +14,8 @@
 #include "XsollaStore/Public/XsollaStoreSettings.h"
 #include "XsollaLogin/Public/XsollaLoginLibrary.h"
 #include "XsollaLogin/Public/XsollaLoginSettings.h"
+#include "XsollaInventory/Public/XsollaInventoryLibrary.h"
+#include "XsollaInventory/Public/XsollaInventorySettings.h"
 #include "AutomationDriver/Public/AutomationDriverTypeDefs.h"
 #include "AutomationDriver/Public/IAutomationDriver.h"
 #include "AutomationDriver/Public/IAutomationDriverModule.h"
@@ -164,6 +166,7 @@ UWidget* UTestHelper::FindInputWidget(UObject* WorldContextObject, const FName I
 void UTestHelper::RestoreDefaultSettings()
 {
 	UXsollaLoginLibrary::GetLoginSettings()->SetupDefaultDemoSettings();
+	UXsollaInventoryLibrary::GetInventorySettings()->SetupDefaultDemoSettings();
 	UXsollaStoreLibrary::GetStoreSettings()->SetupDefaultDemoSettings();
 }
 
