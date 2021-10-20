@@ -139,12 +139,13 @@ public:
 	/** Launch social authentication
 	 * Opens social authentication URL in the browser.
 	 *
+	 * @param WorldContextObject The world context.
 	 * @param SocialAuthenticationUrl URL with the social network authentication form.
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
+	void LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
 
 	/** Launch native authentication via social network
 	 * Opens the specified social network mobile app (if available) in order to authenticate the user.

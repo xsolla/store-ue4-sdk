@@ -229,7 +229,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	}
 }
 
-void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
+void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
@@ -238,7 +238,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	// Check for user browser widget override
 	const TSubclassOf<UUserWidget> BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
 
-	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
+	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), BrowserWidgetClass);
 	MyBrowser->AddToViewport(100000);
 
 	BrowserWidget = MyBrowser;
