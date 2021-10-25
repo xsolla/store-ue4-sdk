@@ -33,4 +33,7 @@ public:
 	/** Demo Project ID */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Inventory Demo")
 	FString DemoProjectID;
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla Inventory Settings")
+	void SetupDefaultDemoSettings();
 };
