@@ -4,16 +4,16 @@
 
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
-
 #include "XsollaUtilsHttpRequestHelper.h"
-
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
-
+#include "XsollaWebsocket.h"
 #include "XsollaStoreSubsystem.generated.h"
 
+
 class FJsonObject;
+class IWebSocket;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
@@ -190,6 +190,31 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	//TEXTREVIEW
+	/** Create websocket object
+	 * Creates websocket object
+	 *
+	 * @param OrderId Identifier of order to be checked.
+	 * @param OnStatusReceived Callback function called after successful order check. Order status will be received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param LifeTime Object lifetime.
+	 *
+	 * * @return Returns new websocket instance
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Websocket", meta = (AutoCreateRefTerm = "OnStatusReceived, ErrorCallback"))
+	UXsollaWebsocket* CreateWebsocketObject(const int32 OrderId,
+		const FOnCheckOrderViaWebsocket& OnStatusReceived, const FOnWebsocketError& ErrorCallback, const int32 LifeTime = 300);
+
+	//TEXTREVIEW
+	/** Destroy websocket object
+	 * Destroys websocket object
+	 *
+	 * @param DestroyableObject Object to destroy
+	 *
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Websocket")
+	void DestroyWebsocketObject(UXsollaWebsocket* DestroyableObject);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -683,4 +708,7 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+
+	UPROPERTY()
+	TArray<UXsollaWebsocket*> CachedWebsockets;
 };
