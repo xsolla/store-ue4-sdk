@@ -8,12 +8,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
-#include "XsollaWebsocket.h"
+#include "XsollaOrderCheckObject.h"
 #include "XsollaStoreSubsystem.generated.h"
 
 
 class FJsonObject;
-class IWebSocket;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
@@ -192,29 +191,21 @@ public:
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	//TEXTREVIEW
-	/** Create websocket object
-	 * Creates websocket object
+	/** Create order check object
+	 * Creates order check object
 	 *
 	 * @param OrderId Identifier of order to be checked.
-	 * @param OnStatusReceived Callback function called after successful order check. Order status will be received.
+	 * @param OnStatusReceivedCallback Callback function called after successful order check. Order status will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param TimeoutCallback Callback function called after life time is expired.
 	 * @param LifeTime Object lifetime.
 	 *
-	 * * @return Returns new websocket instance
+	 * * @return Returns new order check instance
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Websocket", meta = (AutoCreateRefTerm = "OnStatusReceived, ErrorCallback"))
-	UXsollaWebsocket* CreateWebsocketObject(const int32 OrderId,
-		const FOnCheckOrderViaWebsocket& OnStatusReceived, const FOnWebsocketError& ErrorCallback, const int32 LifeTime = 300);
-
-	//TEXTREVIEW
-	/** Destroy websocket object
-	 * Destroys websocket object
-	 *
-	 * @param DestroyableObject Object to destroy
-	 *
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Websocket")
-	void DestroyWebsocketObject(UXsollaWebsocket* DestroyableObject);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
+	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
+		const FOnOrderCheckViaWebsocket& OnStatusReceivedCallback, const FOnWebsocketError& ErrorCallback,
+		const FOnWebsocketTimeout& TimeoutCallback, const int32 LifeTime = 300);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -708,7 +699,4 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
-
-	UPROPERTY()
-	TArray<UXsollaWebsocket*> CachedWebsockets;
 };

@@ -17,6 +17,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "XsollaOrderCheckObject.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -282,34 +283,19 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 }
 
 //TEXTREVIEW
-UXsollaWebsocket* UXsollaStoreSubsystem::CreateWebsocketObject(const int32 OrderId,
-	const FOnCheckOrderViaWebsocket& OnStatusReceived, const FOnWebsocketError& ErrorCallback, const int32 LifeTime)
+UXsollaOrderCheckObject* UXsollaStoreSubsystem::CreateOrderCheckObject(const int32 OrderId,
+	const FOnOrderCheckViaWebsocket& OnStatusReceivedCallback, const FOnWebsocketError& ErrorCallback,
+	const FOnWebsocketTimeout& TimeoutCallback, const int32 LifeTime)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
 							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder
 							.AddStringQueryParam(TEXT("project_id"), ProjectID)
 							.Build();
 	
-	auto WebsocketObject = NewObject<UXsollaWebsocket>(this);
-	WebsocketObject->Init(Url, TEXT("wss"), LifeTime);
+	auto WebsocketObject = NewObject<UXsollaOrderCheckObject>(this);
+	WebsocketObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
 
-	CachedWebsockets.Add(WebsocketObject);
-	
-	WebsocketObject->OnStatusReceived = OnStatusReceived;
-	WebsocketObject->OnError = ErrorCallback;
-	
 	return WebsocketObject;
-}
-
-void UXsollaStoreSubsystem::DestroyWebsocketObject(UXsollaWebsocket* DestroyableObject)
-{
-	if (!CachedWebsockets.Contains(DestroyableObject))
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("Can't find websocket object in Websockets array."));
-	}
-
-	CachedWebsockets.Remove(DestroyableObject);
-	DestroyableObject->Destroy();
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,

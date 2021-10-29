@@ -1,30 +1,36 @@
 // Copyright 2021 Xsolla Inc. All Rights Reserved.
 
-#include "XsollaWebsocket.h"
+#include "XsollaOrderCheckObject.h"
 
+#include "Engine/EngineTypes.h"
+#include "Engine/World.h"
+#include "IWebSocket.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "TimerManager.h"
 #include "WebSocketsModule.h"
 #include "XsollaStoreDataModel.h"
 
-void UXsollaWebsocket::Init(const FString& Url, const FString& Protocol, int32 SocketLifeTime)
+//TEXTREVIEW
+void UXsollaOrderCheckObject::Init(const FString& Url, const FString& Protocol,
+const FOnOrderCheckViaWebsocket& InOnStatusReceived, const FOnWebsocketError& InOnError,
+const FOnWebsocketTimeout& InOnTimeout, int32 SocketLifeTime)
 {
 
 	LifeTime = FMath::Clamp(SocketLifeTime, 1, 3600);
+
+	OnStatusReceived = InOnStatusReceived;
+	OnError = InOnError;
+	OnTimeout = InOnTimeout;
 	
 	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, Protocol);
-
-	Websocket->OnConnected().AddUObject(this, &UXsollaWebsocket::OnConnected);
-	Websocket->OnConnectionError().AddUObject(this, &UXsollaWebsocket::OnConnectionError);
-	Websocket->OnMessage().AddUObject(this, &UXsollaWebsocket::OnMessage);
-	Websocket->OnClosed().AddUObject(this, &UXsollaWebsocket::OnClosed);
+	Websocket->OnConnected().AddUObject(this, &UXsollaOrderCheckObject::OnConnected);
+	Websocket->OnConnectionError().AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
+	Websocket->OnMessage().AddUObject(this, &UXsollaOrderCheckObject::OnMessage);
+	Websocket->OnClosed().AddUObject(this, &UXsollaOrderCheckObject::OnClosed);
 }
 
-void UXsollaWebsocket::OnExpired()
-{
-	UE_LOG(LogXsollaStore, Log, TEXT("Websocket object expired."));
-	OnError.ExecuteIfBound(TEXT("Timeout"));
-}
-
-void UXsollaWebsocket::Connect()
+void UXsollaOrderCheckObject::Connect()
 {
 
 	if (!Websocket.IsValid())
@@ -35,19 +41,17 @@ void UXsollaWebsocket::Connect()
 
 	Websocket->Connect();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UXsollaWebsocket::OnExpired, LifeTime, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UXsollaOrderCheckObject::OnExpired, LifeTime, false);
 }
 
-void UXsollaWebsocket::Destroy()
+void UXsollaOrderCheckObject::Destroy()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Destroy websocket."));
-	
 	if (Websocket.IsValid())
 	{
 		Websocket->OnConnected().RemoveAll(this);
 		Websocket->OnConnectionError().RemoveAll(this);
 		Websocket->OnClosed().RemoveAll(this);
-
 		Websocket->Close();
 		Websocket = nullptr;
 	}
@@ -55,22 +59,20 @@ void UXsollaWebsocket::Destroy()
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
-void UXsollaWebsocket::OnConnected()
+void UXsollaOrderCheckObject::OnConnected()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Connected to websocket server."));
 }
 
-void UXsollaWebsocket::OnConnectionError(const FString& Error)
+void UXsollaOrderCheckObject::OnConnectionError(const FString& Error)
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Failed to connect to websocket server with error: \"%s\"."), *Error);
-	
 	OnError.ExecuteIfBound(FString::Printf(TEXT("Failed to connect to websocket server with error: \"%s\"."), *Error));
 }
 
-void UXsollaWebsocket::OnMessage(const FString& Message)
+void UXsollaOrderCheckObject::OnMessage(const FString& Message)
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Received message from websocket server: \"%s\"."), *Message);
-
 	TSharedPtr<FJsonObject> JsonObject;
 	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*Message);
 
@@ -111,8 +113,14 @@ void UXsollaWebsocket::OnMessage(const FString& Message)
 	OnStatusReceived.ExecuteIfBound(OrderId, OrderStatus);
 }
 
-void UXsollaWebsocket::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
+void UXsollaOrderCheckObject::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Connection to websocket server has been closed with status code: \"%d\" and reason: \"%s\"."), StatusCode, *Reason);
 	OnError.ExecuteIfBound(TEXT("Connection to websocket server has been closed."));
+}
+
+void UXsollaOrderCheckObject::OnExpired()
+{
+	UE_LOG(LogXsollaStore, Log, TEXT("Websocket object expired."));
+	OnTimeout.ExecuteIfBound();
 }
