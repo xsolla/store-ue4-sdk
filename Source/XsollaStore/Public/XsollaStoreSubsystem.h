@@ -4,14 +4,13 @@
 
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
-
 #include "XsollaUtilsHttpRequestHelper.h"
-
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
-
+#include "XsollaOrderCheckObject.h"
 #include "XsollaStoreSubsystem.generated.h"
+
 
 class FJsonObject;
 
@@ -190,6 +189,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	//TEXTREVIEW
+	/** Create order check object
+	 * Creates order check object
+	 *
+	 * @param OrderId Identifier of order to be checked.
+	 * @param OnStatusReceivedCallback Callback function called after successful order check. Order status will be received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param TimeoutCallback Callback function called after life time is expired.
+	 * @param LifeTime Object lifetime.
+	 *
+	 * * @return Returns new order check instance
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
+	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
+		const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
+		const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime = 300);
 
 	/** Clear Cart
 	 * Removes all items from the cart.

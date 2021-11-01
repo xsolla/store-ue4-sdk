@@ -17,6 +17,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "XsollaOrderCheckObject.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -281,6 +282,22 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 	HttpRequest->ProcessRequest();
 }
 
+//TEXTREVIEW
+UXsollaOrderCheckObject* UXsollaStoreSubsystem::CreateOrderCheckObject(const int32 OrderId,
+	const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
+	const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
+							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder
+							.AddStringQueryParam(TEXT("project_id"), ProjectID)
+							.Build();
+	
+	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
+	OrderCheckObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
+
+	return OrderCheckObject;
+}
+
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
@@ -305,7 +322,7 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 
 	// Just cleanup local cart
 	Cart.Items.Empty();
-	OnCartUpdate.Broadcast(Cart);
+	OnCartUpdate.Broadcast(Cart); 
 }
 
 void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& CartId,
