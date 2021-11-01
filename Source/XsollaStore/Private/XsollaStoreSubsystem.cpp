@@ -284,18 +284,18 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 
 //TEXTREVIEW
 UXsollaOrderCheckObject* UXsollaStoreSubsystem::CreateOrderCheckObject(const int32 OrderId,
-	const FOnOrderCheckViaWebsocket& OnStatusReceivedCallback, const FOnWebsocketError& ErrorCallback,
-	const FOnWebsocketTimeout& TimeoutCallback, const int32 LifeTime)
+	const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
+	const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
 							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder
 							.AddStringQueryParam(TEXT("project_id"), ProjectID)
 							.Build();
 	
-	auto WebsocketObject = NewObject<UXsollaOrderCheckObject>(this);
-	WebsocketObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
+	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
+	OrderCheckObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
 
-	return WebsocketObject;
+	return OrderCheckObject;
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,

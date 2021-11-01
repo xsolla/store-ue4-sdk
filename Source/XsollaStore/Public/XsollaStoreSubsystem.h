@@ -204,8 +204,8 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
 	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
-		const FOnOrderCheckViaWebsocket& OnStatusReceivedCallback, const FOnWebsocketError& ErrorCallback,
-		const FOnWebsocketTimeout& TimeoutCallback, const int32 LifeTime = 300);
+		const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
+		const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime = 300);
 
 	/** Clear Cart
 	 * Removes all items from the cart.

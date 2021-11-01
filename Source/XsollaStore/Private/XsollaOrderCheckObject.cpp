@@ -13,8 +13,8 @@
 
 //TEXTREVIEW
 void UXsollaOrderCheckObject::Init(const FString& Url, const FString& Protocol,
-const FOnOrderCheckViaWebsocket& InOnStatusReceived, const FOnWebsocketError& InOnError,
-const FOnWebsocketTimeout& InOnTimeout, int32 SocketLifeTime)
+	const FOnOrderCheckSuccess& InOnStatusReceived, const FOnOrderCheckError& InOnError,
+	const FOnOrderCheckTimeout& InOnTimeout, int32 SocketLifeTime)
 {
 
 	LifeTime = FMath::Clamp(SocketLifeTime, 1, 3600);

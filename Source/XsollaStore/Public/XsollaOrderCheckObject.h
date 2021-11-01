@@ -11,9 +11,9 @@
 
 class IWebSocket;
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnOrderCheckViaWebsocket, int32, OrderId, EXsollaOrderStatus, OrderStatus);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWebsocketError, const FString&, ErrorMessage);
-DECLARE_DYNAMIC_DELEGATE(FOnWebsocketTimeout);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnOrderCheckSuccess, int32, OrderId, EXsollaOrderStatus, OrderStatus);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOrderCheckError, const FString&, ErrorMessage);
+DECLARE_DYNAMIC_DELEGATE(FOnOrderCheckTimeout);
 
 UCLASS(BlueprintType)
 class UXsollaOrderCheckObject : public UObject
@@ -22,8 +22,8 @@ class UXsollaOrderCheckObject : public UObject
 	
 public:
 	void Init(const FString& Url, const FString& Protocol,
-		const FOnOrderCheckViaWebsocket& InOnStatusReceived, const FOnWebsocketError& InOnError,
-		const FOnWebsocketTimeout& InOnTimeout, int32 SocketLifeTime = 300);
+		const FOnOrderCheckSuccess& InOnStatusReceived, const FOnOrderCheckError& InOnError,
+		const FOnOrderCheckTimeout& InOnTimeout, int32 SocketLifeTime = 300);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
 	void Connect();
@@ -34,11 +34,11 @@ public:
 private:
 	TSharedPtr<IWebSocket> Websocket;
 
-	FOnOrderCheckViaWebsocket OnStatusReceived;
+	FOnOrderCheckSuccess OnStatusReceived;
 
-	FOnWebsocketError OnError;
+	FOnOrderCheckError OnError;
 
-	FOnWebsocketTimeout OnTimeout;
+	FOnOrderCheckTimeout OnTimeout;
 
 	int32 LifeTime;
 
