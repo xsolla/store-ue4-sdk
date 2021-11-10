@@ -656,6 +656,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	//TEXTREVIEW
+	/** Log Out User
+	 * Logs the user out and deletes the user session according to the value of the sessions parameter. (OAuth2.0 only).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Sessions Shows how the user is logged out and how the user session is deleted. Available strings: 'sso', 'all'. Leave empty to use the default value(all).
+	 * @param SuccessCallback Callback function called after successful user logout.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
+		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	
 protected:
 	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
@@ -787,6 +800,8 @@ protected:
 		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
