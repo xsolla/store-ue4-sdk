@@ -20,6 +20,15 @@ enum class EXsollaFriendsType : uint8
 };
 
 UENUM(BlueprintType)
+enum class EXsollaSessionType : uint8
+{
+	/** all is used for deleting the SSO user session and invalidating all access and refresh tokens. */
+	all UMETA(DisplayName = "All"),
+	/** sso is used for deleting only the SSO user session. */
+	sso UMETA(DisplayName = "SSO")
+};
+
+UENUM(BlueprintType)
 enum class EXsollaUsersSortCriteria : uint8
 {
 	/** Sorts the list of users by nickname alphabetically. */
