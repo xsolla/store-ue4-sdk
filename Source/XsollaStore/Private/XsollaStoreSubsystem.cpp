@@ -1533,7 +1533,7 @@ FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const
 		theme = TEXT("default");
 		break;
 	case EXsollaPaymentUiTheme::default_dark:
-		theme = TEXT("defaul_dark");
+		theme = TEXT("default_dark");
 		break;
 	case EXsollaPaymentUiTheme::dark:
 		theme = TEXT("dark");
