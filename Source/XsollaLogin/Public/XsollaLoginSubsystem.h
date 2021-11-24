@@ -169,7 +169,7 @@ public:
 
 	/** Refresh authentication token
 	 * Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
-	 * 
+	 *
 	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing the user with username/password for the first time.
 	 * @param SuccessCallback Callback function called after successful token refreshing. Refresh data including the JWT will be received.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
@@ -656,19 +656,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Log Out User
-	 * Logs the user out and deletes the user session according to the value of the sessions parameter. (OAuth2.0 only).
+	 * Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth2.0 only).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param Sessions Shows how the user is logged out and how the user session is deleted. Available strings: 'sso', 'all'. Leave empty to use the default value(all).
+	 * @param Sessions Shows how the user is logged out and how the user session is deleted. Available strings: 'sso' and 'all'. Leave empty to use the default value (all).
 	 * @param SuccessCallback Callback function called after successful user logout.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-	
+
 protected:
 	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
@@ -834,7 +833,7 @@ private:
 
 	/** Cached Xsolla UseOAuth flag. */
 	bool bUseOAuth2;
-	
+
 	/** Cached Xsolla client ID. */
 	FString ClientID;
 

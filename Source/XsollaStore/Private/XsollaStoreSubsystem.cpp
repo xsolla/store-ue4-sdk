@@ -165,7 +165,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
 
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
-	
+
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
@@ -298,16 +298,15 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 	HttpRequest->ProcessRequest();
 }
 
-//TEXTREVIEW
 UXsollaOrderCheckObject* UXsollaStoreSubsystem::CreateOrderCheckObject(const int32 OrderId,
 	const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
 	const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
-							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder
+							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder.
 							.AddStringQueryParam(TEXT("project_id"), ProjectID)
 							.Build();
-	
+
 	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
 	OrderCheckObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
 
@@ -338,7 +337,7 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 
 	// Just cleanup local cart
 	Cart.Items.Empty();
-	OnCartUpdate.Broadcast(Cart); 
+	OnCartUpdate.Broadcast(Cart);
 }
 
 void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& CartId,
@@ -792,7 +791,7 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, con
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("code"), Code);
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -1245,7 +1244,7 @@ void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr 
 				GamesData.GroupIds.Add(ItemGroup.external_id);
 			}
 		}
-		
+
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
