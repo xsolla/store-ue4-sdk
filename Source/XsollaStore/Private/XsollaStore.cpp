@@ -25,6 +25,11 @@ void FXsollaStoreModule::StartupModule()
 			XsollaStoreSettings);
 	}
 
+	if (!FModuleManager::Get().IsModuleLoaded("WebSockets"))
+	{
+		FModuleManager::Get().LoadModule("WebSockets");
+	}
+	
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore module started"), *VA_FUNC_LINE);
 }
 
@@ -43,6 +48,11 @@ void FXsollaStoreModule::ShutdownModule()
 	else
 	{
 		XsollaStoreSettings = nullptr;
+	}
+
+	if (FModuleManager::Get().IsModuleLoaded("WebSockets"))
+	{
+		FModuleManager::Get().UnloadModule("WebSockets");
 	}
 }
 
