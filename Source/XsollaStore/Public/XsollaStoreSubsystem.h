@@ -133,7 +133,6 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	//TEXTREVIEW
 	/** Get All Items List
 	 * Gets a list of all virtual items.
 	 *
@@ -203,7 +202,6 @@ public:
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Create order check object
 	 * Creates order check object
 	 *
