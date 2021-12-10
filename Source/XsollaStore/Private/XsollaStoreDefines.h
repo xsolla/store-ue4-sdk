@@ -13,4 +13,4 @@ DECLARE_LOG_CATEGORY_EXTERN(LogXsollaStore, Log, All);
 #define VA_LINE (FString::FromInt(__LINE__))		 // Current Line Number in the code where this is called
 #define VA_FUNC_LINE (VA_FUNC + "(" + VA_LINE + ")") // Current Class and Line Number where this is called!
 
-#define XSOLLA_STORE_VERSION TEXT("0.9.0")
+#define XSOLLA_STORE_VERSION TEXT("0.9.2")

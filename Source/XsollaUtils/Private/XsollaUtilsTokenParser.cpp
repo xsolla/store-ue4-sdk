@@ -74,3 +74,22 @@ bool UXsollaUtilsTokenParser::GetBoolTokenParam(const FString& Token, const FStr
 
 	return true;
 }
+
+bool UXsollaUtilsTokenParser::GetInt64TokenParam(const FString& Token, const FString& ParamName, int64& ParamValue)
+{
+	ParamValue = 0;
+	TSharedPtr<FJsonObject> PayloadJsonObject;
+	if (!ParseTokenPayload(Token, PayloadJsonObject))
+	{
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't parse token payload"), *VA_FUNC_LINE);
+		return false;
+	}
+
+	if (!PayloadJsonObject->TryGetNumberField(ParamName, ParamValue))
+	{
+		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
+		return false;
+	}
+
+	return true;
+}

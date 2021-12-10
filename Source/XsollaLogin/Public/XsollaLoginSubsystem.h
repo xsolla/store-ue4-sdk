@@ -52,10 +52,11 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
+	 * @param bInUseOAuth2 bInUseOAuth2. If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user.
 	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId, const bool bInUseOAuth2, const FString& InClientId);
 
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -138,12 +139,13 @@ public:
 	/** Launch social authentication
 	 * Opens social authentication URL in the browser.
 	 *
+	 * @param WorldContextObject The world context.
 	 * @param SocialAuthenticationUrl URL with the social network authentication form.
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
+	void LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
 
 	/** Launch native authentication via social network
 	 * Opens the specified social network mobile app (if available) in order to authenticate the user.
@@ -167,7 +169,7 @@ public:
 
 	/** Refresh authentication token
 	 * Refreshes the token in case it is expired. Works only when OAuth 2.0 is enabled.
-	 * 
+	 *
 	 * @param RefreshToken Token used to refresh the expired access token. Received when authorizing the user with username/password for the first time.
 	 * @param SuccessCallback Callback function called after successful token refreshing. Refresh data including the JWT will be received.
 	 * @param ErrorCallback Callback function called after request resulted with an error.
@@ -654,6 +656,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Log Out User
+	 * Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth2.0 only).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Sessions Shows how the user is logged out and how the user session is deleted. Available strings: 'sso' and 'all'. Leave empty to use the default value (all).
+	 * @param SuccessCallback Callback function called after successful user logout.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
+		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 protected:
 	void RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
@@ -727,6 +741,10 @@ protected:
 		FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void DeviceIdOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void DeviceIdJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshTokenOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SessionTicketOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -785,6 +803,8 @@ protected:
 		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
@@ -810,6 +830,9 @@ private:
 
 	/** Cached Xsolla Login project. */
 	FString LoginID;
+
+	/** Cached Xsolla UseOAuth flag. */
+	bool bUseOAuth2;
 
 	/** Cached Xsolla client ID. */
 	FString ClientID;

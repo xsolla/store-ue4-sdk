@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.2] - 2021-12-07
+
+### Fixed
+- WebSockets module unloading.
+
+## [0.9.1] - 2021-11-29
+
+### Added
+- Websocket for purchase status check.
+- Webshop.
+
+### Fixed
+- Minor issues.
+
 ## [0.9.0] - 2021-09-17
 
 ### Changed

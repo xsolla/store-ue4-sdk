@@ -4,14 +4,13 @@
 
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
-
 #include "XsollaUtilsHttpRequestHelper.h"
-
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
-
+#include "XsollaOrderCheckObject.h"
 #include "XsollaStoreSubsystem.generated.h"
+
 
 class FJsonObject;
 
@@ -27,8 +26,9 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, FStoreListOfBundles, ListOfBundles);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
-DECLARE_DYNAMIC_DELEGATE(FOnRedeemPromocodeUpdate);
+DECLARE_DYNAMIC_DELEGATE(FOnPromocodeUpdate);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsListBySpecifiedGroup, FStoreItemsList, ItemsList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsList, FStoreItemsList, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesList, GamesList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameUpdate, const FGameItem&, Game);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameKeyUpdate, const FGameKeyItem&, GameKey);
@@ -133,6 +133,16 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
+	/** Get All Items List
+	 * Gets a list of all virtual items.
+	 *
+	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after server response.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnStoreError& ErrorCallback);
+
 	/** Fetch Payment Token
 	 * Initiates an item purchase session and fetches token for payment console.
 	 *
@@ -144,12 +154,13 @@ public:
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Quantity Item quantity.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 		const FString& Currency, const FString& Country, const FString& Locale,
 		const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Fetch Cart Payment Token
 	 * Initiates a cart purchase session and fetches a token for payment console.
@@ -172,11 +183,12 @@ public:
 	/** Launch Payment Console
 	 * Opens payment console for the provided access token.
 	 *
+	 * @param WorldContextObject The world context.
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param BrowserWidget Widget to represent a payment form. Can be set in the project settings.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	void LaunchPaymentConsole(const FString& AccessToken, UUserWidget*& BrowserWidget);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
+	void LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget);
 
 	/** Check Order
 	 * Checks pending order status by its ID.
@@ -189,6 +201,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Create order check object
+	 * Creates order check object
+	 *
+	 * @param OrderId Identifier of order to be checked.
+	 * @param OnStatusReceivedCallback Callback function called after successful order check. Order status will be received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param TimeoutCallback Callback function called after life time is expired.
+	 * @param LifeTime Object lifetime.
+	 *
+	 * * @return Returns new order check instance
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
+	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
+		const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
+		const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime = 300);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -349,7 +377,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
-		const FOnRedeemPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	/** Remove Promocode From Cart
+	 * Removes a promo code from a cart. After the promo code is removed, the total price of all items in the cart will be recalculated without bonuses and discounts provided by a promo code.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after successful promocode redemption.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void RemovePromocodeFromCart(const FString& AuthToken,
+		const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
@@ -477,6 +516,8 @@ protected:
 		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void GetItemsListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+	void GetAllItemsList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetItemsList SuccessCallback, FOnStoreError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
@@ -512,7 +553,9 @@ protected:
 	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnRedeemPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void RemovePromocodeFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);

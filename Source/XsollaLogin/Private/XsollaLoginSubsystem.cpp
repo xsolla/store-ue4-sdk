@@ -47,7 +47,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID, Settings->ClientID);
+	Initialize(Settings->ProjectID, Settings->LoginID, Settings->UseOAuth2, Settings->ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -58,10 +58,11 @@ void UXsollaLoginSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId)
+void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const bool bInUseOAuth2, const FString& InClientId)
 {
 	ProjectID = InProjectId;
 	LoginID = InLoginId;
+	bUseOAuth2 = bInUseOAuth2;
 	ClientID = InClientId;
 
 	// Check token override from Xsolla Launcher
@@ -77,7 +78,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	if (Settings->bAllowNativeAuth)
 	{
-		if (Settings->UseOAuth2)
+		if (bUseOAuth2)
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitOauth",
 				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
@@ -124,7 +125,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	LoginData.Username = Username;
 	LoginData.Password = Password;
 
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		RegisterUserOAuth(Username, Password, Email, State, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
@@ -137,9 +138,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		ResendAccountConfirmationEmailOAuth(Username, State, SuccessCallback, ErrorCallback);
 	}
@@ -168,7 +167,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
 
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		AuthenticateUserOAuth(Username, Password, SuccessCallback, ErrorCallback);
 	}
@@ -220,9 +219,7 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload, const TArray<FString>& AdditionalFields,
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		GetSocialAuthenticationUrlOAuth(ProviderName, State, SuccessCallback, ErrorCallback);
 	}
@@ -232,7 +229,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	}
 }
 
-void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
+void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
@@ -241,7 +238,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(const FString& SocialAuth
 	// Check for user browser widget override
 	const TSubclassOf<UUserWidget> BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass) ? Settings->OverrideBrowserWidgetClass : DefaultBrowserWidgetClass;
 
-	auto MyBrowser = CreateWidget<UUserWidget>(GEngine->GameViewport->GetWorld(), BrowserWidgetClass);
+	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), BrowserWidgetClass);
 	MyBrowser->AddToViewport(100000);
 
 	BrowserWidget = MyBrowser;
@@ -332,9 +329,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 	const FString& AppId, const FString& State, const FString& Payload,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		AuthenticateWithSessionTicketOAuth(ProviderName, AppId, SessionTicket, Code, State, SuccessCallback, ErrorCallback);
 	}
@@ -582,9 +577,7 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 		return;
 	}
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		AuthenticateViaDeviceIdOAuth(DeviceName, DeviceId, State, SuccessCallback, ErrorCallback);
 	}
@@ -608,7 +601,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 		return;
 	}
 
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		AuthViaAccessTokenOfSocialNetworkOAuth(AuthToken, AuthTokenSecret, OpenId, ProviderName, State, SuccessCallback, ErrorCallback);
 	}
@@ -621,9 +614,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 void UXsollaLoginSubsystem::StartAuthByPhoneNumber(const FString& PhoneNumber, const FString& Payload, const FString& State,
 	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		StartAuthByPhoneNumberOAuth(PhoneNumber, State, SuccessCallback, ErrorCallback);
 	}
@@ -636,9 +627,8 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumber(const FString& PhoneNumber, c
 void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const FString& OperationId, const FString& PhoneNumber,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		CompleteAuthByPhoneNumberOAuth(Code, OperationId, PhoneNumber, SuccessCallback, ErrorCallback);
 	}
@@ -651,9 +641,7 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const
 void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
 	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		StartAuthByEmailOAuth(Email, State, SuccessCallback, ErrorCallback);
 	}
@@ -666,9 +654,7 @@ void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString
 void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-	if (Settings->UseOAuth2)
+	if (bUseOAuth2)
 	{
 		CompleteAuthByEmailOAuth(Code, OperationId, Email, SuccessCallback, ErrorCallback);
 	}
@@ -981,6 +967,20 @@ void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
+void UXsollaLoginSubsystem::LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
+	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	const FString SessionsString = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaSessionType", Sessions);
+	
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/logout"))
+							.AddStringQueryParam(TEXT("sessions"), SessionsString)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::LogoutUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FString& Password, const FString& Email, const FString& Payload,
 	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
@@ -1258,7 +1258,7 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceIdJWT(const FString& DeviceName
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::DeviceIdJWT_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1286,7 +1286,7 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceIdOAuth(const FString& DeviceNa
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicketOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::DeviceIdOAuth_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1750,6 +1750,36 @@ void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequ
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *TokenFieldName);
+	}
+
+	HandleRequestError(OutError, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::DeviceIdOAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::DeviceIdJWT_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		static const FString TokenField = TEXT("token");
+		if (JsonObject->HasTypedField<EJson::String>(TokenField))
+		{
+			const FString Token = JsonObject->GetStringField(TokenField);
+
+			LoginData.AuthToken.JWT = Token;
+			SuccessCallback.ExecuteIfBound(LoginData);
+			return;
+		}
+
+		OutError.description = FString::Printf(TEXT("No field '%s' found"), *TokenField);
 	}
 
 	HandleRequestError(OutError, ErrorCallback);
@@ -2228,9 +2258,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 {
 	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::Ok)
 	{
-		const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-
-		if (Settings->UseOAuth2)
+		if (bUseOAuth2)
 		{
 			HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 		}
@@ -2256,6 +2284,21 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 	}
 
 	HandleRequestError(OutError, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+{
+	XsollaHttpRequestError OutError;
+	
+	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
+	{
+		SuccessCallback.ExecuteIfBound();
+	}
+	else
+	{
+		HandleRequestError(OutError, ErrorCallback);
+	}
 }
 
 void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,

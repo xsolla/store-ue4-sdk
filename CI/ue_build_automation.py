@@ -34,6 +34,7 @@ plugin_repo_link = None             # UE plugin repo link
 plugin_repo_branch = None           # UE plugin repo branch
 inspect_tool_path = None            # path to code inspection tool
 inspect_artifact_path = None        # path to code inspection artifact
+autotests_artifact_path = None      # path to autotests results artifact
 
 # Plugin git clone progress tracking utility
 class CloneProgress(git.remote.RemoteProgress):
@@ -69,15 +70,17 @@ if len(sys.argv) < 8:
     print('-u, --ue_base - path to the UE installation directory')
     print('-d, --demo_base - path to the demo project directory')
     print('-n, --demo_name - demo project name')
+    print('-b, --branch - UE plugin repo branch with autotests (optional, qa/autotests used by default)')
     print('-o, --build_output - path to build artifacts direcory')
     print('-i, --inspect_tool - path to code inspection tool')
     print('-a, --inspect_artifact - path to code inspection artifact')
+    print('-t, --test_artifact - path to autotests artifact')
     sys.exit('Invalid parameter provided')
 
 # Parse script args
 argv = sys.argv[1:]
 try:
-    opts, args = getopt.getopt(argv, "u:d:n:o:i:a:", ["ue_base=", "demo_base=", "demo_name=", "build_output=", "inspect_tool=", "inspect_artifact="])
+    opts, args = getopt.getopt(argv, "u:d:n:b:o:i:a:t:", ["ue_base=", "demo_base=", "demo_name=", "branch=", "build_output=", "inspect_tool=", "inspect_artifact=", "test_artifact="])
 except:
     sys.exit('Error: Failed to parse arguments')
 
@@ -88,12 +91,16 @@ for opt, arg in opts:
         demo_project_path = os.path.abspath(arg)
     elif opt in ['-n', '--demo_name']:
         demo_project_name = arg
+    elif opt in ['-b', '--branch']:
+        plugin_repo_branch = arg
     elif opt in ['-o', '--build_output']:
         build_output_path = os.path.abspath(arg)
     elif opt in ['-i', '--inspect_tool']:
         inspect_tool_path = os.path.abspath(arg)
     elif opt in ['-a', '--inspect_artifact']:
         inspect_artifact_path = os.path.abspath(arg)
+    elif opt in ['-t', '--test_artifact']:
+        autotests_artifact_path = os.path.abspath(arg)
 
 # Check whether all variables are set
 if engine_path is None:
@@ -102,12 +109,16 @@ if demo_project_path is None:
     sys.exit('Error: Provide a valid path to the demo project directory')
 if demo_project_name is None:
     sys.exit('Error: Provide a valid demo project name')
+if plugin_repo_branch is None:
+    sys.exit('Error: Provide a valid branch name')
 if build_output_path is None:
     sys.exit('Error: Provide a valid path to the directory where build artifacts will be stored')
 if inspect_tool_path is None:
     sys.exit('Error: Provide a valid path to code inspection tool')
 if inspect_artifact_path is None:
     sys.exit('Error: Provide a valid path to code inspection artifact')
+if autotests_artifact_path is None:
+    sys.exit('Error: Provide a valid path to autotests results artifact')
 
 # Check platform for running this script (currently only Windows supported)
 if not platform.system() == 'Windows':
@@ -124,6 +135,10 @@ for temp_folder in temp_folders:
     if (os.path.exists(temp_folder_path)):
         print(f'Removing {temp_folder_path}')
         shutil.rmtree(temp_folder_path, ignore_errors=False, onerror=DeleteReadOnly)
+
+# Clone UE plugin to demo project Plugins folder
+from git import Repo
+repo = Repo.clone_from('git@gitlab.loc:sdk_group/store-ue4-sdk.git', os.path.join(demo_project_path, 'Plugins/Xsolla'), branch=plugin_repo_branch, progress=CloneProgress())
 
 # Check if Unreal Automation Tool (UAT) exists
 uat = os.path.join(engine_path, 'Engine/Binaries/DotNET/AutomationTool.exe')
@@ -171,3 +186,65 @@ os.makedirs(inspect_path)
 # Run code inspection
 demo_project_sln = os.path.join(demo_project_path, demo_project_name + '.sln')
 inspection = subprocess.run([inspect_tool_path, demo_project_sln, '-o=' + os.path.join(inspect_path, 'InspectResult.xml'), '--project=' + demo_project_name], stdout=sys.stdout)
+
+# Clear temporaries if any in demo project folder
+for temp_folder in temp_folders:
+    temp_folder_path = os.path.join(demo_project_path, temp_folder)
+    if (os.path.exists(temp_folder_path)):
+        print(f'Removing {temp_folder_path}')
+        shutil.rmtree(temp_folder_path, ignore_errors=False, onerror=DeleteReadOnly)
+
+# Clone UE plugin to demo project Plugins folder
+from git import Repo
+repo = Repo.clone_from('git@gitlab.loc:sdk_group/store-ue4-sdk.git', os.path.join(demo_project_path, 'Plugins/Xsolla'), branch='qa/autotests', progress=CloneProgress())
+
+# Check if Unreal Build Tool (UBT) exists
+ubt = os.path.join(engine_path, 'Engine/Binaries/DotNET/UnrealBuildTool.exe')
+if not os.path.exists(ubt):
+    sys.exit(f'Error: Failed to locate Unreal Build Tool at {ubt}')
+
+# Prepare project for building
+prepareBuildResult = subprocess.run([ubt,
+    '-Mode=QueryTargets',
+    '-Project=' + demo_project,
+    '-Output=' + os.path.join(demo_project_path, 'Intermediate', 'TargetInfo.json'),
+], stdout=sys.stdout)
+
+if prepareBuildResult.returncode != 0:
+    sys.exit(f'Error: UnrealBuildTool Error: {prepareBuildResult.stderr}')
+
+# Build project
+buildResult = subprocess.run([ubt,
+    'Development',
+    'Win64',
+    '-TargetType=Editor',
+    '-Progress',
+    '-NoEngineChanges',
+    '-Project=' + demo_project,
+    '-NoHotReloadFromIDE',
+], stdout=sys.stdout)
+
+if buildResult.returncode != 0:
+    sys.exit(f'Error: UnrealBuildTool Error: {buildResult.stderr}')
+
+# Check if Unreal Editor exists
+ue_editor = os.path.join(engine_path, 'Engine/Binaries/Win64/UE4Editor.exe')
+if not os.path.exists(ue_editor):
+    sys.exit(f'Error: Failed to locate Unreal Engine Editor at {ue_editor}')
+
+# Prepare folder for storing code autotests artifacts
+autotests_path = os.path.join(autotests_artifact_path, 'Autotests')
+if os.path.exists(autotests_path):
+    shutil.rmtree(autotests_path)
+os.makedirs(autotests_path)
+
+# Run autotests
+autotests = subprocess.run([ue_editor,
+    demo_project,
+    '-ExecCmds=' + 'Automation RunTests Xsolla',
+    '-nullRHI',
+    '-nopause',
+    '-unattended',
+    '-testexit=' + 'Automation Test Queue Empty',
+    '-ReportOutputPath=' + autotests_path
+], stdout=sys.stdout)

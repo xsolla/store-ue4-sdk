@@ -35,4 +35,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
 	static UPARAM(DisplayName = "IsSuccessfull") bool GetBoolTokenParam(const FString& Token, const FString& ParamName, bool& ParamValue);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	static UPARAM(DisplayName = "IsSuccessfull") bool GetInt64TokenParam(const FString& Token, const FString& ParamName, int64& ParamValue);
 };
