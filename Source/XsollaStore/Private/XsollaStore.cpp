@@ -49,11 +49,6 @@ void FXsollaStoreModule::ShutdownModule()
 	{
 		XsollaStoreSettings = nullptr;
 	}
-
-	if (FModuleManager::Get().IsModuleLoaded("WebSockets"))
-	{
-		FModuleManager::Get().UnloadModule("WebSockets");
-	}
 }
 
 UXsollaStoreSettings* FXsollaStoreModule::GetSettings() const
