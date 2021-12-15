@@ -25,7 +25,7 @@ public class XsollaNativeAuth {
         XLogin.SocialConfig socialConfig = new XLogin.SocialConfig(facebookAppId, googleAppId, wechatAppId, qqAppId);
         LoginConfig loginConfig = new LoginConfig.OauthBuilder().
                 setProjectId(loginID).
-                setOauthClientId(Integer.parseInt(clientId)).
+                setOauthClientId(tryParseInt(clientId, 0)).
                 setCallbackUrl(callbackUrl).
                 setSocialConfig(socialConfig).
                 build();
@@ -40,5 +40,13 @@ public class XsollaNativeAuth {
         intent.putExtra(XsollaNativeAuthActivity.REMEMBER_ME, rememberMe);
         intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
+    }
+
+    private static int tryParseInt(String value, int defaultVal) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultVal;
+        }
     }
 }
