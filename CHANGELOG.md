@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.3] - 2021-12-15
+
+### Fixed
+- Android SDK initialization error.
+- GetGameMode method call.
+
 ## [0.9.2] - 2021-12-07
 
 ### Fixed
