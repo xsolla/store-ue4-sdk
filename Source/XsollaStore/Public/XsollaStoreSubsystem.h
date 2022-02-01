@@ -390,9 +390,6 @@ public:
 	void RemovePromocodeFromCart(const FString& AuthToken,
 		const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Battlepass", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	FStoreBattlepassData ParseBattlepass(const FString& BattlepassInfo);
-
 	/** Get Games
 	 * Gets list of games for building a catalog.
 	 *

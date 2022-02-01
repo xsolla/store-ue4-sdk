@@ -647,20 +647,6 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-FStoreBattlepassData UXsollaStoreSubsystem::ParseBattlepass(const FString& BattlepassInfo)
-{
-	FStoreBattlepassData BattlepassData;
-
-	TSharedPtr<FJsonObject> JsonObject;
-
-	if (!FJsonObjectConverter::JsonObjectStringToUStruct(BattlepassInfo, &BattlepassData, 0, 0))
-	{
-		UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't convert BattlepassInfo to struct"), *VA_FUNC_LINE);
-	}
-
-	return BattlepassData;
-}
-
 void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {

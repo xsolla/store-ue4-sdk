@@ -640,54 +640,6 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 	bool is_selectable;
 };
 
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreBattlepassRewardItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
-	FString Sku;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
-	FString Promocode;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Reward Item")
-	int32 Quantity;
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreBattlepassLevel
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	int32 Tier;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	int32 Experience;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	FStoreBattlepassRewardItem FreeItem;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Level")
-	FStoreBattlepassRewardItem PremiumItem;
-};
-
-USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FStoreBattlepassData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
-	FString Name;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
-	FString ExpiryDate;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Battlepass Data")
-	TArray<FStoreBattlepassLevel> Levels;
-};
-
 inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
 {
 	this->description = Bundle.description;
