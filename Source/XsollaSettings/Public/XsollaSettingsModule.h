@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class UXsollaSettings;
+class UXsollaProjectSettings;
 
 /**
  * Xsolla Settings Module
@@ -26,7 +26,7 @@ public:
 	 */
 	static inline FXsollaSettingsModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FXsollaSettingsModule>(ModuleName);
+		return FModuleManager::LoadModuleChecked<FXsollaSettingsModule>("XsollaSettings");
 	}
 
 	/**
@@ -36,16 +36,20 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded(ModuleName);
+		return FModuleManager::Get().IsModuleLoaded("XsollaSettings");
 	}
 
-	/** Getter for internal settings object to support runtime configuration changes. */
-	UXsollaSettings* GetSettings() const;
-	
+	/** Getter for internal settings object to support runtime configuration changes */
+	UXsollaProjectSettings* GetSettings() const;
+	//{
+	//	check(XsollaSettings);
+	//	return XsollaSettings;
+	//}
+
 	/** Module name. */
-	static const FName ModuleName;
+	//static const FName ModuleName;
 
 private:
-	/** Module settings */
-	UXsollaSettings* XsollaSettings;
+	/** Settings. */
+	UXsollaProjectSettings* XsollaSettings;
 };

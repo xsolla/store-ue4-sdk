@@ -4,8 +4,9 @@
 #include "XsollaSettingsLibrary.h"
 
 #include "XsollaSettingsModule.h"
+#include "XsollaProjectSettings.h"
 
-UXsollaSettings* UXsollaSettingsLibrary::GetXsollaSettings()
+UXsollaProjectSettings* UXsollaSettingsLibrary::GetProjectSettings()
 {
 	return FXsollaSettingsModule::Get().GetSettings();
 }

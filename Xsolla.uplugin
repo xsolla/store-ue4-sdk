@@ -29,6 +29,21 @@
         "XboxOne",
         "PS4"
       ]
+    },
+    {
+      "Name": "XsollaSettings",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "XboxOne",
+        "PS4"
+      ]
     },	
     {
       "Name": "XsollaUIBuilder",
@@ -92,21 +107,6 @@
     },
     {
       "Name": "XsollaInventory",
-      "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
-    },
-    {
-      "Name": "XsollaSettings",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
       "WhitelistPlatforms": [

@@ -14,10 +14,14 @@
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSubsystemNames.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "XsollaOrderCheckObject.h"
+#include "XsollaSettingsModule.h"
+#include "XsollaProjectSettings.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -34,7 +38,7 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	// Initialize subsystem with project identifier provided by user
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	Initialize(Settings->ProjectID);
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
@@ -173,7 +177,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	if (Settings->BuildForSteam)
 	{
@@ -215,7 +219,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	if (Settings->BuildForSteam)
 	{
@@ -248,7 +252,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
 	}
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	if (Settings->UsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
@@ -262,8 +266,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
 		// Check for user browser widget override
-		auto BrowserWidgetClass = (Settings->OverrideBrowserWidgetClass)
-									  ? Settings->OverrideBrowserWidgetClass
+		auto BrowserWidgetClass = (Settings->OverrideStoreBrowserWidgetClass)
+									  ? Settings->OverrideStoreBrowserWidgetClass
 									  : DefaultBrowserWidgetClass;
 
 		PengindPaystationUrl = PaystationUrl;
@@ -1376,7 +1380,7 @@ void UXsollaStoreSubsystem::SaveData()
 
 bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 {
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	bool bIsSandboxEnabled = Settings->EnableSandbox;
 
 #if UE_BUILD_SHIPPING
@@ -1440,7 +1444,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 {
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// General
 	if (!Currency.IsEmpty())
@@ -1496,7 +1500,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 
 FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
 {
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	if (!Settings->UseCrossPlatformAccountLinking)
 	{
@@ -1510,7 +1514,7 @@ FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const
 {
 	FString theme;
 
-	const UXsollaStoreSettings* Settings = FXsollaStoreModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	switch (Settings->PaymentInterfaceTheme)
 	{

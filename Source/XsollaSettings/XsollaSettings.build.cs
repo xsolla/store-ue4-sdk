@@ -16,8 +16,7 @@ namespace UnrealBuildTool.Rules
                     "Slate",
                     "SlateCore",
                     "UMG",
-                    "Engine",
-                    "Projects"
+                    "Engine"
                 }
             );
 

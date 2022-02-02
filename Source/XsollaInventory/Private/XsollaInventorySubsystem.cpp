@@ -2,10 +2,8 @@
 
 #include "XsollaInventorySubsystem.h"
 
-#include "XsollaInventory.h"
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
-#include "XsollaInventorySettings.h"
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsUrlBuilder.h"
 
@@ -13,6 +11,8 @@
 #include "JsonObjectConverter.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "XsollaSettingsModule.h"
+#include "XsollaProjectSettings.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaInventoryModule"
 
@@ -26,7 +26,7 @@ void UXsollaInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	// Initialize subsystem with project identifier provided by user
-	const UXsollaInventorySettings* Settings = FXsollaInventoryModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	Initialize(Settings->ProjectID);
 
 	UE_LOG(LogXsollaInventory, Log, TEXT("%s: XsollaInventory subsystem initialized"), *VA_FUNC_LINE);
@@ -277,7 +277,7 @@ FString UXsollaInventorySubsystem::SerializeJson(const TSharedPtr<FJsonObject> D
 
 FString UXsollaInventorySubsystem::GetPublishingPlatformName() const
 {
-	const UXsollaInventorySettings* Settings = FXsollaInventoryModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	if (!Settings->UseCrossPlatformAccountLinking)
 	{

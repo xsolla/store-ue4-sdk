@@ -1,24 +1,24 @@
 // Copyright 2022 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaSettingsModule.h"
-
 #include "XsollaSettingsDefines.h"
+#include "XsollaProjectSettings.h"
 #include "Developer/Settings/Public/ISettingsModule.h"
-#include "XsollaSettings.h"
+
 
 #define LOCTEXT_NAMESPACE "FXsollaSettingsModule"
 
-const FName FXsollaSettingsModule::ModuleName = "XsollaSettings";
+//const FName FXsollaSettingsModule::ModuleName = "XsollaSettings";
 
 void FXsollaSettingsModule::StartupModule()
 {
-	XsollaSettings = NewObject<UXsollaSettings>(GetTransientPackage(), "XsollaSettings", RF_Standalone);
+	// Register settings
+	XsollaSettings = NewObject<UXsollaProjectSettings>(GetTransientPackage(), "XsollaSettings", RF_Standalone);
 	XsollaSettings->AddToRoot();
 
-	// Register settings
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->RegisterSettings("Project", "Plugins", ModuleName,
+		SettingsModule->RegisterSettings("Project", "Plugins", "XsollaSettings",
 			LOCTEXT("RuntimeSettingsName", "Xsolla Settings"),
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Settings"),
 			XsollaSettings);
@@ -31,7 +31,7 @@ void FXsollaSettingsModule::ShutdownModule()
 {
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", ModuleName);
+		SettingsModule->UnregisterSettings("Project", "Plugins", "XsollaSettings");
 	}
 
 	if (!GExitPurge)
@@ -45,11 +45,12 @@ void FXsollaSettingsModule::ShutdownModule()
 	}
 }
 
-UXsollaSettings* FXsollaSettingsModule::GetSettings() const
+UXsollaProjectSettings* FXsollaSettingsModule::GetSettings() const
 {
 	check(XsollaSettings);
 	return XsollaSettings;
 }
+
 #undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FXsollaSettingsModule, XsollaSettings);

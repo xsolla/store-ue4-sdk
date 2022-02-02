@@ -18,7 +18,8 @@ public class XsollaInventory : ModuleRules
                 "JsonUtilities",
                 "UMG",
                 "XsollaWebBrowser",
-                "XsollaUtils"
+                "XsollaUtils",
+                "XsollaSettings"
             }
             );
 

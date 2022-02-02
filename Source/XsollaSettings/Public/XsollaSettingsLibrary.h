@@ -6,7 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaSettingsLibrary.generated.h"
 
-class UXsollaSettings;
+class UXsollaProjectSettings;
 
 /**
  * 
@@ -19,6 +19,6 @@ class XSOLLASETTINGS_API UXsollaSettingsLibrary : public UBlueprintFunctionLibra
 public:
 	/** Gives direct access to the SDK settings. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Settings")
-	static UXsollaSettings* GetXsollaSettings();
+	static UXsollaProjectSettings* GetProjectSettings();
 	
 };
