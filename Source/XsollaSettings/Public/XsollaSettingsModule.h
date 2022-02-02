@@ -40,11 +40,11 @@ public:
 	}
 
 	/** Getter for internal settings object to support runtime configuration changes */
-	UXsollaProjectSettings* GetSettings() const;
-	//{
-	//	check(XsollaSettings);
-	//	return XsollaSettings;
-	//}
+	UXsollaProjectSettings* GetSettings() const
+	{
+		check(XsollaSettings);
+		return XsollaSettings;
+	}
 
 	/** Module name. */
 	//static const FName ModuleName;

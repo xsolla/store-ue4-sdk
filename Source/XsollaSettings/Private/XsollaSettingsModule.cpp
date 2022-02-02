@@ -45,11 +45,11 @@ void FXsollaSettingsModule::ShutdownModule()
 	}
 }
 
-UXsollaProjectSettings* FXsollaSettingsModule::GetSettings() const
-{
-	check(XsollaSettings);
-	return XsollaSettings;
-}
+//UXsollaProjectSettings* FXsollaSettingsModule::GetSettings() const
+//{
+//	check(XsollaSettings);
+//	return XsollaSettings;
+//}
 
 #undef LOCTEXT_NAMESPACE
 
