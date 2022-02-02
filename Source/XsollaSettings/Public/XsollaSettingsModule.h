@@ -46,9 +46,6 @@ public:
 		return XsollaSettings;
 	}
 
-	/** Module name. */
-	//static const FName ModuleName;
-
 private:
 	/** Settings. */
 	UXsollaProjectSettings* XsollaSettings;

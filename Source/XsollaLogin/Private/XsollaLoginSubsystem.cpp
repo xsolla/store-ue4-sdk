@@ -76,7 +76,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 
 #if PLATFORM_ANDROID
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	if (Settings->bAllowNativeAuth)
 	{
 		if (bUseOAuth2)
@@ -255,7 +255,7 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 {
 #if PLATFORM_ANDROID
 
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	if (Settings->bAllowNativeAuth)
 	{
 		UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
@@ -1083,9 +1083,6 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	// Generate endpoint url
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user/resend_confirmation_link"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)

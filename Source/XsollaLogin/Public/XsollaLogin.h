@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class UXsollaLoginSettings;
-
 /**
  * Xsolla Login SDK Module
  * See: https://developers.xsolla.com/api/v2/login/
@@ -39,13 +37,6 @@ public:
 		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
 
-	/** Getter for internal settings object to support runtime configuration changes. */
-	UXsollaLoginSettings* GetSettings() const;
-
 	/** Module name. */
 	static const FName ModuleName;
-
-private:
-	/** Module settings */
-	UXsollaLoginSettings* XsollaLoginSettings;
 };

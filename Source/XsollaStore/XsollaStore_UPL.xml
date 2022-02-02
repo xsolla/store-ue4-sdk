@@ -7,8 +7,8 @@
     <log text="XsollaStore UPL initialization"/>
 
     <!-- Read settings -->
-    <setBoolFromProperty result="UseDeepLinkingFlag" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="UseDeepLinking" default="false"/>
-    <setStringFromProperty result="DeepLinkingURL" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="RedirectURL" default=""/>
+    <setBoolFromProperty result="UseDeepLinkingFlag" ini="Engine" section="/Script/XsollaSettings.XsollaProjectSettings" property="UseDeepLinking" default="false"/>
+    <setStringFromProperty result="DeepLinkingURL" ini="Engine" section="/Script/XsollaSettings.XsollaProjectSettings" property="RedirectURL" default=""/>
 
     <setIntLength result="DeepLinkingURLLength" source="$S(DeepLinkingURL)"/>
     <setBoolIsGreater  result="DeepLinkingURLNotEmpty" arg1="$I(DeepLinkingURLLength)" arg2="0"/>

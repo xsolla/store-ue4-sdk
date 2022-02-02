@@ -8,8 +8,6 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaSettingsModule"
 
-//const FName FXsollaSettingsModule::ModuleName = "XsollaSettings";
-
 void FXsollaSettingsModule::StartupModule()
 {
 	// Register settings
@@ -44,12 +42,6 @@ void FXsollaSettingsModule::ShutdownModule()
 		XsollaSettings = nullptr;
 	}
 }
-
-//UXsollaProjectSettings* FXsollaSettingsModule::GetSettings() const
-//{
-//	check(XsollaSettings);
-//	return XsollaSettings;
-//}
 
 #undef LOCTEXT_NAMESPACE
 
