@@ -931,8 +931,6 @@ protected:
 	/** Cached list of user devices. */
 	TArray<FXsollaUserDevice> UserDevices;
 
-	static const FString BlankRedirectEndpoint;
-
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;

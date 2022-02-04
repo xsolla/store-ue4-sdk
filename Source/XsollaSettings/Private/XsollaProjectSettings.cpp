@@ -19,6 +19,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	SendPasswordlessAuthURL = false;
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
+	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	bForceSteamAuthorization = false;
 	Platform = EXsollaPublishingPlatform::playstation_network;
 	bCustomAuthViaAccessToken = false;

@@ -30,8 +30,6 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
-const FString UXsollaLoginSubsystem::BlankRedirectEndpoint(TEXT("https://login.xsolla.com/api/blank"));
-
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -282,12 +280,14 @@ void UXsollaLoginSubsystem::SetToken(const FString& Token)
 
 void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("refresh_token"));
 	RequestDataJson->SetStringField(TEXT("refresh_token"), RefreshToken);
-	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), Settings->RedirectURI);
 
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -305,12 +305,14 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("authorization_code"));
 	RequestDataJson->SetStringField(TEXT("code"), AuthenticationCode);
-	RequestDataJson->SetStringField(TEXT("redirect_uri"), BlankRedirectEndpoint);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), Settings->RedirectURI);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1020,6 +1022,8 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("username"), Username);
@@ -1037,7 +1041,7 @@ void UXsollaLoginSubsystem::RegisterUserOAuth(const FString& Username, const FSt
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 							.AddStringQueryParam(TEXT("state"), State)
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
@@ -1076,6 +1080,8 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& Username, const FString& State,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("username"), Username);
@@ -1087,7 +1093,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailOAuth(const FString& U
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user/resend_confirmation_link"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("state"), State)
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
@@ -1171,11 +1177,13 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrlJWT(const FString& Provide
 void UXsollaLoginSubsystem::GetSocialAuthenticationUrlOAuth(const FString& ProviderName, const FString& State,
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_url"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
@@ -1214,12 +1222,14 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicketOAuth(const FString& Pr
 	const FString& SessionTicket, const FString& Code, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("app_id"), AppId)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
@@ -1272,13 +1282,15 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceIdOAuth(const FString& DeviceNa
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Generate endpoint url
 	const FString& PlatformName = UGameplayStatics::GetPlatformName();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
 							.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();
@@ -1329,12 +1341,14 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetworkOAuth(
 	const FString& ProviderName, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_with_token"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();
@@ -1415,7 +1429,7 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumberOAuth(const FString& PhoneNumb
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/phone/request"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();
@@ -1526,7 +1540,7 @@ void UXsollaLoginSubsystem::StartAuthByEmailOAuth(const FString& Email, const FS
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/email/request"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), BlankRedirectEndpoint)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.AddStringQueryParam(TEXT("state"), State)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();

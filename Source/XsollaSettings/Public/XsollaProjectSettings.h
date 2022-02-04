@@ -110,8 +110,8 @@ public:
 	/**
 	 * Redirect uri
 	 */
-	//UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken&&UseOAuth2", EditConditionHides))
-	//FString RedirectURI;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken&&UseOAuth2", EditConditionHides))
+	FString RedirectURI;
 
 	/** API methods will be calling different URLs depending on the selected storage method. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
