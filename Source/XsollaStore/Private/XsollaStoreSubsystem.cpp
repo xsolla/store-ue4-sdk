@@ -260,16 +260,11 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
-		// Check for user browser widget override
-		auto BrowserWidgetClass = (Settings->OverrideStoreBrowserWidgetClass)
-									  ? Settings->OverrideStoreBrowserWidgetClass
-									  : DefaultBrowserWidgetClass;
-
 		PengindPaystationUrl = PaystationUrl;
 
 		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
 		{
-			MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), BrowserWidgetClass);
+			MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 			MyBrowser->AddToViewport(100000);
 		}
 		else

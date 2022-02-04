@@ -254,14 +254,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString RedirectButtonCaption;
 
-	/** Custom class to handle the payment console. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings")
-	TSubclassOf<UUserWidget> OverrideStoreBrowserWidgetClass;
-
-	/** Custom class to handle authentication via social network. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	TSubclassOf<UUserWidget> OverrideLoginBrowserWidgetClass;
-
 	/** Request user nickname after successful authorization in case one is missing */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool RequestNickname;

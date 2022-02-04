@@ -207,12 +207,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 {
 	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
 
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	// Check for user browser widget override
-	const TSubclassOf<UUserWidget> BrowserWidgetClass = (Settings->OverrideLoginBrowserWidgetClass) ? Settings->OverrideLoginBrowserWidgetClass : DefaultBrowserWidgetClass;
-
-	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), BrowserWidgetClass);
+	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 	MyBrowser->AddToViewport(100000);
 
 	BrowserWidget = MyBrowser;
