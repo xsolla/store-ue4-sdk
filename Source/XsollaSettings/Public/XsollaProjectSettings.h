@@ -263,13 +263,4 @@ public:
 	/** Redirect button caption. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
 	FString RedirectButtonCaption;
-
-	/** Request user nickname after successful authorization in case one is missing */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
-	bool RequestNickname;
-
-	
-	/** Enable if the sandbox mode can be used in a shipping build. Use carefully! */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings")
-	bool EnableSandboxInShippingBuild;
 };

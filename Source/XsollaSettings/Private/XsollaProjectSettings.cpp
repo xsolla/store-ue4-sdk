@@ -17,7 +17,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	ClientID = TEXT("57");
 	EncryptCachedCredentials = false;
 	SendPasswordlessAuthURL = false;
-	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	Platform = EXsollaPublishingPlatform::playstation_network;
@@ -26,7 +25,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
 	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
 	EnableSandbox = true;
-	EnableSandboxInShippingBuild = false;
 	UsePlatformBrowser = false;
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;

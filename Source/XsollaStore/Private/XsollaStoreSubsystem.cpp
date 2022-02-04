@@ -1374,7 +1374,6 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 	bool bIsSandboxEnabled = Settings->EnableSandbox;
 
 #if UE_BUILD_SHIPPING
-	bIsSandboxEnabled = Settings->EnableSandbox && Settings->EnableSandboxInShippingBuild;
 	if (bIsSandboxEnabled)
 	{
 		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Sandbox should be disabled in Shipping build"), *VA_FUNC_LINE);
