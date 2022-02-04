@@ -176,9 +176,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	if (Settings->BuildForSteam)
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
 		FString SteamId;
 		FString OutError;
@@ -218,9 +216,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
 
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	if (Settings->BuildForSteam)
+	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 	{
 		FString SteamId;
 		FString OutError;

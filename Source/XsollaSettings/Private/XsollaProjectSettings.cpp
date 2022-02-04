@@ -20,7 +20,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	RequestNickname = true;
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
-	bForceSteamAuthorization = false;
 	Platform = EXsollaPublishingPlatform::playstation_network;
 	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
@@ -30,7 +29,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	EnableSandbox = true;
 	EnableSandboxInShippingBuild = false;
 	UsePlatformBrowser = false;
-	BuildForSteam = false;
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
