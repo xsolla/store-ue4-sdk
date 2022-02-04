@@ -270,18 +270,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool bForceSteamAuthorization;
 
-	/** Demo Project ID. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	FString DemoProjectID;
-
-	/** Demo Login ID. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	FString DemoLoginID;
-
-	/** Demo application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
-	FString DemoClientID;
-
 	/** Request user nickname after successful authorization in case one is missing */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
 	bool RequestNickname;
