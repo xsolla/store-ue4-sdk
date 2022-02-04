@@ -10,7 +10,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");
 	InvalidateExistingSessions = false;
-	UseOAuth2 = true;
+	AuthenticationType = EAuthenticationType::oAuth;
 	UseCrossPlatformAccountLinking = false;
 	ProjectID = TEXT("77640");
 	LoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
@@ -21,7 +21,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	Platform = EXsollaPublishingPlatform::playstation_network;
-	bCustomAuthViaAccessToken = false;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
 	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");

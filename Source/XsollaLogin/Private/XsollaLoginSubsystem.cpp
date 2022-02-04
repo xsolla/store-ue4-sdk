@@ -46,7 +46,7 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize subsystem with project identifiers provided by user
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	Initialize(Settings->ProjectID, Settings->LoginID, Settings->UseOAuth2, Settings->ClientID);
+	Initialize(Settings->ProjectID, Settings->LoginID, Settings->AuthenticationType, Settings->ClientID);
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -57,11 +57,11 @@ void UXsollaLoginSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const bool bInUseOAuth2, const FString& InClientId)
+void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString& InLoginId, const EAuthenticationType InAuthenticationType, const FString& InClientId)
 {
 	ProjectID = InProjectId;
 	LoginID = InLoginId;
-	bUseOAuth2 = bInUseOAuth2;
+	AuthenticationType = InAuthenticationType;
 	ClientID = InClientId;
 
 	// Check token override from Xsolla Launcher
@@ -115,11 +115,11 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	LoginData.Username = Username;
 	LoginData.Password = Password;
 
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		RegisterUserOAuth(Username, Password, Email, State, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		RegisterUserJWT(Username, Password, Email, Payload, PersonalDataProcessingConsent, ReceiveNewsConsent, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
@@ -128,11 +128,11 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Payload,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		ResendAccountConfirmationEmailOAuth(Username, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		ResendAccountConfirmationEmailJWT(Username, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -148,11 +148,11 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
 
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		AuthenticateUserOAuth(Username, Password, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		AuthenticateUserJWT(Username, Password, Payload, bRememberMe, SuccessCallback, ErrorCallback);
 	}
@@ -193,11 +193,11 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State, const FString& Payload, const TArray<FString>& AdditionalFields,
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		GetSocialAuthenticationUrlOAuth(ProviderName, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		GetSocialAuthenticationUrlJWT(ProviderName, Payload, AdditionalFields, SuccessCallback, ErrorCallback);
 	}
@@ -302,11 +302,11 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 	const FString& AppId, const FString& State, const FString& Payload,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		AuthenticateWithSessionTicketOAuth(ProviderName, AppId, SessionTicket, Code, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		AuthenticateWithSessionTicketJWT(ProviderName, AppId, SessionTicket, Code, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -550,11 +550,11 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 		return;
 	}
 
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		AuthenticateViaDeviceIdOAuth(DeviceName, DeviceId, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		AuthenticateViaDeviceIdJWT(DeviceName, DeviceId, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -565,11 +565,11 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 	const FString& ProviderName, const FString& Payload, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		AuthViaAccessTokenOfSocialNetworkOAuth(AuthToken, AuthTokenSecret, OpenId, ProviderName, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		AuthViaAccessTokenOfSocialNetworkJWT(AuthToken, AuthTokenSecret, OpenId, ProviderName, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -578,11 +578,11 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 void UXsollaLoginSubsystem::StartAuthByPhoneNumber(const FString& PhoneNumber, const FString& Payload, const FString& State,
 	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		StartAuthByPhoneNumberOAuth(PhoneNumber, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		StartAuthByPhoneNumberJWT(PhoneNumber, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -592,11 +592,11 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		CompleteAuthByPhoneNumberOAuth(Code, OperationId, PhoneNumber, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		CompleteAuthByPhoneNumberJWT(Code, OperationId, PhoneNumber, SuccessCallback, ErrorCallback);
 	}
@@ -605,11 +605,11 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const
 void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString& Payload, const FString& State,
 	const FOnStartAuthSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		StartAuthByEmailOAuth(Email, State, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		StartAuthByEmailJWT(Email, Payload, SuccessCallback, ErrorCallback);
 	}
@@ -618,11 +618,11 @@ void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString
 void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	if (bUseOAuth2)
+	if (AuthenticationType == EAuthenticationType::oAuth)
 	{
 		CompleteAuthByEmailOAuth(Code, OperationId, Email, SuccessCallback, ErrorCallback);
 	}
-	else
+	if (AuthenticationType == EAuthenticationType::jwt)
 	{
 		CompleteAuthByEmailJWT(Code, OperationId, Email, SuccessCallback, ErrorCallback);
 	}
@@ -2231,7 +2231,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 {
 	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::Ok)
 	{
-		if (bUseOAuth2)
+		if (AuthenticationType == EAuthenticationType::oAuth)
 		{
 			HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 		}

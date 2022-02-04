@@ -5,6 +5,20 @@
 #include "Blueprint/UserWidget.h"
 #include "XsollaProjectSettings.generated.h"
 
+/** Authentication type */
+UENUM(BlueprintType)
+enum class EAuthenticationType : uint8
+{
+	/** SDK will use OAuth 2.0 protocol in order to authorize user. */
+	oAuth UMETA(DisplayName = "OAuth"),
+
+	/** SDK will use Jwt protocol in order to authorize user. */
+	jwt UMETA(DisplayName = "Jwt"),
+
+	/** SDK will user auth via access token. */
+	accessToken UMETA(DisplayName = "AccessToken")
+};
+
 /** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
 UENUM(BlueprintType)
 enum class EUserDataStorage : uint8
@@ -92,11 +106,11 @@ class XSOLLASETTINGS_API UXsollaProjectSettings : public UObject
 
 public:
 	/** Project ID from your Publisher Account. Required. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	FString ProjectID;
 
 	/** Login ID in the UUID format from your Publisher Account. Required. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	FString LoginID;
 
 	/**
@@ -104,45 +118,45 @@ public:
 	 * Must be identical to a Callback URL specified in Publisher Account in Login settings.
 	 * Required if there are several Callback URLs.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken&&!UseOAuth2", EditConditionHides))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType == EAuthenticationType::jwt", EditConditionHides))
 	FString CallbackURL;
 
 	/**
 	 * Redirect uri
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken&&UseOAuth2", EditConditionHides))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType == EAuthenticationType::oAuth", EditConditionHides))
 	FString RedirectURI;
 
 	/** API methods will be calling different URLs depending on the selected storage method. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	EUserDataStorage UserDataStorage;
 
 	/** If enabled, SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Invalidate Existing Sessions", Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Invalidate Existing Sessions", Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool InvalidateExistingSessions;
 
 	/** If enabled, SDK will use OAuth 2.0 protocol in order to authorize user. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use OAuth2", Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
-	bool UseOAuth2;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Authentication Type", Category = "Xsolla Settings")
+	EAuthenticationType AuthenticationType;
 
 	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "UseOAuth2 && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType == EAuthenticationType::oAuth"))
 	FString ClientID;
 
 	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool EncryptCachedCredentials;
 
 	/** AES-256 encryption key used for cached credentials encryption. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "EncryptCachedCredentials && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "EncryptCachedCredentials && AuthenticationType != EAuthenticationType::accessToken"))
 	FString XsollaSaveEncryptionKey;
 
 	/** Flag indicating whether the authentication link should be sent together with the confirmation code for passwordless login. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool SendPasswordlessAuthURL;
 
 	/** Authentication link used for passwordless login. It won't be sent together with the confirmation code for passwordless login if empty. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "SendPasswordlessAuthURL && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Settings", meta = (EditCondition = "SendPasswordlessAuthURL && AuthenticationType != EAuthenticationType::accessToken"))
 	FString PasswordlessAuthURL;
 
 	/** Enable to process a payment with an external (system) browser. */
@@ -154,7 +168,7 @@ public:
 	bool EnableSandbox;
 	
 	/** If enabled, SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Xsolla Demo", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool UseCrossPlatformAccountLinking;
 
 	/**
@@ -162,52 +176,48 @@ public:
 	 * The main account is the Xsolla Login project which other Xsolla Login projects (platform accounts) are linked to.
 	 * Main and platform accounts are created in Publisher Account.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && AuthenticationType != EAuthenticationType::accessToken"))
 	FString AccountLinkingURL;
 
 	/** URL used for a target platform user account authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && AuthenticationType != EAuthenticationType::accessToken"))
 	FString PlatformAuthenticationURL;
 
 	/** Target platform for cross-platform account linking. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking && AuthenticationType != EAuthenticationType::accessToken"))
 	EXsollaPublishingPlatform Platform;
 
 	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo",
-		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaPublishingPlatform::xsolla && !bCustomAuthViaAccessToken"))
+		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaPublishingPlatform::xsolla && AuthenticationType != EAuthenticationType::accessToken"))
 	FString PlatformAccountID;
 
 	/** Web Store URL to be opened in order to purchase virtual items. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Demo")
 	FString WebStoreURL;
-	
-	/** If enabled, Inventory SDK will user auth via access token */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Custom Auth")
-	bool bCustomAuthViaAccessToken;
 
 	/** URL for login via access token */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Custom Auth", meta = (EditCondition = "bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Custom Auth", meta = (EditCondition = "AuthenticationType == EAuthenticationType::accessToken"))
 	FString CustomAuthServerURL;
 
 	/** If enabled, user authentication will be handled via native Android applications if possible. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool bAllowNativeAuth;
 
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && AuthenticationType != EAuthenticationType::accessToken"))
 	FString FacebookAppId;
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && AuthenticationType != EAuthenticationType::accessToken"))
 	FString GoogleAppId;
 
 	/** WeChat app identifier (can be obtained on WeChat developer page). Used for native user authentication via WeChat Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && AuthenticationType != EAuthenticationType::accessToken"))
 	FString WeChatAppId;
 
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && !bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Android", meta = (EditCondition = "bAllowNativeAuth && AuthenticationType != EAuthenticationType::accessToken"))
 	FString QQAppId;
 
 	/** Enable deep linking for Android applications. */
@@ -255,7 +265,7 @@ public:
 	FString RedirectButtonCaption;
 
 	/** Request user nickname after successful authorization in case one is missing */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "!bCustomAuthViaAccessToken"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Xsolla Login Demo", meta = (EditCondition = "AuthenticationType != EAuthenticationType::accessToken"))
 	bool RequestNickname;
 
 	
