@@ -11,6 +11,7 @@
 
 #include "XsollaInventorySubsystem.generated.h"
 
+enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
 
 DECLARE_DYNAMIC_DELEGATE(FOnInventoryUpdate);
@@ -43,35 +44,38 @@ public:
 	 * Updates the list of purchased virtual items (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateInventory(const FString& AuthToken,
+	void UpdateInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Update Virtual Currency Balance
 	 * Updates virtual currency balance (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyBalance(const FString& AuthToken,
+	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Update User Subscriptions
 	 * Updates the list of user subscriptions (cached locally).
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSubscriptions(const FString& AuthToken,
+	void UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Consume Inventory Item
@@ -81,11 +85,13 @@ public:
 	 * @param ItemSKU Desired item SKU.
 	 * @param Quantity Item quantity. If the item is uncountable, should be zero.
 	 * @param InstanceID Instance item ID. If the item is countable, should be empty.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after successful inventory item consumption.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, const int32 Quantity, const FString& InstanceID,
+	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, const int32 Quantity,
+		const FString& InstanceID, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Get Coupon Rewards
@@ -138,9 +144,6 @@ private:
 
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
-
-	/** Get name of publishing platform */
-	FString GetPublishingPlatformName() const;
 
 public:
 	/** Gets cached inventory data */

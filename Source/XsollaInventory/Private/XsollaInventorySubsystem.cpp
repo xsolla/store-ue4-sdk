@@ -43,14 +43,17 @@ void UXsollaInventorySubsystem::Initialize(const FString& InProjectId)
 	ProjectID = InProjectId;
 }
 
-void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback,
+	const int Limit, const int Offset)
 {
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT(""):UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.AddNumberQueryParam(TEXT("limit"), Limit)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
@@ -59,11 +62,14 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/virtual_currency_balance"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
@@ -72,12 +78,14 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& Auth
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
+void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/subscriptions"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
@@ -87,7 +95,7 @@ void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
 }
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
-	const int32 Quantity, const FString& InstanceID,
+	const int32 Quantity, const FString& InstanceID, const EXsollaPublishingPlatform Platform,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	// Prepare request payload
@@ -112,9 +120,11 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/item/consume"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
@@ -273,18 +283,6 @@ FString UXsollaInventorySubsystem::SerializeJson(const TSharedPtr<FJsonObject> D
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&JsonContent);
 	FJsonSerializer::Serialize(DataJson.ToSharedRef(), Writer);
 	return JsonContent;
-}
-
-FString UXsollaInventorySubsystem::GetPublishingPlatformName() const
-{
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	if (!Settings->UseCrossPlatformAccountLinking)
-	{
-		return TEXT("");
-	}
-
-	return UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Settings->Platform);
 }
 
 FInventoryItemsData UXsollaInventorySubsystem::GetInventory() const

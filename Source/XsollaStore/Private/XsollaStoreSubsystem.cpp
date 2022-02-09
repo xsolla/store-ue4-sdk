@@ -568,16 +568,18 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
 }
 
 void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
-	const FString& ItemSKU, const FString& CurrencySKU,
+	const FString& ItemSKU, const FString& CurrencySKU, const EXsollaPublishingPlatform Platform,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}/virtual/{CurrencySKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
 							.SetPathParam(TEXT("CurrencySKU"), CurrencySKU)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken);
@@ -1485,18 +1487,6 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
 	return RequestDataJson;
-}
-
-FString UXsollaStoreSubsystem::GetPublishingPlatformName() const
-{
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	if (!Settings->UseCrossPlatformAccountLinking)
-	{
-		return TEXT("");
-	}
-
-	return UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Settings->Platform);
 }
 
 FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const

@@ -6,7 +6,6 @@
 UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	UserDataStorage = EUserDataStorage::Xsolla;
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");
 	InvalidateExistingSessions = false;

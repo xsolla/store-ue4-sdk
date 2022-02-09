@@ -164,14 +164,14 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
-	RequestDataJson->SetStringField((Settings->UserDataStorage == EUserDataStorage::Xsolla) ? TEXT("username") : TEXT("email"), User);
+	RequestDataJson->SetStringField(TEXT("username"), User);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
 	// Generate endpoint url
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? TEXT("https://login.xsolla.com/api/password/reset/request") : TEXT("https://login.xsolla.com/api/proxy/password/reset");
+	const FString Endpoint = TEXT("https://login.xsolla.com/api/password/reset/request");
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->CallbackURL))
@@ -964,9 +964,7 @@ void UXsollaLoginSubsystem::RegisterUserJWT(const FString& Username, const FStri
 
 	// Generate endpoint url
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla)
-								 ? TEXT("https://login.xsolla.com/api/user")
-								 : TEXT("https://login.xsolla.com/api/proxy/registration");
+	const FString Endpoint = TEXT("https://login.xsolla.com/api/user");
 
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
@@ -1023,9 +1021,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmailJWT(const FString& Use
 
 	// Generate endpoint url
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla)
-								 ? TEXT("https://login.xsolla.com/api/user/resend_confirmation_link")
-								 : TEXT("https://login.xsolla.com/api/proxy/registration/resend_confirmation_link");
+	const FString Endpoint = TEXT("https://login.xsolla.com/api/user/resend_confirmation_link");
 
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
@@ -1077,9 +1073,7 @@ void UXsollaLoginSubsystem::AuthenticateUserJWT(const FString& Username, const F
 
 	// Generate endpoint url
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla)
-								 ? TEXT("https://login.xsolla.com/api/login")
-								 : TEXT("https://login.xsolla.com/api/proxy/login");
+	const FString Endpoint = TEXT("https://login.xsolla.com/api/login");
 
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
