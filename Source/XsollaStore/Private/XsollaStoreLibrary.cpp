@@ -20,11 +20,6 @@ UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitial
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
 
-UXsollaStoreSettings* UXsollaStoreLibrary::GetStoreSettings()
-{
-	return FXsollaStoreModule::Get().GetSettings();
-}
-
 bool UXsollaStoreLibrary::Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B)
 {
 	return A == B;

@@ -14,6 +14,7 @@
 #include "XsollaLoginSubsystem.generated.h"
 
 class FJsonObject;
+enum class EAuthenticationType: uint8;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -52,11 +53,11 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
-	 * @param bInUseOAuth2 bInUseOAuth2. If enabled, Login SDK will use OAuth 2.0 protocol in order to authorize user.
+	 * @param InAuthenticationType InAuthenticationType. Login SDK will use OAuth 2.0, Jwt or AccessToken protocol in order to authorize user.
 	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void Initialize(const FString& InProjectId, const FString& InLoginId, const bool bInUseOAuth2, const FString& InClientId);
+	void Initialize(const FString& InProjectId, const FString& InLoginId, const EAuthenticationType InAuthenticationType, const FString& InClientId);
 
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
@@ -831,8 +832,8 @@ private:
 	/** Cached Xsolla Login project. */
 	FString LoginID;
 
-	/** Cached Xsolla UseOAuth flag. */
-	bool bUseOAuth2;
+	/** Cached Xsolla authentication type. */
+	EAuthenticationType AuthenticationType;
 
 	/** Cached Xsolla client ID. */
 	FString ClientID;
@@ -930,8 +931,6 @@ protected:
 
 	/** Cached list of user devices. */
 	TArray<FXsollaUserDevice> UserDevices;
-
-	static const FString BlankRedirectEndpoint;
 
 private:
 	UPROPERTY()

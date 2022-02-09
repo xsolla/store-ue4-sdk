@@ -19,7 +19,8 @@ public class XsollaLogin : ModuleRules
                 "UMG",
                 "OnlineSubsystem",
                 "XsollaWebBrowser",
-                "XsollaUtils"
+                "XsollaUtils",
+                "XsollaSettings"
             }
             );
 
@@ -29,7 +30,7 @@ public class XsollaLogin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore",
+                "SlateCore"
             }
             );
 

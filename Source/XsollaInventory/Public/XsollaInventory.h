@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class UXsollaInventorySettings;
-
 /**
  * Xsolla Inventory SDK Module
  */
@@ -37,11 +35,4 @@ public:
 	{
 		return FModuleManager::Get().IsModuleLoaded("XsollaInventory");
 	}
-
-	/** Getter for internal settings object to support runtime configuration changes */
-	UXsollaInventorySettings* GetSettings() const;
-
-private:
-	/** Module settings */
-	UXsollaInventorySettings* XsollaInventorySettings;
 };

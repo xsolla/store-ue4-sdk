@@ -18,7 +18,9 @@ public class XsollaStore : ModuleRules
                 "JsonUtilities",
                 "UMG",
                 "XsollaWebBrowser",
-                "XsollaUtils"
+                "XsollaUtils",
+                "XsollaSettings",
+                "OnlineSubsystem"
             }
             );
 

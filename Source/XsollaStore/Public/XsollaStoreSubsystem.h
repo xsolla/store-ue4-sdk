@@ -12,6 +12,7 @@
 #include "XsollaStoreSubsystem.generated.h"
 
 
+enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
@@ -347,12 +348,13 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
 	 * @param CurrencySKU Currency to buy virtual items with.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after the successful item purchase.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
-		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const EXsollaPublishingPlatform Platform, const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
 	/** Get Promocode Rewards
 	 * Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
@@ -604,9 +606,6 @@ private:
 
 	/** Prepare payload for payment token request */
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters);
-
-	/** Get name of publishing platform */
-	FString GetPublishingPlatformName() const;
 
 	/** Get payment interface theme */
 	FString GetPaymentInerfaceTheme() const;
