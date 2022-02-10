@@ -77,7 +77,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	if (Settings->bAllowNativeAuth)
 	{
-		if (bUseOAuth2)
+		if (AuthenticationType == EAuthenticationType::oAuth)
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitOauth",
 				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
@@ -89,7 +89,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 				XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
 				XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 		}
-		else
+		if (AuthenticationType == EAuthenticationType::jwt)
 		{
 			XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInitJwt",
 				"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
