@@ -37,6 +37,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthCodeTimeout, const FString&, OperationI
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserAttributesUpdate, const TArray<FXsollaUserAttribute>&, UserAttributes);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsUpdate, const FXsollaUserDetails&, UserDetails);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsParamUpdate, const FString&, Param);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAuthLinksUpdate, const TArray<FXsollaSocialAuthLink>&, Links);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -559,11 +560,11 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Locale Locale.
-	 * @param SuccessCallback Callback function called after locally cached list of links for social authentication was successfully updated.
+	 * @param SuccessCallback Callback function called after list of links for social authentication was successfully updated.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnSocialAuthLinksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update Social Friends
 	 * Updates locally cached user friends data from a social provider.
@@ -785,7 +786,7 @@ protected:
 	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnSocialAuthLinksUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -859,10 +860,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets user friends. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const TArray<FXsollaSocialAuthLink>& GetSocialAuthLinks() const;
-
 	/** Gets user friends from social networks. Returns the list of users obtained during last UpdateSocialFriends method call. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const FXsollaSocialFriendsData& GetSocialFriends() const;
@@ -886,9 +883,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached social auth links. */
-	TArray<FXsollaSocialAuthLink> SocialAuthLinks;
 
 	/** Cached list of user's social network friends that was obtained during last UpdateSocialFriends method call. */
 	FXsollaSocialFriendsData SocialFriendsData;
