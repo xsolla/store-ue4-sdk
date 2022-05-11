@@ -141,12 +141,11 @@ public:
 	 * Opens social authentication URL in the browser.
 	 *
 	 * @param WorldContextObject The world context.
-	 * @param SocialAuthenticationUrl URL with the social network authentication form.
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
-	void LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
+	void LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
 
 	/** Launch native authentication via social network
 	 * Opens the specified social network mobile app (if available) in order to authenticate the user.
@@ -857,14 +856,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets the pending social authentication URL to be opened in the browser. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const FString& GetPendingSocialAuthenticationUrl() const;
-
-	/** Gets cached HTML page for social account linking. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const FString& GetSocialAccountLinkingHtml() const;
-
 	/** Gets user attributes. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const TArray<FXsollaUserAttribute>& GetUserAttributes();
@@ -904,12 +895,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Social authentication url to be opened in browser. */
-	FString PendingSocialAuthenticationUrl;
-
-	/** Cached HTML page for social account linking. */
-	FString SocialAccountLinkingHtml;
 
 	/** Cached list of user attributes. */
 	TArray<FXsollaUserAttribute> UserAttributes;

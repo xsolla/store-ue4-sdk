@@ -201,10 +201,8 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 	}
 }
 
-void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObject, const FString& SocialAuthenticationUrl, UUserWidget*& BrowserWidget, const bool bRememberMe)
+void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe)
 {
-	PendingSocialAuthenticationUrl = SocialAuthenticationUrl;
-
 	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 	MyBrowser->AddToViewport(100000);
 
@@ -2412,16 +2410,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const FString& UXsollaLoginSubsystem::GetPendingSocialAuthenticationUrl() const
-{
-	return PendingSocialAuthenticationUrl;
-}
-
-const FString& UXsollaLoginSubsystem::GetSocialAccountLinkingHtml() const
-{
-	return SocialAccountLinkingHtml;
 }
 
 const TArray<FXsollaUserAttribute>& UXsollaLoginSubsystem::GetUserAttributes()
