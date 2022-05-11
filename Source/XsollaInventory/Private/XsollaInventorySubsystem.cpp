@@ -63,7 +63,7 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken, const 
 }
 
 void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
@@ -79,7 +79,7 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& Auth
 }
 
 void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
@@ -96,7 +96,7 @@ void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken, co
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
 	const int32 Quantity, const FString& InstanceID, const EXsollaPublishingPlatform Platform,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnInventoryRequestSuccess& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -174,8 +174,7 @@ void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryItemsData::StaticStruct(), &NewInventory, OutError))
 	{
-		Inventory = NewInventory;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(NewInventory);
 	}
 	else
 	{
@@ -185,13 +184,14 @@ void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
 
 void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-
+	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance, OutError))
 	{
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(VirtualCurrencyBalance);
 	}
 	else
 	{
@@ -201,15 +201,14 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete
 
 void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FSubscriptionData receivedSubscriptions;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionData::StaticStruct(), &receivedSubscriptions, OutError))
 	{
-		Subscriptions = receivedSubscriptions;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(receivedSubscriptions);
 	}
 	else
 	{
@@ -219,7 +218,7 @@ void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnInventoryError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -283,64 +282,6 @@ FString UXsollaInventorySubsystem::SerializeJson(const TSharedPtr<FJsonObject> D
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&JsonContent);
 	FJsonSerializer::Serialize(DataJson.ToSharedRef(), Writer);
 	return JsonContent;
-}
-
-FInventoryItemsData UXsollaInventorySubsystem::GetInventory() const
-{
-	return Inventory;
-}
-
-TArray<FVirtualCurrencyBalance> UXsollaInventorySubsystem::GetVirtualCurrencyBalance() const
-{
-	return VirtualCurrencyBalance.Items;
-}
-
-FVirtualCurrencyBalance UXsollaInventorySubsystem::GetVirtualCurrencyBalanceBySku(const FString& CurrencySku, bool& bWasFound) const
-{
-	FVirtualCurrencyBalance Currency;
-	bWasFound = false;
-
-	const auto InventoryItem =
-		VirtualCurrencyBalance.Items.FindByPredicate(
-			[CurrencySku](const FVirtualCurrencyBalance& InCurrency) {
-				return InCurrency.sku == CurrencySku;
-			});
-
-	if (InventoryItem != nullptr)
-	{
-		bWasFound = true;
-		Currency = InventoryItem[0];
-	}
-
-	return Currency;
-}
-
-TArray<FSubscriptionItem> UXsollaInventorySubsystem::GetSubscriptions() const
-{
-	return Subscriptions.Items;
-}
-
-FString UXsollaInventorySubsystem::GetItemName(const FString& ItemSKU) const
-{
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	if (InventoryItem != nullptr)
-	{
-		return InventoryItem->name;
-	}
-
-	return TEXT("");
-}
-
-bool UXsollaInventorySubsystem::IsItemInInventory(const FString& ItemSKU) const
-{
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	return InventoryItem != nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

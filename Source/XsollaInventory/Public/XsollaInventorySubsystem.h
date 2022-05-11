@@ -14,7 +14,10 @@
 enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
 
-DECLARE_DYNAMIC_DELEGATE(FOnInventoryUpdate);
+DECLARE_DYNAMIC_DELEGATE(FOnInventoryRequestSuccess);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInventoryUpdate, const FInventoryItemsData&, InventoryData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyBalanceUpdate, const FVirtualCurrencyBalanceData&, CurrencyBalanceData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionUpdate, const FSubscriptionData&, SubscriptionData);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnInventoryError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FInventoryCouponRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FInventoryRedeemedCouponData, RewardData);
@@ -64,7 +67,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Update User Subscriptions
 	 * Updates the list of user subscriptions (cached locally).
@@ -76,7 +79,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
@@ -92,7 +95,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, const int32 Quantity,
 		const FString& InstanceID, const EXsollaPublishingPlatform Platform,
-		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnInventoryRequestSuccess& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Get Coupon Rewards
 	 * Gets coupon rewards by its code. Can be used to let users choose one of many items as a bonus.
@@ -123,12 +126,12 @@ protected:
 	void UpdateInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 	void UpdateVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 	void UpdateSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnInventoryError ErrorCallback);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnInventoryError ErrorCallback);
 
 	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback);
@@ -145,40 +148,7 @@ private:
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
 
-public:
-	/** Gets cached inventory data */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
-	FInventoryItemsData GetInventory() const;
-
-	/** Gets cached virtual currencies balance */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency")
-	TArray<FVirtualCurrencyBalance> GetVirtualCurrencyBalance() const;
-
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Inventory|VirtualCurrency")
-	FVirtualCurrencyBalance GetVirtualCurrencyBalanceBySku(const FString& CurrencySku, bool& bWasFound) const;
-
-	/** Gets cached user subscriptions */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions")
-	TArray<FSubscriptionItem> GetSubscriptions() const;
-
-	/** Gets name of the cached item with given SKU */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
-	FString GetItemName(const FString& ItemSKU) const;
-
-	/** Checks if certain item is in the inventory */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
-	bool IsItemInInventory(const FString& ItemSKU) const;
-
 protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectID;
-
-	/** User inventory */
-	FInventoryItemsData Inventory;
-
-	/** Cached virtual currency balance */
-	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
-
-	/** Cached user subscriptions */
-	FSubscriptionData Subscriptions;
 };
