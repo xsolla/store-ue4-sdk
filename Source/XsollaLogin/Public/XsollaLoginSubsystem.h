@@ -860,14 +860,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets user friends from social networks. Returns the list of users obtained during last UpdateSocialFriends method call. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const FXsollaSocialFriendsData& GetSocialFriends() const;
-
-	/** Gets social profiles associated with specified user. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	TArray<FXsollaSocialFriend> GetSocialProfiles(const FString& UserID) const;
-
 	/** Gets linked social networks. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const TArray<FXsollaLinkedSocialNetworkData>& GetLinkedSocialNetworks() const;
@@ -883,9 +875,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached list of user's social network friends that was obtained during last UpdateSocialFriends method call. */
-	FXsollaSocialFriendsData SocialFriendsData;
 
 	/** Cached list of linked social networks. */
 	TArray<FXsollaLinkedSocialNetworkData> LinkedSocialNetworks;

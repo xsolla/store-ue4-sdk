@@ -2051,8 +2051,7 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaSocialFriendsData::StaticStruct(), &receivedUserSocialFriendsData, OutError))
 	{
-		SocialFriendsData = receivedUserSocialFriendsData;
-		SuccessCallback.ExecuteIfBound(SocialFriendsData);
+		SuccessCallback.ExecuteIfBound(receivedUserSocialFriendsData);
 	}
 	else
 	{
@@ -2403,20 +2402,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const FXsollaSocialFriendsData& UXsollaLoginSubsystem::GetSocialFriends() const
-{
-	return SocialFriendsData;
-}
-
-TArray<FXsollaSocialFriend> UXsollaLoginSubsystem::GetSocialProfiles(const FString& UserID) const
-{
-	auto SocialProfiles = SocialFriendsData.data.FilterByPredicate([UserID](const FXsollaSocialFriend& InSocialProfile) {
-		return InSocialProfile.xl_uid == UserID;
-	});
-
-	return SocialProfiles;
 }
 
 const TArray<FXsollaLinkedSocialNetworkData>& UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
