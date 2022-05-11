@@ -34,6 +34,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkEmailAndPasswordSuccess, bool, bNeedToC
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStartAuthSuccess, FString, OperationId);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthCodeSuccess, const FString&, Code, const FString&, OperationId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthCodeTimeout, const FString&, OperationId);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserAttributesUpdate, const TArray<FXsollaUserAttribute>&, UserAttributes);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -210,12 +211,12 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
 	 * @param AttributeKeys Keys of the attributes that should be updated.
-	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
+	 * @param SuccessCallback Callback function called after successful user attributes update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
 	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Read-Only Attributes
 	 * Updates locally cached list of user read-only attributes.
@@ -223,12 +224,12 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
 	 * @param AttributeKeys Keys of the attributes that should be updated.
-	 * @param SuccessCallback Callback function called after successful user attributes local cache update.
+	 * @param SuccessCallback Callback function called after successful user attributes update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
 	void UpdateUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Attributes
 	 * Modifies the list of user attributes by creating/editing its items (changes made on the server side).
@@ -732,9 +733,9 @@ protected:
 	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -856,14 +857,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets user attributes. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const TArray<FXsollaUserAttribute>& GetUserAttributes();
-
-	/** Gets user read-only attributes. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const TArray<FXsollaUserAttribute>& GetUserReadOnlyAttributes();
-
 	/** Gets user details. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const FXsollaUserDetails& GetUserDetails() const;
@@ -895,12 +888,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached list of user attributes. */
-	TArray<FXsollaUserAttribute> UserAttributes;
-
-	/** Cached list of user read-only attributes. */
-	TArray<FXsollaUserAttribute> UserReadOnlyAttributes;
 
 	/** Cached user details. */
 	FXsollaUserDetails UserDetails;

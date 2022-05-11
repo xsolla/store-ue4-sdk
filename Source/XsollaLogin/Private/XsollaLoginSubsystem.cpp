@@ -309,7 +309,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 }
 
 void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -339,7 +339,7 @@ void UXsollaLoginSubsystem::UpdateUserAttributes(const FString& AuthToken, const
 }
 
 void UXsollaLoginSubsystem::UpdateUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request body
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -1620,15 +1620,14 @@ void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 }
 
 void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	TArray<FXsollaUserAttribute> userAttributesData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsArray(HttpRequest, HttpResponse, bSucceeded, &userAttributesData, OutError))
 	{
-		UserAttributes = userAttributesData;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(userAttributesData);
 	}
 	else
 	{
@@ -1637,15 +1636,14 @@ void UXsollaLoginSubsystem::UpdateUserAttributes_HttpRequestComplete(FHttpReques
 }
 
 void UXsollaLoginSubsystem::UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	TArray<FXsollaUserAttribute> userReadOnlyAttributesData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsArray(HttpRequest, HttpResponse, bSucceeded, &userReadOnlyAttributesData, OutError))
 	{
-		UserReadOnlyAttributes = userReadOnlyAttributesData;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(userReadOnlyAttributesData);
 	}
 	else
 	{
@@ -2410,16 +2408,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const TArray<FXsollaUserAttribute>& UXsollaLoginSubsystem::GetUserAttributes()
-{
-	return UserAttributes;
-}
-
-const TArray<FXsollaUserAttribute>& UXsollaLoginSubsystem::GetUserReadOnlyAttributes()
-{
-	return UserReadOnlyAttributes;
 }
 
 const FXsollaUserDetails& UXsollaLoginSubsystem::GetUserDetails() const
