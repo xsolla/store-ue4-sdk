@@ -876,7 +876,7 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUsersDevices(const FString& AuthToken, const FOnUserDevicesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices")).Build();
@@ -2169,15 +2169,14 @@ void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
 }
 
 void UXsollaLoginSubsystem::UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDevicesUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	TArray<FXsollaUserDevice> userDevicesData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsArray(HttpRequest, HttpResponse, bSucceeded, &userDevicesData, OutError))
 	{
-		UserDevices = userDevicesData;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(userDevicesData);
 	}
 	else
 	{
@@ -2401,11 +2400,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const TArray<FXsollaUserDevice>& UXsollaLoginSubsystem::GetUserDevices()
-{
-	return UserDevices;
 }
 
 #if PLATFORM_ANDROID

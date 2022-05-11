@@ -39,6 +39,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsUpdate, const FXsollaUserDetails
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsParamUpdate, const FString&, Param);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAuthLinksUpdate, const TArray<FXsollaSocialAuthLink>&, Links);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkedSocialNetworksUpdate, const TArray<FXsollaLinkedSocialNetworkData>&, LinkedSocialNetworks);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDevicesUpdate, const TArray<FXsollaUserDevice>&, UserDevices);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -623,7 +624,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUsersDevices(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUsersDevices(const FString& AuthToken, const FOnUserDevicesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Search Users by Nickname
 	 * Searches for users with the specified nickname.
@@ -803,7 +804,7 @@ protected:
 	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		const bool bSucceeded, FOnUserDevicesUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -861,16 +862,9 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets user devices. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const TArray<FXsollaUserDevice>& GetUserDevices();
-
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached list of user devices. */
-	TArray<FXsollaUserDevice> UserDevices;
 
 private:
 	UPROPERTY()
