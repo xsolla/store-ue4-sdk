@@ -916,7 +916,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_providers")).Build();
@@ -2130,15 +2130,14 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 }
 
 void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnLinkedSocialNetworksUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	TArray<FXsollaLinkedSocialNetworkData> socialNetworks;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsArray(HttpRequest, HttpResponse, bSucceeded, &socialNetworks, OutError))
 	{
-		LinkedSocialNetworks = socialNetworks;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(socialNetworks);
 	}
 	else
 	{
@@ -2402,20 +2401,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const TArray<FXsollaLinkedSocialNetworkData>& UXsollaLoginSubsystem::GetLinkedSocialNetworks() const
-{
-	return LinkedSocialNetworks;
-}
-
-bool UXsollaLoginSubsystem::IsSocialNetworkLinked(const FString& Provider) const
-{
-	auto SocialNetwork = LinkedSocialNetworks.FindByPredicate([Provider](const FXsollaLinkedSocialNetworkData& InSocialNetwork) {
-		return InSocialNetwork.provider == Provider;
-	});
-
-	return SocialNetwork != nullptr;
 }
 
 const TArray<FXsollaUserDevice>& UXsollaLoginSubsystem::GetUserDevices()

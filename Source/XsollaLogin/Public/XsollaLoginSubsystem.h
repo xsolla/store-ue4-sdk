@@ -38,6 +38,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserAttributesUpdate, const TArray<FXsollaU
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsUpdate, const FXsollaUserDetails&, UserDetails);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsParamUpdate, const FString&, Param);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAuthLinksUpdate, const TArray<FXsollaSocialAuthLink>&, Links);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLinkedSocialNetworksUpdate, const TArray<FXsollaLinkedSocialNetworkData>&, LinkedSocialNetworks);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -658,7 +659,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Log Out User
 	 * Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth2.0 only).
@@ -798,7 +799,7 @@ protected:
 	void SocialAccountLinking_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnSocialAccountLinkingHtmlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnLinkedSocialNetworksUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
@@ -860,14 +861,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets linked social networks. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const TArray<FXsollaLinkedSocialNetworkData>& GetLinkedSocialNetworks() const;
-
-	/** Checks if the specified social network is linked to user profile. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	bool IsSocialNetworkLinked(const FString& Provider) const;
-
 	/** Gets user devices. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const TArray<FXsollaUserDevice>& GetUserDevices();
@@ -875,9 +868,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached list of linked social networks. */
-	TArray<FXsollaLinkedSocialNetworkData> LinkedSocialNetworks;
 
 	/** Cached list of user devices. */
 	TArray<FXsollaUserDevice> UserDevices;
