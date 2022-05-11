@@ -639,7 +639,7 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me")).Build();
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), AuthToken);
@@ -648,7 +648,7 @@ void UXsollaLoginSubsystem::UpdateUserDetails(const FString& AuthToken, const FO
 }
 
 void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FString& Birthday, const FString& FirstName, const FString& LastName,
-	const FString& Gender, const FString& Nickname, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FString& Gender, const FString& Nickname, const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -671,7 +671,7 @@ void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateUserEmail(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/email")).Build();
@@ -680,7 +680,7 @@ void UXsollaLoginSubsystem::UpdateUserEmail(const FString& AuthToken, const FOnR
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::UpdateUserPhoneNumber(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::UpdateUserPhoneNumber(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone")).Build();
@@ -690,7 +690,7 @@ void UXsollaLoginSubsystem::UpdateUserPhoneNumber(const FString& AuthToken, cons
 }
 
 void UXsollaLoginSubsystem::ModifyUserPhoneNumber(const FString& AuthToken, const FString& PhoneNumber,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
@@ -711,9 +711,8 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Generate endpoint url
-	const FString PhoneNumberParam = PhoneNumber.IsEmpty() ? UserDetails.phone : PhoneNumber;
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone/{phoneNumber}"))
-							.SetPathParam(TEXT("phoneNumber"), PhoneNumberParam)
+							.SetPathParam(TEXT("phoneNumber"), PhoneNumber)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), AuthToken);
@@ -722,7 +721,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 }
 
 void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	if (!IsValid(Picture))
 	{
@@ -1869,15 +1868,14 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpReq
 }
 
 void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDetailsUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FXsollaUserDetails receivedUserDetails;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaUserDetails::StaticStruct(), &receivedUserDetails, OutError))
 	{
-		UserDetails = receivedUserDetails;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(receivedUserDetails);
 	}
 	else
 	{
@@ -1886,7 +1884,7 @@ void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr Http
 }
 
 void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1896,8 +1894,8 @@ void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRe
 		static const FString EmailFieldName = TEXT("current_email");
 		if (JsonObject->HasTypedField<EJson::String>(EmailFieldName))
 		{
-			UserDetails.email = JsonObject->GetStringField(EmailFieldName);
-			SuccessCallback.ExecuteIfBound();
+			auto Email = JsonObject->GetStringField(EmailFieldName);
+			SuccessCallback.ExecuteIfBound(Email);
 			return;
 		}
 
@@ -1908,7 +1906,7 @@ void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRe
 }
 
 void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1918,8 +1916,8 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 		static const FString PhoneFieldName = TEXT("phone_number");
 		if (JsonObject->HasTypedField<EJson::String>(PhoneFieldName))
 		{
-			UserDetails.phone = JsonObject->GetStringField(PhoneFieldName);
-			SuccessCallback.ExecuteIfBound();
+			auto Phone = JsonObject->GetStringField(PhoneFieldName);
+			SuccessCallback.ExecuteIfBound(Phone);
 			return;
 		}
 
@@ -1930,7 +1928,7 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 }
 
 void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1947,8 +1945,8 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 			static const FString PhoneFieldName = TEXT("phone_number");
 			if (JsonObject->HasTypedField<EJson::String>(PhoneFieldName))
 			{
-				UserDetails.phone = JsonObject->GetStringField(PhoneFieldName);
-				SuccessCallback.ExecuteIfBound();
+				auto Phone = JsonObject->GetStringField(PhoneFieldName);
+				SuccessCallback.ExecuteIfBound(Phone);
 				return;
 			}
 
@@ -1966,7 +1964,6 @@ void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPt
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		UserDetails.phone = TEXT("");
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1976,7 +1973,7 @@ void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPt
 }
 
 void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
+	FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1986,8 +1983,8 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 		static const FString PictureFieldName = TEXT("picture");
 		if (JsonObject->HasTypedField<EJson::String>(PictureFieldName))
 		{
-			UserDetails.picture = JsonObject->GetStringField(PictureFieldName);
-			SuccessCallback.ExecuteIfBound();
+			auto Picture = JsonObject->GetStringField(PictureFieldName);
+			SuccessCallback.ExecuteIfBound(Picture);
 			return;
 		}
 
@@ -2004,7 +2001,6 @@ void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRe
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		UserDetails.picture = TEXT("");
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -2408,11 +2404,6 @@ void UXsollaLoginSubsystem::SaveData()
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
 	}
-}
-
-const FXsollaUserDetails& UXsollaLoginSubsystem::GetUserDetails() const
-{
-	return UserDetails;
 }
 
 const TArray<FXsollaSocialAuthLink>& UXsollaLoginSubsystem::GetSocialAuthLinks() const

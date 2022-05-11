@@ -35,6 +35,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStartAuthSuccess, FString, OperationId);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthCodeSuccess, const FString&, Code, const FString&, OperationId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthCodeTimeout, const FString&, OperationId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserAttributesUpdate, const TArray<FXsollaUserAttribute>&, UserAttributes);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsUpdate, const FXsollaUserDetails&, UserDetails);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserDetailsParamUpdate, const FString&, Param);
 DECLARE_DYNAMIC_DELEGATE(FOnAuthCancel);
 
 UCLASS()
@@ -439,11 +441,11 @@ public:
 	 * Updates locally cached user details.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user details local cache update.
+	 * @param SuccessCallback Callback function called after successful user details update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserDetails(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserDetails(const FString& AuthToken, const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Details
 	 * Modifies specified user details.
@@ -459,27 +461,27 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ModifyUserDetails(const FString& AuthToken, const FString& Birthday, const FString& FirstName, const FString& LastName, const FString& Gender, const FString& Nickname,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Email
 	 * Updates locally cached user email.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user email local cache update.
+	 * @param SuccessCallback Callback function called after successful user email update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserEmail(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Update User Phone Number
 	 * Updates locally cached user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user phone number local cache update.
+	 * @param SuccessCallback Callback function called after successful user phone number update.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserPhoneNumber(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void UpdateUserPhoneNumber(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Phone Number
 	 * Modifies user phone number.
@@ -490,7 +492,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserPhoneNumber(const FString& AuthToken, const FString& PhoneNumber, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserPhoneNumber(const FString& AuthToken, const FString& PhoneNumber, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Phone Number
 	 * Removes the user phone number.
@@ -512,7 +514,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Remove User Profile Picture
 	 * Removes user profile picture.
@@ -767,17 +769,17 @@ protected:
 	void GetAuthConfirmationCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthCodeSuccess SuccessCallback, FOnAuthCodeTimeout TimeoutCallback, FOnAuthError ErrorCallback);
 	void UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserDetailsUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfilePicture_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
+		FOnUserDetailsParamUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void UserFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -857,10 +859,6 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
-	/** Gets user details. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	const FXsollaUserDetails& GetUserDetails() const;
-
 	/** Gets user friends. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	const TArray<FXsollaSocialAuthLink>& GetSocialAuthLinks() const;
@@ -888,9 +886,6 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
-
-	/** Cached user details. */
-	FXsollaUserDetails UserDetails;
 
 	/** Cached social auth links. */
 	TArray<FXsollaSocialAuthLink> SocialAuthLinks;
