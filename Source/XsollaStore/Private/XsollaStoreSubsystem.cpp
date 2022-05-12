@@ -644,7 +644,7 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1213,10 +1213,11 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 }
 
 void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-
+	FStoreGamesData GamesData;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
 		// Update categories
@@ -1228,7 +1229,7 @@ void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr 
 			}
 		}
 
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(GamesData);
 	}
 	else
 	{
@@ -1644,11 +1645,6 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
-}
-
-const FStoreGamesData& UXsollaStoreSubsystem::GetGamesData() const
-{
-	return GamesData;
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -37,6 +37,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGame
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, GamesList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrenciesUpdate, const FVirtualCurrencyData&, VirtualCurrencyData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreGamesUpdate, const FStoreGamesData&, GamesData);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
 
 UCLASS()
@@ -406,7 +407,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys" , meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Games By Specified Group
 	 * Gets the list of games from the specified group for building a catalog.
@@ -558,7 +559,7 @@ protected:
 		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
@@ -662,10 +663,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
 
-	/** Gets games list data. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys")
-	const FStoreGamesData& GetGamesData() const;
-
 public:
 	/** Event occurred when the cart was changed or updated. */
 	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
@@ -683,9 +680,6 @@ protected:
 
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
-
-	/** Cached list of games */
-	FStoreGamesData GamesData;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
