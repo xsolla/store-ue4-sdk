@@ -299,19 +299,19 @@ public:
 	void GetSpecifiedBundle(const FString& Sku,
 		const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Update Bundles
+	/** Get Bundles
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
-	* @param SuccessCallback Callback function called after the cart is successfully filled.
+	* @param SuccessCallback Callback function called after bundles are successfully received.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Virtual Currency
@@ -406,7 +406,7 @@ public:
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys" , meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Games By Specified Group
@@ -558,7 +558,7 @@ protected:
 	void RemovePromocodeFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
-	void UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	void GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback);
 
 	void GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,

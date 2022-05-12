@@ -210,30 +210,30 @@ public:
 		const FString& AppId, const FString& State, const FString& Payload,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update User Attributes
-	 * Updates the locally cached list of user attributes.
+	/** Get User Attributes
+	 * Gets the list of user attributes.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param UserId Identifier of a user whose attributes should be updated.
-	 * @param AttributeKeys Keys of the attributes that should be updated.
-	 * @param SuccessCallback Callback function called after successful user attributes update.
+	 * @param UserId Identifier of a user whose attributes should be requested.
+	 * @param AttributeKeys Keys of the attributes that should be requested.
+	 * @param SuccessCallback Callback function called after user attributes were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
-	void UpdateUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
+	void GetUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
 		const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update User Read-Only Attributes
-	 * Updates locally cached list of user read-only attributes.
+	/** Get User Read-Only Attributes
+	 * Gets list of user read-only attributes.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
 	 * @param AttributeKeys Keys of the attributes that should be updated.
-	 * @param SuccessCallback Callback function called after successful user attributes update.
+	 * @param SuccessCallback Callback function called after user attributes were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AttributeKeys, SuccessCallback, ErrorCallback"))
-	void UpdateUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
+	void GetUserReadOnlyAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
 		const FOnUserAttributesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Attributes
@@ -440,15 +440,15 @@ public:
 	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
 		const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update User Details
-	 * Updates locally cached user details.
+	/** Get User Details
+	 * Gets user details.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user details update.
+	 * @param SuccessCallback Callback function called after successful user details were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserDetails(const FString& AuthToken, const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetUserDetails(const FString& AuthToken, const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Details
 	 * Modifies specified user details.
@@ -466,25 +466,25 @@ public:
 	void ModifyUserDetails(const FString& AuthToken, const FString& Birthday, const FString& FirstName, const FString& LastName, const FString& Gender, const FString& Nickname,
 		const FOnUserDetailsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update User Email
-	 * Updates locally cached user email.
+	/** Get User Email
+	 * Gets user email.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user email update.
+	 * @param SuccessCallback Callback function called after user email was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update User Phone Number
-	 * Updates locally cached user phone number.
+	/** Get User Phone Number
+	 * Gets user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful user phone number update.
+	 * @param SuccessCallback Callback function called after user phone number was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUserPhoneNumber(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetUserPhoneNumber(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Modify User Phone Number
 	 * Modifies user phone number.
@@ -501,7 +501,7 @@ public:
 	 * Removes the user phone number.
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param PhoneNumber User phone number for removal. If the parameter isn't specified, the locally cached phone number will be used instead.
+	 * @param PhoneNumber User phone number for removal.
 	 * @param SuccessCallback Callback function called after the user phone number was successfully removed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -529,20 +529,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveProfilePicture(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Friends
-	 * Updates locally cached user friends data.
+	/** Get Friends
+	 * Gets user friends data.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Type Friends type.
 	 * @param SortBy Condition for sorting users (by name/by update).
 	 * @param SortOrder Condition for sorting users (ascending/descending).
-	 * @param SuccessCallback Callback function called after successful user friends data local cache update.
+	 * @param SuccessCallback Callback function called after user friends data was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param After Parameter that is used for API pagination.
 	 * @param Limit Maximum number of friends that can be received at a time.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
+	void GetFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
 		const FOnUserFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& After, const int Limit = 20);
 
 	/** Modify Friends
@@ -557,42 +557,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ModifyFriends(const FString& AuthToken, const EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Social Authentication Links
-	 * Updates locally cached list of links for social authentication enabled in Publisher Account.
+	/** Get Social Authentication Links
+	 * Gets list of links for social authentication enabled in Publisher Account.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Locale Locale.
-	 * @param SuccessCallback Callback function called after list of links for social authentication was successfully updated.
+	 * @param SuccessCallback Callback function called after list of links for social authentication was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnSocialAuthLinksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnSocialAuthLinksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Social Friends
-	 * Updates locally cached user friends data from a social provider.
+	/** Get Social Friends
+	 * Gets user friends data from a social provider.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of social provider. If empty, friends from all available social providers will be fetched.
-	 * @param SuccessCallback Callback function called after successful update of the user friends data from the social provider local cache.
+	 * @param SuccessCallback Callback function called after user friends data was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Offset Number of the element from which the list is generated.
 	 * @param Limit Maximum number of friends that can be received at a time.
 	 * @param FromThisGame Flag indicating whether social friends are from this game.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSocialFriends(const FString& AuthToken, const FString& Platform,
+	void GetSocialFriends(const FString& AuthToken, const FString& Platform,
 		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const int Offset = 0, const int Limit = 500, const bool FromThisGame = false);
 
-	/** Update Users Friends
-	 * Updates friends on the server.
+	/** Get Users Friends
+	 * Gets friends on the server.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of the chosen social provider. If not specified, the method gets friends from all social providers.
-	 * @param SuccessCallback Callback function called after successful update of user friends.
+	 * @param SuccessCallback Callback function called after user friends were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Get Access Token By Email
 	 * Get Access token by email from your own backend service.
@@ -616,15 +616,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Users Devices
-	 * Updates a list of user’s devices.
+	/** Get Users Devices
+	 * Gets a list of user’s devices.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param SuccessCallback Callback function called after users devices data was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateUsersDevices(const FString& AuthToken, const FOnUserDevicesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetUsersDevices(const FString& AuthToken, const FOnUserDevicesUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Search Users by Nickname
 	 * Searches for users with the specified nickname.
@@ -652,15 +652,15 @@ public:
 	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Update Linked Social Networks
-	 * Updates the list of linked social networks cached locally.
+	/** Get Linked Social Networks
+	 * Gets the list of linked social networks.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param SuccessCallback Callback function called after the list of linked social networks was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void GetLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Log Out User
 	 * Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth2.0 only).
@@ -737,9 +737,9 @@ protected:
 		FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	void GetUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	void GetReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserAttributesUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);

@@ -43,42 +43,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	void Initialize(const FString& InProjectId);
 
-	/** Update List of Purchased Virtual Items
-	 * Updates the list of purchased virtual items (cached locally).
+	/** Get List of Purchased Virtual Items
+	 * Gets the list of purchased virtual items.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after local cache of purchased virtual items was successfully updated.
+	 * @param SuccessCallback Callback function called after purchased virtual items were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	void GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Update Virtual Currency Balance
-	 * Updates virtual currency balance (cached locally).
+	/** Get Virtual Currency Balance
+	 * Gets virtual currency balance.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after local cache of virtual currency balance was successfully updated.
+	 * @param SuccessCallback Callback function called after virtual currency balance was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	void GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
-	/** Update User Subscriptions
-	 * Updates the list of user subscriptions (cached locally).
+	/** Get User Subscriptions
+	 * Gets the list of user subscriptions.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully updated.
+	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	void GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
 
 	/** Consume Inventory Item

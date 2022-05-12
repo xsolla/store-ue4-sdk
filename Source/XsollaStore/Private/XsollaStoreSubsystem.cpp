@@ -513,7 +513,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
@@ -643,7 +643,7 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
@@ -657,7 +657,7 @@ void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -1212,7 +1212,7 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;

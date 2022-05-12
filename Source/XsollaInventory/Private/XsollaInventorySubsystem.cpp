@@ -43,7 +43,7 @@ void UXsollaInventorySubsystem::Initialize(const FString& InProjectId)
 	ProjectID = InProjectId;
 }
 
-void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback,
 	const int Limit, const int Offset)
 {
@@ -62,7 +62,7 @@ void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken, const 
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
@@ -78,7 +78,7 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& Auth
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
