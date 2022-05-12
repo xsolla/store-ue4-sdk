@@ -91,7 +91,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
 							.SetPathParam(TEXT("ProjectId"), ProjectID)
@@ -513,7 +513,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
@@ -643,8 +643,8 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -657,7 +657,7 @@ void UXsollaStoreSubsystem::UpdateGamesList(const FString& Locale, const FString
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -825,13 +825,14 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-
+	FVirtualCurrencyData VirtualCurrencyData;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(VirtualCurrencyData);
 	}
 	else
 	{
@@ -1211,11 +1212,12 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-
+	FStoreGamesData GamesData;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
 		// Update categories
@@ -1227,7 +1229,7 @@ void UXsollaStoreSubsystem::UpdateGamesList_HttpRequestComplete(FHttpRequestPtr 
 			}
 		}
 
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(GamesData);
 	}
 	else
 	{
@@ -1571,11 +1573,6 @@ const FStoreItemsData& UXsollaStoreSubsystem::GetItemsData() const
 	return ItemsData;
 }
 
-const TArray<FVirtualCurrency>& UXsollaStoreSubsystem::GetVirtualCurrencyData() const
-{
-	return VirtualCurrencyData.Items;
-}
-
 const TArray<FVirtualCurrencyPackage>& UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
 {
 	return VirtualCurrencyPackages.Items;
@@ -1603,38 +1600,6 @@ FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const
 	}
 
 	return TEXT("");
-}
-
-FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU) const
-{
-	auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySKU](const FVirtualCurrency& InCurrency) {
-		return InCurrency.sku == CurrencySKU;
-	});
-
-	if (Currency != nullptr)
-	{
-		return Currency->name;
-	}
-
-	return TEXT("");
-}
-
-FVirtualCurrency UXsollaStoreSubsystem::FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const
-{
-	FVirtualCurrency VirtualCurrency;
-	bHasFound = false;
-
-	const auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySku](const FVirtualCurrency& InCurrency) {
-		return InCurrency.sku == CurrencySku;
-	});
-
-	if (Currency != nullptr)
-	{
-		VirtualCurrency = Currency[0];
-		bHasFound = true;
-	}
-
-	return VirtualCurrency;
 }
 
 const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
@@ -1680,11 +1645,6 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 	});
 
 	return CartItem != nullptr;
-}
-
-const FStoreGamesData& UXsollaStoreSubsystem::GetGamesData() const
-{
-	return GamesData;
 }
 
 #undef LOCTEXT_NAMESPACE
