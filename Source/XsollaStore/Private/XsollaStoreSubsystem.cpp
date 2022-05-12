@@ -91,7 +91,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 }
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
 							.SetPathParam(TEXT("ProjectId"), ProjectID)
@@ -825,13 +825,14 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-
+	FVirtualCurrencyData VirtualCurrencyData;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(VirtualCurrencyData);
 	}
 	else
 	{
@@ -1571,11 +1572,6 @@ const FStoreItemsData& UXsollaStoreSubsystem::GetItemsData() const
 	return ItemsData;
 }
 
-const TArray<FVirtualCurrency>& UXsollaStoreSubsystem::GetVirtualCurrencyData() const
-{
-	return VirtualCurrencyData.Items;
-}
-
 const TArray<FVirtualCurrencyPackage>& UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
 {
 	return VirtualCurrencyPackages.Items;
@@ -1603,38 +1599,6 @@ FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const
 	}
 
 	return TEXT("");
-}
-
-FString UXsollaStoreSubsystem::GetVirtualCurrencyName(const FString& CurrencySKU) const
-{
-	auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySKU](const FVirtualCurrency& InCurrency) {
-		return InCurrency.sku == CurrencySKU;
-	});
-
-	if (Currency != nullptr)
-	{
-		return Currency->name;
-	}
-
-	return TEXT("");
-}
-
-FVirtualCurrency UXsollaStoreSubsystem::FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const
-{
-	FVirtualCurrency VirtualCurrency;
-	bHasFound = false;
-
-	const auto Currency = VirtualCurrencyData.Items.FindByPredicate([CurrencySku](const FVirtualCurrency& InCurrency) {
-		return InCurrency.sku == CurrencySku;
-	});
-
-	if (Currency != nullptr)
-	{
-		VirtualCurrency = Currency[0];
-		bHasFound = true;
-	}
-
-	return VirtualCurrency;
 }
 
 const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
