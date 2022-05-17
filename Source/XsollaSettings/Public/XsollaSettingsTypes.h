@@ -12,10 +12,7 @@ enum class EAuthenticationType : uint8
 	oAuth UMETA(DisplayName = "OAuth"),
 
 	/** SDK will use Jwt protocol in order to authorize user. */
-	jwt UMETA(DisplayName = "Jwt"),
-
-	/** SDK will user auth via access token. */
-	accessToken UMETA(DisplayName = "AccessToken")
+	jwt UMETA(DisplayName = "Jwt")
 };
 
 /** Target platform name */
