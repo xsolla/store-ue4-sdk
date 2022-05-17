@@ -305,7 +305,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	});
 
 	FOnOrderCheckError OrderCheckErrorCallback;
-	OrderCheckErrorCallback.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback](const FString& ErrorMessage)
+	OrderCheckErrorCallback.BindLambda([&, OrderCheckObject, AccessToken, OrderId, SuccessCallback, ErrorCallback](const FString& ErrorMessage)
 	{
 		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		OrderCheckObject->Destroy();
@@ -313,7 +313,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	});
 
 	FOnOrderCheckTimeout OrderCheckTimeoutCallback;
-	OrderCheckTimeoutCallback.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+	OrderCheckTimeoutCallback.BindLambda([&, OrderCheckObject, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
 	{
 		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		OrderCheckObject->Destroy();
