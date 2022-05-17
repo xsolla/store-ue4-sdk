@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+DECLARE_DELEGATE(FOnBrowserClosed);
+
 UCLASS()
 class XSOLLAWEBBROWSER_API UXsollaWebBrowserWrapper : public UUserWidget
 {
@@ -17,4 +20,9 @@ class XSOLLAWEBBROWSER_API UXsollaWebBrowserWrapper : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Xsolla|Browser")
 	void LoadUrl(const FString& Url);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Browser")
+	void BrowserClosed();
+	
+	FOnBrowserClosed OnBrowserClosed;
 };

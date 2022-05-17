@@ -3,3 +3,7 @@
 
 #include "XsollaWebBrowserWrapper.h"
 
+void UXsollaWebBrowserWrapper::BrowserClosed()
+{
+	OnBrowserClosed.ExecuteIfBound();
+}

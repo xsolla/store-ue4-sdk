@@ -21,6 +21,9 @@
 #include "XsollaOrderCheckObject.h"
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
+#include "XsollaWebBrowserWrapper.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -235,7 +238,8 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget)
+void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -252,9 +256,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 
-		BrowserWidget = nullptr;
-
 		FPlatformProcess::LaunchURL(*PaystationUrl, nullptr, nullptr);
+		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 	}
 	else
 	{
@@ -264,7 +267,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 
 		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
 		{
-			MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+			MyBrowser = CreateWidget<UXsollaWebBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 			MyBrowser->AddToViewport(100000);
 		}
 		else
@@ -272,8 +275,80 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 			MyBrowser->SetVisibility(ESlateVisibility::Visible);
 		}
 
-		BrowserWidget = MyBrowser;
+		MyBrowser->OnBrowserClosed.Unbind();
+		MyBrowser->OnBrowserClosed.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+		{
+			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		});
 	}
+}
+
+void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
+							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder.
+							.AddStringQueryParam(TEXT("project_id"), ProjectID)
+							.Build();
+
+	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
+
+	FOnOrderCheckSuccess OrderCheckSuccessCallback;
+	OrderCheckSuccessCallback.BindLambda([&, OrderCheckObject, SuccessCallback](int32 OrderId, EXsollaOrderStatus OrderStatus)
+	{
+		if (OrderStatus == EXsollaOrderStatus::Done)
+		{
+			SuccessCallback.ExecuteIfBound();
+			OrderCheckObject->Destroy();
+			CachedOrderCheckObjects.Remove(OrderCheckObject);
+		}
+	});
+
+	FOnOrderCheckError OrderCheckErrorCallback;
+	OrderCheckErrorCallback.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback](const FString& ErrorMessage)
+	{
+		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		OrderCheckObject->Destroy();
+		CachedOrderCheckObjects.Remove(OrderCheckObject);
+	});
+
+	FOnOrderCheckTimeout OrderCheckTimeoutCallback;
+	OrderCheckTimeoutCallback.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+	{
+		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		OrderCheckObject->Destroy();
+		CachedOrderCheckObjects.Remove(OrderCheckObject);
+	});
+	
+	OrderCheckObject->Init(Url, TEXT("wss"), OrderCheckSuccessCallback, OrderCheckErrorCallback, OrderCheckTimeoutCallback, 300);
+	CachedOrderCheckObjects.Add(OrderCheckObject);
+	OrderCheckObject->Connect();
+}
+
+void UXsollaStoreSubsystem::ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
+{
+	FOnCheckOrder CheckOrderSuccessCallback;
+	CheckOrderSuccessCallback.BindLambda([&, AccessToken, SuccessCallback, ErrorCallback](int32 OrderId, EXsollaOrderStatus OrderStatus, FXsollaOrderContent OrderContent)
+	{
+		if (OrderStatus == EXsollaOrderStatus::New || OrderStatus == EXsollaOrderStatus::Paid)
+		{
+			FTimerHandle TimerHandle;
+			FTimerDelegate TimerDelegate;
+			TimerDelegate.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+			{
+				ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+			});
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.0f, false);
+		}
+
+		if (OrderStatus == EXsollaOrderStatus::Done)
+		{
+			SuccessCallback.ExecuteIfBound();
+		}
+	});
+	
+	CheckOrder(AccessToken, OrderId, CheckOrderSuccessCallback, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
@@ -290,21 +365,6 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
-}
-
-UXsollaOrderCheckObject* UXsollaStoreSubsystem::CreateOrderCheckObject(const int32 OrderId,
-	const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
-	const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime)
-{
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
-							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder.
-							.AddStringQueryParam(TEXT("project_id"), ProjectID)
-							.Build();
-
-	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
-	OrderCheckObject->Init(Url, TEXT("wss"), OnStatusReceivedCallback, ErrorCallback, TimeoutCallback, LifeTime);
-
-	return OrderCheckObject;
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,

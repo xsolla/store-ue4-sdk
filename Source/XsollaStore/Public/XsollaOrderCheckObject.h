@@ -11,9 +11,9 @@
 
 class IWebSocket;
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnOrderCheckSuccess, int32, OrderId, EXsollaOrderStatus, OrderStatus);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOrderCheckError, const FString&, ErrorMessage);
-DECLARE_DYNAMIC_DELEGATE(FOnOrderCheckTimeout);
+DECLARE_DELEGATE_TwoParams(FOnOrderCheckSuccess, int32, EXsollaOrderStatus);
+DECLARE_DELEGATE_OneParam(FOnOrderCheckError, const FString&);
+DECLARE_DELEGATE(FOnOrderCheckTimeout);
 
 UCLASS(BlueprintType)
 class UXsollaOrderCheckObject : public UObject

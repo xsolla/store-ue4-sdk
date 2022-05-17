@@ -14,13 +14,15 @@
 
 enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
+class UXsollaWebBrowserWrapper;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
+DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus, FXsollaOrderContent, OrderContent);
+DECLARE_DELEGATE_ThreeParams(FOnCheckOrder, int32, EXsollaOrderStatus, FXsollaOrderContent);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurrencyPackage&, CurrencyPackage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
@@ -187,39 +189,32 @@ public:
 	 * Opens payment console for the provided access token.
 	 *
 	 * @param WorldContextObject The world context.
+	 * @param OrderId Identifier of order.
 	 * @param AccessToken Payment token used during purchase processing.
-	 * @param BrowserWidget Widget to represent a payment form. Can be set in the project settings.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
-	void LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback);
 
-	/** Check Order
-	 * Checks pending order status by its ID.
+	/** Check Pending Order
+	 * Checks pending order
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param OrderId Identifier of order to be checked.
-	 * @param SuccessCallback Callback function called after successful order check. Order status will be received.
+	 * @param AccessToken Payment token used during purchase processing.
+	 * @param OrderId Identifier of order.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
+		 const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback);
+
+	void ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback);
+	
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
-
-	/** Create order check object
-	 * Creates order check object
-	 *
-	 * @param OrderId Identifier of order to be checked.
-	 * @param OnStatusReceivedCallback Callback function called after successful order check. Order status will be received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param TimeoutCallback Callback function called after life time is expired.
-	 * @param LifeTime Object lifetime.
-	 *
-	 * * @return Returns new order check instance
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
-	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
-		const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
-		const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime = 300);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -696,9 +691,12 @@ protected:
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
 
-	UUserWidget* MyBrowser;
+	UXsollaWebBrowserWrapper* MyBrowser;
 
 private:
 	UPROPERTY()
-	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaWebBrowserWrapper> DefaultBrowserWidgetClass;
+
+	UPROPERTY()
+	TArray<UXsollaOrderCheckObject*> CachedOrderCheckObjects;
 };
