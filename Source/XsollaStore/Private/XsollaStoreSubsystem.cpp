@@ -30,9 +30,11 @@
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
+#if !UE_SERVER
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Store/Components/W_StoreBrowser.W_StoreBrowser_C"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
+#endif
 }
 
 void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
