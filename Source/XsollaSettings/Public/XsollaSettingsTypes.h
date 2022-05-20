@@ -4,17 +4,6 @@
 
 #include "XsollaSettingsTypes.generated.h"
 
-/** Authentication type */
-UENUM(BlueprintType)
-enum class EAuthenticationType : uint8
-{
-	/** SDK will use OAuth 2.0 protocol in order to authorize user. */
-	oAuth UMETA(DisplayName = "OAuth"),
-
-	/** SDK will use Jwt protocol in order to authorize user. */
-	jwt UMETA(DisplayName = "Jwt")
-};
-
 /** Target platform name */
 UENUM(BlueprintType)
 enum class EXsollaPublishingPlatform : uint8

@@ -2,21 +2,17 @@
 
 #include "XsollaProjectSettings.h"
 
-
 UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	AccountLinkingURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/link");
 	PlatformAuthenticationURL = TEXT("https://livedemo.xsolla.com/sdk/sdk-shadow-account/auth");
-	InvalidateExistingSessions = false;
-	AuthenticationType = EAuthenticationType::oAuth;
 	UseCrossPlatformAccountLinking = false;
 	ProjectID = TEXT("77640");
 	LoginID = TEXT("026201e3-7e40-11ea-a85b-42010aa80004");
 	ClientID = TEXT("57");
 	EncryptCachedCredentials = false;
 	SendPasswordlessAuthURL = false;
-	CallbackURL = TEXT("https://login.xsolla.com/api/blank");
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	Platform = EXsollaPublishingPlatform::playstation_network;
 	CustomAuthServerURL = "https://sdk.xsolla.com/";

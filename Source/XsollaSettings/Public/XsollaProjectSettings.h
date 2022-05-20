@@ -20,35 +20,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString LoginID;
 
-	/** If enabled, SDK will use OAuth 2.0 protocol in order to authorize user. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Authentication Type", Category = "General")
-	EAuthenticationType AuthenticationType;
-
 	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General", meta = (EditCondition = "AuthenticationType == EAuthenticationType::oAuth", EditConditionHides))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ClientID;
 
 	/** URL for login via access token */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString CustomAuthServerURL;
-	
-	/**
-	 * URL to redirect the user to after registration/authentication/password reset.
-	 * Must be identical to a Callback URL specified in Publisher Account in Login settings.
-	 * Required if there are several Callback URLs.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General", meta = (EditCondition = "AuthenticationType == EAuthenticationType::jwt", EditConditionHides))
-	FString CallbackURL;
 
-	/**
-	 * Redirect uri
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General", meta = (EditCondition = "AuthenticationType == EAuthenticationType::oAuth", EditConditionHides))
+	/** Redirect uri */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString RedirectURI;
-
-	/** If enabled, SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Invalidate Existing Sessions", Category = "General", meta = (EditCondition = "AuthenticationType == EAuthenticationType::jwt", EditConditionHides))
-	bool InvalidateExistingSessions;
 
 	/** Flag indicating whether Xsolla cached credentials should be encrypted and decrypted using the XsollaSaveEncryptionKey secondary encryption key. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Security")
