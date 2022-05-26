@@ -720,7 +720,7 @@ protected:
 		FOnSocialAuthLinksUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserSocialFriendsUpdate SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	void GetUsersFriends_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCodeReceived SuccessCallback, FOnAuthError ErrorCallback);
 	void UserProfile_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserProfileReceived SuccessCallback, FOnAuthError ErrorCallback);
@@ -732,7 +732,7 @@ protected:
 		FOnLinkedSocialNetworksUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void UpdateUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
+	void GetUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnUserDevicesUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnLinkEmailAndPasswordSuccess SuccessCallback, FOnAuthError ErrorCallback);

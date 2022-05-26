@@ -61,8 +61,8 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	LoadData();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreItemsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -75,12 +75,12 @@ void UXsollaStoreSubsystem::UpdateVirtualItems(const FString& Locale, const FStr
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
+	const FOnItemGroupsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/groups"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -91,11 +91,11 @@ void UXsollaStoreSubsystem::UpdateItemGroups(const FString& Locale,
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
@@ -109,12 +109,12 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies(const FString& Locale, const
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -127,7 +127,7 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages(const FString& Locale,
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -842,9 +842,9 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, con
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
+void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -859,7 +859,7 @@ void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 			}
 		}
 
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(ItemsData);
 	}
 	else
 	{
@@ -867,9 +867,9 @@ void UXsollaStoreSubsystem::UpdateVirtualItems_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
+void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsData GroupsData;
@@ -877,7 +877,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &GroupsData, OutError))
 	{
 		ItemsData.Groups = GroupsData.Groups;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(GroupsData.Groups);
 	}
 	else
 	{
@@ -885,7 +885,7 @@ void UXsollaStoreSubsystem::UpdateItemGroups_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
+void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
@@ -902,15 +902,15 @@ void UXsollaStoreSubsystem::UpdateVirtualCurrencies_HttpRequestComplete(
 	}
 }
 
-void UXsollaStoreSubsystem::UpdateVirtualCurrencyPackages_HttpRequestComplete(
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FOnStoreError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages, OutError))
 	{
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(VirtualCurrencyPackages);
 	}
 	else
 	{
@@ -1602,27 +1602,6 @@ bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& St
 	return true;
 }
 
-TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItems(const FString& GroupFilter) const
-{
-	if (GroupFilter.IsEmpty())
-	{
-		return ItemsData.Items;
-	}
-	else
-	{
-		return ItemsData.Items.FilterByPredicate([GroupFilter](const FStoreItem& InStoreItem) {
-			for (auto& ItemGroup : InStoreItem.groups)
-			{
-				if (ItemGroup.external_id == GroupFilter)
-				{
-					return true;
-				}
-			}
-			return false;
-		});
-	}
-}
-
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
 {
 	return ItemsData.Items.FilterByPredicate([](const FStoreItem& InStoreItem) {
@@ -1633,11 +1612,6 @@ TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
 const FStoreItemsData& UXsollaStoreSubsystem::GetItemsData() const
 {
 	return ItemsData;
-}
-
-const TArray<FVirtualCurrencyPackage>& UXsollaStoreSubsystem::GetVirtualCurrencyPackages() const
-{
-	return VirtualCurrencyPackages.Items;
 }
 
 const FStoreCart& UXsollaStoreSubsystem::GetCart() const

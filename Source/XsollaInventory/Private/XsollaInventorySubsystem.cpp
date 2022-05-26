@@ -58,7 +58,7 @@ void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXs
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaInventorySubsystem::GetInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -74,7 +74,7 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthTok
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -90,7 +90,7 @@ void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
+		&UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
@@ -165,7 +165,7 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
@@ -182,7 +182,7 @@ void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
 	}
 }
 
-void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
@@ -199,7 +199,7 @@ void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete
 	}
 }
 
-void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnInventoryError ErrorCallback)
 {
