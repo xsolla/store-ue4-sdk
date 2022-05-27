@@ -1092,7 +1092,7 @@ void UXsollaLoginSubsystem::Default_HttpRequestComplete(FHttpRequestPtr HttpRequ
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1115,7 +1115,7 @@ void UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete(FHttpRequestPtr Http
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1138,7 +1138,7 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *SocialUrlFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1159,7 +1159,7 @@ void UXsollaLoginSubsystem::GetUserAttributes_HttpRequestComplete(FHttpRequestPt
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1175,7 +1175,7 @@ void UXsollaLoginSubsystem::GetReadOnlyUserAttributes_HttpRequestComplete(FHttpR
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1198,7 +1198,7 @@ void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestP
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccountLinkingCode);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1213,7 +1213,7 @@ void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr Htt
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1241,7 +1241,7 @@ void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequ
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *TokenFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::DeviceId_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1254,6 +1254,32 @@ void UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete(FHttpRequestPtr Htt
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
+}
+
+void UXsollaLoginSubsystem::InnerRefreshToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnLoginDataUpdate SuccessCallback, FOnLoginDataError ErrorCallback)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		static const FString AccessTokenFieldName = TEXT("access_token");
+		if (JsonObject->HasTypedField<EJson::String>(AccessTokenFieldName))
+		{
+			LoginData.AuthToken.JWT = JsonObject->GetStringField(AccessTokenFieldName);
+			LoginData.AuthToken.RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + JsonObject->GetNumberField(TEXT("expires_in"));
+
+			SaveData();
+
+			SuccessCallback.ExecuteIfBound(LoginData);
+			return;
+		}
+
+		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
+	}
+
+	ErrorCallback.ExecuteIfBound(OutError.statusCode, OutError.errorCode, OutError.description);
 }
 
 void UXsollaLoginSubsystem::SessionTicket_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1288,7 +1314,7 @@ void UXsollaLoginSubsystem::StartAuth_HttpRequestComplete(FHttpRequestPtr HttpRe
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *OperationIdFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1330,7 +1356,7 @@ void UXsollaLoginSubsystem::GetAuthConfirmationCode_HttpRequestComplete(FHttpReq
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *CodeFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1345,7 +1371,7 @@ void UXsollaLoginSubsystem::UserDetails_HttpRequestComplete(FHttpRequestPtr Http
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1368,7 +1394,7 @@ void UXsollaLoginSubsystem::UserEmail_HttpRequestComplete(FHttpRequestPtr HttpRe
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *EmailFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1390,7 +1416,7 @@ void UXsollaLoginSubsystem::UserPhoneNumber_HttpRequestComplete(FHttpRequestPtr 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *PhoneFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1420,7 +1446,7 @@ void UXsollaLoginSubsystem::ModifyPhoneNumber_HttpRequestComplete(FHttpRequestPt
 		}
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1434,7 +1460,7 @@ void UXsollaLoginSubsystem::RemovePhoneNumber_HttpRequestComplete(FHttpRequestPt
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1457,7 +1483,7 @@ void UXsollaLoginSubsystem::UserProfilePicture_HttpRequestComplete(FHttpRequestP
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *PictureFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1471,7 +1497,7 @@ void UXsollaLoginSubsystem::UserProfilePictureRemove_HttpRequestComplete(FHttpRe
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1489,7 +1515,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1505,7 +1531,7 @@ void UXsollaLoginSubsystem::SocialAuthLinks_HttpRequestComplete(FHttpRequestPtr 
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1521,7 +1547,7 @@ void UXsollaLoginSubsystem::SocialFriends_HttpRequestComplete(FHttpRequestPtr Ht
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1537,7 +1563,7 @@ void UXsollaLoginSubsystem::GetUsersFriends_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1553,7 +1579,7 @@ void UXsollaLoginSubsystem::UserProfile_HttpRequestComplete(FHttpRequestPtr Http
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1569,7 +1595,7 @@ void UXsollaLoginSubsystem::UserSearch_HttpRequestComplete(FHttpRequestPtr HttpR
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1592,7 +1618,7 @@ void UXsollaLoginSubsystem::SocialAccountLinking_HttpRequestComplete(FHttpReques
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *SocialUrlFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1607,7 +1633,7 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1631,7 +1657,7 @@ void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1646,7 +1672,7 @@ void UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete(const FHttpReque
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1669,7 +1695,7 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword_HttpRequestComplete(FHttpReques
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *ConfirmationRequiredFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1695,7 +1721,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 		OutError.description = TEXT("Response code is successfull, but outcome is unexpected");
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -1709,7 +1735,7 @@ void UXsollaLoginSubsystem::LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpR
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
 }
 
@@ -1737,7 +1763,7 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1765,7 +1791,7 @@ void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpReques
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *LoginUrlFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1789,10 +1815,10 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *LoginUrlFieldName);
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback)
+void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Error code: %s, Error message: %s"), *VA_FUNC_LINE, *ErrorData.code, *ErrorData.description);
 	ErrorCallback.ExecuteIfBound(ErrorData.code, ErrorData.description);
@@ -1858,6 +1884,58 @@ void UXsollaLoginSubsystem::SaveData()
 	{
 		// Don't drop cache in memory but reset save file
 		UXsollaLoginSave::Save(FXsollaLoginData());
+	}
+}
+
+void UXsollaLoginSubsystem::InnerRefreshToken(const FString& RefreshToken, const FOnLoginDataUpdate& SuccessCallback, const FOnLoginDataError& ErrorCallback)
+{
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
+	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
+	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("refresh_token"));
+	RequestDataJson->SetStringField(TEXT("refresh_token"), RefreshToken);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), Settings->RedirectURI);
+
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+
+	// Generate endpoint url
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::InnerRefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& ErrorData, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	if (ErrorData.statusCode == 401 || ErrorData.statusCode == 403) // token time expired
+	{
+		FOnLoginDataUpdate SuccessRefreshCallback;
+		SuccessRefreshCallback.BindLambda([ErrorHandlersWrapper](const FXsollaLoginData& LoginData)
+		{
+			if (ErrorHandlersWrapper.bNeedRepeatRequest)
+			{
+				ErrorHandlersWrapper.TokenUpdateCallback.ExecuteIfBound(LoginData.AuthToken.JWT, false);
+			}
+		});
+		FOnLoginDataError ErrorRefreshCallback;
+		ErrorRefreshCallback.BindLambda([ErrorHandlersWrapper](int32 StatusCode, int32 ErrorCode, const FString& Description)
+		{
+			ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, Description);
+		});
+
+		InnerRefreshToken(LoginData.AuthToken.RefreshToken, SuccessRefreshCallback, ErrorRefreshCallback);
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
+		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 	}
 }
 

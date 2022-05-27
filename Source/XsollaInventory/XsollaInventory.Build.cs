@@ -31,7 +31,8 @@ public class XsollaInventory : ModuleRules
                 "Slate",
                 "SlateCore",
                 "UMG",
-                "ImageWrapper"
+                "ImageWrapper",
+                "XsollaLogin"
             }
             );
 

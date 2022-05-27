@@ -13,6 +13,7 @@
 #include "Serialization/JsonWriter.h"
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
+#include "XsollaLoginSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaInventoryModule"
 
@@ -29,6 +30,8 @@ void UXsollaInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	Initialize(Settings->ProjectID);
 
+	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
+	
 	UE_LOG(LogXsollaInventory, Log, TEXT("%s: XsollaInventory subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -44,7 +47,7 @@ void UXsollaInventorySubsystem::Initialize(const FString& InProjectId)
 }
 
 void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback,
+	const FOnInventoryUpdate& SuccessCallback, const FOnError& ErrorCallback,
 	const int Limit, const int Offset)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT(""):UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
@@ -56,14 +59,20 @@ void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXs
 							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::GetInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Platform, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	{
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::GetInventory_HttpRequestComplete, SuccessCallback, FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback));
+		HttpRequest->ProcessRequest();
+	});
+	
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
@@ -79,7 +88,7 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthTok
 }
 
 void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnSubscriptionUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
@@ -96,7 +105,7 @@ void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
 	const int32 Quantity, const FString& InstanceID, const EXsollaPublishingPlatform Platform,
-	const FOnInventoryRequestSuccess& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnInventoryRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -135,7 +144,7 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 }
 
 void UXsollaInventorySubsystem::GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
-	const FOnCouponRewardsUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCouponRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/code/{CouponCode}/rewards"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -149,7 +158,7 @@ void UXsollaInventorySubsystem::GetCouponRewards(const FString& AuthToken, const
 }
 
 void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
-	const FOnCouponRedeemUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCouponRedeemUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/redeem"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -167,7 +176,7 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 
 void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 	FInventoryItemsData NewInventory;
@@ -178,13 +187,13 @@ void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
@@ -195,13 +204,13 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, {ErrorCallback});
 	}
 }
 
 void UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FSubscriptionData receivedSubscriptions;
@@ -212,13 +221,13 @@ void UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, {ErrorCallback});
 	}
 }
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -228,12 +237,12 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, {ErrorCallback});
 	}
 }
 
 void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	FInventoryCouponRewardData couponRewards;
 	XsollaHttpRequestError OutError;
@@ -244,12 +253,12 @@ void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpReq
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, {ErrorCallback});
 	}
 }
 
 void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	FInventoryRedeemedCouponData redeemedCouponData;
 	XsollaHttpRequestError OutError;
@@ -260,14 +269,8 @@ void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, {ErrorCallback});
 	}
-}
-
-void UXsollaInventorySubsystem::HandleRequestError(const XsollaHttpRequestError& ErrorData, FOnInventoryError ErrorCallback)
-{
-	UE_LOG(LogXsollaInventory, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
-	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaInventorySubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,

@@ -8,17 +8,18 @@
 
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
+#include "XsollaUtilsDataModel.h"
 
 #include "XsollaInventorySubsystem.generated.h"
 
 enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
+class UXsollaLoginSubsystem;
 
 DECLARE_DYNAMIC_DELEGATE(FOnInventoryRequestSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInventoryUpdate, const FInventoryItemsData&, InventoryData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyBalanceUpdate, const FVirtualCurrencyBalanceData&, CurrencyBalanceData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionUpdate, const FSubscriptionData&, SubscriptionData);
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnInventoryError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FInventoryCouponRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FInventoryRedeemedCouponData, RewardData);
 
@@ -55,7 +56,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnInventoryUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Virtual Currency Balance
 	 * Gets virtual currency balance.
@@ -67,7 +68,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get User Subscriptions
 	 * Gets the list of user subscriptions.
@@ -79,7 +80,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnSubscriptionUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnSubscriptionUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
@@ -95,7 +96,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, const int32 Quantity,
 		const FString& InstanceID, const EXsollaPublishingPlatform Platform,
-		const FOnInventoryRequestSuccess& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnInventoryRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Coupon Rewards
 	 * Gets coupon rewards by its code. Can be used to let users choose one of many items as a bonus.
@@ -108,7 +109,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Coupons", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
-		const FOnCouponRewardsUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnCouponRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Redeem Coupon
 	 * Redeems a coupon code. The user gets a bonus after a coupon is redeemed.
@@ -120,25 +121,23 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Coupons", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
-		const FOnCouponRedeemUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback);
+		const FOnCouponRedeemUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 protected:
 	void GetInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FOnError ErrorCallback);
 	void GetSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FOnError ErrorCallback);
 
 	void UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnError ErrorCallback);
 	void RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback);
-
-	void HandleRequestError(const XsollaHttpRequestError& ErrorData, FOnInventoryError ErrorCallback);
+		const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnError ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
@@ -148,6 +147,9 @@ private:
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
 
+	UPROPERTY()
+	UXsollaLoginSubsystem* LoginSubsystem;
+	
 protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectID;

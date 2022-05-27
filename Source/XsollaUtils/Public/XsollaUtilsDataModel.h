@@ -7,6 +7,30 @@
 
 #include "XsollaUtilsDataModel.generated.h"
 
+DECLARE_DELEGATE_TwoParams(FOnTokenUpdate, const FString&, bool);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
+
+USTRUCT()
+struct FErrorHandlersWrapper
+{
+	GENERATED_BODY()
+
+	bool bNeedRepeatRequest = false;
+	FOnTokenUpdate TokenUpdateCallback;
+	FOnError ErrorCallback;
+	FErrorHandlersWrapper(bool bInNeedRepeatRequest, FOnTokenUpdate InTokenUpdateCallback, FOnError InErrorCallback)
+		: bNeedRepeatRequest(bInNeedRepeatRequest)
+		, TokenUpdateCallback(InTokenUpdateCallback)
+		, ErrorCallback(InErrorCallback)
+	{
+	}
+	FErrorHandlersWrapper(FOnError InErrorCallback)
+		: ErrorCallback(InErrorCallback)
+	{
+	}
+	FErrorHandlersWrapper() {}
+};
+
 USTRUCT(BlueprintType)
 struct XSOLLAUTILS_API FXsollaItemGroup
 {

@@ -10,6 +10,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
+#include "XsollaUtilsDataModel.h"
 
 #include "XsollaLoginSubsystem.generated.h"
 
@@ -17,7 +18,8 @@ class FJsonObject;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
-
+DECLARE_DELEGATE_ThreeParams(FOnLoginDataError, int32, int32, const FString&);
+DECLARE_DELEGATE_OneParam(FOnLoginDataUpdate, const FXsollaLoginData&);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialUrlReceived, const FString&, Url);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSocialAccountLinkingHtmlReceived, const FString&, Content);
@@ -688,6 +690,8 @@ protected:
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
+	void InnerRefreshToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnLoginDataUpdate SuccessCallback, FOnLoginDataError ErrorCallback);
 	void SessionTicket_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void AuthViaAccessTokenOfSocialNetwork_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -750,7 +754,9 @@ protected:
 	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
 	/** Returns true if the error occurs. */
-	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
+	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
+
+	void InnerRefreshToken(const FString& RefreshToken, const FOnLoginDataUpdate& SuccessCallback, const FOnLoginDataError& ErrorCallback);
 
 private:
 	/** Create http request and add Xsolla API meta */
@@ -788,6 +794,7 @@ public:
 	/** Saves cached data or resets it if RememberMe is false. */
 	void SaveData();
 
+	void HandleRequestError(const XsollaHttpRequestError& ErrorData, FErrorHandlersWrapper ErrorHandlersWrapper);
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
