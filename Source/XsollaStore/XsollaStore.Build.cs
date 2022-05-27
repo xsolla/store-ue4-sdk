@@ -33,7 +33,8 @@ public class XsollaStore : ModuleRules
                 "SlateCore",
                 "UMG",
                 "ImageWrapper",
-                "WebSockets"
+                "WebSockets",
+                "XsollaLogin"
             }
             );
 

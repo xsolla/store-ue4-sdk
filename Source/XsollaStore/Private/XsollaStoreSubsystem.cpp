@@ -24,6 +24,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "XsollaWebBrowserWrapper.h"
+#include "XsollaLoginSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -45,6 +46,8 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	Initialize(Settings->ProjectID);
 
+	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
+	
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -62,7 +65,7 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 }
 
 void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreItemsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -73,6 +76,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.Build();
 
+	
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
@@ -80,7 +84,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 }
 
 void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
-	const FOnItemGroupsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/groups"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -96,7 +100,7 @@ void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
 							.SetPathParam(TEXT("ProjectId"), ProjectID)
@@ -114,7 +118,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FS
 }
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -133,7 +137,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 
 void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& ExternalId,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/group/{ExternalId}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -152,7 +156,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 }
 
 void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale,
-	const FOnGetItemsList& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/all"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -168,7 +172,7 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale,
 void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 	const FString& Currency, const FString& Country, const FString& Locale,
 	const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback, const int32 Quantity)
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
 
@@ -179,31 +183,36 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
-		FString SteamId;
-		FString OutError;
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
 
-		if (!GetSteamUserId(AuthToken, SteamId, OutError))
+		if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 		{
-			ErrorCallback.ExecuteIfBound(0, 0, OutError);
-			return;
+			FString SteamId;
+			FString OutError;
+
+			if (!GetSteamUserId(Token, SteamId, OutError))
+			{
+				ErrorCallback.ExecuteIfBound(0, 0, OutError);
+				return;
+			}
+
+			HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
 		}
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
 
-		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
-	}
-
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 	const FString& Currency, const FString& Country, const FString& Locale,
 	const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -219,29 +228,34 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 							.SetPathParam(TEXT("CartID"), Cart.cart_id)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-
-	if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
-		FString SteamId;
-		FString OutError;
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
 
-		if (!GetSteamUserId(AuthToken, SteamId, OutError))
+		if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
 		{
-			ErrorCallback.ExecuteIfBound(0, 0, OutError);
-			return;
+			FString SteamId;
+			FString OutError;
+
+			if (!GetSteamUserId(AuthToken, SteamId, OutError))
+			{
+				ErrorCallback.ExecuteIfBound(0, 0, OutError);
+				return;
+			}
+
+			HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
 		}
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
 
-		HttpRequest->SetHeader(TEXT("x-steam-userid"), SteamId);
-	}
-
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -286,7 +300,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
 							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder.
@@ -328,7 +342,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 }
 
 void UXsollaStoreSubsystem::ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
 	FOnCheckOrder CheckOrderSuccessCallback;
 	CheckOrderSuccessCallback.BindLambda([&, AccessToken, SuccessCallback, ErrorCallback](int32 OrderId, EXsollaOrderStatus OrderStatus, FXsollaOrderContent OrderContent)
@@ -354,7 +368,7 @@ void UXsollaStoreSubsystem::ShortPollingCheckOrder(const FString& AccessToken, c
 }
 
 void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
-	const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 
@@ -370,7 +384,7 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
-	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -398,7 +412,7 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 
 void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& CartId,
 	const FString& Currency, const FString& Locale,
-	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -426,7 +440,7 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 
 void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& CartId,
 	const FString& ItemSKU, const int32 Quantity,
-	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -497,7 +511,7 @@ void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& C
 }
 
 void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
-	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
@@ -532,7 +546,7 @@ void UXsollaStoreSubsystem::RemoveFromCart(const FString& AuthToken, const FStri
 }
 
 void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
-	const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/cart/fill")
@@ -556,13 +570,19 @@ void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString
 
 	JsonObject->SetArrayField(TEXT("items"), JsonItems);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken, SerializeJson(JsonObject));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::FillCartById_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, JsonObject, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, Token, SerializeJson(JsonObject));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::FillCartById_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle/sku/{Sku}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -576,7 +596,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetS
 }
 
 void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -595,7 +615,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 
 void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/sku/{CurrencySKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -613,7 +633,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnCurrencyPackageUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package/sku/{PackageSKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -631,7 +651,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage(const FString& PackageSKU,
 
 void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 	const FString& ItemSKU, const FString& CurrencySKU, const EXsollaPublishingPlatform Platform,
-	const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
 
@@ -644,28 +664,40 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
-	const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/promocode/code/{PromocodeCode}/rewards"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("PromocodeCode"), PromocodeCode)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
-	const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/promocode/redeem"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -679,14 +711,20 @@ void UXsollaStoreSubsystem::RedeemPromocode(const FString& AuthToken, const FStr
 	JsonCart->SetStringField(TEXT("id"), Cart.cart_id);
 	RequestDataJson->SetObjectField(TEXT("cart"), JsonCart);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
-	const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/promocode/remove"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -699,14 +737,20 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart(const FString& AuthToken,
 	JsonCart->SetStringField(TEXT("id"), Cart.cart_id);
 	RequestDataJson->SetObjectField(TEXT("cart"), JsonCart);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, Token, SerializeJson(RequestDataJson));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreGamesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnStoreGamesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -724,7 +768,7 @@ void UXsollaStoreSubsystem::GetGamesList(const FString& Locale, const FString& C
 }
 
 void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/group/{ExternalId}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -743,7 +787,7 @@ void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup(const FString& External
 }
 
 void UXsollaStoreSubsystem::GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnGameUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/sku/{GameSKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -760,7 +804,7 @@ void UXsollaStoreSubsystem::GetGameItem(const FString& GameSKU, const FString& L
 }
 
 void UXsollaStoreSubsystem::GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnGameKeyUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/key/sku/{ItemSKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -777,7 +821,7 @@ void UXsollaStoreSubsystem::GetGameKeyItem(const FString& ItemSKU, const FString
 }
 
 void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset)
+	const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/key/group/{ExternalId}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -795,7 +839,7 @@ void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup(const FString& Exter
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback)
+void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/game/drm"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -808,7 +852,7 @@ void UXsollaStoreSubsystem::GetDRMList(const FOnDRMListUpdate& SuccessCallback, 
 }
 
 void UXsollaStoreSubsystem::GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
-	const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit, const int Offset, const bool bIsSandbox)
+	const FOnOwnedGamesListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const bool bIsSandbox)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -818,14 +862,20 @@ void UXsollaStoreSubsystem::GetOwnedGames(const FString& AuthToken, const TArray
 							.AddBoolQueryParam(TEXT("sandbox"), bIsSandbox, true)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
-	const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback)
+	const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/entitlement/redeem"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -836,15 +886,21 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient(const FString& AuthToken, con
 	RequestDataJson->SetStringField(TEXT("code"), Code);
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -869,7 +925,7 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsData GroupsData;
@@ -887,7 +943,7 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyData VirtualCurrencyData;
@@ -904,7 +960,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -920,7 +976,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsList Items;
@@ -938,7 +994,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetItemsList SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetItemsList SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreItemsList Items;
@@ -956,7 +1012,7 @@ void UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -970,12 +1026,12 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 		return;
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 }
 
 void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
 {
 	FXsollaOrder Order;
 	XsollaHttpRequestError OutError;
@@ -1016,7 +1072,7 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1038,7 +1094,7 @@ void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1056,7 +1112,7 @@ void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1075,7 +1131,7 @@ void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1093,7 +1149,7 @@ void UXsollaStoreSubsystem::AddToCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1111,7 +1167,7 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1121,13 +1177,13 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
@@ -1157,7 +1213,7 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
@@ -1174,7 +1230,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrency currency;
@@ -1192,7 +1248,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackage currencyPackage;
@@ -1210,7 +1266,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 
 void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1222,12 +1278,12 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 		return;
 	}
 
-	HandleRequestError(OutError, ErrorCallback);
+	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 }
 
 void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 	FStorePromocodeRewardData PromocodeRewardData;
@@ -1238,13 +1294,13 @@ void UXsollaStoreSubsystem::GetPromocodeRewards_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1254,13 +1310,13 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1270,12 +1326,12 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreGamesData GamesData;
@@ -1300,7 +1356,7 @@ void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr Htt
 }
 
 void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreGamesList Games;
@@ -1316,7 +1372,7 @@ void UXsollaStoreSubsystem::GetGamesListBySpecifiedGroup_HttpRequestComplete(FHt
 }
 
 void UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FGameItem Game;
@@ -1333,7 +1389,7 @@ void UXsollaStoreSubsystem::GetGameItem_HttpRequestComplete(FHttpRequestPtr Http
 }
 
 void UXsollaStoreSubsystem::GetGameKeyItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FGameKeyItem GameKey;
@@ -1350,7 +1406,7 @@ void UXsollaStoreSubsystem::GetGameKeyItem_HttpRequestComplete(FHttpRequestPtr H
 }
 
 void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreGameKeysList GameKeys;
@@ -1366,7 +1422,7 @@ void UXsollaStoreSubsystem::GetGameKeysListBySpecifiedGroup_HttpRequestComplete(
 }
 
 void UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
 	FStoreDRMList DRMList;
@@ -1382,7 +1438,7 @@ void UXsollaStoreSubsystem::GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpR
 }
 
 void UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 	FOwnedGamesList OwnedGamesList;
@@ -1393,12 +1449,12 @@ void UXsollaStoreSubsystem::GetOwnedGames_HttpRequestComplete(FHttpRequestPtr Ht
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback)
+	const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 
@@ -1408,11 +1464,11 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete(FHttpRequ
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
-void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback)
+void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback)
 {
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
 		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
