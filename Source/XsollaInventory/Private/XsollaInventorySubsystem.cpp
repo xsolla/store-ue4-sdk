@@ -95,8 +95,8 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthTok
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-	const FOnSubscriptionUpdate& SuccessCallback, const FOnError& ErrorCallback)
+void UXsollaInventorySubsystem::GetTimeLimitedItems(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnTimeLimitedItemsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
@@ -111,7 +111,7 @@ void UXsollaInventorySubsystem::GetSubscriptions(const FString& AuthToken, const
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
-			&UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+			&UXsollaInventorySubsystem::GetTimeLimitedItems_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
 
@@ -243,16 +243,16 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	}
 }
 
-void UXsollaInventorySubsystem::GetSubscriptions_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetTimeLimitedItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+	const bool bSucceeded, FOnTimeLimitedItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-	FSubscriptionData receivedSubscriptions;
+	FTimeLimitedItemsData receivedTimeLimitedItems;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionData::StaticStruct(), &receivedSubscriptions, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FTimeLimitedItemsData::StaticStruct(), &receivedTimeLimitedItems, OutError))
 	{
-		SuccessCallback.ExecuteIfBound(receivedSubscriptions);
+		SuccessCallback.ExecuteIfBound(receivedTimeLimitedItems);
 	}
 	else
 	{

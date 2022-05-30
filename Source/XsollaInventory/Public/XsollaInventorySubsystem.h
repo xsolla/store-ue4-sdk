@@ -19,7 +19,7 @@ class UXsollaLoginSubsystem;
 DECLARE_DYNAMIC_DELEGATE(FOnInventoryRequestSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInventoryUpdate, const FInventoryItemsData&, InventoryData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyBalanceUpdate, const FVirtualCurrencyBalanceData&, CurrencyBalanceData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionUpdate, const FSubscriptionData&, SubscriptionData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnTimeLimitedItemsUpdate, const FTimeLimitedItemsData&, TimeLimitedItemsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRewardsUpdate, FInventoryCouponRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCouponRedeemUpdate, FInventoryRedeemedCouponData, RewardData);
 
@@ -70,17 +70,17 @@ public:
 	void GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get User Subscriptions
-	 * Gets the list of user subscriptions.
+	/** Get User Time Limited Items
+	 * Gets the list of user time limited items.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after list of user subscriptions was successfully received.
+	 * @param SuccessCallback Callback function called after list of user time limited items was successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSubscriptions(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
-		const FOnSubscriptionUpdate& SuccessCallback, const FOnError& ErrorCallback);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|TimeLimitedItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetTimeLimitedItems(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+		const FOnTimeLimitedItemsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Consume Inventory Item
 	 * Consumes an inventory item.
@@ -128,8 +128,8 @@ protected:
 		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetVirtualCurrencyBalance_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void GetSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnSubscriptionUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void GetTimeLimitedItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnTimeLimitedItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void ConsumeInventoryItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
