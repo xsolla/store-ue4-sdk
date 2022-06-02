@@ -585,17 +585,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Access Token By Email
-	 * Get Access token by email from your own backend service.
-	 *
-	 * @param Parameters Parameters for custom auth.
-	 * @param SuccessCallback Callback function called after the access token is successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetAccessTokenFromCustomAuthServer(const FXsollaParameters Parameters, const FOnAccessTokenLoginSuccess& SuccessCallback,
-		const FOnAuthError& ErrorCallback);
-
 	/** Get User Profile
 	 * Gets specified user public profile information.
 	 *
@@ -736,8 +725,6 @@ protected:
 		FOnSocialAccountLinkingHtmlReceived SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void LinkedSocialNetworks_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnLinkedSocialNetworksUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void GetAccessTokenByEmail_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void GetUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnUserDevicesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void LinkEmailAndPassword_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,

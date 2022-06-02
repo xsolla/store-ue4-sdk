@@ -1133,28 +1133,6 @@ void UXsollaLoginSubsystem::GetUsersFriends(const FString& AuthToken, const FStr
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaLoginSubsystem::GetAccessTokenFromCustomAuthServer(const FXsollaParameters Parameters,
-	const FOnAccessTokenLoginSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("{CustomAuthServer}login"))
-							.SetPathParam(TEXT("CustomAuthServer"), Settings->CustomAuthServerURL)
-							.Build();
-
-	const TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	UXsollaUtilsLibrary::AddParametersToJsonObject(RequestDataJson, Parameters);
-
-	FString PostContent;
-	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
 void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Generate endpoint url
@@ -1841,29 +1819,6 @@ void UXsollaLoginSubsystem::LinkedSocialNetworks_HttpRequestComplete(FHttpReques
 	}
 }
 
-void UXsollaLoginSubsystem::GetAccessTokenByEmail_HttpRequestComplete(
-	const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnAccessTokenLoginSuccess SuccessCallback, FOnAuthError ErrorCallback)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		static const FString AccessTokenFieldName = TEXT("access_token");
-		if (JsonObject->HasTypedField<EJson::String>(AccessTokenFieldName))
-		{
-			const FString AccessToken = JsonObject->GetStringField(AccessTokenFieldName);
-			SuccessCallback.ExecuteIfBound(AccessToken);
-			return;
-		}
-
-		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
-	}
-
-	HandleRequestOAuthError(OutError, ErrorCallback);
-}
-
 void UXsollaLoginSubsystem::GetUsersDevices_HttpRequestComplete(const FHttpRequestPtr HttpRequest, const FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserDevicesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
@@ -2121,11 +2076,11 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 	if (ErrorData.statusCode == 401 || ErrorData.statusCode == 403) // token time expired
 	{
 		FOnLoginDataUpdate SuccessRefreshCallback;
-		SuccessRefreshCallback.BindLambda([ErrorHandlersWrapper](const FXsollaLoginData& LoginData)
+		SuccessRefreshCallback.BindLambda([ErrorHandlersWrapper](const FXsollaLoginData& InLoginData)
 		{
 			if (ErrorHandlersWrapper.bNeedRepeatRequest)
 			{
-				ErrorHandlersWrapper.TokenUpdateCallback.ExecuteIfBound(LoginData.AuthToken.JWT, false);
+				ErrorHandlersWrapper.TokenUpdateCallback.ExecuteIfBound(InLoginData.AuthToken.JWT, false);
 			}
 		});
 		FOnLoginDataError ErrorRefreshCallback;
