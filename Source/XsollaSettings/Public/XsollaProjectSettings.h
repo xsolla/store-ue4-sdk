@@ -24,10 +24,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ClientID;
 
-	/** URL for login via access token */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
-	FString CustomAuthServerURL;
-
 	/** Redirect uri */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString RedirectURI;
@@ -89,6 +85,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	bool bAllowNativeAuth;
 
+	/** If enabled, SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Invalidate Existing Sessions", Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	bool InvalidateExistingSessions;
+	
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
 	FString FacebookAppId;
