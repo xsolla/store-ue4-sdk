@@ -80,10 +80,11 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	if (Settings->bAllowNativeAuth)
 	{
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
-			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(LoginID),
 			XsollaJavaConvertor::GetJavaString(ClientID),
+			XsollaJavaConvertor::GetJavaString(Settings->RedirectURI),
 			XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
