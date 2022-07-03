@@ -25,6 +25,7 @@
 #include "TimerManager.h"
 #include "XsollaWebBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
+#include "XsollaLoginLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -1603,9 +1604,34 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 
 		PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
 	}
+	else
+	{
+		if (Settings->UsePlatformBrowser)
+		{
+#if PLATFORM_ANDROID
+			PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment."), *UXsollaLoginLibrary::GetAppId()));
+			TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
+
+			RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
+				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
+			RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
+				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
+
+			RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
+			RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
+
+			PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
+#endif	
+		}
+	}
 
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
-
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: payment payload"), *OutputString);
+	
 	return RequestDataJson;
 }
 

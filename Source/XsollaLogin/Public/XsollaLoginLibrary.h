@@ -46,4 +46,8 @@ public:
 	/** Gets the device ID. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceId();
+
+	/** Gets the app ID. */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetAppId();
 };
