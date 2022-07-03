@@ -127,25 +127,25 @@ public:
 
 	/** Enable to override default redirect policy for payments. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy")
-	bool OverrideRedirectPolicy;
+	bool UseSettingsFromPublisherAccount;
 
 	/** Page to redirect user to after the payment. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString ReturnUrl;
 
 	/** Payment status that triggers user redirect to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
 	/** Delay after which the user will be automatically redirected to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	int32 RedirectDelay;
 
 	/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
 
 	/** Redirect button caption. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString RedirectButtonCaption;
 };

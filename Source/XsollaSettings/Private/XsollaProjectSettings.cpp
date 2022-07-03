@@ -23,7 +23,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
-	OverrideRedirectPolicy = false;
+	UseSettingsFromPublisherAccount = true;
 	ReturnUrl = TEXT("");
 	RedirectCondition = EXsollaPaymentRedirectCondition::none;
 	RedirectDelay = 0;

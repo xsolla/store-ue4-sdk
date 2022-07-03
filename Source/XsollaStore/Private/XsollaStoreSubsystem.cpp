@@ -1587,7 +1587,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
-	if (Settings->OverrideRedirectPolicy)
+	if (!Settings->UseSettingsFromPublisherAccount)
 	{
 		if (!Settings->ReturnUrl.IsEmpty())
 			PaymentSettingsJson->SetStringField(TEXT("return_url"), Settings->ReturnUrl);
