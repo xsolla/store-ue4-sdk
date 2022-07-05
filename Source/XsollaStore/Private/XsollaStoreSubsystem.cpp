@@ -1609,7 +1609,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 		if (Settings->UsePlatformBrowser)
 		{
 #if PLATFORM_ANDROID
-			PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment."), *UXsollaLoginLibrary::GetAppId()));
+			PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId()));
 			TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
 			RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),

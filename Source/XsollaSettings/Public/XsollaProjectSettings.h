@@ -100,14 +100,6 @@ public:
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
 	FString QQAppId;
-
-	/** Enable deep linking for Android applications. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
-	bool UseDeepLinking;
-
-	/** Redirect URL that allows external applications to enter current project game activity. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "UseDeepLinking"))
-	FString RedirectURL;
 	
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
