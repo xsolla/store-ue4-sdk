@@ -22,11 +22,10 @@ public class XsollaNativeAuth {
         XLogin.init(activity, loginConfig);
     }
 
-    public static void xAuthSocial(Activity activity, String provider, boolean rememberMe, boolean invalidateToken, long callback) {
+    public static void xAuthSocial(Activity activity, String provider, boolean rememberMe, long callback) {
         SocialNetwork socialNetwork = SocialNetwork.valueOf(provider.toUpperCase());
         Intent intent = new Intent(activity, XsollaNativeAuthActivity.class);
         intent.putExtra(XsollaNativeAuthActivity.ARG_SOCIAL_NETWORK, socialNetwork.name());
-        intent.putExtra(XsollaNativeAuthActivity.ARG_WITH_LOGOUT, invalidateToken);
         intent.putExtra(XsollaNativeAuthActivity.REMEMBER_ME, rememberMe);
         intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);

@@ -261,8 +261,8 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		nativeCallback->BindCancelDelegate(CancelCallback);
 		nativeCallback->BindErrorDelegate(ErrorCallback);
 
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZZJ)V",
-			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, Settings->InvalidateExistingSessions, (jlong)nativeCallback);
+		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
+			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, (jlong)nativeCallback);
 	}
 	else
 	{

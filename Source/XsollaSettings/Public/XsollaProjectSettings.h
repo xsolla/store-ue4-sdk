@@ -84,10 +84,6 @@ public:
 	/** If enabled, user authentication will be handled via native Android applications if possible. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	bool bAllowNativeAuth;
-
-	/** If enabled, SDK will deactivate the existing user JWT values and activate the one generated during last successful authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Invalidate Existing Sessions", Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
-	bool InvalidateExistingSessions;
 	
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
