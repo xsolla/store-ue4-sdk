@@ -80,10 +80,11 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	if (Settings->bAllowNativeAuth)
 	{
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
-			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(LoginID),
 			XsollaJavaConvertor::GetJavaString(ClientID),
+			XsollaJavaConvertor::GetJavaString(Settings->RedirectURI),
 			XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
@@ -260,8 +261,8 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		nativeCallback->BindCancelDelegate(CancelCallback);
 		nativeCallback->BindErrorDelegate(ErrorCallback);
 
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZZJ)V",
-			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, Settings->InvalidateExistingSessions, (jlong)nativeCallback);
+		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
+			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, (jlong)nativeCallback);
 	}
 	else
 	{
@@ -2093,8 +2094,9 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 	}
 	else
 	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
-		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
+		auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
+		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
 	}
 }
 

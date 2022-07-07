@@ -15,7 +15,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	SendPasswordlessAuthURL = false;
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	Platform = EXsollaPublishingPlatform::playstation_network;
-	CustomAuthServerURL = "https://sdk.xsolla.com/";
 	bAllowNativeAuth = false;
 	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
 	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
@@ -24,7 +23,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
-	OverrideRedirectPolicy = false;
+	UseSettingsFromPublisherAccount = true;
 	ReturnUrl = TEXT("");
 	RedirectCondition = EXsollaPaymentRedirectCondition::none;
 	RedirectDelay = 0;

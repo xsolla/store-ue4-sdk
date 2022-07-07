@@ -17,7 +17,6 @@ import com.xsolla.android.login.token.TokenUtils;
 
 public class XsollaNativeAuthActivity extends Activity {
     public static String ARG_SOCIAL_NETWORK = "social_network";
-    public static String ARG_WITH_LOGOUT = "with_logout";
 	public static String REMEMBER_ME = "remember_me";
     public static String CALLBACK_ADDRESS = "callback_address";
 
@@ -34,9 +33,8 @@ public class XsollaNativeAuthActivity extends Activity {
         tokenUtils = new TokenUtils(this);
 
         SocialNetwork socialNetwork = SocialNetwork.valueOf(getIntent().getStringExtra(ARG_SOCIAL_NETWORK));
-        boolean withLogout = getIntent().getBooleanExtra(ARG_WITH_LOGOUT, false);
 
-        XLogin.startSocialAuth(this, socialNetwork, withLogout, new StartSocialCallback() {
+        XLogin.startSocialAuth(this, socialNetwork, false, new StartSocialCallback() {
             @Override
             public void onAuthStarted() {
                 Log.d("XsollaAuthActivity", "onAuthStarted");
@@ -55,9 +53,8 @@ public class XsollaNativeAuthActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         SocialNetwork socialNetwork = SocialNetwork.valueOf(getIntent().getStringExtra(ARG_SOCIAL_NETWORK));
-        boolean withLogout = getIntent().getBooleanExtra(ARG_WITH_LOGOUT, false);
 
-        XLogin.finishSocialAuth(this, socialNetwork, requestCode, resultCode, data, withLogout, new FinishSocialCallback() {
+        XLogin.finishSocialAuth(this, socialNetwork, requestCode, resultCode, data, false, new FinishSocialCallback() {
             @Override
             public void onAuthSuccess() {
                 Log.d("XsollaAuthActivity", "onAuthSuccess");                

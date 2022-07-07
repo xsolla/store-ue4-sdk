@@ -113,3 +113,8 @@ FString UXsollaLoginLibrary::GetDeviceId()
 {
 	return UKismetSystemLibrary::GetDeviceId();
 }
+
+FString UXsollaLoginLibrary::GetAppId()
+{
+	return UKismetSystemLibrary::GetGameBundleId();
+}

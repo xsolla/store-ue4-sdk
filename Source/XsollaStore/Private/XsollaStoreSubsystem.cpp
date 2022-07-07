@@ -25,6 +25,7 @@
 #include "TimerManager.h"
 #include "XsollaWebBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
+#include "XsollaLoginLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -1470,9 +1471,10 @@ void UXsollaStoreSubsystem::RedeemGameCodeByClient_HttpRequestComplete(FHttpRequ
 
 void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback)
 {
+	auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
-		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
-	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
+		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
+	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
 }
 
 void UXsollaStoreSubsystem::LoadData()
@@ -1586,7 +1588,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
-	if (Settings->OverrideRedirectPolicy)
+	if (!Settings->UseSettingsFromPublisherAccount)
 	{
 		if (!Settings->ReturnUrl.IsEmpty())
 			PaymentSettingsJson->SetStringField(TEXT("return_url"), Settings->ReturnUrl);
@@ -1603,9 +1605,34 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 
 		PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
 	}
+	else
+	{
+		if (Settings->UsePlatformBrowser)
+		{
+#if PLATFORM_ANDROID||PLATFORM_IOS
+			PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId()));
+			TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
+
+			RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
+				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
+			RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
+				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
+
+			RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
+			RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
+
+			PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
+#endif	
+		}
+	}
 
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
-
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: payment payload"), *OutputString);
+	
 	return RequestDataJson;
 }
 

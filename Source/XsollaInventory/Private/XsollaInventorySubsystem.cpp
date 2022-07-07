@@ -100,7 +100,7 @@ void UXsollaInventorySubsystem::GetTimeLimitedItems(const FString& AuthToken, co
 {
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
 	
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/subscriptions"))
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/time_limited_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();

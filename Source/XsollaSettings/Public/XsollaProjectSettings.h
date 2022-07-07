@@ -24,10 +24,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ClientID;
 
-	/** URL for login via access token */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
-	FString CustomAuthServerURL;
-
 	/** Redirect uri */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString RedirectURI;
@@ -88,7 +84,7 @@ public:
 	/** If enabled, user authentication will be handled via native Android applications if possible. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	bool bAllowNativeAuth;
-
+	
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
 	FString FacebookAppId;
@@ -104,14 +100,6 @@ public:
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
 	FString QQAppId;
-
-	/** Enable deep linking for Android applications. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
-	bool UseDeepLinking;
-
-	/** Redirect URL that allows external applications to enter current project game activity. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "UseDeepLinking"))
-	FString RedirectURL;
 	
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
@@ -127,25 +115,25 @@ public:
 
 	/** Enable to override default redirect policy for payments. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy")
-	bool OverrideRedirectPolicy;
+	bool UseSettingsFromPublisherAccount;
 
 	/** Page to redirect user to after the payment. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString ReturnUrl;
 
 	/** Payment status that triggers user redirect to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
 	/** Delay after which the user will be automatically redirected to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	int32 RedirectDelay;
 
 	/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
 
 	/** Redirect button caption. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "OverrideRedirectPolicy"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString RedirectButtonCaption;
 };
