@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0] - 2022-07-08
+
+### Added
+- Check order status.
+- Token autorefresh.
+
+### Changed
+- Xsolla settings.
+
+### Fixed
+- Minor issues.
+
+### Removed
+- JWT authorization.
+- Data cache.
+
 ## [0.9.3] - 2021-12-15
 
 ### Fixed
