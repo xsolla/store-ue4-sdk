@@ -161,7 +161,7 @@ void FXsollaEntityTypeList::OnCommitChange()
 			}
 		}
 
-		TypesProperty->NotifyPostChange();
+		TypesProperty->NotifyPostChange(EPropertyChangeType::Unspecified);
 		UpdateConfig.ExecuteIfBound();
 		ReloadTypes.ExecuteIfBound();
 	}
