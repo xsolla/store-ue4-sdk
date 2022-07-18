@@ -2,10 +2,8 @@
 
 #include "XsollaInventorySubsystem.h"
 
-#include "XsollaInventory.h"
 #include "XsollaInventoryDataModel.h"
 #include "XsollaInventoryDefines.h"
-#include "XsollaInventorySettings.h"
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsUrlBuilder.h"
 
@@ -13,6 +11,9 @@
 #include "JsonObjectConverter.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "XsollaSettingsModule.h"
+#include "XsollaProjectSettings.h"
+#include "XsollaLoginSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaInventoryModule"
 
@@ -26,9 +27,11 @@ void UXsollaInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	// Initialize subsystem with project identifier provided by user
-	const UXsollaInventorySettings* Settings = FXsollaInventoryModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	Initialize(Settings->ProjectID);
 
+	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
+	
 	UE_LOG(LogXsollaInventory, Log, TEXT("%s: XsollaInventory subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -43,52 +46,81 @@ void UXsollaInventorySubsystem::Initialize(const FString& InProjectId)
 	ProjectID = InProjectId;
 }
 
-void UXsollaInventorySubsystem::UpdateInventory(const FString& AuthToken,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnInventoryUpdate& SuccessCallback, const FOnError& ErrorCallback,
+	const int Limit, const int Offset)
 {
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT(""):UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.AddNumberQueryParam(TEXT("limit"), Limit)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Platform, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::GetInventory_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+	
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance(const FString& AuthToken, const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/virtual_currency_balance"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaInventorySubsystem::UpdateSubscriptions(const FString& AuthToken,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+void UXsollaInventorySubsystem::GetTimeLimitedItems(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
+	const FOnTimeLimitedItemsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/subscriptions"))
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/time_limited_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::GetTimeLimitedItems_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU,
-	const int32 Quantity, const FString& InstanceID,
-	const FOnInventoryUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const int32 Quantity, const FString& InstanceID, const EXsollaPublishingPlatform Platform,
+	const FOnInventoryRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -112,34 +144,49 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/item/consume"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("platform"), GetPublishingPlatformName())
+							.AddStringQueryParam(TEXT("platform"), PlatformName)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
 
-	HttpRequest->ProcessRequest();
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaInventorySubsystem::GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
-	const FOnCouponRewardsUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCouponRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/code/{CouponCode}/rewards"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("CouponCode"), CouponCode)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
-	const FOnCouponRedeemUpdate& SuccessCallback, const FOnInventoryError& ErrorCallback)
+	const FOnCouponRedeemUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/coupon/redeem"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -149,67 +196,73 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("coupon_code"), CouponCode);
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, AuthToken, SerializeJson(RequestDataJson));
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaInventorySubsystem::UpdateInventory_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 	FInventoryItemsData NewInventory;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryItemsData::StaticStruct(), &NewInventory, OutError))
 	{
-		Inventory = NewInventory;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(NewInventory);
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
-void UXsollaInventorySubsystem::UpdateVirtualCurrencyBalance_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-
+	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
+	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance, OutError))
 	{
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(VirtualCurrencyBalance);
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
-void UXsollaInventorySubsystem::UpdateSubscriptions_HttpRequestComplete(
+void UXsollaInventorySubsystem::GetTimeLimitedItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnTimeLimitedItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-	FSubscriptionData receivedSubscriptions;
+	FTimeLimitedItemsData receivedTimeLimitedItems;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionData::StaticStruct(), &receivedSubscriptions, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FTimeLimitedItemsData::StaticStruct(), &receivedTimeLimitedItems, OutError))
 	{
-		Subscriptions = receivedSubscriptions;
-		SuccessCallback.ExecuteIfBound();
+		SuccessCallback.ExecuteIfBound(receivedTimeLimitedItems);
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
 
@@ -219,12 +272,12 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	FInventoryCouponRewardData couponRewards;
 	XsollaHttpRequestError OutError;
@@ -235,12 +288,12 @@ void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpReq
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
 }
 
 void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FOnInventoryError ErrorCallback)
+	const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	FInventoryRedeemedCouponData redeemedCouponData;
 	XsollaHttpRequestError OutError;
@@ -251,14 +304,8 @@ void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr
 	}
 	else
 	{
-		HandleRequestError(OutError, ErrorCallback);
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
-}
-
-void UXsollaInventorySubsystem::HandleRequestError(const XsollaHttpRequestError& ErrorData, FOnInventoryError ErrorCallback)
-{
-	UE_LOG(LogXsollaInventory, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *ErrorData.errorMessage);
-	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, ErrorData.errorMessage);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaInventorySubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
@@ -273,76 +320,6 @@ FString UXsollaInventorySubsystem::SerializeJson(const TSharedPtr<FJsonObject> D
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&JsonContent);
 	FJsonSerializer::Serialize(DataJson.ToSharedRef(), Writer);
 	return JsonContent;
-}
-
-FString UXsollaInventorySubsystem::GetPublishingPlatformName() const
-{
-	const UXsollaInventorySettings* Settings = FXsollaInventoryModule::Get().GetSettings();
-
-	if (!Settings->UseCrossPlatformAccountLinking)
-	{
-		return TEXT("");
-	}
-
-	return UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Settings->Platform);
-}
-
-FInventoryItemsData UXsollaInventorySubsystem::GetInventory() const
-{
-	return Inventory;
-}
-
-TArray<FVirtualCurrencyBalance> UXsollaInventorySubsystem::GetVirtualCurrencyBalance() const
-{
-	return VirtualCurrencyBalance.Items;
-}
-
-FVirtualCurrencyBalance UXsollaInventorySubsystem::GetVirtualCurrencyBalanceBySku(const FString& CurrencySku, bool& bWasFound) const
-{
-	FVirtualCurrencyBalance Currency;
-	bWasFound = false;
-
-	const auto InventoryItem =
-		VirtualCurrencyBalance.Items.FindByPredicate(
-			[CurrencySku](const FVirtualCurrencyBalance& InCurrency) {
-				return InCurrency.sku == CurrencySku;
-			});
-
-	if (InventoryItem != nullptr)
-	{
-		bWasFound = true;
-		Currency = InventoryItem[0];
-	}
-
-	return Currency;
-}
-
-TArray<FSubscriptionItem> UXsollaInventorySubsystem::GetSubscriptions() const
-{
-	return Subscriptions.Items;
-}
-
-FString UXsollaInventorySubsystem::GetItemName(const FString& ItemSKU) const
-{
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	if (InventoryItem != nullptr)
-	{
-		return InventoryItem->name;
-	}
-
-	return TEXT("");
-}
-
-bool UXsollaInventorySubsystem::IsItemInInventory(const FString& ItemSKU) const
-{
-	auto InventoryItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem) {
-		return InItem.sku == ItemSKU;
-	});
-
-	return InventoryItem != nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

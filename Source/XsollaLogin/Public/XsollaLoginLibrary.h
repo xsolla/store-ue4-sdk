@@ -7,7 +7,6 @@
 #include "XsollaLoginLibrary.generated.h"
 
 class UXsollaLoginSubsystem;
-class UXsollaLoginSettings;
 class UTexture2D;
 
 UCLASS()
@@ -16,10 +15,6 @@ class XSOLLALOGIN_API UXsollaLoginLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Gives direct access to the login SDK settings. */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
-	static UXsollaLoginSettings* GetLoginSettings();
-
 	/** Validates the email string format. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static bool IsEmailValid(const FString& EMail);
@@ -51,4 +46,8 @@ public:
 	/** Gets the device ID. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceId();
+
+	/** Gets the app ID. */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static FString GetAppId();
 };

@@ -31,11 +31,12 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	bool IsReferralAnalyticsSet = !XRef.IsEmpty() && !XRefV.IsEmpty();
 
 	// Xsolla analytics URL meta
-	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=%s&sdk_v=%s"),
+	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=%s&sdk_v=%s&build_platform=%s"),
 		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
 		ENGINE_VERSION_STRING,
 		*SdkModuleName.ToLower(),
-		*SdkModuleVersion);
+		*SdkModuleVersion,
+		*UGameplayStatics::GetPlatformName().ToLower());
 
 	// Referral analytics URL meta
 	const FString ReferralMetaUrl = IsReferralAnalyticsSet ? FString::Printf(TEXT("&ref=%s&ref_v=%s"), *XRef.ToLower(), *XRefV.ToLower()) : TEXT("");
@@ -47,6 +48,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
 	HttpRequest->SetHeader(TEXT("X-SDK"), SdkModuleName);
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), SdkModuleVersion);
+	HttpRequest->SetHeader(TEXT("X-BUILD-PLATFORM"), UGameplayStatics::GetPlatformName());
 
 	// Referral analytics header meta
 	if (IsReferralAnalyticsSet)

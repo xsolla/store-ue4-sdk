@@ -7,22 +7,28 @@
 
 #include "XsollaUtilsDataModel.generated.h"
 
-/** Target platform name */
-UENUM(BlueprintType)
-enum class EXsollaPublishingPlatform : uint8
+DECLARE_DELEGATE_TwoParams(FOnTokenUpdate, const FString&, bool);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
+
+USTRUCT()
+struct FErrorHandlersWrapper
 {
-	playstation_network UMETA(DisplayName = "PlaystationNetwork"),
-	xbox_live UMETA(DisplayName = "XboxLive"),
-	xsolla UMETA(DisplayName = "Xsolla"),
-	pc_standalone UMETA(DisplayName = "PcStandalone"),
-	nintendo_shop UMETA(DisplayName = "NintendoShop"),
-	google_play UMETA(DisplayName = "GooglePlay"),
-	app_store_ios UMETA(DisplayName = "AppStoreIos"),
-	android_standalone UMETA(DisplayName = "AndroidStandalone"),
-	ios_standalone UMETA(DisplayName = "IosStandalone"),
-	android_other UMETA(DisplayName = "AndroidOther"),
-	ios_other UMETA(DisplayName = "IosOther"),
-	pc_other UMETA(DisplayName = "PcOther")
+	GENERATED_BODY()
+
+	bool bNeedRepeatRequest = false;
+	FOnTokenUpdate TokenUpdateCallback;
+	FOnError ErrorCallback;
+	FErrorHandlersWrapper(bool bInNeedRepeatRequest, FOnTokenUpdate InTokenUpdateCallback, FOnError InErrorCallback)
+		: bNeedRepeatRequest(bInNeedRepeatRequest)
+		, TokenUpdateCallback(InTokenUpdateCallback)
+		, ErrorCallback(InErrorCallback)
+	{
+	}
+	FErrorHandlersWrapper(FOnError InErrorCallback)
+		: ErrorCallback(InErrorCallback)
+	{
+	}
+	FErrorHandlersWrapper() {}
 };
 
 USTRUCT(BlueprintType)

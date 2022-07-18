@@ -18,7 +18,9 @@ public class XsollaStore : ModuleRules
                 "JsonUtilities",
                 "UMG",
                 "XsollaWebBrowser",
-                "XsollaUtils"
+                "XsollaUtils",
+                "XsollaSettings",
+                "OnlineSubsystem"
             }
             );
 
@@ -31,7 +33,8 @@ public class XsollaStore : ModuleRules
                 "SlateCore",
                 "UMG",
                 "ImageWrapper",
-                "WebSockets"
+                "WebSockets",
+                "XsollaLogin"
             }
             );
 

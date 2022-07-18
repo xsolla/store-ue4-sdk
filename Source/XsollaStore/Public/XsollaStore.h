@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class UXsollaStoreSettings;
-
 /**
  * Xsolla Store SDK Module
  */
@@ -38,13 +36,6 @@ public:
 		return FModuleManager::Get().IsModuleLoaded(ModuleName);
 	}
 
-	/** Getter for internal settings object to support runtime configuration changes. */
-	UXsollaStoreSettings* GetSettings() const;
-
 	/** Module name. */
 	static const FName ModuleName;
-
-private:
-	/** Module settings. */
-	UXsollaStoreSettings* XsollaStoreSettings;
 };

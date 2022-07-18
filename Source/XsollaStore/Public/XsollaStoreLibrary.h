@@ -7,7 +7,6 @@
 #include "XsollaStoreLibrary.generated.h"
 
 class UXsollaStoreSubsystem;
-class UXsollaStoreSettings;
 class UDataTable;
 
 UCLASS()
@@ -16,10 +15,6 @@ class XSOLLASTORE_API UXsollaStoreLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Direct access to the store SDK settings. */
-	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
-	static UXsollaStoreSettings* GetStoreSettings();
-
 	/** Returns true if cart A is equal to cart B (A == B). */
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (StoreCart)", CompactNodeTitle = "===", ScriptMethod = "Equals", ScriptOperator = "==", Keywords = "== equal"), Category = "Xsolla|Store|Cart")
 	static bool Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B);

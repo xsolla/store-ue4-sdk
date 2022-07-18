@@ -3,10 +3,11 @@
 #include "XsollaLoginSave.h"
 #include "XsollaLogin.h"
 #include "XsollaLoginDefines.h"
-#include "XsollaLoginSettings.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
+#include "XsollaProjectSettings.h"
+#include "XsollaSettingsModule.h"
 
 const FString UXsollaLoginSave::SaveSlotName = "XsollaLoginSaveSlot";
 const int32 UXsollaLoginSave::UserIndex = 0;
@@ -25,7 +26,7 @@ FXsollaLoginData UXsollaLoginSave::Load()
 	}
 
 	// Decrypt the players sensitive credentials using an AES-256 encryption key if enabled
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	FXsollaLoginData CachedLoginData = SaveInstance->LoginData;
 
 	if (Settings->EncryptCachedCredentials && CachedLoginData.bEncrypted)
@@ -60,7 +61,7 @@ void UXsollaLoginSave::Save(const FXsollaLoginData& InLoginData)
 	}
 
 	// Encrypt the players sensitive credentials using a secondary AES-256 encryption key configured for the project if enabled
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	FXsollaLoginData CachedLoginData = InLoginData;
 
 	if (Settings->EncryptCachedCredentials)
@@ -93,7 +94,7 @@ void UXsollaLoginSave::Save(const FXsollaLoginData& InLoginData)
 
 FAES::FAESKey UXsollaLoginSave::GetEncryptionKey()
 {
-	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	FAES::FAESKey CachedEncryptionKey = FAES::FAESKey();
 
 	if (Settings->XsollaSaveEncryptionKey.IsEmpty())

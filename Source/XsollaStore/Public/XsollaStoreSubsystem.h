@@ -9,17 +9,21 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Subsystems/SubsystemCollection.h"
 #include "XsollaOrderCheckObject.h"
+#include "XsollaUtilsDataModel.h"
 #include "XsollaStoreSubsystem.generated.h"
 
 
+enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
+class UXsollaWebBrowserWrapper;
+class UXsollaLoginSubsystem;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
+DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnStoreError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus, FXsollaOrderContent, OrderContent);
+DECLARE_DELEGATE_ThreeParams(FOnCheckOrder, int32, EXsollaOrderStatus, FXsollaOrderContent);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurrencyPackage&, CurrencyPackage);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
@@ -35,6 +39,11 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameKeyUpdate, const FGameKeyItem&, GameKey
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGameKeysList, GameKeysList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, GamesList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrenciesUpdate, const FVirtualCurrencyData&, VirtualCurrencyData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreGamesUpdate, const FStoreGamesData&, GamesData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreItemsUpdate, const FStoreItemsData&, ItemsData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrencyPackagesUpdate, const FVirtualCurrencyPackagesData&, Data);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const TArray<FXsollaItemGroup>&, ItemGroups);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
 
 UCLASS()
@@ -58,63 +67,63 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
-	/** Update Virtual Items
-	 * Updates the list of virtual items available for the configured project (cached locally).
+	/** Get Virtual Items
+	 * Gets the list of virtual items available for the configured project.
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after local cache of virtual items was successfully updated.
+	 * @param SuccessCallback Callback function called after virtual items were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Update Item Groups
-	 * Updates the list of virtual item groups (cached locally).
+	/** Get Item Groups
+	 * Gets the list of virtual item groups.
 	 *
 	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after local cache of virtual item groups was successfully updated.
+	 * @param SuccessCallback Callback function called after virtual item groups were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateItemGroups(const FString& Locale,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetItemGroups(const FString& Locale,
+		const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Update Virtual Currencies
-	 * Updates the list of virtual currencies (cached locally).
+	/** Get Virtual Currencies
+	 * Gets the list of virtual currencies.
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after local cache of virtual currencies was successfully updated.
+	 * @param SuccessCallback Callback function called after virtual currencies were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Update Virtual Currency Packages
-	 * Updates the list of virtual currency packages (cached locally).
+	/** Get Virtual Currency Packages
+	 * Gets the list of virtual currency packages.
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
-	 * @param SuccessCallback Callback function called after local cache of virtual currency packages was successfully updated.
+	 * @param SuccessCallback Callback function called after virtual currency packages were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Items List By Specified Group
 	 * Gets an item list from the specified group for building a catalog.
@@ -131,7 +140,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetItemsListBySpecifiedGroup(const FString& ExternalId,
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get All Items List
 	 * Gets a list of all virtual items.
@@ -141,7 +150,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Fetch Payment Token
 	 * Initiates an item purchase session and fetches token for payment console.
@@ -160,7 +169,7 @@ public:
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
 		const FString& Currency, const FString& Country, const FString& Locale,
 		const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback, const int32 Quantity = 1);
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Fetch Cart Payment Token
 	 * Initiates a cart purchase session and fetches a token for payment console.
@@ -178,45 +187,38 @@ public:
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Country, const FString& Locale,
 		const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Launch Payment Console
 	 * Opens payment console for the provided access token.
 	 *
 	 * @param WorldContextObject The world context.
+	 * @param OrderId Identifier of order.
 	 * @param AccessToken Payment token used during purchase processing.
-	 * @param BrowserWidget Widget to represent a payment form. Can be set in the project settings.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject"))
-	void LaunchPaymentConsole(UObject* WorldContextObject, const FString& AccessToken, UUserWidget*& BrowserWidget);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Check Order
-	 * Checks pending order status by its ID.
+	/** Check Pending Order
+	 * Checks pending order
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param OrderId Identifier of order to be checked.
-	 * @param SuccessCallback Callback function called after successful order check. Order status will be received.
+	 * @param AccessToken Payment token used during purchase processing.
+	 * @param OrderId Identifier of order.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CheckOrder(const FString& AuthToken, const int32 OrderId,
-		const FOnCheckOrder& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Create order check object
-	 * Creates order check object
-	 *
-	 * @param OrderId Identifier of order to be checked.
-	 * @param OnStatusReceivedCallback Callback function called after successful order check. Order status will be received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param TimeoutCallback Callback function called after life time is expired.
-	 * @param LifeTime Object lifetime.
-	 *
-	 * * @return Returns new order check instance
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck", meta = (AutoCreateRefTerm = "OnStatusReceivedCallback, ErrorCallback, TimeoutCallback"))
-	UXsollaOrderCheckObject* CreateOrderCheckObject(const int32 OrderId,
-		const FOnOrderCheckSuccess& OnStatusReceivedCallback, const FOnOrderCheckError& ErrorCallback,
-		const FOnOrderCheckTimeout& TimeoutCallback, const int32 LifeTime = 300);
+	void ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
+	
+	void CheckOrder(const FString& AuthToken, const int32 OrderId,
+		const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -228,7 +230,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ClearCart(const FString& AuthToken, const FString& CartId,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Update Cart
 	 * Updates cart content (cached locally).
@@ -243,7 +245,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateCart(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Locale,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Add to Cart
 	 * Adds an item to the cart and changes its quantity.
@@ -257,7 +259,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Remove from Cart
 	 * Completely removes an item from the cart.
@@ -270,7 +272,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Fill Cart By ID
 	 * Fills out the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
@@ -283,7 +285,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Specified Bundle
 	* Gets a specified bundle.
@@ -293,23 +295,22 @@ public:
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSpecifiedBundle(const FString& Sku,
-		const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Update Bundles
+	/** Get Bundles
 	* Gets a list of bundles for building a catalog.
 	*
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
-	* @param SuccessCallback Callback function called after the cart is successfully filled.
+	* @param SuccessCallback Callback function called after bundles are successfully received.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Virtual Currency
 	 * Gets virtual currency with specified SKU.
@@ -324,7 +325,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU,
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnCurrencyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Virtual Currency Package
 	 * Gets virtual currency package with specified SKU.
@@ -339,7 +340,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU,
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnCurrencyPackageUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnCurrencyPackageUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Buy Item with Virtual Currency
 	 * Buys an item using virtual currency.
@@ -347,12 +348,13 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired item SKU.
 	 * @param CurrencySKU Currency to buy virtual items with.
+	 * @param Platform Target platform
 	 * @param SuccessCallback Callback function called after the successful item purchase.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
-		const FOnPurchaseUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const EXsollaPublishingPlatform Platform, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Promocode Rewards
 	 * Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
@@ -365,7 +367,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
-		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Redeem Promocode
 	 * Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
@@ -377,7 +379,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
-		const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Remove Promocode From Cart
 	 * Removes a promo code from a cart. After the promo code is removed, the total price of all items in the cart will be recalculated without bonuses and discounts provided by a promo code.
@@ -388,7 +390,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemovePromocodeFromCart(const FString& AuthToken,
-		const FOnPromocodeUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Games
 	 * Gets list of games for building a catalog.
@@ -402,8 +404,8 @@ public:
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys" , meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void UpdateGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreGamesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Games By Specified Group
 	 * Gets the list of games from the specified group for building a catalog.
@@ -419,7 +421,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get Game Item
 	 * Gets a game item with the specified SKU for the catalog.
@@ -433,7 +435,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGameUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnGameUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Game Key Item
 	 * Gets a game key item with the specified SKU for the catalog.
@@ -447,7 +449,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGameKeyUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnGameKeyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Game Key List
 	 * Gets a game key list from the specified group for building a catalog.
@@ -463,7 +465,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+		const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Get DRM List
 	 * Gets the list of available DRMs.
@@ -472,7 +474,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback);
+	void GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Owned Games
 	 * Gets the list of games owned by the user. The response will contain an array of games owned by a particular user.
@@ -488,7 +490,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
-		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnStoreError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
+		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
 
 	/** Redeem Game Code By Client
 	* Grants an entitlement by a provided game code.
@@ -500,86 +502,86 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
-		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnStoreError& ErrorCallback);
+		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 protected:
-	void UpdateVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
-	void UpdateVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void GetVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnError ErrorCallback);
+	void GetItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback);
+	void GetVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnError ErrorCallback);
+	void GetVirtualCurrencyPackages_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FOnError ErrorCallback);
 	void GetItemsListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback);
 	void GetAllItemsList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetItemsList SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetItemsList SuccessCallback, FOnError ErrorCallback);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void ClearCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void UpdateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void AddToCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void GetListOfBundles_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FOnError ErrorCallback);
 	void GetSpecifiedBundle_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void GetVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnError ErrorCallback);
 	void GetVirtualCurrencyPackage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void BuyItemWithVirtualCurrency_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void GetPromocodeRewards_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetPromocodeRewardsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void RedeemPromocode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void RemovePromocodeFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
-	void UpdateGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreUpdate SuccessCallback, FOnStoreError ErrorCallback);
+	void GetGamesList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnStoreGamesUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void GetGamesListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetGamesListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback);
 
 	void GetGameItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGameUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void GetGameKeyItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGameKeyUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void GetGameKeysListBySpecifiedGroup_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnGetGameKeysListBySpecifiedGroup SuccessCallback, FOnError ErrorCallback);
 
 	void GetDRMList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnDRMListUpdate SuccessCallback, FOnError ErrorCallback);
 
 	void GetOwnedGames_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnOwnedGamesListUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FOnStoreError ErrorCallback);
+		const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	/** Return true if error is happened */
-	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnStoreError ErrorCallback);
+	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
 
 protected:
 	/** Load save game and extract data */
@@ -605,9 +607,6 @@ private:
 	/** Prepare payload for payment token request */
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters);
 
-	/** Get name of publishing platform */
-	FString GetPublishingPlatformName() const;
-
 	/** Get payment interface theme */
 	FString GetPaymentInerfaceTheme() const;
 
@@ -618,14 +617,6 @@ private:
 	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
 
 public:
-	/** Get Virtual Items
-	 * Gets the list of cached virtual items filtered by category.
-	 *
-	 * @param GroupFilter Group for which items should be received.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	TArray<FStoreItem> GetVirtualItems(const FString& GroupFilter) const;
-
 	/** Gets the list of cached virtual items without any Category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItemsWithoutGroup() const;
@@ -633,14 +624,6 @@ public:
 	/** Gets cached items data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FStoreItemsData& GetItemsData() const;
-
-	/** Gets the list of cached virtual currencies. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	const TArray<FVirtualCurrency>& GetVirtualCurrencyData() const;
-
-	/** Gets the list of cached virtual currency packages. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency")
-	const TArray<FVirtualCurrencyPackage>& GetVirtualCurrencyPackages() const;
 
 	/** Gets cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
@@ -654,14 +637,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetItemName(const FString& ItemSKU) const;
 
-	/** Gets name of the cached virtual currency with the given SKU. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FString GetVirtualCurrencyName(const FString& CurrencySKU) const;
-
-	/** Gets virtual currency from the cache with the given SKU. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FVirtualCurrency FindVirtualCurrencyBySku(const FString& CurrencySku, bool& bHasFound) const;
-
 	/** Gets item from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FStoreItem& FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
@@ -673,10 +648,6 @@ public:
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	bool IsItemInCart(const FString& ItemSKU) const;
-
-	/** Gets games list data. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys")
-	const FStoreGamesData& GetGamesData() const;
 
 public:
 	/** Event occurred when the cart was changed or updated. */
@@ -693,14 +664,8 @@ protected:
 	/** Current cart */
 	FStoreCart Cart;
 
-	/** Cached list of virtual currencies */
-	FVirtualCurrencyData VirtualCurrencyData;
-
 	/** Cached virtual currency packages */
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
-
-	/** Cached list of games */
-	FStoreGamesData GamesData;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
@@ -717,9 +682,15 @@ protected:
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
 
-	UUserWidget* MyBrowser;
+	UXsollaWebBrowserWrapper* MyBrowser;
 
 private:
 	UPROPERTY()
-	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaWebBrowserWrapper> DefaultBrowserWidgetClass;
+
+	UPROPERTY()
+	TArray<UXsollaOrderCheckObject*> CachedOrderCheckObjects;
+
+	UPROPERTY()
+	UXsollaLoginSubsystem* LoginSubsystem;
 };

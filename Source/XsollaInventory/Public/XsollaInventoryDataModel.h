@@ -180,51 +180,51 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLAINVENTORY_API FSubscriptionItem
+struct XSOLLAINVENTORY_API FTimeLimitedItem
 {
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString sku;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString name;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString type;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString virtual_item_type;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString description;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString image_url;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	int64 expired_at;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Item")
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item")
 	FString status;
 
 public:
-	FSubscriptionItem()
+	FTimeLimitedItem()
 		: expired_at(0)
 	{
 	}
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLAINVENTORY_API FSubscriptionData
+struct XSOLLAINVENTORY_API FTimeLimitedItemsData
 {
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Data")
-	TArray<FSubscriptionItem> Items;
+	UPROPERTY(BlueprintReadOnly, Category = "Time Limited Item Data")
+	TArray<FTimeLimitedItem> Items;
 
 public:
-	FSubscriptionData(){};
+	FTimeLimitedItemsData(){};
 };

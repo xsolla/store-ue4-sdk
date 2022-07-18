@@ -5,102 +5,42 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
     <log text="XsollaStore UPL initialization"/>
-
-    <!-- Read settings -->
-    <setBoolFromProperty result="UseDeepLinkingFlag" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="UseDeepLinking" default="false"/>
-    <setStringFromProperty result="DeepLinkingURL" ini="Engine" section="/Script/XsollaStore.XsollaStoreSettings" property="RedirectURL" default=""/>
-
-    <setIntLength result="DeepLinkingURLLength" source="$S(DeepLinkingURL)"/>
-    <setBoolIsGreater  result="DeepLinkingURLNotEmpty" arg1="$I(DeepLinkingURLLength)" arg2="0"/>
-
-    <if condition="DeepLinkingURLNotEmpty">
-      <false>
-        <log text="XsollaStore UPL deep linking URL is empty"/>
-      </false>
-    </if>
-
-    <setBoolAnd result="DeepLinkingSettingsProvided" arg1="$B(UseDeepLinkingFlag)" arg2="$B(DeepLinkingURLNotEmpty)"/>
-
-    <setBool result="DeepLinkingURLValid" value="false"/>
-    
-    <if condition="DeepLinkingSettingsProvided">
-      <true>
-        <!-- Try parse redirect URL for deep linking (scheme)-->
-        <setIntFindString result="DeepLinkingSchemeEndIndex" source="$S(DeepLinkingURL)" find="://"/>
-        <setBoolIsGreater  result="DeepLinkingURLHasScheme" arg1="$I(DeepLinkingSchemeEndIndex)" arg2="0"/>
-        <if condition="DeepLinkingURLHasScheme">
-          <true>
-            <!-- Try parse redirect URL for deep linking (host)-->
-            <setStringSubstring result="DeepLinkingScheme" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingSchemeEndIndex)"/>
-            <setStringReplace result="DeepLinkingURL" source="$S(DeepLinkingURL)" find="$S(DeepLinkingScheme)://" with=""/>          
-            <setIntFindString result="DeepLinkingHostEndIndex" source="$S(DeepLinkingURL)" find="/"/>
-            <setBoolIsGreater  result="DeepLinkingURLHasHost" arg1="$I(DeepLinkingHostEndIndex)" arg2="0"/>            
-            <if condition="DeepLinkingURLHasHost">
-              <true>
-                <!-- Try parse redirect URL for deep linking (prefix)-->
-                <setStringSubstring result="DeepLinkingHost" source="$S(DeepLinkingURL)" start="0" length="$I(DeepLinkingHostEndIndex)"/>
-                <setStringReplace result="DeepLinkingPathPrefix" source="$S(DeepLinkingURL)" find="$S(DeepLinkingHost)/" with=""/>
-                <setIntLength result="DeepLinkingPathPrefixLength" source="$S(DeepLinkingPathPrefix)"/>
-                <setBoolIsGreater  result="DeepLinkingPathPrefixNotEmpty" arg1="$I(DeepLinkingPathPrefixLength)" arg2="0"/>                
-                <if condition="DeepLinkingPathPrefixNotEmpty">
-                  <true>
-                    <log text="XsollaStore UPL deep linking URL is valid"/>
-                    <setBool result="DeepLinkingURLValid" value="true"/>
-                  </true>
-                  <false>
-                    <log text="XsollaStore UPL deep linking URL ivalid prefix"/>
-                  </false>
-                </if>                
-              </true>
-              <false>
-                <log text="XsollaStore UPL deep linking URL ivalid host"/>
-              </false>
-            </if>            
-          </true>
-          <false>
-            <log text="XsollaStore UPL deep linking URL ivalid scheme"/>
-          </false>
-        </if>
-      </true>
-    </if>
-
-    <setBoolAnd result="DeepLinkingSettingsValid" arg1="$B(UseDeepLinkingFlag)" arg2="$B(DeepLinkingURLValid)"/>
-        
   </init>
 
   <!-- Optional updates applied to AndroidManifest.xml -->
   <androidManifestUpdates>
-    <if condition="DeepLinkingSettingsValid">
-      <true>
-        <!-- Update the GameActivity activity -->
-        <loopElements tag="activity">
-          <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
-          <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity"/>
-          <if condition="bGameActivity">
-            <true>
-              <setElement result="deepLinkingSchemeData" value="data"/>
-              <addAttribute tag="$deepLinkingSchemeData" name="android:scheme" value="$S(DeepLinkingScheme)"/>
-              <setElement result="deepLinkingHostData" value="data"/>
-              <addAttribute tag="$deepLinkingHostData" name="android:host" value="$S(DeepLinkingHost)"/>
-              <setElement result="deepLinkingPathPrefixData" value="data"/>
-              <addAttribute tag="$deepLinkingPathPrefixData" name="android:pathPrefix" value="/$S(DeepLinkingPathPrefix)"/>
-              
-              <setElement result="deepLinkingIntentFilter" value="intent-filter" />
-              <addElement tag="$deepLinkingIntentFilter" name="deepLinkingSchemeData" />
-              <addElement tag="$deepLinkingIntentFilter" name="deepLinkingHostData" />
-              <addElement tag="$deepLinkingIntentFilter" name="deepLinkingPathPrefixData" />
+    <setStringFromAttribute result="PackageName" tag="manifest" name="package" />
+    <setString result="DeepLinkingScheme" value="app"/>
+    <setString result="DeepLinkingHost" value="xpayment.$S(PackageName)"/>
 
-              <addElements tag="$deepLinkingIntentFilter">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-              </addElements>
-              
-              <addElement tag="activity" name="deepLinkingIntentFilter" /> 
-            </true>
-          </if>
-        </loopElements>
-      </true>
-    </if>
+    <log text="XsollaStore UPL deep linking PACKAGE NAME: $S(PackageName)"/>
+    <log text="XsollaStore UPL deep linking SCHEME: $S(DeepLinkingScheme)"/>
+    <log text="XsollaStore UPL deep linking HOST: $S(DeepLinkingHost)"/>
+
+    <!-- Update the GameActivity activity -->
+    <loopElements tag="activity">
+      <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
+      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity"/>
+      <if condition="bGameActivity">
+        <true>
+          <setElement result="deepLinkingSchemeData" value="data"/>
+          <addAttribute tag="$deepLinkingSchemeData" name="android:scheme" value="$S(DeepLinkingScheme)"/>
+          <setElement result="deepLinkingHostData" value="data"/>
+          <addAttribute tag="$deepLinkingHostData" name="android:host" value="$S(DeepLinkingHost)"/>
+
+          <setElement result="deepLinkingIntentFilter" value="intent-filter" />
+          <addElement tag="$deepLinkingIntentFilter" name="deepLinkingSchemeData" />
+          <addElement tag="$deepLinkingIntentFilter" name="deepLinkingHostData" />
+
+          <addElements tag="$deepLinkingIntentFilter">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+          </addElements>
+
+          <addElement tag="activity" name="deepLinkingIntentFilter" />
+        </true>
+      </if>
+    </loopElements>
   </androidManifestUpdates>
 </root>

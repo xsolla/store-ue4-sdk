@@ -18,11 +18,6 @@ UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitial
 {
 }
 
-UXsollaLoginSettings* UXsollaLoginLibrary::GetLoginSettings()
-{
-	return FXsollaLoginModule::Get().GetSettings();
-}
-
 bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 {
 	const FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
@@ -117,4 +112,9 @@ FString UXsollaLoginLibrary::GetDeviceName()
 FString UXsollaLoginLibrary::GetDeviceId()
 {
 	return UKismetSystemLibrary::GetDeviceId();
+}
+
+FString UXsollaLoginLibrary::GetAppId()
+{
+	return UKismetSystemLibrary::GetGameBundleId();
 }
