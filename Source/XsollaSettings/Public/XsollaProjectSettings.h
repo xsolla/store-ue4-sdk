@@ -163,7 +163,7 @@ public:
 	 * Payment status when user is automatically redirected to the return URL.
 	 * "None" - do not redirect.
 	 * "Successful payment" - redirect when a payment is successful.
-	 * "Successful or cancelled payment" - redirect when a payment is successful or canceled.
+	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
 	 * "Any payment" - redirect for any payment status.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
@@ -182,7 +182,7 @@ public:
 	 * "None" - do not redirect.
 	 * "Purchase using virtual currency" - redirect when purchase is made using virtual currency.
 	 * "Successful payment" - redirect when a payment is successful.
-	 * "Successful or cancelled payment" - redirect when a payment is successful or canceled.
+	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;

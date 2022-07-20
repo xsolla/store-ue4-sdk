@@ -58,7 +58,7 @@ enum class EXsollaPaymentRedirectCondition : uint8
 {
 	none UMETA(DisplayName = "None"),
 	successful UMETA(DisplayName = "Successful payment"),
-	successful_or_canceled UMETA(DisplayName = "Successful or cancelled payment"),
+	successful_or_canceled UMETA(DisplayName = "Successful or canceled payment"),
 	any UMETA(DisplayName = "Any payment")
 };
 
@@ -69,7 +69,7 @@ enum class EXsollaPaymentRedirectStatusManual : uint8
 	none UMETA(DisplayName = "None"),
 	vc UMETA(DisplayName = "Purchase using virtual currency"),
 	successful UMETA(DisplayName = "Successful payment"),
-	successful_or_canceled UMETA(DisplayName = "Successful or cancelled payment"),
+	successful_or_canceled UMETA(DisplayName = "Successful or canceled payment"),
 	any UMETA(DisplayName = "Any payment")
 };
 
