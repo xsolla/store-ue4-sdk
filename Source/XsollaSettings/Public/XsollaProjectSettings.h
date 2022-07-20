@@ -26,7 +26,6 @@ public:
 	 * Can be found in Publisher Account.
 	 * To get it, go to the "Login -> Dashbord" section and click "Copy ID" near the name of the Login project.
 	 * If you don't use Xsolla Login, leave this field blank.
-	 * Required.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString LoginID;
@@ -34,7 +33,7 @@ public:
 	/**
 	 * Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol.
 	 * Can be found in Publisher Account.
-	 * To get it, go to the "Login -> Dashbord" section and click "Copy ID" near the name of the Login project.
+	 * To get the ID, set up an OAuth client in Publisher Account in the "Login -> your Login project -> Secure -> OAuth 2.0" section.
 	 * If you don't use Xsolla Login, leave this field blank.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
@@ -42,7 +41,7 @@ public:
 
 	/**
 	 * URI to redirect the user to after signing up, logging in, or password reset.
-	 * Must be identical to the OAuth 2.0 redirect URI specified in Publisher Account in Login >Security > OAuth 2.0 settings.
+	 * Must be identical to the OAuth 2.0 redirect URI specified in Publisher Account in Login -> Security -> OAuth 2.0 settings.
 	 * Required if there are several callback URIs.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
@@ -141,7 +140,7 @@ public:
 
 	/**
 	 * Device type used to present payment interface.
-	 * The Pay Station UI depends on the type of device.
+	 * The Pay Station UI depends on the device type.
 	 * If Not specified, the app automatically uses Pay Station UI supported by the device.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
@@ -163,9 +162,9 @@ public:
 	 * Redirect Conditions.
 	 * Payment status when user is automatically redirected to the return URL.
 	 * "None" - do not redirect.
-	 * "Successful" - redirect when a payment is successful.
-	 * "Successful or Cancelled" - redirect when a payment is successful or canceled.
-	 * "Any" - redirect for any payment status.
+	 * "Successful payment" - redirect when a payment is successful.
+	 * "Successful or cancelled payment" - redirect when a payment is successful or canceled.
+	 * "Any payment" - redirect for any payment status.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
@@ -182,8 +181,8 @@ public:
 	 * Payment status when the redirect button appears.
 	 * "None" - do not redirect.
 	 * "Purchase using virtual currency" - redirect when purchase is made using virtual currency.
-	 * "Successful" - redirect when a payment is successful.
-	 * "Successful or Cancelled" - redirect when a payment is successful or canceled.
+	 * "Successful payment" - redirect when a payment is successful.
+	 * "Successful or cancelled payment" - redirect when a payment is successful or canceled.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;

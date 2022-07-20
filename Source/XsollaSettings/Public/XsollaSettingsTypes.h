@@ -57,9 +57,9 @@ UENUM(BlueprintType)
 enum class EXsollaPaymentRedirectCondition : uint8
 {
 	none UMETA(DisplayName = "None"),
-	successful UMETA(DisplayName = "Successful"),
-	successful_or_canceled UMETA(DisplayName = "Successful or Cancelled"),
-	any UMETA(DisplayName = "Any")
+	successful UMETA(DisplayName = "Successful payment"),
+	successful_or_canceled UMETA(DisplayName = "Successful or cancelled payment"),
+	any UMETA(DisplayName = "Any payment")
 };
 
 /** Payment status that triggers the display of a button clicking which redirects the user to the return URL. */
@@ -68,8 +68,8 @@ enum class EXsollaPaymentRedirectStatusManual : uint8
 {
 	none UMETA(DisplayName = "None"),
 	vc UMETA(DisplayName = "Purchase using virtual currency"),
-	successful UMETA(DisplayName = "Successful"),
-	successful_or_canceled UMETA(DisplayName = "Successful or Cancelled"),
-	any UMETA(DisplayName = "Any")
+	successful UMETA(DisplayName = "Successful payment"),
+	successful_or_canceled UMETA(DisplayName = "Successful or cancelled payment"),
+	any UMETA(DisplayName = "Any payment")
 };
 
