@@ -5,19 +5,41 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
     <log text="XsollaStore UPL initialization"/>
+    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName"/>
+    <setStringReplace result="PackageNamePath" source="$S(PackageName)" find="." with="/"/>
   </init>
+
+  <buildGradleAdditions>
+    <!-- Add dependencies -->
+    <insert>
+      dependencies {
+        implementation 'com.xsolla.android:payments:1.0.0'
+      }
+      repositories {
+        maven { url 'https://maven.google.com' }
+        jcenter { url 'https://jcenter.bintray.com' }
+      }
+    </insert>
+  </buildGradleAdditions>
+  
+  <prebuildCopies>
+    <!-- Add native implementation wrapper -->
+    <copyDir src="$S(PluginDir)/Private/Android/Java" dst="$S(BuildDir)/src/com/xsolla/store" />
+  </prebuildCopies>
 
   <!-- Optional updates applied to AndroidManifest.xml -->
   <androidManifestUpdates>
-    <setStringFromAttribute result="PackageName" tag="manifest" name="package" />
+
+    <!-- Setup XsollaNativePaymentsActivity -->
+    <setElement result="XsollaNativePaymentsActivity" value="activity"/>
+    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:name" value="com.xsolla.store.XsollaNativePaymentsActivity"/>
+    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:configChanges" value="orientation|screenSize"/>
+    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+    <addElement tag="application" name="XsollaNativePaymentsActivity"/>
+
+    <!-- Add depp linking settings to GameActivity activity -->
     <setString result="DeepLinkingScheme" value="app"/>
     <setString result="DeepLinkingHost" value="xpayment.$S(PackageName)"/>
-
-    <log text="XsollaStore UPL deep linking PACKAGE NAME: $S(PackageName)"/>
-    <log text="XsollaStore UPL deep linking SCHEME: $S(DeepLinkingScheme)"/>
-    <log text="XsollaStore UPL deep linking HOST: $S(DeepLinkingHost)"/>
-
-    <!-- Update the GameActivity activity -->
     <loopElements tag="activity">
       <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
       <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity"/>
