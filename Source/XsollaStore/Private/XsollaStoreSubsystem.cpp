@@ -27,6 +27,12 @@
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
 
+#if PLATFORM_ANDROID
+#include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
+#include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
+#include "XsollaLogin/Private/Android/XsollaNativeAuthCallback.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
@@ -269,6 +275,23 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	}
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+#if PLATFORM_ANDROID
+	if (!Settings->UsePlatformBrowser)
+	{
+		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V",
+			FJavaWrapper::GameActivityThis,
+			XsollaJavaConvertor::GetJavaString(AccessToken), 
+			Settings->EnableSandbox,
+			XsollaJavaConvertor::GetJavaString("app"),
+			XsollaJavaConvertor::GetJavaString(FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId())));
+
+		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		return;
+	}
+#endif
+
 	if (Settings->UsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
@@ -1607,23 +1630,20 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	}
 	else
 	{
-		if (Settings->UsePlatformBrowser)
-		{
 #if PLATFORM_ANDROID||PLATFORM_IOS
-			PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId()));
-			TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
+		PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId()));
+		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
-			RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
-				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
-			RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
-				UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
+		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
+			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
+		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
+			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
 
-			RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
-			RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
+		RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
+		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
 
-			PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
+		PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
 #endif	
-		}
 	}
 
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);

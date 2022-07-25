@@ -80,11 +80,10 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 	if (Settings->bAllowNativeAuth)
 	{
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
-			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(LoginID),
 			XsollaJavaConvertor::GetJavaString(ClientID),
-			XsollaJavaConvertor::GetJavaString(Settings->RedirectURI),
 			XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
 			XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
@@ -252,7 +251,6 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
 #if PLATFORM_ANDROID
-
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	if (Settings->bAllowNativeAuth)
 	{
@@ -261,8 +259,12 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		nativeCallback->BindCancelDelegate(CancelCallback);
 		nativeCallback->BindErrorDelegate(ErrorCallback);
 
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
-			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, (jlong)nativeCallback);
+		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial",
+			"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
+			FJavaWrapper::GameActivityThis, 
+			XsollaJavaConvertor::GetJavaString(ProviderName), 
+			bRememberMe, 
+			(jlong)nativeCallback);
 	}
 	else
 	{
