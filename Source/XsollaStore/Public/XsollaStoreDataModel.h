@@ -890,3 +890,270 @@ struct XSOLLASTORE_API FOwnedGamesList
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
 	TArray<FOwnedGameItem> items;
 };
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPaystationLink
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Paystation Link")
+	FString link_to_ps;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPeriod
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
+	int32 value;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
+	FString unit;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionCharge
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
+	float amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
+	float amount_with_promotion;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
+	FString currency;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPlanCharge
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
+	float amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
+	float setup_fee;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
+	FString currency;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPlanPromotion
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
+	float promotion_charge_amount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
+	float promotion_remaining_charges;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPlan
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	int32 plan_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FString plan_external_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FString plan_group_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FString plan_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FString plan_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FString plan_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FDateTime plan_start_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FDateTime plan_end_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	int32 trial_period;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FSubscriptionPeriod period;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FSubscriptionPlanCharge charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
+	FSubscriptionPlanPromotion promotion;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionPlansList
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
+	TArray<FSubscriptionPlan> items;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
+	bool has_more;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscription
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	int32 id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	int32 plan_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString plan_external_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString plan_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString plan_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FDateTime plan_start_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FDateTime plan_end_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	int32 product_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString product_external_id;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString product_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString product_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FString status;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	bool is_in_trial;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	int32 trial_period;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FDateTime date_create;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FDateTime date_next_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FDateTime date_last_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FSubscriptionCharge charge;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
+	FSubscriptionPeriod period;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionsList
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
+	TArray<FSubscription> items;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
+	bool has_more;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionDetails
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	int32 id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	int32 plan_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString plan_external_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString plan_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString plan_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime plan_start_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime plan_end_date;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	int32 product_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString product_external_id;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString product_name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString product_description;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FString status;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	bool is_in_trial;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	int32 trial_period;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime date_create;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime date_next_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime date_last_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FSubscriptionCharge charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FSubscriptionPeriod period;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	FDateTime date_end;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	bool is_renew_possible;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	bool is_change_to_non_renew_possible;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
+	bool is_change_plan_allowed;
+};

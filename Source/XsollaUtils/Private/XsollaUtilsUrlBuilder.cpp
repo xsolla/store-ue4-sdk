@@ -94,6 +94,17 @@ XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& 
 	return *this;
 }
 
+XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddArrayQueryParam(const FString& ParamName, const TArray<int32> ParamValueArray, const bool IgnoreEmpty, const bool AsOneParam)
+{
+	TArray<FString> StrArray;
+	for (const auto& i : ParamValueArray)
+	{
+		StrArray.Add(FString::FromInt(i));
+	}
+
+	return AddArrayQueryParam(ParamName, StrArray, IgnoreEmpty, AsOneParam);
+}
+
 XsollaUtilsUrlBuilder& XsollaUtilsUrlBuilder::AddNumberQueryParam(const FString& ParamName, const int32 ParamValue)
 {
 	NumberQueryParams.Add(TPair<FString, int32>(ParamName, ParamValue));
