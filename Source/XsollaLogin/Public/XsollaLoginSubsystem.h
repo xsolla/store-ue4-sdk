@@ -72,6 +72,7 @@ public:
 	 * @param Password Password. Required.
 	 * @param Email Email. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 * @param Locale Defines localization of the email user receives.
 	 * @param PersonalDataProcessingConsent Whether the user gave consent to processing of their personal data.
 	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
 	 * @param AdditionalFields Parameters used for extended registration forms.
@@ -79,7 +80,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+	void RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale,
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
@@ -88,11 +89,12 @@ public:
 	 *
 	 * @param Username Username. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
+	 * @param Locale Defines localization of the email user receives.
 	 * @param SuccessCallback Callback function called after successful request sending.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ResendAccountConfirmationEmail(const FString& Username, const FString& State,
+	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Locale,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate User
@@ -112,11 +114,12 @@ public:
 	 * Resets the user password.
 	 *
 	 * @param User User identifier (name or email depending on user data storage type). Required.
+	 * @param Locale Defines localization of the email user receives.
 	 * @param SuccessCallback Callback function called after successful user password reset.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void ResetUserPassword(const FString& User, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Internal request for token validation (called with each auth update automatically)
 	 *

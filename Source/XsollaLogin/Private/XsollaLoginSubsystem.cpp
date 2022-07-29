@@ -93,7 +93,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 #endif
 }
 
-void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
+void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale, 
 	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
@@ -120,6 +120,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
@@ -128,7 +129,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State,
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Locale,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -144,6 +145,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Userna
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user/resend_confirmation_link"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
@@ -182,7 +184,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -198,6 +200,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 	const FString Endpoint = TEXT("https://login.xsolla.com/api/password/reset/request");
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->RedirectURI))
 							.Build();
 
