@@ -90,7 +90,6 @@ public:
 	 * @param Username Username. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
 	 * @param Locale Defines localization of the email user receives.
-	 * @param Locale Defines localization of the email user receives.
 	 * @param SuccessCallback Callback function called after successful request sending.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -115,6 +114,7 @@ public:
 	 * Resets the user password.
 	 *
 	 * @param User User identifier (name or email depending on user data storage type). Required.
+	 * @param Locale Defines localization of the email user receives.
 	 * @param SuccessCallback Callback function called after successful user password reset.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
