@@ -45,6 +45,12 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreItemsUpdate, const FStoreItemsData&, I
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrencyPackagesUpdate, const FVirtualCurrencyPackagesData&, Data);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const TArray<FXsollaItemGroup>&, ItemGroups);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPublicPlansListUpdate, FSubscriptionPlansList, SubscriptionPlansList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPlansListUpdate, FSubscriptionPlansList, SubscriptionPlansList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionsListUpdate, FSubscriptionsList, SubscriptionsList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionDetailsSuccess, const FSubscriptionDetails&, SubscriptionDetails);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionPayStationLinkSuccess, const FString&, LinkToPaystation);
+DECLARE_DYNAMIC_DELEGATE(FOnCancelSubscriptionSuccess);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -504,6 +510,115 @@ public:
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
 		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	/** Get Subscription Public Plans
+	* Returns a list of all plans, including plans purchased by the user while promotions are active.
+	*
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
+	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
+	* @param Offset Number of elements from which the list is generated (the count starts from 0).
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "PlanId, PlanExternalId, SuccessCallback, ErrorCallback"))
+	void GetSubscriptionPublicPlans(const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
+		const FOnSubscriptionPublicPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback,	const int Limit = 50, const int Offset = 0);
+
+	/** Get Subscription Plans
+	* Returns a list of all plans, including plans purchased by the user while promotions are active.
+	*
+	* @param AuthToken User authorization token.
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
+	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
+	* @param Offset Number of elements from which the list is generated (the count starts from 0).
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "PlanId, PlanExternalId, SuccessCallback, ErrorCallback"))
+	void GetSubscriptionPlans(const FString& AuthToken, const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
+		const FOnSubscriptionPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+
+	/** Get Subscriptions
+	* Returns a list of active recurrent subscriptions that have the status `active`, `non renewing`, and `pause`.
+	* 
+	* @param AuthToken User authorization token.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
+	* @param Offset Number of elements from which the list is generated (the count starts from 0).
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptions(const FString& AuthToken, const FString& Locale,
+		const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+
+	/** Get Subscriptions Details
+	* Returns information about a subscription by its ID. Subscription can be in any status.
+	* 
+	* @param AuthToken User authorization token.
+	* @param SubscriptionId Subscription ID. **Required**.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
+		const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Get Subscription Purchase Url
+	* Returns Pay Station URL for the subscription purchase.
+	* 
+	* @param AuthToken User authorization token.
+	* @param PlanExternalId Subscription plan external ID (32 characters). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
+	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Get Subscription Management Url
+	* Returns Pay Station URL for the subscription management.
+	* 
+	* @param AuthToken User authorization token.
+	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Get Subscription Renewal Url
+	* Returns Pay Station URL for the subscription renewal.
+	*
+	* @param AuthToken User authorization token.
+	* @param SubscriptionId Subscription ID. **Required**.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Cancel Subscription
+	* Changes a regular subscription status to non_renewing (subscription is automatically canceled after expiration).
+	*
+	* @param AuthToken User authorization token.
+	* @param SubscriptionId Subscription ID. **Required**.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
+		const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback);
+	
 protected:
 	void GetVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnError ErrorCallback);
@@ -579,6 +694,24 @@ protected:
 
 	void RedeemGameCodeByClient_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnRedeemGameCodeSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void GetSubscriptionPublicPlans_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnSubscriptionPublicPlansListUpdate SuccessCallback, FOnError ErrorCallback);
+
+	void GetSubscriptionPlans_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnSubscriptionPlansListUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void GetSubscriptions_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnSubscriptionsListUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void GetSubscriptionDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetSubscriptionDetailsSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+		
+	void GetSubscriptionPaystationLink_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetSubscriptionPayStationLinkSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
