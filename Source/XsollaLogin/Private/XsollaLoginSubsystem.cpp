@@ -94,7 +94,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 }
 
 void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale, 
-	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
+	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	LoginData = FXsollaLoginData();
@@ -110,7 +110,12 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	RequestDataJson->SetStringField(TEXT("email"), Email);
 	RequestDataJson->SetBoolField(TEXT("accept_consent"), PersonalDataProcessingConsent);
 	RequestDataJson->SetNumberField(TEXT("promo_email_agreement"), ReceiveNewsConsent ? 1 : 0);
-	SetStringArrayField(RequestDataJson, TEXT("fields"), AdditionalFields);
+	TSharedPtr<FJsonObject> FieldsDataJson = MakeShareable(new FJsonObject());
+	for (auto& FieldKeyValue: AdditionalFields)
+	{
+		FieldsDataJson->SetStringField(FieldKeyValue.Key, FieldKeyValue.Value);
+	}
+	RequestDataJson->SetObjectField(TEXT("fields"), FieldsDataJson);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
