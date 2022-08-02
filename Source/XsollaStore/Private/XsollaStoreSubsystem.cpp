@@ -927,7 +927,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPublicPlans(const TArray<int> PlanId,
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/public/v1/projects/{ProjectID}/user_plans"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddArrayQueryParam(TEXT("plan_external_id"), PlanId)
+								.AddArrayQueryParam(TEXT("plan_id"), PlanId)
 								.AddArrayQueryParam(TEXT("plan_external_id"), PlanExternalId)
 								.AddStringQueryParam(TEXT("country"), Country)
 								.AddStringQueryParam(TEXT("locale"), Locale)
@@ -945,7 +945,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans(const FString& AuthToken, const
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/plans"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddArrayQueryParam(TEXT("plan_external_id"), PlanId)
+								.AddArrayQueryParam(TEXT("plan_id"), PlanId)
 								.AddArrayQueryParam(TEXT("plan_external_id"), PlanExternalId)
 								.AddStringQueryParam(TEXT("country"), Country)
 								.AddStringQueryParam(TEXT("locale"), Locale)
