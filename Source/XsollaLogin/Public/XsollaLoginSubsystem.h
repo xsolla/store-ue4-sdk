@@ -65,19 +65,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
 
-	// textreview
 	/** Sign up User
-	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
+	 * Adds a new user to the database. The user will receive an account confirmation email to the specified email adress.
 	 *
 	 * @param Username Username. Required.
 	 * @param Password Password. Required.
-	 * @param Email Email. Required.
+	 * @param Email Email address. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
-	 * @param Locale Defines localization of the email user receives.
+	 * @param Locale Defines localization of the email the user receives.
 	 * @param PersonalDataProcessingConsent Whether the user gave consent to processing of their personal data.
 	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
 	 * @param AdditionalFields Parameters used for extended registration forms.
-	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be send to the specified email.
+	 * @param SuccessCallback Callback function called after successful user registration. Account confirmation message will be sent to the specified email address.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
@@ -85,14 +84,13 @@ public:
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	// textreview
 	/** Resend Account Confirmation Email
 	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
 	 *
 	 * @param Username Username. Required.
 	 * @param State Value used for additional user verification. Required for OAuth 2.0.
-	 * @param Locale Defines localization of the email user receives.
-	 * @param SuccessCallback Callback function called after successful request sending.
+	 * @param Locale Defines localization of the email the user receives.
+	 * @param SuccessCallback Callback function called after successful sending of the request.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -112,12 +110,11 @@ public:
 	void AuthenticateUser(const FString& Username, const FString& Password,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
-	// textreview
 	/** Reset User Password
 	 * Resets the user password.
 	 *
-	 * @param User User identifier (name or email depending on user data storage type). Required.
-	 * @param Locale Defines localization of the email user receives.
+	 * @param User User identifier (name or email address depending on user data storage type). Required.
+	 * @param Locale Defines localization of the email the user receives.
 	 * @param SuccessCallback Callback function called after successful user password reset.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -338,7 +335,7 @@ public:
 	 *
 	 * @param UserId User identifier from a platform account.
 	 * @param Platform Platform type.
-	 * @param InvalidateExistingSessions 
+	 * @param InvalidateExistingSessions
 	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */

@@ -222,7 +222,7 @@ public:
 
 	void ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
-	
+
 	void CheckOrder(const FString& AuthToken, const int32 OrderId,
 		const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback);
 
@@ -510,7 +510,6 @@ public:
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
 		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	// textreview
 	/** Get Subscription Public Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
@@ -527,7 +526,6 @@ public:
 	void GetSubscriptionPublicPlans(const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPublicPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback,	const int Limit = 50, const int Offset = 0);
 
-	// textreview
 	/** Get Subscription Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
@@ -545,10 +543,9 @@ public:
 	void GetSubscriptionPlans(const FString& AuthToken, const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// textreview
 	/** Get Subscriptions
 	* Returns a list of active recurrent subscriptions that have the status `active`, `non renewing`, and `pause`.
-	* 
+	*
 	* @param AuthToken User authorization token.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
 	* @param SuccessCallback Callback function called after successful redemption.
@@ -560,10 +557,9 @@ public:
 	void GetSubscriptions(const FString& AuthToken, const FString& Locale,
 		const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	// textreview
 	/** Get Subscriptions Details
-	* Returns information about a subscription by its ID. Subscription can be in any status.
-	* 
+	* Returns information about a subscription by its ID. Subscription can be have any status.
+	*
 	* @param AuthToken User authorization token.
 	* @param SubscriptionId Subscription ID. **Required**.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
@@ -574,10 +570,9 @@ public:
 	void GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
 		const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	// textreview
 	/** Get Subscription Purchase Url
 	* Returns Pay Station URL for the subscription purchase.
-	* 
+	*
 	* @param AuthToken User authorization token.
 	* @param PlanExternalId Subscription plan external ID (32 characters). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
@@ -588,10 +583,9 @@ public:
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	// textreview
 	/** Get Subscription Management Url
 	* Returns Pay Station URL for the subscription management.
-	* 
+	*
 	* @param AuthToken User authorization token.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param SuccessCallback Callback function called after successful redemption.
@@ -601,7 +595,6 @@ public:
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	// textreview
 	/** Get Subscription Renewal Url
 	* Returns Pay Station URL for the subscription renewal.
 	*
@@ -614,7 +607,6 @@ public:
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	// textreview
 	/** Cancel Subscription
 	* Changes a regular subscription status to non_renewing (subscription is automatically canceled after expiration).
 	*
@@ -626,7 +618,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback);
-	
+
 protected:
 	void GetVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FOnError ErrorCallback);
@@ -714,7 +706,7 @@ protected:
 
 	void GetSubscriptionDetails_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetSubscriptionDetailsSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-		
+
 	void GetSubscriptionPaystationLink_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetSubscriptionPayStationLinkSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
