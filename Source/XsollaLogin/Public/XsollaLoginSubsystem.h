@@ -65,6 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
 
+	// textreview
 	/** Sign up User
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
 	 *
@@ -84,6 +85,7 @@ public:
 		const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	// textreview
 	/** Resend Account Confirmation Email
 	 * Resends an account confirmation email to a user. To complete account confirmation, the user should follow the link in the email.
 	 *
@@ -110,6 +112,7 @@ public:
 	void AuthenticateUser(const FString& Username, const FString& Password,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
+	// textreview
 	/** Reset User Password
 	 * Resets the user password.
 	 *

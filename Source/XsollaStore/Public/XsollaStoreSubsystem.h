@@ -510,6 +510,7 @@ public:
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
 		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	// textreview
 	/** Get Subscription Public Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
@@ -526,6 +527,7 @@ public:
 	void GetSubscriptionPublicPlans(const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPublicPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback,	const int Limit = 50, const int Offset = 0);
 
+	// textreview
 	/** Get Subscription Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
@@ -543,6 +545,7 @@ public:
 	void GetSubscriptionPlans(const FString& AuthToken, const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
+	// textreview
 	/** Get Subscriptions
 	* Returns a list of active recurrent subscriptions that have the status `active`, `non renewing`, and `pause`.
 	* 
@@ -557,6 +560,7 @@ public:
 	void GetSubscriptions(const FString& AuthToken, const FString& Locale,
 		const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
+	// textreview
 	/** Get Subscriptions Details
 	* Returns information about a subscription by its ID. Subscription can be in any status.
 	* 
@@ -570,6 +574,7 @@ public:
 	void GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
 		const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	// textreview
 	/** Get Subscription Purchase Url
 	* Returns Pay Station URL for the subscription purchase.
 	* 
@@ -583,6 +588,7 @@ public:
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	// textreview
 	/** Get Subscription Management Url
 	* Returns Pay Station URL for the subscription management.
 	* 
@@ -595,6 +601,7 @@ public:
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	// textreview
 	/** Get Subscription Renewal Url
 	* Returns Pay Station URL for the subscription renewal.
 	*
@@ -607,6 +614,7 @@ public:
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	// textreview
 	/** Cancel Subscription
 	* Changes a regular subscription status to non_renewing (subscription is automatically canceled after expiration).
 	*
