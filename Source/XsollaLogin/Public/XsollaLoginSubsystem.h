@@ -776,6 +776,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void SetLoginData(const FXsollaLoginData& Data, const bool ClearCache = true);
 
+	/** Updates user auth token data. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	void UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken);
+
 	/** Drops cache and cleans login data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void DropLoginData(const bool ClearCache = true);
