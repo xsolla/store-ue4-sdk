@@ -76,7 +76,7 @@ public:
 	/** Get Virtual Items
 	 * Gets the list of virtual items available for the configured project.
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
@@ -120,7 +120,7 @@ public:
 	/** Get Virtual Currency Packages
 	 * Gets the list of virtual currency packages.
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
@@ -137,7 +137,7 @@ public:
 	/** Get Items List By Specified Group
 	 * Gets an item list from the specified group for building a catalog.
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
@@ -155,7 +155,7 @@ public:
 	/** Get All Items List
 	 * Gets a list of all virtual items.
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
@@ -301,7 +301,7 @@ public:
 	/** Get Specified Bundle
 	* Gets a specified bundle.
 	*
-	* @param AuthToken User authorization token.
+	* @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	* @param Sku Bundle SKU.
 	* @param SuccessCallback Callback function called after the cart is successfully filled.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
@@ -312,7 +312,7 @@ public:
 	/** Get Bundles
 	* Gets a list of bundles for building a catalog.
 	*
-	* @param AuthToken User authorization token.
+	* @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
