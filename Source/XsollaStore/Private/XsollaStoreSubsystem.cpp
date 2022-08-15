@@ -71,7 +71,7 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	LoadData();
 }
 
-void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualItems(const FString& AuthToken, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
@@ -84,7 +84,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 							.Build();
 
 	
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -124,7 +124,8 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& AuthToken, const FString& Locale, const FString& Country,
+	const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
@@ -136,13 +137,13 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& ExternalId,
+void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& AuthToken, const FString& ExternalId,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
@@ -156,13 +157,13 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale,
+void UXsollaStoreSubsystem::GetAllItemsList(const FString& AuthToken, const FString& Locale,
 	const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/all"))
@@ -170,7 +171,7 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale,
 							.AddStringQueryParam(TEXT("locale"), Locale)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -606,20 +607,20 @@ void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback)
+void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& AuthToken, const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle/sku/{Sku}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("Sku"), Sku)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetBundles(const FString& AuthToken, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
@@ -631,7 +632,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 							.AddNumberQueryParam(TEXT("offset"), Offset)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this,
 		&UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
