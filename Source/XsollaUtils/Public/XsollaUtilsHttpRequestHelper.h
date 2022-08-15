@@ -40,11 +40,20 @@ class XSOLLAUTILS_API XsollaUtilsHttpRequestHelper
 {
 public:
 	static TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url,
+		const FString& Verb,
+		const FString& AuthToken = FString(),
+		const FString& Content = FString(),
+		const FString& SdkModuleName = FString(),
+		const FString& SdkModuleVersion = FString());
+
+	static TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url,
 		const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
 		const FString& AuthToken = FString(),
 		const FString& Content = FString(),
 		const FString& SdkModuleName = FString(),
 		const FString& SdkModuleVersion = FString());
+
+	static FString GetVerbAsString(const EXsollaHttpRequestVerb Verb);
 
 	static bool ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, XsollaHttpRequestError& OutError);
 	static bool ParseResponseAsJson(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, TSharedPtr<FJsonObject>& OutResponse, XsollaHttpRequestError& OutError);

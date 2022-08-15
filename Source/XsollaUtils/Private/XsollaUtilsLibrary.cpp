@@ -6,6 +6,8 @@
 
 #include "Dom/JsonObject.h"
 #include "Interfaces/IPluginManager.h"
+#include "XsollaUtilsUrlBuilder.h"
+#include "XsollaUtilsHttpRequestHelper.h"
 
 FString UXsollaUtilsLibrary::XReferral(TEXT(""));
 FString UXsollaUtilsLibrary::XReferralVersion(TEXT(""));
@@ -174,4 +176,69 @@ FString UXsollaUtilsLibrary::GetUrlParameter(const FString& Url, const FString& 
 	const FString UrlOptions = DecodedUrl.RightChop(DecodedUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
 
 	return UGameplayStatics::ParseOption(UrlOptions, ParamName);
+}
+
+void UXsollaUtilsLibrary::CreateCustomRequest(const FString& Url, const FString& Verb,
+	const FOnCustomRequestSuccess& SuccessCallback, const FOnCustomRequestError& ErrorCallback)
+{
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(XsollaUtilsUrlBuilder(Url).Build(), Verb, FString(), FString(), TEXT("DEMO"), FString());
+	HttpRequest->OnProcessRequestComplete().BindStatic(&UXsollaUtilsLibrary::CreateCustomRequest_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaUtilsLibrary::CreateCustomRequest_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnCustomRequestSuccess SuccessCallback, FOnCustomRequestError ErrorCallback)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(HttpResponse->GetContentAsString());
+		return;
+	}
+
+	ErrorCallback.ExecuteIfBound(OutError.code, OutError.description);
+}
+
+bool UXsollaUtilsLibrary::GetJsonStringField(const FString& data, const FString& key, FString& iValue)
+{
+	FString tmpData = data;
+	TSharedRef<TJsonReader<TCHAR>> Reader = FJsonStringReader::Create(MoveTemp(tmpData));
+
+	TSharedPtr<FJsonObject> JsonObject;
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		return false;
+	}
+
+	if (!JsonObject->HasField(key))
+	{
+		return false;
+	}
+
+	iValue = JsonObject->GetStringField(key);
+
+	return true;
+}
+
+bool UXsollaUtilsLibrary::GetJsonIntField(const FString& data, const FString& key, int& iValue)
+{
+	FString tmpData = data;
+	TSharedRef<TJsonReader<TCHAR>> Reader = FJsonStringReader::Create(MoveTemp(tmpData));
+
+	TSharedPtr<FJsonObject> JsonObject;
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		return false;
+	}
+
+	if (!JsonObject->HasField(key))
+	{
+		return false;
+	}
+
+	iValue = JsonObject->GetIntegerField(key);
+
+	return true;
 }

@@ -2027,6 +2027,13 @@ void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, const boo
 	}
 }
 
+void UXsollaLoginSubsystem::UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken)
+{
+	LoginData.AuthToken.JWT = AccessToken;
+	LoginData.AuthToken.ExpiresAt = ExpiresIn;
+	LoginData.AuthToken.RefreshToken = RefreshToken;
+}
+
 void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
 {
 	// Drop saved data in memory

@@ -12,6 +12,9 @@
 class UXsollaUtilsImageLoader;
 class FJsonObject;
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCustomRequestSuccess, const FString&, Data);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnCustomRequestError, const FString&, Code, const FString&, Description);
+
 UCLASS()
 class XSOLLAUTILS_API UXsollaUtilsLibrary : public UBlueprintFunctionLibrary
 {
@@ -102,6 +105,18 @@ public:
 
 	/** Gets URL query parameter with specified name. */
 	static FString GetUrlParameter(const FString& Url, const FString& ParamName);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	static void CreateCustomRequest(const FString& Url, const FString& Verb, const FOnCustomRequestSuccess& SuccessCallback, const FOnCustomRequestError& ErrorCallback);
+
+	static void CreateCustomRequest_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnCustomRequestSuccess SuccessCallback, FOnCustomRequestError ErrorCallback);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	static bool GetJsonStringField(const FString& data, const FString& key, FString& iValue);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	static bool GetJsonIntField(const FString& data, const FString& key, int& iValue);
 
 private:
 	static FString XReferral;

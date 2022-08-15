@@ -14,7 +14,7 @@ const FString XsollaUtilsHttpRequestHelper::DeserializationErrorMsg(TEXT("Failed
 const FString XsollaUtilsHttpRequestHelper::ConversionErrorMsg(TEXT("Failed to convert response"));
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::CreateHttpRequest(const FString& Url,
-	const EXsollaHttpRequestVerb Verb,
+	const FString& Verb,
 	const FString& AuthToken,
 	const FString& Content,
 	const FString& SdkModuleName,
@@ -57,30 +57,9 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 		HttpRequest->SetHeader(TEXT("X-REF-V"), XRefV);
 	}
 
-	switch (Verb)
+	if (!Verb.IsEmpty())
 	{
-	case EXsollaHttpRequestVerb::VERB_GET:
-		HttpRequest->SetVerb(TEXT("GET"));
-		break;
-
-	case EXsollaHttpRequestVerb::VERB_POST:
-		HttpRequest->SetVerb(TEXT("POST"));
-		break;
-
-	case EXsollaHttpRequestVerb::VERB_PUT:
-		HttpRequest->SetVerb(TEXT("PUT"));
-		break;
-
-	case EXsollaHttpRequestVerb::VERB_DELETE:
-		HttpRequest->SetVerb(TEXT("DELETE"));
-		break;
-
-	case EXsollaHttpRequestVerb::VERB_PATCH:
-		HttpRequest->SetVerb(TEXT("PATCH"));
-		break;
-
-	default:
-		unimplemented();
+		HttpRequest->SetVerb(Verb);
 	}
 
 	if (!AuthToken.IsEmpty())
@@ -95,6 +74,39 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	}
 
 	return HttpRequest;
+}
+
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& AuthToken, const FString& Content, const FString& SdkModuleName, const FString& SdkModuleVersion)
+{
+	return CreateHttpRequest(Url, GetVerbAsString(Verb), AuthToken, Content, SdkModuleName, SdkModuleVersion);
+}
+
+FString XsollaUtilsHttpRequestHelper::GetVerbAsString(const EXsollaHttpRequestVerb Verb)
+{
+	FString VerbAsString = TEXT("GET");
+	switch (Verb)
+	{
+	case EXsollaHttpRequestVerb::VERB_GET:
+		VerbAsString = TEXT("GET");
+		break;
+
+	case EXsollaHttpRequestVerb::VERB_POST:
+		VerbAsString = TEXT("POST");
+		break;
+
+	case EXsollaHttpRequestVerb::VERB_PUT:
+		VerbAsString = TEXT("PUT");
+		break;
+
+	case EXsollaHttpRequestVerb::VERB_DELETE:
+		VerbAsString = TEXT("DELETE");
+		break;
+
+	case EXsollaHttpRequestVerb::VERB_PATCH:
+		VerbAsString = TEXT("PATCH");
+		break;
+	}
+	return VerbAsString;
 }
 
 bool XsollaUtilsHttpRequestHelper::ParseResponse(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, XsollaHttpRequestError& OutError)
