@@ -71,8 +71,8 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	LoadData();
 }
 
-void UXsollaStoreSubsystem::GetVirtualItems(const FString& AuthToken, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -124,9 +124,9 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& AuthToken, const FString& Locale, const FString& Country,
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country,
 	const TArray<FString>& AdditionalFields,
-	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
+	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -143,9 +143,8 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& AuthToken,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& AuthToken, const FString& ExternalId,
-	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/group/{ExternalId}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -163,8 +162,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& AuthToke
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetAllItemsList(const FString& AuthToken, const FString& Locale,
-	const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback)
+void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/all"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -607,7 +605,8 @@ void UXsollaStoreSubsystem::FillCartById(const FString& AuthToken, const FString
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& AuthToken, const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback)
+void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku,
+	const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle/sku/{Sku}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -620,8 +619,8 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& AuthToken, const F
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetBundles(const FString& AuthToken, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
