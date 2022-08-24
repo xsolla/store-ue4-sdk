@@ -745,6 +745,9 @@ private:
 	/** Prepare payload for payment token request */
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters);
 
+	/** Prepare paystation settings */
+	TSharedPtr<FJsonObject> PreparePaystationSettings();
+
 	/** Get payment interface theme */
 	FString GetPaymentInerfaceTheme() const;
 

@@ -1058,10 +1058,11 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 								.Build();
 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+
 	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1088,7 +1089,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1115,7 +1116,7 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1920,9 +1921,20 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
 
-	// PayStation settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetObjectField(TEXT("settings"), PreparePaystationSettings());
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: payment payload"), *OutputString);
+	
+	return RequestDataJson;
+}
 
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
+{
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"), GetPaymentInerfaceTheme());
@@ -1954,7 +1966,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	}
 	else
 	{
-#if PLATFORM_ANDROID||PLATFORM_IOS
+#if PLATFORM_ANDROID || PLATFORM_IOS
 		PaymentSettingsJson->SetStringField(TEXT("return_url"), FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId()));
 		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
@@ -1967,17 +1979,10 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
 
 		PaymentSettingsJson->SetObjectField(TEXT("redirect_policy"), RedirectSettingsJson);
-#endif	
+#endif
 	}
 
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
-	FString OutputString;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
-	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-	
-	UE_LOG(LogXsollaStore, Log, TEXT("%s: payment payload"), *OutputString);
-	
-	return RequestDataJson;
+	return PaymentSettingsJson;
 }
 
 FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const
