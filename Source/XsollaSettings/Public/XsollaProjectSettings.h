@@ -104,25 +104,21 @@ public:
 	/** Web Store URL to be opened in order to purchase virtual items. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo")
 	FString WebStoreURL;
-
-	/** If enabled, user authentication will be handled via native Android applications if possible. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
-	bool bAllowNativeAuth;
 	
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString FacebookAppId;
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString GoogleAppId;
 
 	/** WeChat app identifier (can be obtained on WeChat developer page). Used for native user authentication via WeChat Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString WeChatAppId;
 
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString QQAppId;
 	
 	/** Payment user interface theme. */

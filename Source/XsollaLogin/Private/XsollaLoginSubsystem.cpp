@@ -77,18 +77,15 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 #if PLATFORM_ANDROID
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	if (Settings->bAllowNativeAuth)
-	{
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
-			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
-			FJavaWrapper::GameActivityThis,
-			XsollaJavaConvertor::GetJavaString(LoginID),
-			XsollaJavaConvertor::GetJavaString(ClientID),
-			XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
-	}
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
+		"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+		FJavaWrapper::GameActivityThis,
+		XsollaJavaConvertor::GetJavaString(LoginID),
+		XsollaJavaConvertor::GetJavaString(ClientID),
+		XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 
 #endif
 }
@@ -260,24 +257,17 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 {
 #if PLATFORM_ANDROID
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	if (Settings->bAllowNativeAuth)
-	{
-		UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
-		nativeCallback->BindSuccessDelegate(SuccessCallback);
-		nativeCallback->BindCancelDelegate(CancelCallback);
-		nativeCallback->BindErrorDelegate(ErrorCallback);
+	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
+	nativeCallback->BindSuccessDelegate(SuccessCallback);
+	nativeCallback->BindCancelDelegate(CancelCallback);
+	nativeCallback->BindErrorDelegate(ErrorCallback);
 
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial",
-			"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
-			FJavaWrapper::GameActivityThis, 
-			XsollaJavaConvertor::GetJavaString(ProviderName), 
-			bRememberMe, 
-			(jlong)nativeCallback);
-	}
-	else
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Native authentication should be enabled in Project Settings"), *VA_FUNC_LINE);
-	}
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial",
+		"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
+		FJavaWrapper::GameActivityThis, 
+		XsollaJavaConvertor::GetJavaString(ProviderName), 
+		bRememberMe, 
+		(jlong)nativeCallback);
 
 #endif
 }
