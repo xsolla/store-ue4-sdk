@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.0] - 2022-08-31
+
+### Added
+- SDK methods for working with subscriptions (`XsollaSubscriptions` class)
+- Demo user generation
+
+### Changed
+- SDK methods for working with catalog (`XsollaCatalog` class). They support catalog personalization
+
 ## [1.0.0] - 2022-07-08
 
 ### Added
