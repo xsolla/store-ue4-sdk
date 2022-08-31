@@ -31,7 +31,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	bool IsReferralAnalyticsSet = !XRef.IsEmpty() && !XRefV.IsEmpty();
 
 	// Xsolla analytics URL meta
-	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=%s&sdk_v=%s&build_platform=%s"),
+	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue5&engine_v=%s&sdk=%s&sdk_v=%s&build_platform=%s"),
 		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
 		ENGINE_VERSION_STRING,
 		*SdkModuleName.ToLower(),
@@ -44,7 +44,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	HttpRequest->SetURL(Url + MetaUrl + ReferralMetaUrl);
 
 	// Xsolla analytics header meta
-	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE4"));
+	HttpRequest->SetHeader(TEXT("X-ENGINE"), TEXT("UE5"));
 	HttpRequest->SetHeader(TEXT("X-ENGINE-V"), ENGINE_VERSION_STRING);
 	HttpRequest->SetHeader(TEXT("X-SDK"), SdkModuleName);
 	HttpRequest->SetHeader(TEXT("X-SDK-V"), SdkModuleVersion);
