@@ -147,7 +147,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
 			&UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
@@ -173,7 +173,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
 			&UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
@@ -193,7 +193,7 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetI
 	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
 			&UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
@@ -271,7 +271,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 			FString SteamId;
 			FString OutError;
 
-			if (!GetSteamUserId(AuthToken, SteamId, OutError))
+			if (!GetSteamUserId(Token, SteamId, OutError))
 			{
 				ErrorCallback.ExecuteIfBound(0, 0, OutError);
 				return;
@@ -644,7 +644,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku,
 	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
 			&UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
@@ -669,7 +669,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this,
 			&UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
