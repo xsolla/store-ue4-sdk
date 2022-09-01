@@ -778,7 +778,7 @@ public:
 
 	/** Updates user auth token data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken);
+	void UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken, bool bRememberMe = true);
 
 	/** Drops cache and cleans login data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
