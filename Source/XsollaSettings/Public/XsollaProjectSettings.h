@@ -12,19 +12,38 @@ class XSOLLASETTINGS_API UXsollaProjectSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** Project ID from your Publisher Account. Required. */
+
+	/**
+	 * Project ID from your Publisher Account.
+	 * Can be found in Publisher Account beside the name of your project.
+	 * Required.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ProjectID;
 
-	/** Login ID in the UUID format from your Publisher Account. Required. */
+	/**
+	 * Login ID in the UUID format from your Publisher Account.
+	 * Can be found in Publisher Account.
+	 * To get it, go to the "Login -> Dashbord" section and click "Copy ID" near the name of the Login project.
+	 * If you don't use Xsolla Login, leave this field blank.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString LoginID;
 
-	/** Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol. */
+	/**
+	 * Your application ID. You will get it after sending request to enable the OAuth 2.0 protocol.
+	 * Can be found in Publisher Account.
+	 * To get the ID, set up an OAuth client in Publisher Account in the "Login -> your Login project -> Secure -> OAuth 2.0" section.
+	 * If you don't use Xsolla Login, leave this field blank.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ClientID;
 
-	/** Redirect uri */
+	/**
+	 * URI to redirect the user to after signing up, logging in, or password reset.
+	 * Must be identical to the OAuth 2.0 redirect URI specified in Publisher Account in Login -> Security -> OAuth 2.0 settings.
+	 * Required if there are several callback URIs.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString RedirectURI;
 
@@ -48,7 +67,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Purchases")
 	bool UsePlatformBrowser;
 
-	/** Enable to test the payment process: sandbox-secure.xsolla.com will be used instead of secure.xsolla.com. */
+	/**
+	 * Enable to test the payment process.
+	 * sandbox-secure.xsolla.com will be used instead of secure.xsolla.com.
+	 * If you already accepted a real payment, test payments are available only to users
+	 * who are specified in Publisher Account in the "Company settings -> Users" section.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Purchases")
 	bool EnableSandbox;
 	
@@ -80,40 +104,49 @@ public:
 	/** Web Store URL to be opened in order to purchase virtual items. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo")
 	FString WebStoreURL;
-
-	/** If enabled, user authentication will be handled via native Android applications if possible. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
-	bool bAllowNativeAuth;
 	
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString FacebookAppId;
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString GoogleAppId;
 
 	/** WeChat app identifier (can be obtained on WeChat developer page). Used for native user authentication via WeChat Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString WeChatAppId;
 
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android", meta = (EditCondition = "bAllowNativeAuth"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString QQAppId;
 	
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
-	/** Payment user interface size (desktop only).*/
+	/**
+	 * Payment user interface size (desktop only).
+	 * Small: 620 x 630 px
+	 * Medium (recomended): 740 x 760 px
+	 * Large: 820 x 840 px
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiSize PaymentInterfaceSize;
 
-	/** Device type used to present payment interface. */
+	/**
+	 * Device type used to present payment interface.
+	 * The Pay Station UI depends on the device type.
+	 * If Not specified, the app automatically uses Pay Station UI supported by the device.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiVersion PaymentInterfaceVersion;
 
-	/** Enable to override default redirect policy for payments. */
+	/**
+	 * Use settings from Publisher Account.
+	 * If the option is enabled, SDK uses redirect settings
+	 * specified in Publisher Account in the "Pay Station -> Settings -> Redirect policy" section.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy")
 	bool UseSettingsFromPublisherAccount;
 
@@ -121,19 +154,39 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString ReturnUrl;
 
-	/** Payment status that triggers user redirect to the return URL. */
+	/**
+	 * Redirect Conditions.
+	 * Payment status when user is automatically redirected to the return URL.
+	 * "None" - do not redirect.
+	 * "Successful payment" - redirect when a payment is successful.
+	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
+	 * "Any payment" - redirect for any payment status.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectCondition RedirectCondition;
 
-	/** Delay after which the user will be automatically redirected to the return URL. */
+	/**
+	 * Delay after which the user will be automatically redirected to the return URL.
+	 * In seconds.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	int32 RedirectDelay;
 
-	/** Payment status triggering the display of a button clicking which redirects the user to the return URL. */
+	/**
+	 * Status for Manual Redirection.
+	 * Payment status when the redirect button appears.
+	 * "None" - do not redirect.
+	 * "Purchase using virtual currency" - redirect when purchase is made using virtual currency.
+	 * "Successful payment" - redirect when a payment is successful.
+	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
 
-	/** Redirect button caption. */
+	/**
+	 * Redirect button caption.
+	 * Caption of the button that will redirect the user to the return URL.
+	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString RedirectButtonCaption;
 };

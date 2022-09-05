@@ -11,12 +11,11 @@ import com.xsolla.android.login.social.SocialNetwork;
 
 public class XsollaNativeAuth {
 
-    public static void xLoginInit(Activity activity, String loginID, String clientId, String callbackUrl, String facebookAppId, String googleAppId, String wechatAppId, String qqAppId) {
+    public static void xLoginInit(Activity activity, String loginID, String clientId, String facebookAppId, String googleAppId, String wechatAppId, String qqAppId) {
         XLogin.SocialConfig socialConfig = new XLogin.SocialConfig(facebookAppId, googleAppId, wechatAppId, qqAppId);
         LoginConfig loginConfig = new LoginConfig.OauthBuilder().
                 setProjectId(loginID).
                 setOauthClientId(tryParseInt(clientId, 0)).
-                setCallbackUrl(callbackUrl).
                 setSocialConfig(socialConfig).
                 build();
         XLogin.init(activity, loginConfig);

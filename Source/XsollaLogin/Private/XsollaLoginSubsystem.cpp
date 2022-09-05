@@ -77,25 +77,21 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 #if PLATFORM_ANDROID
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	if (Settings->bAllowNativeAuth)
-	{
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
-			"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
-			FJavaWrapper::GameActivityThis,
-			XsollaJavaConvertor::GetJavaString(LoginID),
-			XsollaJavaConvertor::GetJavaString(ClientID),
-			XsollaJavaConvertor::GetJavaString(Settings->RedirectURI),
-			XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
-			XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
-	}
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xLoginInit",
+		"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+		FJavaWrapper::GameActivityThis,
+		XsollaJavaConvertor::GetJavaString(LoginID),
+		XsollaJavaConvertor::GetJavaString(ClientID),
+		XsollaJavaConvertor::GetJavaString(Settings->FacebookAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
+		XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
 
 #endif
 }
 
-void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State,
-	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TArray<FString>& AdditionalFields,
+void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale, 
+	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	LoginData = FXsollaLoginData();
@@ -111,7 +107,12 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	RequestDataJson->SetStringField(TEXT("email"), Email);
 	RequestDataJson->SetBoolField(TEXT("accept_consent"), PersonalDataProcessingConsent);
 	RequestDataJson->SetNumberField(TEXT("promo_email_agreement"), ReceiveNewsConsent ? 1 : 0);
-	SetStringArrayField(RequestDataJson, TEXT("fields"), AdditionalFields);
+	TSharedPtr<FJsonObject> FieldsDataJson = MakeShareable(new FJsonObject());
+	for (auto& FieldKeyValue: AdditionalFields)
+	{
+		FieldsDataJson->SetStringField(FieldKeyValue.Key, FieldKeyValue.Value);
+	}
+	RequestDataJson->SetObjectField(TEXT("fields"), FieldsDataJson);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -121,6 +122,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
 							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
@@ -129,7 +131,7 @@ void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString&
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State,
+void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Locale,
 	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -145,6 +147,7 @@ void UXsollaLoginSubsystem::ResendAccountConfirmationEmail(const FString& Userna
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/user/resend_confirmation_link"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
 							.Build();
 
@@ -183,7 +186,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
+void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -199,6 +202,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FOnRequ
 	const FString Endpoint = TEXT("https://login.xsolla.com/api/password/reset/request");
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->RedirectURI))
 							.Build();
 
@@ -252,22 +256,18 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
 #if PLATFORM_ANDROID
-
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	if (Settings->bAllowNativeAuth)
-	{
-		UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
-		nativeCallback->BindSuccessDelegate(SuccessCallback);
-		nativeCallback->BindCancelDelegate(CancelCallback);
-		nativeCallback->BindErrorDelegate(ErrorCallback);
+	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
+	nativeCallback->BindSuccessDelegate(SuccessCallback);
+	nativeCallback->BindCancelDelegate(CancelCallback);
+	nativeCallback->BindErrorDelegate(ErrorCallback);
 
-		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial", "(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
-			FJavaWrapper::GameActivityThis, XsollaJavaConvertor::GetJavaString(ProviderName), bRememberMe, (jlong)nativeCallback);
-	}
-	else
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Native authentication should be enabled in Project Settings"), *VA_FUNC_LINE);
-	}
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial",
+		"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
+		FJavaWrapper::GameActivityThis, 
+		XsollaJavaConvertor::GetJavaString(ProviderName), 
+		bRememberMe, 
+		(jlong)nativeCallback);
 
 #endif
 }
@@ -2015,6 +2015,14 @@ void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, const boo
 		// Drop saved data in cache
 		UXsollaLoginSave::Save(LoginData);
 	}
+}
+
+void UXsollaLoginSubsystem::UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken, bool bRememberMe)
+{
+	LoginData.AuthToken.JWT = AccessToken;
+	LoginData.AuthToken.ExpiresAt = ExpiresIn;
+	LoginData.AuthToken.RefreshToken = RefreshToken;
+	LoginData.bRememberMe = bRememberMe;
 }
 
 void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
