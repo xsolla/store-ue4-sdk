@@ -29,6 +29,14 @@
 #include "Android/XsollaNativeAuthCallback.h"
 #endif
 
+#if PLATFORM_IOS
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <AuthenticationServices/AuthenticationServices.h>
+#import "XsollaSDKLoginKitObjectiveC-Bridging-Header.h"
+#include "platform/Application.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
@@ -255,8 +263,9 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
-#if PLATFORM_ANDROID
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
+#if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
 	nativeCallback->BindSuccessDelegate(SuccessCallback);
 	nativeCallback->BindCancelDelegate(CancelCallback);
@@ -269,6 +278,52 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		bRememberMe, 
 		(jlong)nativeCallback);
 
+#endif
+
+#if PLATFORM_IOS
+
+	FString Platform = ProviderName.GetNSString();
+
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString()]
+		state:@"xsollatest"
+		scope:@"offline"
+		redirectUri:@"app://xsollalogin"];
+
+	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
+		clientId:[Settings->ClientID.GetNSString()]
+		refreshToken:nil
+		clientSecret:nil
+		redirectUri:@"app://xsollalogin"];
+
+	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+	WebAuthenticationPresentationContextProvider* Context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];
+
+	[[LoginKitObjectiveC shared] authBySocialNetwork:Platform
+		oAuth2Params:OAuthParams
+		jwtParams:JwtGenerationParams
+		presentationContextProvider:Context
+		completion:^(AccessTokenInfo* _Nullable accesTokenInfo, NSError* _Nullable error) {
+		if (error != nil)
+		{
+			NSLog(@"Error code: %ld", error.code);
+
+			if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
+			{
+				CancelCallback.ExecuteIfBound();
+				return;
+			}
+
+			NSString* errorString = error.localizedDescription;
+			ErrorCallback.ExecuteIfBound(FString(error.code), FString(errorString));
+			return;
+		}
+		
+		LoginData.AuthToken.JWT = tokenInfo.accessToken;
+		LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
+		LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
+
+		SuccessCallback.ExecuteIfBound(LoginData);
+	}];
 #endif
 }
 
