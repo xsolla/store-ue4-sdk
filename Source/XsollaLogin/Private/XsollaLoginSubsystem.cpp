@@ -2017,11 +2017,12 @@ void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, const boo
 	}
 }
 
-void UXsollaLoginSubsystem::UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken)
+void UXsollaLoginSubsystem::UpdateAuthTokenData(const FString& AccessToken, int ExpiresIn, const FString& RefreshToken, bool bRememberMe)
 {
 	LoginData.AuthToken.JWT = AccessToken;
 	LoginData.AuthToken.ExpiresAt = ExpiresIn;
 	LoginData.AuthToken.RefreshToken = RefreshToken;
+	LoginData.bRememberMe = bRememberMe;
 }
 
 void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
