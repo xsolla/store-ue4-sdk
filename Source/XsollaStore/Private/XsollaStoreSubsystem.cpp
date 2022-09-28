@@ -32,6 +32,9 @@
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
 #include "XsollaLogin/Private/Android/XsollaNativeAuthCallback.h"
 #endif
+#if PLATFORM_IOS
+#import "XsollaSDKPaymentsKitObjectiveC/XsollaSDKPaymentsKitObjectiveC-Swift.h"
+#endif
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
@@ -301,23 +304,36 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	}
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID || PLATFORM_IOS
 	if (!Settings->UsePlatformBrowser)
 	{
+		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
+#if PLATFORM_ANDROID
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
 			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken), 
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
-			XsollaJavaConvertor::GetJavaString(FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId())));
+			XsollaJavaConvertor::GetJavaString(RedirectURI);
+#endif
 
+#if PLATFORM_IOS
+		[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken->GetNSString()
+			presenter:[UIApplication sharedApplication].keyWindow.rootViewController
+			isSandbox:Settings->EnableSandbox
+			redirectUrl:RedirectURI->GetNSString()
+			completionHandler:^(NSError* _Nullable error) {
+			if (error != nil)
+			{
+				NSLog(@"Error code: %ld", error.code);
+			}
+		}];
+#endif
 		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		return;
 	}
 #endif
-
 	if (Settings->UsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);

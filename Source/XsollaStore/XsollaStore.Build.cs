@@ -45,6 +45,34 @@ public class XsollaStore : ModuleRules
 			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "XsollaStore_UPL.xml"));
 		}
 
-		PublicDefinitions.Add("WITH_XSOLLA_STORE=1");
+        if (Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+
+            AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "XsollaStore_IOS_UPL.xml"));
+
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKPaymentsKit",
+                "../ThirdParty/IOS/XsollaSDKPaymentsKit.embeddedframework.zip"
+            )
+            );
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKPaymentsKitObjectiveC",
+                "../ThirdParty/IOS/XsollaSDKPaymentsKitObjectiveC.embeddedframework.zip"
+            )
+            );
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKUtilities",
+                "../ThirdParty/IOS/XsollaSDKUtilities.embeddedframework.zip"
+
+            )
+            );
+        }
+
+        PublicDefinitions.Add("WITH_XSOLLA_STORE=1");
     }
 }
