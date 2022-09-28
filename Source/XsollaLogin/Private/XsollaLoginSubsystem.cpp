@@ -33,8 +33,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <AuthenticationServices/AuthenticationServices.h>
-#import "XsollaSDKLoginKitObjectiveC-Bridging-Header.h"
-#include "platform/Application.h"
+#import <XsollaSDKLoginKitObjectiveC/XsollaSDKLoginKitObjectiveC-Swift.h>
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
@@ -265,6 +264,10 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	
+	NativeSuccessCallback = SuccessCallback;
+	NativeErrorCallback = ErrorCallback;
+	NativeCancelCallback = CancelCallback;
+
 #if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
 	nativeCallback->BindSuccessDelegate(SuccessCallback);
@@ -281,16 +284,13 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #endif
 
 #if PLATFORM_IOS
-
-	FString Platform = ProviderName.GetNSString();
-
-	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString()]
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
 		state:@"xsollatest"
 		scope:@"offline"
 		redirectUri:@"app://xsollalogin"];
 
 	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
-		clientId:[Settings->ClientID.GetNSString()]
+		clientId:[Settings->ClientID.GetNSString() intValue]
 		refreshToken:nil
 		clientSecret:nil
 		redirectUri:@"app://xsollalogin"];
@@ -298,23 +298,26 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
 	WebAuthenticationPresentationContextProvider* Context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];
 
-	[[LoginKitObjectiveC shared] authBySocialNetwork:Platform
+	[[LoginKitObjectiveC shared] authBySocialNetwork:ProviderName.GetNSString()
 		oAuth2Params:OAuthParams
 		jwtParams:JwtGenerationParams
 		presentationContextProvider:Context
-		completion:^(AccessTokenInfo* _Nullable accesTokenInfo, NSError* _Nullable error) {
+		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
 		if (error != nil)
 		{
 			NSLog(@"Error code: %ld", error.code);
 
 			if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
 			{
-				CancelCallback.ExecuteIfBound();
+				AsyncTask(ENamedThreads::GameThread, [=]() {
+					NativeCancelCallback.ExecuteIfBound();
+				});
 				return;
 			}
 
-			NSString* errorString = error.localizedDescription;
-			ErrorCallback.ExecuteIfBound(FString(error.code), FString(errorString));
+			AsyncTask(ENamedThreads::GameThread, [=, ErrStr = FString(error.description), ErrCode = FString([@(error.code) stringValue])]() {
+				NativeErrorCallback.ExecuteIfBound(ErrCode, ErrStr);
+			});
 			return;
 		}
 		
@@ -322,7 +325,9 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
 		LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
 
-		SuccessCallback.ExecuteIfBound(LoginData);
+		AsyncTask(ENamedThreads::GameThread, [=]() {
+			NativeSuccessCallback.ExecuteIfBound(LoginData);
+		});
 	}];
 #endif
 }

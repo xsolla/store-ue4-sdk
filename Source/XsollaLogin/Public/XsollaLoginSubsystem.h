@@ -798,4 +798,13 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+
+	UPROPERTY()
+	FOnAuthUpdate NativeSuccessCallback;
+
+	UPROPERTY()
+	FOnAuthCancel NativeCancelCallback;
+
+	UPROPERTY()
+	FOnAuthError NativeErrorCallback;
 };

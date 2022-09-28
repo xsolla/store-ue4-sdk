@@ -44,6 +44,11 @@ public class XsollaLogin : ModuleRules
         }
         if (Target.Platform == UnrealTargetPlatform.IOS)
         {
+            PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+
+            AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "XsollaLogin_IOS_UPL.xml"));
+
             PublicAdditionalFrameworks.Add(
             new Framework(
                 "XsollaSDKLoginKit",
@@ -60,6 +65,7 @@ public class XsollaLogin : ModuleRules
             new Framework(
                 "XsollaSDKUtilities",
                 "../ThirdParty/IOS/XsollaSDKUtilities.embeddedframework.zip"
+
             )
             );
         }

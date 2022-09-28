@@ -1,0 +1,53 @@
+# SwiftLint Configuration Generator https://mobile-quality.org/
+
+line_length:
+    warning: 120
+    ignores_comments: true
+    ignores_interpolated_strings: true
+    ignores_urls: true
+
+disabled_rules:
+    - trailing_whitespace
+    - identifier_name
+    - opening_brace
+    - statement_position
+    - switch_case_alignment
+    - todo
+    - type_body_length
+    - file_length
+
+opt_in_rules:
+    - closure_end_indentation
+    - closure_spacing
+
+excluded:
+    - Pods
+
+custom_rules:
+    image_name_initialization:
+        included: ".*.swift"
+        name: "Image initialization"
+        regex: 'UIImage\(named:[^)]+\)'
+        message: "Use UIImage(assetName: ) or Assets.Image.imageName.image instead"
+        severity: error
+
+    open_iboutlets:
+        included: ".*.swift"
+        name: "IBOutlet opening"
+        regex: "@IBOutlet ?(weak){0,1} var"
+        message: "IBOutlet should be private or fileprivate"
+        severity: error
+
+    open_ibaction:
+        included: ".*.swift"
+        name: "IBAction opening"
+        regex: "@IBAction func"
+        message: "IBAction should be private or fileprivate"
+        severity: error
+
+    opening_braces:
+        name: "Opening Brace"
+        message: "Opening braces should be placed on the next line."
+        included: ".*.swift"
+        regex: '\S\h*\{[^\}]*$'
+        severity: warning
