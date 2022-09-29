@@ -33,7 +33,10 @@
 #include "XsollaLogin/Private/Android/XsollaNativeAuthCallback.h"
 #endif
 #if PLATFORM_IOS
-#import "XsollaSDKPaymentsKitObjectiveC/XsollaSDKPaymentsKitObjectiveC-Swift.h"
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <AuthenticationServices/AuthenticationServices.h>
+#import <XsollaSDKPaymentsKitObjectiveC/XsollaSDKPaymentsKitObjectiveC-Swift.h>
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
@@ -319,16 +322,18 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #endif
 
 #if PLATFORM_IOS
-		[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken->GetNSString()
-			presenter:[UIApplication sharedApplication].keyWindow.rootViewController
-			isSandbox:Settings->EnableSandbox
-			redirectUrl:RedirectURI->GetNSString()
-			completionHandler:^(NSError* _Nullable error) {
-			if (error != nil)
-			{
-				NSLog(@"Error code: %ld", error.code);
-			}
-		}];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken.GetNSString()
+				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
+				isSandbox:Settings->EnableSandbox
+				redirectUrl:RedirectURI.GetNSString()
+				completionHandler:^(NSError* _Nullable error) {
+				if (error != nil)
+				{
+					NSLog(@"Error code: %ld", error.code);
+				}
+			}];
+		});
 #endif
 		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		return;
