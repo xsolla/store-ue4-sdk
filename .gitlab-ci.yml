@@ -23,10 +23,17 @@ build doc:
     - /^v.*/
   image: alpine
   script:
-  - apk update && apk add doxygen graphviz ttf-freefont zip
-  - doxygen Documentation/Autogen/Doxyfile
-  - mv Documentation/Autogen/html/ docs/
-  - cd docs/ && zip -r ../build.zip *
+  - apk update && apk add doxygen graphviz ttf-freefont zip git nodejs npm
+  - doxygen Documentation/Autogen/Doxyfile >/dev/null
+  - git clone https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
+  - mkdir -p sdk-reference-parser-unity-ue/src
+  - mkdir -p sdk-reference-parser-unity-ue/dist
+  - mv Documentation/Autogen/html/ sdk-reference-parser-unity-ue/src >/dev/null
+  - cd sdk-reference-parser-unity-ue
+  - npm install
+  - npm start
+  - mv -v dist/html/* dist >/dev/null
+  - cd dist && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
   artifacts:
     paths:
     - build.zip
