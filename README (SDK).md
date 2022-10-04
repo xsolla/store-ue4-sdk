@@ -30,7 +30,6 @@ To start with the SDK, you need to install this plug-in and set up a project in 
 ### User management
 
 * User attributes to manage additional information.
-* Friend system.
 * Cross-platform account linking.
 * Secure Xsolla storage for user data. Alternatively, you can connect PlayFab, Firebase, or your custom storage.
 

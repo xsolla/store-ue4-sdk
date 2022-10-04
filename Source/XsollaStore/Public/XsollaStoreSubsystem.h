@@ -122,7 +122,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after virtual currency packages were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -139,7 +139,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -312,7 +312,7 @@ public:
 	*
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	* @param SuccessCallback Callback function called after bundles are successfully received.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
@@ -329,7 +329,7 @@ public:
 	 * @param CurrencySKU Desired currency SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -408,7 +408,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calcualtions are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified games list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -424,7 +424,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -440,7 +440,7 @@ public:
 	 * @param GameSKU Desired game SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -454,7 +454,7 @@ public:
 	 * @param ItemSKU Desired game item SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -468,7 +468,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game key data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -518,7 +518,7 @@ public:
 	/** Get Subscription Public Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
-	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
@@ -535,7 +535,7 @@ public:
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
 	* @param AuthToken User authorization token.
-	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.

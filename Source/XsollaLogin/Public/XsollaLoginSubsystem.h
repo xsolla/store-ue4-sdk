@@ -60,7 +60,7 @@ public:
 	 *
 	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
 	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
-	 * @param InClientId New Client ID value from Publisher Account > Login settings -> OAuth 2.0 authentication settings.
+	 * @param InClientId New Client ID value from Publisher Account > Login settings > OAuth 2.0 authentication settings.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
@@ -104,7 +104,7 @@ public:
 	 * @param Password Password. Required.
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticateUser(const FString& Username, const FString& Password,
@@ -146,7 +146,7 @@ public:
 	 *
 	 * @param WorldContextObject The world context.
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
-	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
 	void LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
@@ -158,7 +158,7 @@ public:
 	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Callback function called after user authentication was canceled.
 	 * @param ErrorCallback Callback function called after user authentication resulted with an error.
-	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
@@ -361,7 +361,7 @@ public:
 	 * @param AuthToken Access token received from a social network
 	 * @param AuthTokenSecret Parameter 'oauth_token_secret' received from the authorization request. Required for Twitter only.
 	 * @param OpenId Parameter 'openid' received from the social network. Required for WeChat only.
-	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: 'facebook', 'google', 'linkedin', 'twitter', 'discord', 'naver', and 'baidu'.
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can have the following values: `facebook`, `google`, `linkedin`, `twitter`, `discord`, `naver`, and `baidu`.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF Attacks. The value will be returned in the response. Must be longer than 8 symbols.
 	 * @param SuccessCallback Callback function called after successful user authentication on the specified platform.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
