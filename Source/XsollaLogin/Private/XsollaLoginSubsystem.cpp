@@ -29,6 +29,13 @@
 #include "Android/XsollaNativeAuthCallback.h"
 #endif
 
+#if PLATFORM_IOS
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <AuthenticationServices/AuthenticationServices.h>
+#import <XsollaSDKLoginKitObjectiveC/XsollaSDKLoginKitObjectiveC-Swift.h>
+#endif
+
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
@@ -255,8 +262,13 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
-#if PLATFORM_ANDROID
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	
+	NativeSuccessCallback = SuccessCallback;
+	NativeErrorCallback = ErrorCallback;
+	NativeCancelCallback = CancelCallback;
+
+#if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
 	nativeCallback->BindSuccessDelegate(SuccessCallback);
 	nativeCallback->BindCancelDelegate(CancelCallback);
@@ -269,6 +281,54 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		bRememberMe, 
 		(jlong)nativeCallback);
 
+#endif
+
+#if PLATFORM_IOS
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+		state:@"xsollatest"
+		scope:@"offline"
+		redirectUri:@"app://xsollalogin"];
+
+	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
+		clientId:[Settings->ClientID.GetNSString() intValue]
+		refreshToken:nil
+		clientSecret:nil
+		redirectUri:@"app://xsollalogin"];
+
+	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+	WebAuthenticationPresentationContextProvider* Context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];
+
+	[[LoginKitObjectiveC shared] authBySocialNetwork:ProviderName.GetNSString()
+		oAuth2Params:OAuthParams
+		jwtParams:JwtGenerationParams
+		presentationContextProvider:Context
+		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
+		if (error != nil)
+		{
+			NSLog(@"Error code: %ld", error.code);
+
+			if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
+			{
+				AsyncTask(ENamedThreads::GameThread, [=]() {
+					NativeCancelCallback.ExecuteIfBound();
+				});
+				return;
+			}
+
+			AsyncTask(ENamedThreads::GameThread, [=, ErrStr = FString(error.description), ErrCode = FString([@(error.code) stringValue])]() {
+				NativeErrorCallback.ExecuteIfBound(ErrCode, ErrStr);
+			});
+			return;
+		}
+		
+		LoginData.AuthToken.JWT = tokenInfo.accessToken;
+		LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
+		LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
+
+		AsyncTask(ENamedThreads::GameThread, [=]() {
+			NativeSuccessCallback.ExecuteIfBound(LoginData);
+		});
+	}];
 #endif
 }
 
