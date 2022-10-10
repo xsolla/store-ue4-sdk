@@ -256,16 +256,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Create Code for Linking Accounts
-	 * Creates code for linking the user platform account to the main account.
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful account linking code creation. The new linking code will be received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback);
-
 	/** Check User Age
 	 * Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
 	 *
@@ -275,19 +265,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Link Accounts by Code
-	 * Links the user platform account to the existing main account by the code.
-	 *
-	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform type.
-	 * @param Code Account linking code obtained from the master account.
-	 * @param SuccessCallback Callback function called after successful account linking.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
-		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Link Email, Password, and Username to Account
 	 * Adds the username/email and password authentication to the existing user account. This call is used if the account is created via the device ID or phone number.
@@ -330,19 +307,7 @@ public:
 	void UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Cross-Authenticate
-	 * Authenticates a platform account user.
-	 *
-	 * @param UserId User identifier from a platform account.
-	 * @param Platform Platform type.
-	 * @param InvalidateExistingSessions
-	 * @param SuccessCallback Callback function called after successful user authentication on a specified platform.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaPublishingPlatform Platform, bool InvalidateExistingSessions, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
-
-	/** Cross-Authenticate
+	/** Auth via Device Id
 	 * Authenticates a platform account user via deviceId.
 	 *
 	 * @param DeviceName Name of the mobile device.
@@ -668,18 +633,12 @@ protected:
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback);
-	void CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void GetUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserAttributesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserAttributesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnCodeReceived SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
-	void AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void DeviceId_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	void RefreshToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -740,8 +699,6 @@ protected:
 	/** Processes the request for obtaining/refreshing token using OAuth 2.0. */
 	void HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback, FOnAuthUpdate& SuccessCallback);
 
-	/** Processes the request that returns URL with user token (JWT). */
-	void HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 	/** Processes the request that returns URL with a code that can be exchanged to user token (OAuth 2.0). */
 	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 

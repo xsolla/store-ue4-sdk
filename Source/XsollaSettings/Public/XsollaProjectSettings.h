@@ -75,31 +75,6 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Purchases")
 	bool EnableSandbox;
-	
-	/** If enabled, SDK will imitate platform-specific authentication so you can try account linking from different platforms. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, DisplayName = "Use Cross-Platform Account Linking", Category = "Demo")
-	bool UseCrossPlatformAccountLinking;
-
-	/**
-	 * URL used to link the user platform account to the main account with a generated code.
-	 * The main account is the Xsolla Login project which other Xsolla Login projects (platform accounts) are linked to.
-	 * Main and platform accounts are created in Publisher Account.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
-	FString AccountLinkingURL;
-
-	/** URL used for a target platform user account authentication. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
-	FString PlatformAuthenticationURL;
-
-	/** Target platform for cross-platform account linking. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo", meta = (EditCondition = "UseCrossPlatformAccountLinking"))
-	EXsollaPublishingPlatform Platform;
-
-	/** Unique identifier of a target platform user account. You can enter any alphanumeric combination. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo",
-		meta = (EditCondition = "UseCrossPlatformAccountLinking && Platform != EXsollaPublishingPlatform::xsolla"))
-	FString PlatformAccountID;
 
 	/** Web Store URL to be opened in order to purchase virtual items. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo")

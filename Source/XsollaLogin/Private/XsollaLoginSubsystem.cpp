@@ -550,20 +550,6 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback)
-{
-	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
-	{
-		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(TEXT("https://login.xsolla.com/api/users/account/code"), EXsollaHttpRequestVerb::VERB_POST, TEXT(""), Token);
-		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
-		HttpRequest->ProcessRequest();
-	});
-
-	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
-}
-
 void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -661,39 +647,6 @@ void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, co
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
-}
-
-void UXsollaLoginSubsystem::LinkAccount(const FString& UserId, const EXsollaPublishingPlatform Platform, const FString& Code,
-	const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
-	const FString Url = XsollaUtilsUrlBuilder(Settings->AccountLinkingURL)
-							.AddStringQueryParam(TEXT("user_id"), UserId)
-							.AddStringQueryParam(TEXT("platform"), PlatformName)
-							.AddStringQueryParam(TEXT("code"), Code)
-							.Build();
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
-}
-
-void UXsollaLoginSubsystem::AuthenticatePlatformAccountUser(const FString& UserId, const EXsollaPublishingPlatform Platform, bool InvalidateExistingSessions,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
-{
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	const FString PlatformName = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
-	const FString Url = XsollaUtilsUrlBuilder(Settings->PlatformAuthenticationURL)
-							.AddStringQueryParam(TEXT("user_id"), UserId)
-							.AddStringQueryParam(TEXT("platform"), PlatformName)
-							.AddBoolQueryParam(TEXT("with_logout"), InvalidateExistingSessions)
-							.Build();
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State,
@@ -1384,12 +1337,6 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
-void UXsollaLoginSubsystem::CrossAuth_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
-{
-	HandleUrlWithTokenRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
-}
-
 void UXsollaLoginSubsystem::GetUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnUserAttributesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
@@ -1422,28 +1369,6 @@ void UXsollaLoginSubsystem::GetReadOnlyUserAttributes_HttpRequestComplete(FHttpR
 	}
 }
 
-void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnCodeReceived SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		static const FString AccountLinkingCode = TEXT("code");
-		if (JsonObject->HasTypedField<EJson::String>(AccountLinkingCode))
-		{
-			const FString Code = JsonObject.Get()->GetStringField(AccountLinkingCode);
-			SuccessCallback.ExecuteIfBound(Code);
-			return;
-		}
-
-		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccountLinkingCode);
-	}
-
-	HandleRequestError(OutError, ErrorHandlersWrapper);
-}
-
 void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
@@ -1458,33 +1383,6 @@ void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr Htt
 	{
 		HandleRequestOAuthError(OutError, ErrorCallback);
 	}
-}
-
-void UXsollaLoginSubsystem::AuthConsoleAccountUser_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		static const FString TokenFieldName = TEXT("token");
-		if (JsonObject->HasTypedField<EJson::String>(TokenFieldName))
-		{
-			const FString Token = JsonObject.Get()->GetStringField(TokenFieldName);
-
-			LoginData.AuthToken.JWT = Token;
-
-			SaveData();
-
-			SuccessCallback.ExecuteIfBound(LoginData);
-			return;
-		}
-
-		OutError.description = FString::Printf(TEXT("No field '%s' found"), *TokenFieldName);
-	}
-
-	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
 void UXsollaLoginSubsystem::DeviceId_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
@@ -1981,34 +1879,6 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
-	}
-
-	HandleRequestOAuthError(OutError, ErrorCallback);
-}
-
-void UXsollaLoginSubsystem::HandleUrlWithTokenRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
-	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		static const FString LoginUrlFieldName = TEXT("login_url");
-		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
-		{
-			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
-
-			LoginData.AuthToken.JWT = Token;
-
-			SaveData();
-
-			SuccessCallback.ExecuteIfBound(LoginData);
-			return;
-		}
-
-		OutError.description = FString::Printf(TEXT("No field '%s' found"), *LoginUrlFieldName);
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
