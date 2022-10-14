@@ -318,7 +318,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 			XsollaJavaConvertor::GetJavaString(AccessToken), 
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
-			XsollaJavaConvertor::GetJavaString(RedirectURI);
+			XsollaJavaConvertor::GetJavaString(RedirectURI));
 #endif
 
 #if PLATFORM_IOS
