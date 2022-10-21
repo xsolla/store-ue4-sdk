@@ -15,7 +15,7 @@ UDataTable* UXsollaStoreLibrary::CurrencyLibrary;
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Store/Misc/currency-format.currency-format'"),
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Misc/currency-format.currency-format'"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
