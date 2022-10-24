@@ -192,9 +192,9 @@ public:
 	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticate With Session Ticket
-	 * Authenticates a user by exchanging the platform specific session ticket for a token.
+	 * Authenticates a user by exchanging the session ticket from Steam, Xbox, or Epic Games to the JWT.
 	 *
-	 * @param ProviderName Platform on which the session ticket was obtained.
+	 * @param ProviderName Platform on which the session ticket was obtained. Can be `steam`, `xbox`, `epicgames`. 
 	 * @param SessionTicket Session ticket.
 	 * @param Code Code received from the platform.
 	 * @param AppId Platform application identifier.
