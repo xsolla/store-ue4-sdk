@@ -19,7 +19,10 @@ void FXsollaWebBrowserModule::StartupModule()
 		WebBrowserAssetMgr->LoadDefaultMaterials();
 
 		FWebBrowserInitSettings WebBrowserInitSettings;
-		WebBrowserInitSettings.ProductVersion = TEXT("");
+
+		FString ChromeVersion = TEXT("Chrome/87.0.4280.66");
+
+		WebBrowserInitSettings.ProductVersion = FString::Printf(TEXT("%s/%s UnrealEngine/%s Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) %s Safari/537.36"), FApp::GetProjectName(), FApp::GetBuildVersion(), *FEngineVersion::Current().ToString(), *ChromeVersion);
 		IWebBrowserModule::Get().CustomInitialize(WebBrowserInitSettings);
 
 		IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
