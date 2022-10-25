@@ -25,7 +25,7 @@ build doc:
   script:
   - apk update && apk add doxygen graphviz ttf-freefont zip git nodejs npm
   - doxygen Documentation/Autogen/Doxyfile >/dev/null
-  - git clone https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
+  - git clone -b test https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
   - mkdir -p sdk-reference-parser-unity-ue/src
   - mkdir -p sdk-reference-parser-unity-ue/dist
   - mv Documentation/Autogen/html/ sdk-reference-parser-unity-ue/src >/dev/null
