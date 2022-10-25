@@ -7,7 +7,6 @@ stages:
   - build
   - deploy
   - linking
-  - build-demo
 
 variables:
     BUILD_SCRIPT_PATH: "CI\\ue_build_automation.py"
@@ -77,21 +76,3 @@ stop doc:
   dependencies: []
   tags:
     - sshclient
-    
-build:
-  stage: build-demo
-  script:
-    - echo call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch %GIT_CURRENT_BRANCH% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
-    - call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch %GIT_CURRENT_BRANCH% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
-  artifacts:
-    name: "UE4_%CI_COMMIT_REF_NAME%"
-    when: always
-    paths:
-      - Builds
-      - Inspect
-      - Autotests
-    expire_in: 3 days
-  dependencies: []
-  tags:
-    - sdk_ci
-    - windows
