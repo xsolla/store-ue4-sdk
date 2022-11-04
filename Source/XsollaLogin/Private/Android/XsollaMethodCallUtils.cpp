@@ -4,6 +4,7 @@
 
 namespace XsollaMethodCallUtils
 {
+#if PLATFORM_ANDROID
 	void CallStaticVoidMethod(const ANSICHAR* ClassName, const ANSICHAR* MethodName, const ANSICHAR* MethodSignature, ...)
 	{
 		bool bIsOptional = false;
@@ -21,4 +22,5 @@ namespace XsollaMethodCallUtils
 
 		Env->DeleteLocalRef(Class);
 	}
+#endif
 }

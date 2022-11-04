@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "XsollaStoreDefines.h"
+#include "XsollaStore/Private/XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
 
 #include "XsollaStoreDataModel.generated.h"
