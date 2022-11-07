@@ -15,7 +15,11 @@ public class XsollaNativePaymentsActivity extends Activity {
     public static final String ARG_SANDBOX = "sandbox";
     public static final String ARG_REDIRECT_SCHEME = "redirect_scheme";
     public static final String ARG_REDIRECT_HOST = "redirect_host";
+    public static String CALLBACK_ADDRESS = "callback_address";
     private static final int RC_PAY_STATION = 1;
+
+    public static native void onPaymentsSuccessCallback(long callback);
+    public static native void onPaymentsErrorCallback(long callback, String errorMessage);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,11 @@ public class XsollaNativePaymentsActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        onPaymentsSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
+
+        String errorMessage = "Unknown error";
+        onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
         finish();
     }
 }

@@ -30,7 +30,7 @@
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
-#include "XsollaLogin/Private/Android/XsollaNativeAuthCallback.h"
+#include "XsollaStore/Private/Android/XsollaNativePaymentsCallback.h"
 #endif
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
@@ -312,22 +312,30 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 #if PLATFORM_ANDROID
+		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
+		nativeCallback->BindSuccessDelegate([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+		{ 
+			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		});
+		nativeCallback->BindErrorDelegate(ErrorCallback);
+
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
-			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken), 
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
-			XsollaJavaConvertor::GetJavaString(RedirectURI));
+			XsollaJavaConvertor::GetJavaString(RedirectURI),
+			(jlong)nativeCallback);
 #endif
 
 #if PLATFORM_IOS
-PaymentAccessToken = AccessToken;
-PaymentRedirectURI = RedirectURI;
-PaymentEnableSandbox = Settings->EnableSandbox;
-PaymentOrderId = OrderId;
-PaymentSuccessCallback = SuccessCallback;
-PaymentErrorCallback = ErrorCallback;
+		PaymentAccessToken = AccessToken;
+		PaymentRedirectURI = RedirectURI;
+		PaymentEnableSandbox = Settings->EnableSandbox;
+		PaymentOrderId = OrderId;
+		PaymentSuccessCallback = SuccessCallback;
+		PaymentErrorCallback = ErrorCallback;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
@@ -338,6 +346,7 @@ PaymentErrorCallback = ErrorCallback;
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
+					PaymentErrorCallback.ExecuteIfBound(0, error.code, FString(error.description));
 				} else {
 				AsyncTask(ENamedThreads::GameThread, [=]() {
 					CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
@@ -345,9 +354,6 @@ PaymentErrorCallback = ErrorCallback;
 				}
 			}];
 		});
-#endif
-#if PLATFORM_ANDROID
-		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 #endif
 		return;
 	}
