@@ -4,6 +4,7 @@
 
 namespace XsollaJavaConvertor
 {
+#if PLATFORM_ANDROID
 	jstring GetJavaString(const FString& string)
 	{
 		JNIEnv* JEnv = AndroidJavaEnv::GetJavaEnv();
@@ -26,4 +27,5 @@ namespace XsollaJavaConvertor
 
 		return Result;
 	}
+#endif
 }

@@ -7,6 +7,7 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "XsollaStoreDefines.h"
 #include "XsollaOrderCheckObject.generated.h"
 
 class IWebSocket;
