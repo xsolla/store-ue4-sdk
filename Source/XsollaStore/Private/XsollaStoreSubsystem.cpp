@@ -322,20 +322,33 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #endif
 
 #if PLATFORM_IOS
+PaymentAccessToken = AccessToken;
+PaymentRedirectURI = RedirectURI;
+PaymentEnableSandbox = Settings->EnableSandbox;
+PaymentOrderId = OrderId;
+PaymentSuccessCallback = SuccessCallback;
+PaymentErrorCallback = ErrorCallback;
+
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken.GetNSString()
+			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
 				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
-				isSandbox:Settings->EnableSandbox
-				redirectUrl:RedirectURI.GetNSString()
+				isSandbox:PaymentEnableSandbox
+				redirectUrl:PaymentRedirectURI.GetNSString()
 				completionHandler:^(NSError* _Nullable error) {
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
+				} else {
+				AsyncTask(ENamedThreads::GameThread, [=]() {
+					CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
+				});
 				}
 			}];
 		});
 #endif
+#if PLATFORM_ANDROID
 		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+#endif
 		return;
 	}
 #endif

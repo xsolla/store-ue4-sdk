@@ -834,4 +834,23 @@ private:
 
 	UPROPERTY()
 	UXsollaLoginSubsystem* LoginSubsystem;
+
+	UPROPERTY()
+	FString PaymentAccessToken;
+
+	UPROPERTY()
+	FString PaymentRedirectURI;
+
+	UPROPERTY()
+	bool PaymentEnableSandbox;
+
+	UPROPERTY()
+	int32 PaymentOrderId;
+
+	UPROPERTY()
+	FOnStoreSuccessPayment PaymentSuccessCallback;
+
+	UPROPERTY()
+	FOnError PaymentErrorCallback;
+
 };
