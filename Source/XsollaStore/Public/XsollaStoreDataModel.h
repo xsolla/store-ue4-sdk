@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "XsollaStore/Private/XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
-
 #include "XsollaStoreDataModel.generated.h"
 
 UENUM(BlueprintType)
