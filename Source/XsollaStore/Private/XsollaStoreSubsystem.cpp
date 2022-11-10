@@ -26,11 +26,10 @@
 #include "XsollaWebBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
-
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
-#include "XsollaLogin/Private/Android/XsollaNativeAuthCallback.h"
+#include "XsollaStore/Private/Android/XsollaNativePaymentsCallback.h"
 #endif
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
@@ -312,22 +311,34 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 #if PLATFORM_ANDROID
+		PaymentAccessToken = AccessToken;
+		PaymentOrderId = OrderId;
+		PaymentSuccessCallback = SuccessCallback;
+		PaymentErrorCallback = ErrorCallback;
+
+		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
+		FOnStoreSuccessPayment SuccessNativeDelegate;
+		SuccessNativeDelegate.BindDynamic(this, &UXsollaStoreSubsystem::CallCheckPendingOrder);
+		nativeCallback->BindSuccessDelegate(SuccessNativeDelegate);
+		nativeCallback->BindErrorDelegate(ErrorCallback);
+
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
-			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken), 
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
-			XsollaJavaConvertor::GetJavaString(RedirectURI));
+			XsollaJavaConvertor::GetJavaString(RedirectURI),
+			(jlong)nativeCallback);
 #endif
 
 #if PLATFORM_IOS
-PaymentAccessToken = AccessToken;
-PaymentRedirectURI = RedirectURI;
-PaymentEnableSandbox = Settings->EnableSandbox;
-PaymentOrderId = OrderId;
-PaymentSuccessCallback = SuccessCallback;
-PaymentErrorCallback = ErrorCallback;
+		PaymentAccessToken = AccessToken;
+		PaymentRedirectURI = RedirectURI;
+		PaymentEnableSandbox = Settings->EnableSandbox;
+		PaymentOrderId = OrderId;
+		PaymentSuccessCallback = SuccessCallback;
+		PaymentErrorCallback = ErrorCallback;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
@@ -338,6 +349,7 @@ PaymentErrorCallback = ErrorCallback;
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
+					PaymentErrorCallback.ExecuteIfBound(0, error.code, FString(error.description));
 				} else {
 				AsyncTask(ENamedThreads::GameThread, [=]() {
 					CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
@@ -345,9 +357,6 @@ PaymentErrorCallback = ErrorCallback;
 				}
 			}];
 		});
-#endif
-#if PLATFORM_ANDROID
-		CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 #endif
 		return;
 	}
@@ -381,6 +390,11 @@ PaymentErrorCallback = ErrorCallback;
 			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		});
 	}
+}
+
+void UXsollaStoreSubsystem::CallCheckPendingOrder()
+{
+	CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
@@ -2148,5 +2162,37 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 
 	return CartItem != nullptr;
 }
+
+#if PLATFORM_ANDROID
+
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+{
+	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteSuccess();
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
+{
+	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+#endif
 
 #undef LOCTEXT_NAMESPACE
