@@ -211,6 +211,9 @@ public:
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
+	UFUNCTION()
+	void CallCheckPendingOrder();
+
 	/** Check Pending Order
 	 * Checks pending order
 	 *

@@ -48,10 +48,27 @@ public class XsollaNativePaymentsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        onPaymentsSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
 
-        String errorMessage = "Unknown error";
-        onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
+        XPayments.Result result = XPayments.Result.fromResultIntent(data);
+        XPayments.Status status = result.getStatus();
+        
+        if(status == XPayments.Status.COMPLETED)
+        {
+            onPaymentsSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
+        }
+
+        if(status == XPayments.Status.UNKNOWN)
+        {
+            String errorMessage = "Unknown error";
+            onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
+        }
+
+        if(status == XPayments.Status.CANCELLED)
+        {
+            String errorMessage = "Cancelled";
+            onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
+        }
+         
         finish();
     }
 }
