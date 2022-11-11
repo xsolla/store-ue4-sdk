@@ -408,77 +408,28 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
 
 	FOnOrderCheckSuccess OrderCheckSuccessCallback;
-	OrderCheckSuccessCallback.BindLambda([&, OrderCheckObject, SuccessCallback](int32 OrderId, EXsollaOrderStatus OrderStatus)
+	OrderCheckSuccessCallback.BindLambda([&, OrderCheckObject, SuccessCallback](int32 OrderId)
 	{
-		if (OrderStatus == EXsollaOrderStatus::Done)
-		{
-			SuccessCallback.ExecuteIfBound();
-			OrderCheckObject->Destroy();
-			CachedOrderCheckObjects.Remove(OrderCheckObject);
-		}
+//TEXTREVIEW
+		UE_LOG(LogXsollaStore, Log, TEXT("Success purchase! OrderId = %d"), OrderId);
+		OrderCheckObject->Destroy();
+		CachedOrderCheckObjects.Remove(OrderCheckObject);
+		SuccessCallback.ExecuteIfBound();
 	});
 
 	FOnOrderCheckError OrderCheckErrorCallback;
-	OrderCheckErrorCallback.BindLambda([&, OrderCheckObject, AccessToken, OrderId, SuccessCallback, ErrorCallback](const FString& ErrorMessage)
+	OrderCheckErrorCallback.BindLambda([&, OrderCheckObject, ErrorCallback](int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
 	{
-		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+//TEXTREVIEW
+		UE_LOG(LogXsollaStore, Error, TEXT("Order checking failed - Status code: %d, Error code: %d, Error message: %s"), StatusCode, ErrorCode, *ErrorMessage);
 		OrderCheckObject->Destroy();
 		CachedOrderCheckObjects.Remove(OrderCheckObject);
-	});
-
-	FOnOrderCheckTimeout OrderCheckTimeoutCallback;
-	OrderCheckTimeoutCallback.BindLambda([&, OrderCheckObject, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
-	{
-		ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
-		OrderCheckObject->Destroy();
-		CachedOrderCheckObjects.Remove(OrderCheckObject);
+		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorMessage);
 	});
 	
-	OrderCheckObject->Init(Url, TEXT("wss"), OrderCheckSuccessCallback, OrderCheckErrorCallback, OrderCheckTimeoutCallback, 300);
+	OrderCheckObject->Init(Url, TEXT("wss"), AccessToken, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 	CachedOrderCheckObjects.Add(OrderCheckObject);
 	OrderCheckObject->Connect();
-}
-
-void UXsollaStoreSubsystem::ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
-{
-	FOnCheckOrder CheckOrderSuccessCallback;
-	CheckOrderSuccessCallback.BindLambda([&, AccessToken, SuccessCallback, ErrorCallback](int32 OrderId, EXsollaOrderStatus OrderStatus, FXsollaOrderContent OrderContent)
-	{
-		if (OrderStatus == EXsollaOrderStatus::New || OrderStatus == EXsollaOrderStatus::Paid)
-		{
-			FTimerHandle TimerHandle;
-			FTimerDelegate TimerDelegate;
-			TimerDelegate.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
-			{
-				ShortPollingCheckOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
-			});
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.0f, false);
-		}
-
-		if (OrderStatus == EXsollaOrderStatus::Done)
-		{
-			SuccessCallback.ExecuteIfBound();
-		}
-	});
-	
-	CheckOrder(AccessToken, OrderId, CheckOrderSuccessCallback, ErrorCallback);
-}
-
-void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
-	const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback)
-{
-	CachedAuthToken = AuthToken;
-
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/order/{OrderId}"))
-							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.SetPathParam(TEXT("OrderId"), OrderId)
-							.Build();
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
-	HttpRequest->OnProcessRequestComplete().BindUObject(this,
-		&UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
@@ -1329,47 +1280,6 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	}
 
 	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
-}
-
-void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
-{
-	FXsollaOrder Order;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaOrder::StaticStruct(), &Order, OutError))
-	{
-		FString OrderStatusStr = Order.status;
-
-		EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
-
-		if (OrderStatusStr == TEXT("new"))
-		{
-			OrderStatus = EXsollaOrderStatus::New;
-		}
-		else if (OrderStatusStr == TEXT("paid"))
-		{
-			OrderStatus = EXsollaOrderStatus::Paid;
-		}
-		else if (OrderStatusStr == TEXT("done"))
-		{
-			OrderStatus = EXsollaOrderStatus::Done;
-		}
-		else if (OrderStatusStr == TEXT("canceled"))
-		{
-			OrderStatus = EXsollaOrderStatus::Canceled;
-		}
-		else
-		{
-			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, Order.order_id);
-		}
-
-		SuccessCallback.ExecuteIfBound(Order.order_id, OrderStatus, Order.content);
-		return;
-	}
-
-	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(

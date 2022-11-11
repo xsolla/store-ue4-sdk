@@ -226,12 +226,6 @@ public:
 	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	void ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
-
-	void CheckOrder(const FString& AuthToken, const int32 OrderId,
-		const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback);
-
 	/** Clear Cart
 	 * Removes all items from the cart.
 	 *
@@ -643,8 +637,6 @@ protected:
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
