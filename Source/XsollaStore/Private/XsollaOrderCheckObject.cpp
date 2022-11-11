@@ -169,9 +169,9 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 // TEXTREVIEW
 	UE_LOG(LogXsollaStore, Log, TEXT("ShortPollingCheckOrder"));
 	FOnOrderCheck CheckOrderSuccessCallback;
-	CheckOrderSuccessCallback.BindLambda([&](int32 OrderId, EXsollaOrderStatus OrderStatus, FXsollaOrderContent OrderContent)
+	CheckOrderSuccessCallback.BindLambda([&](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
 	{
-		if (OrderStatus == EXsollaOrderStatus::New || OrderStatus == EXsollaOrderStatus::Paid)
+		if (InOrderStatus == EXsollaOrderStatus::New || InOrderStatus == EXsollaOrderStatus::Paid)
 		{
 			if (bShortPollingExpired)
 			{
@@ -189,12 +189,12 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 			}
 		}
 
-		if (OrderStatus == EXsollaOrderStatus::Canceled)
+		if (InOrderStatus == EXsollaOrderStatus::Canceled)
 		{
 // TEXTREVIEW
 			OnError.ExecuteIfBound(0, 0, TEXT("Order cancelled"));
 		} 
-		if (OrderStatus == EXsollaOrderStatus::Done)
+		if (InOrderStatus == EXsollaOrderStatus::Done)
 		{
 			OnSuccess.ExecuteIfBound(OrderId);
 		}
