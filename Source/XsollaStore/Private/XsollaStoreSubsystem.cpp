@@ -350,11 +350,20 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
-					PaymentErrorCallback.ExecuteIfBound(0, error.code, FString(error.description));
+					
+					if([@(error.code) integerValue] == NSError.cancelledByUserError)
+					{
+						// cancelled by user
+					} else
+					{
+						AsyncTask(ENamedThreads::GameThread, [=, ErrStr = FString(error.description), ErrCode = int32([@(error.code) integerValue])]() {
+							PaymentErrorCallback.ExecuteIfBound(0, ErrCode, ErrStr);
+						});
+					}
 				} else {
-				AsyncTask(ENamedThreads::GameThread, [=]() {
-					CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
-				});
+					AsyncTask(ENamedThreads::GameThread, [=]() {
+						CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
+					});
 				}
 			}];
 		});
