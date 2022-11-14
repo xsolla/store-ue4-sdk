@@ -19,7 +19,7 @@ echo ### BUILD TEST PROJECT ###
 
 set AT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\AutomationTool.exe"
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
-set OUTPUT_DIR=%CI_WORK_DIR%\Builds\Win64
+set OUTPUT_DIR=%CI_WORK_DIR%\Builds
 
 echo.
 echo ### AUTOMATION_TOOL_PATH: %AT_PATH%

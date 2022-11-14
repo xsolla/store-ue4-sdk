@@ -10,6 +10,7 @@ stages:
   - autotests
   - code-analysis
   - build-demo-win
+  - build-demo-android
 
 variables:
     TEST_PROJECT_DIR: C:\Users\Runner\Desktop\TestProjects\Ue427
@@ -124,6 +125,24 @@ build-win-demo:
   stage: build-demo-win
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+  artifacts:
+    name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO WIN
+    
+build-android-demo:
+  stage: build-demo-android
+  script:
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
   artifacts:
     name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
     when: always
