@@ -309,8 +309,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #if PLATFORM_ANDROID || PLATFORM_IOS
 	if (!Settings->UsePlatformBrowser)
 	{
-		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 #if PLATFORM_ANDROID
+		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		PaymentAccessToken = AccessToken;
 		PaymentOrderId = OrderId;
 		PaymentSuccessCallback = SuccessCallback;
@@ -333,6 +333,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #endif
 
 #if PLATFORM_IOS
+		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		PaymentAccessToken = AccessToken;
 		PaymentRedirectURI = RedirectURI;
 		PaymentEnableSandbox = Settings->EnableSandbox;
@@ -349,11 +350,20 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
-					PaymentErrorCallback.ExecuteIfBound(0, error.code, FString(error.description));
+					
+					if([@(error.code) integerValue] == NSError.cancelledByUserError)
+					{
+						// cancelled by user
+					} else
+					{
+						AsyncTask(ENamedThreads::GameThread, [=, ErrStr = FString(error.description), ErrCode = int32([@(error.code) integerValue])]() {
+							PaymentErrorCallback.ExecuteIfBound(0, ErrCode, ErrStr);
+						});
+					}
 				} else {
-				AsyncTask(ENamedThreads::GameThread, [=]() {
-					CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
-				});
+					AsyncTask(ENamedThreads::GameThread, [=]() {
+						CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
+					});
 				}
 			}];
 		});
