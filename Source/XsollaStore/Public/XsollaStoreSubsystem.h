@@ -20,6 +20,7 @@ class UXsollaLoginSubsystem;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
+DECLARE_DYNAMIC_DELEGATE(FOnStoreCancelPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
@@ -198,6 +199,7 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+//TEXTREVIEW
 	/** Launch Payment Console
 	 * Opens payment console for the provided access token.
 	 *
@@ -206,10 +208,11 @@ public:
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param SuccessCallback Callback function called after the payment was successfully completed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param CancelCallback Callback function called if paystation widget was closed without payment.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback, CancelCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreCancelPayment& CancelCallback);
 
 	UFUNCTION()
 	void CallCheckPendingOrder();
@@ -847,5 +850,8 @@ private:
 
 	UPROPERTY()
 	FOnError PaymentErrorCallback;
+
+	UPROPERTY()
+	FOnStoreCancelPayment PaymentCancelCallback;
 
 };

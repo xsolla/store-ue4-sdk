@@ -14,13 +14,19 @@ class XSOLLASTORE_API UXsollaNativePaymentsCallback : public UObject
 public:
 	void BindSuccessDelegate(const FOnStoreSuccessPayment& OnSuccess);
 	void BindErrorDelegate(const FOnError& OnError);
+	void BindCancelDelegate(const FOnStoreCancelPayment& OnCancel);
 
 	void ExecuteSuccess();
 	void ExecuteError(const FString& ErrorMessage);
+	void ExecuteCancel();
 
 private:
 	UPROPERTY()
 	FOnStoreSuccessPayment OnPaymentsSuccessDelegate;
+
 	UPROPERTY()
 	FOnError OnPaymentsErrorDelegate;
+
+	UPROPERTY()
+	FOnStoreCancelPayment OnPaymentsCancelDelegate;
 };

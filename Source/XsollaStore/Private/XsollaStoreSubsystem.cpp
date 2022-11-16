@@ -293,7 +293,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreCancelPayment& CancelCallback)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -315,12 +315,14 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaymentOrderId = OrderId;
 		PaymentSuccessCallback = SuccessCallback;
 		PaymentErrorCallback = ErrorCallback;
+		PaymentCancelCallback = CancelCallback;
 
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
 		FOnStoreSuccessPayment SuccessNativeDelegate;
 		SuccessNativeDelegate.BindDynamic(this, &UXsollaStoreSubsystem::CallCheckPendingOrder);
 		nativeCallback->BindSuccessDelegate(SuccessNativeDelegate);
 		nativeCallback->BindErrorDelegate(ErrorCallback);
+		nativeCallback->BindCancelDelegate(CancelCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
 			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
@@ -353,7 +355,9 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 					
 					if([@(error.code) integerValue] == NSError.cancelledByUserError)
 					{
-						// cancelled by user
+						AsyncTask(ENamedThreads::GameThread, []() {
+							PaymentCancelCallback.ExecuteIfBound();
+						});
 					} else
 					{
 						AsyncTask(ENamedThreads::GameThread, [=, ErrStr = FString(error.description), ErrCode = int32([@(error.code) integerValue])]() {
@@ -2106,6 +2110,20 @@ JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsErr
 	if (IsValid(callback))
 	{
 		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+{
+	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteCancel();
 	}
 	else
 	{
