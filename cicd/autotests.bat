@@ -14,8 +14,9 @@ call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% 
 if not %errorlevel%==0 goto onFinish
 
 echo.
-echo ==========================
-echo ### BUILD TEST PROJECT ###
+echo =============================
+echo ### GENERATE TEST PROJECT ###
+
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set UBT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\UnrealBuildTool.exe"
 
@@ -32,6 +33,7 @@ if not %errorlevel%==0 goto onFinish
 echo.
 echo ====================
 echo ### LAUNCH TESTS ###
+
 set UE_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\Win64\UE4Editor.exe"
 set REPORTS_DIR=%CI_WORK_DIR%\Logs
 
@@ -46,6 +48,7 @@ set errorlevel=0
 echo.
 echo ===========================
 echo ### INSPECT TESTS REPORT ###
+
 set JSON_PARSER_PATH=C:\Users\Runner\jq-win64.exe
 set REPORT_PATH=%REPORTS_DIR%\index.json
 
