@@ -14,19 +14,19 @@ call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% 
 if not %errorlevel%==0 goto onFinish
 
 echo.
-echo ==========================
-echo ### BUILD TEST PROJECT ###
+echo ============================
+echo ### PACKAGE TEST PROJECT ###
 
 set AT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\AutomationTool.exe"
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
-set OUTPUT_DIR=%CI_WORK_DIR%\Builds
+set PACKAGE_DIR=%CI_WORK_DIR%\Builds
 
 echo.
 echo ### AUTOMATION_TOOL_PATH: %AT_PATH%
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
-echo ### OUTPUT_DIR: %OUTPUT_DIR%
+echo ### PACKAGE_DIR: %PACKAGE_DIR%
 
-call %AT_PATH% BuildCookRun -platform=Win64 -project=%UPROJECT_PATH% -nop4 -cook -build -stage -prereqss -package -archive -archivedirectory=%OUTPUT_DIR%
+call %AT_PATH% BuildCookRun -platform=Win64 -project=%UPROJECT_PATH% -archivedirectory=%PACKAGE_DIR% -nop4 -cook -build -stage -prereqss -package -archive
 if not %errorlevel%==0 goto onFinish
 
 :onFinish
