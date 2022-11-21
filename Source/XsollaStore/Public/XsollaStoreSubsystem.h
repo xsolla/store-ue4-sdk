@@ -15,7 +15,7 @@
 
 enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
-class UXsollaWebBrowserWrapper;
+class UXsollaStoreBrowserWrapper;
 class UXsollaLoginSubsystem;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
@@ -821,11 +821,11 @@ protected:
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
 
-	UXsollaWebBrowserWrapper* MyBrowser;
+	UXsollaStoreBrowserWrapper* MyBrowser;
 
 private:
 	UPROPERTY()
-	TSubclassOf<UXsollaWebBrowserWrapper> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaStoreBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
 	TArray<UXsollaOrderCheckObject*> CachedOrderCheckObjects;

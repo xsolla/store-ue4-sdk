@@ -23,7 +23,7 @@
 #include "XsollaProjectSettings.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
-#include "XsollaWebBrowserWrapper.h"
+#include "XsollaStoreBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
 #if PLATFORM_ANDROID
@@ -342,6 +342,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaymentOrderId = OrderId;
 		PaymentSuccessCallback = SuccessCallback;
 		PaymentErrorCallback = ErrorCallback;
+		PaymentCancelCallback = CancelCallback;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
@@ -388,20 +389,20 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 
 		PengindPaystationUrl = PaystationUrl;
 
-		if (MyBrowser == nullptr || !MyBrowser->IsValidLowLevel() || !MyBrowser->GetIsEnabled())
-		{
-			MyBrowser = CreateWidget<UXsollaWebBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
-			MyBrowser->AddToViewport(100000);
-		}
-		else
-		{
-			MyBrowser->SetVisibility(ESlateVisibility::Visible);
-		}
+		MyBrowser = CreateWidget<UXsollaStoreBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+		MyBrowser->AddToViewport(100000);
 
-		MyBrowser->OnBrowserClosed.Unbind();
-		MyBrowser->OnBrowserClosed.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+		MyBrowser->OnSuccess.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
 		{
 			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+		});
+		MyBrowser->OnError.BindLambda([&, ErrorCallback](const FString& ErrorMessage)
+		{ 
+			ErrorCallback.ExecuteIfBound(0, 0, ErrorMessage);
+		});
+		MyBrowser->OnCancel.BindLambda([&, CancelCallback]()
+		{
+			CancelCallback.ExecuteIfBound();
 		});
 	}
 }
