@@ -14,8 +14,8 @@ call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% 
 if not %errorlevel%==0 goto onFinish
 
 echo.
-echo ==============================
-echo ### GENERATE PROJECT FILES ###
+echo =============================
+echo ### GENERATE TEST PROJECT ###
 
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set UAT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\AutomationTool.exe"

@@ -7,6 +7,7 @@ set CI_WORK_DIR=%4
 
 echo ==========================
 echo ### CLONE TEST PROJECT ###
+
 set PROJECT_REMOTE=git@gitlab.loc:sdk_group/store-ue-sdk-test.git
 
 echo ### PROJECT_REMOTE: %PROJECT_REMOTE%
@@ -23,6 +24,7 @@ if not %errorlevel%==0 goto onFinish
 echo.
 echo ===============================
 echo ### CLONE PLUGIN TO PROJECT ###
+
 set PLUGIN_REMOTE=git@gitlab.loc:sdk_group/store-ue4-sdk.git
 set PLUGIN_DIR=%PROJECT_DIR%\Plugins\XsollaSdk
 
