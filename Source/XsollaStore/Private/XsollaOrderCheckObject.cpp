@@ -48,7 +48,6 @@ void UXsollaOrderCheckObject::Connect()
 
 void UXsollaOrderCheckObject::Destroy()
 {
-//TEXTREVIEW
 	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
 	if (Websocket.IsValid())
 	{
@@ -86,7 +85,6 @@ void UXsollaOrderCheckObject::OnMessage(const FString& Message)
 
 	if (!JsonObject.IsValid())
 	{
-// TEXTREVIEW
 		UE_LOG(LogXsollaStore, Warning, TEXT("Can't parse received message."));
 		return;
 	}
@@ -123,8 +121,7 @@ void UXsollaOrderCheckObject::OnMessage(const FString& Message)
 	}
 	if (OrderStatus == EXsollaOrderStatus::Canceled)
 	{
-// TEXTREVIEW
-		OnError.ExecuteIfBound(0, 0, TEXT("Order cancelled"));
+		OnError.ExecuteIfBound(0, 0, TEXT("Order canceled."));
 	}
 }
 
@@ -136,7 +133,6 @@ void UXsollaOrderCheckObject::OnClosed(int32 StatusCode, const FString& Reason, 
 
 void UXsollaOrderCheckObject::OnWebSocketExpired()
 {
-// TEXTREVIEW
 	UE_LOG(LogXsollaStore, Log, TEXT("Websocket object expired."));
 
 	if (Websocket.IsValid())
@@ -157,7 +153,7 @@ void UXsollaOrderCheckObject::OnShortPollingExpired()
 	bShortPollingExpired = true;
 }
 
-void UXsollaOrderCheckObject::ActivateShortPolling() 
+void UXsollaOrderCheckObject::ActivateShortPolling()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("ActivateShortPolling"));
 	GetWorld()->GetTimerManager().SetTimer(ShortPollingTimerHandle, this, &UXsollaOrderCheckObject::OnShortPollingExpired, ShortPollingLifeTime, false);
@@ -166,7 +162,6 @@ void UXsollaOrderCheckObject::ActivateShortPolling()
 
 void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 {
-// TEXTREVIEW
 	UE_LOG(LogXsollaStore, Log, TEXT("ShortPollingCheckOrder"));
 	FOnOrderCheck CheckOrderSuccessCallback;
 	CheckOrderSuccessCallback.BindLambda([&](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
@@ -175,15 +170,14 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 		{
 			if (bShortPollingExpired)
 			{
-// TEXTREVIEW
 				OnError.ExecuteIfBound(0, 0, TEXT("Short polling expired."));
 			} else
 			{
 				FTimerHandle TimerHandle;
 				FTimerDelegate TimerDelegate;
 				TimerDelegate.BindLambda([&]()
-				{ 
-					ShortPollingCheckOrder(); 
+				{
+					ShortPollingCheckOrder();
 				});
 				GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.0f, false);
 			}
@@ -191,9 +185,8 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 
 		if (InOrderStatus == EXsollaOrderStatus::Canceled)
 		{
-// TEXTREVIEW
-			OnError.ExecuteIfBound(0, 0, TEXT("Order cancelled"));
-		} 
+			OnError.ExecuteIfBound(0, 0, TEXT("Order canceled."));
+		}
 		if (InOrderStatus == EXsollaOrderStatus::Done)
 		{
 			OnSuccess.ExecuteIfBound(OrderId);

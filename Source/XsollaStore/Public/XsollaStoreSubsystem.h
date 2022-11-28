@@ -199,7 +199,6 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-//TEXTREVIEW
 	/** Launch Payment Console
 	 * Opens payment console for the provided access token.
 	 *

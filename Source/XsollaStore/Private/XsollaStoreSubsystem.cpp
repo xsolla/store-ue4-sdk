@@ -59,7 +59,7 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Initialize(Settings->ProjectID);
 
 	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
-	
+
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -327,7 +327,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
 			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
 			FJavaWrapper::GameActivityThis,
-			XsollaJavaConvertor::GetJavaString(AccessToken), 
+			XsollaJavaConvertor::GetJavaString(AccessToken),
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
 			XsollaJavaConvertor::GetJavaString(RedirectURI),
@@ -353,7 +353,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 				if (error != nil)
 				{
 					NSLog(@"Error code: %ld", error.code);
-					
+
 					if([@(error.code) integerValue] == NSError.cancelledByUserError)
 					{
 						AsyncTask(ENamedThreads::GameThread, []() {
@@ -397,7 +397,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 		});
 		MyBrowser->OnError.BindLambda([&, ErrorCallback](const FString& ErrorMessage)
-		{ 
+		{
 			ErrorCallback.ExecuteIfBound(0, 0, ErrorMessage);
 		});
 		MyBrowser->OnCancel.BindLambda([&, CancelCallback]()
@@ -425,8 +425,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	FOnOrderCheckSuccess OrderCheckSuccessCallback;
 	OrderCheckSuccessCallback.BindLambda([&, OrderCheckObject, SuccessCallback](int32 OrderId)
 	{
-//TEXTREVIEW
-		UE_LOG(LogXsollaStore, Log, TEXT("Success purchase! OrderId = %d"), OrderId);
+		UE_LOG(LogXsollaStore, Log, TEXT("Successul purchase! OrderId = %d"), OrderId);
 		OrderCheckObject->Destroy();
 		CachedOrderCheckObjects.Remove(OrderCheckObject);
 		SuccessCallback.ExecuteIfBound();
@@ -435,13 +434,12 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	FOnOrderCheckError OrderCheckErrorCallback;
 	OrderCheckErrorCallback.BindLambda([&, OrderCheckObject, ErrorCallback](int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
 	{
-//TEXTREVIEW
 		UE_LOG(LogXsollaStore, Error, TEXT("Order checking failed - Status code: %d, Error code: %d, Error message: %s"), StatusCode, ErrorCode, *ErrorMessage);
 		OrderCheckObject->Destroy();
 		CachedOrderCheckObjects.Remove(OrderCheckObject);
 		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorMessage);
 	});
-	
+
 	OrderCheckObject->Init(Url, TEXT("wss"), AccessToken, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 	CachedOrderCheckObjects.Add(OrderCheckObject);
 	OrderCheckObject->Connect();
@@ -735,7 +733,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 	CachedAuthToken = AuthToken;
 
 	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
-	
+
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}/virtual/{CurrencySKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
@@ -989,7 +987,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPublicPlans(const TArray<int> PlanId,
 								.AddNumberQueryParam(TEXT("limit"), Limit)
 								.AddNumberQueryParam(TEXT("offset"), Offset)
 								.Build();
-	
+
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPublicPlans_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -1215,7 +1213,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 {
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyData VirtualCurrencyData;
-	
+
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(VirtualCurrencyData);
@@ -1562,7 +1560,7 @@ void UXsollaStoreSubsystem::GetGamesList_HttpRequestComplete(FHttpRequestPtr Htt
 {
 	XsollaHttpRequestError OutError;
 	FStoreGamesData GamesData;
-	
+
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreGamesData::StaticStruct(), &GamesData, OutError))
 	{
 		// Update categories
@@ -1898,9 +1896,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	FString OutputString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-	
+
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: payment payload"), *OutputString);
-	
+
 	return RequestDataJson;
 }
 
