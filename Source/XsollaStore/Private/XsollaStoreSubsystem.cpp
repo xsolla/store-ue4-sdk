@@ -415,11 +415,6 @@ void UXsollaStoreSubsystem::CallCheckPendingOrder()
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
-							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) //FString casting to prevent parameters reorder.
-							.AddStringQueryParam(TEXT("project_id"), ProjectID)
-							.Build();
-
 	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
 
 	FOnOrderCheckSuccess OrderCheckSuccessCallback;
@@ -440,7 +435,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorMessage);
 	});
 
-	OrderCheckObject->Init(Url, TEXT("wss"), AccessToken, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
+	OrderCheckObject->Init(AccessToken, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 	CachedOrderCheckObjects.Add(OrderCheckObject);
 	OrderCheckObject->Connect();
 }

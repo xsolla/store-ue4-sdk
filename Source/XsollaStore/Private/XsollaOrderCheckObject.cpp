@@ -16,7 +16,7 @@
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaStoreDefines.h"
 
-void UXsollaOrderCheckObject::Init(const FString& Url, const FString& Protocol, const FString& InAccessToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime, int32 InShortPollingLifeTime)
+void UXsollaOrderCheckObject::Init(const FString& InAccessToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime, int32 InShortPollingLifeTime)
 {
 	AccessToken = InAccessToken;
 	OrderId = InOrderId;
@@ -26,7 +26,14 @@ void UXsollaOrderCheckObject::Init(const FString& Url, const FString& Protocol, 
 	OnSuccess = InOnSuccess;
 	OnError = InOnError;
 
-	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, Protocol);
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
+		.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) // FString casting to prevent parameters reorder.
+		.AddStringQueryParam(TEXT("project_id"), Settings->ProjectID)
+		.Build();
+
+	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, TEXT("wss"));
 	Websocket->OnConnected().AddUObject(this, &UXsollaOrderCheckObject::OnConnected);
 	Websocket->OnConnectionError().AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
 	Websocket->OnMessage().AddUObject(this, &UXsollaOrderCheckObject::OnMessage);
