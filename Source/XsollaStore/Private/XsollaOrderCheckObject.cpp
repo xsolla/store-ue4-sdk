@@ -163,8 +163,11 @@ void UXsollaOrderCheckObject::OnShortPollingExpired()
 void UXsollaOrderCheckObject::ActivateShortPolling()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("ActivateShortPolling"));
-	GetWorld()->GetTimerManager().SetTimer(ShortPollingTimerHandle, this, &UXsollaOrderCheckObject::OnShortPollingExpired, ShortPollingLifeTime, false);
-	ShortPollingCheckOrder();
+	if (!GetWorld()->GetTimerManager().IsTimerActive(ShortPollingTimerHandle))
+	{
+		GetWorld()->GetTimerManager().SetTimer(ShortPollingTimerHandle, this, &UXsollaOrderCheckObject::OnShortPollingExpired, ShortPollingLifeTime, false);
+		ShortPollingCheckOrder();
+	}
 }
 
 void UXsollaOrderCheckObject::ShortPollingCheckOrder()
