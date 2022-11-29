@@ -22,7 +22,7 @@ class UXsollaOrderCheckObject : public UObject
 	GENERATED_BODY()
 	
 public:
-	void Init(const FString& Url, const FString& Protocol, const FString& InAccessToken, const int32 InOrderId,
+	void Init(const FString& InAccessToken, const int32 InOrderId,
 		const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime = 300, int32 InShortPollingLifeTime = 600);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")

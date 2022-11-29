@@ -20,6 +20,7 @@ public class XsollaNativePaymentsActivity extends Activity {
 
     public static native void onPaymentsSuccessCallback(long callback);
     public static native void onPaymentsErrorCallback(long callback, String errorMessage);
+    public static native void onPaymentsCancelCallback(long callback);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +66,7 @@ public class XsollaNativePaymentsActivity extends Activity {
 
         if(status == XPayments.Status.CANCELLED)
         {
-            String errorMessage = "Cancelled";
-            onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
+            onPaymentsCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
         }
          
         finish();
