@@ -16,9 +16,9 @@
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaStoreDefines.h"
 
-void UXsollaOrderCheckObject::Init(const FString& InAccessToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime, int32 InShortPollingLifeTime)
+void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime, int32 InShortPollingLifeTime)
 {
-	AccessToken = InAccessToken;
+	AuthToken = InAuthToken;
 	OrderId = InOrderId;
 	WebSocketLifeTime = FMath::Clamp(InWebSocketLifeTime, 1, 3600);
 	ShortPollingLifeTime = FMath::Clamp(InShortPollingLifeTime, 1, 3600);
@@ -209,7 +209,7 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 							.SetPathParam(TEXT("OrderId"), OrderId)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AccessToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaOrderCheckObject::CheckOrder_HttpRequestComplete, CheckOrderSuccessCallback, OnError);
 	HttpRequest->ProcessRequest();
 }

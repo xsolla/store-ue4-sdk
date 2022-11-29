@@ -435,7 +435,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorMessage);
 	});
 
-	OrderCheckObject->Init(AccessToken, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
+	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 	CachedOrderCheckObjects.Add(OrderCheckObject);
 	OrderCheckObject->Connect();
 }
