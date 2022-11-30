@@ -356,7 +356,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 
 					if([@(error.code) integerValue] == NSError.cancelledByUserError)
 					{
-						AsyncTask(ENamedThreads::GameThread, []() {
+						AsyncTask(ENamedThreads::GameThread, [=]() {
 							PaymentCancelCallback.ExecuteIfBound();
 						});
 					} else
