@@ -12,9 +12,9 @@
 UXsollaWebBrowserAssetManager::UXsollaWebBrowserAssetManager(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	DefaultMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture.M_WebTexture"),
+	DefaultMaterial = FString::Printf(TEXT("/%s/Browser/Assets/M_WebTexture.M_WebTexture"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaWebBrowserModule::ModuleName));
-	DefaultTranslucentMaterial = FString::Printf(TEXT("/%s/Common/Browser/M_WebTexture_Translucent.M_WebTexture_Translucent"),
+	DefaultTranslucentMaterial = FString::Printf(TEXT("/%s/Browser/Assets/M_WebTexture_Translucent.M_WebTexture_Translucent"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaWebBrowserModule::ModuleName));
 
 #if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
