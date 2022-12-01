@@ -368,6 +368,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 				} else {
 					AsyncTask(ENamedThreads::GameThread, [=]() {
 						CheckPendingOrder(PaymentAccessToken, PaymentOrderId, PaymentSuccessCallback, PaymentErrorCallback);
+						PaymentCancelCallback.Unbind();
 					});
 				}
 			}];
