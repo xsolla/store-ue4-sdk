@@ -3,17 +3,7 @@
 
 #include "XsollaStoreBrowserWrapper.h"
 
-void UXsollaStoreBrowserWrapper::ExecuteSuccess()
+void UXsollaStoreBrowserWrapper::ExecuteBrowserClosed()
 {
-	OnSuccess.ExecuteIfBound();
-}
-
-void UXsollaStoreBrowserWrapper::ExecuteError(const FString& ErrorMessage)
-{
-	OnError.ExecuteIfBound(ErrorMessage);
-}
-
-void UXsollaStoreBrowserWrapper::ExecuteCancel()
-{
-	OnCancel.ExecuteIfBound();
+	OnBrowserClosed.ExecuteIfBound();
 }

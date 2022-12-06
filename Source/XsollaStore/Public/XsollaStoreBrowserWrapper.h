@@ -9,10 +9,7 @@
 /**
  * 
  */
-
-DECLARE_DELEGATE(FOnPaymentSuccess);
-DECLARE_DELEGATE_OneParam(FOnPaymentError, const FString&);
-DECLARE_DELEGATE(FOnPaymentCancel);
+DECLARE_DELEGATE(FOnBrowserClosed);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreBrowserWrapper : public UUserWidget
@@ -24,17 +21,7 @@ public:
 	void LoadUrl(const FString& Url);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Browser")
-	void ExecuteSuccess();
-
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Browser")
-	void ExecuteError(const FString& ErrorMessage);
-
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Browser")
-	void ExecuteCancel();
+	void ExecuteBrowserClosed();
 	
-	FOnPaymentSuccess OnSuccess;
-
-	FOnPaymentError OnError;
-
-	FOnPaymentCancel OnCancel;
+	FOnBrowserClosed OnBrowserClosed;
 };
