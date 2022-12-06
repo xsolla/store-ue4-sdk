@@ -228,6 +228,60 @@ public:
 	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
+	/** Create Order With Specified Free Item
+	 * Creates an order with a specified free item.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param ItemSKU Desired free item SKU.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Quantity Item quantity.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
+		const FString& Currency, const FString& Country, const FString& Locale,
+		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
+
+	/** Create Order With Free Cart
+	 * Creates order with free cart.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateOrderWithFreeCart(const FString& AuthToken,
+		const FString& Currency, const FString& Country, const FString& Locale,
+		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Create Order With Particular Free Cart
+	 * Creates order with particular free cart.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId Identifier of the cart for the purchase.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateOrderWithParticularFreeCart(const FString& AuthToken, const FString& CartId,
+		const FString& Currency, const FString& Country, const FString& Locale,
+		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Clear Cart
 	 * Removes all items from the cart.
 	 *
@@ -639,6 +693,13 @@ protected:
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void CreateOrderWithSpecifiedFreeItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void CreateOrderWithFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void CreateOrderWithParticularFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
