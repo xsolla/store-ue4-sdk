@@ -393,17 +393,9 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		MyBrowser = CreateWidget<UXsollaStoreBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 		MyBrowser->AddToViewport(100000);
 
-		MyBrowser->OnSuccess.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
+		MyBrowser->OnBrowserClosed.BindLambda([&, AccessToken, OrderId, SuccessCallback, ErrorCallback]()
 		{
 			CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
-		});
-		MyBrowser->OnError.BindLambda([&, ErrorCallback](const FString& ErrorMessage)
-		{
-			ErrorCallback.ExecuteIfBound(0, 0, ErrorMessage);
-		});
-		MyBrowser->OnCancel.BindLambda([&, CancelCallback]()
-		{
-			CancelCallback.ExecuteIfBound();
 		});
 	}
 }
