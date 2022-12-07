@@ -434,11 +434,11 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Country, const FString& Locale,
+	const FString& Currency, const FString& Locale,
 	const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
 
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
@@ -460,11 +460,11 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& Auth
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken,
-	const FString& Currency, const FString& Country, const FString& Locale,
+	const FString& Currency, const FString& Locale,
 	const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/cart"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -483,11 +483,11 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithParticularFreeCart(const FString& AuthToken, const FString& CartId,
-	const FString& Currency, const FString& Country, const FString& Locale,
+	const FString& Currency, const FString& Locale,
 	const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/cart/{CartID}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1360,53 +1360,20 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
-		SuccessCallback.ExecuteIfBound(OrderId);
-		return;
-	}
-
-	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithFreeCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
-		SuccessCallback.ExecuteIfBound(OrderId);
-		return;
-	}
-
-	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
 void UXsollaStoreSubsystem::CreateOrderWithParticularFreeCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
-	TSharedPtr<FJsonObject> JsonObject;
-	XsollaHttpRequestError OutError;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
-	{
-		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
-		SuccessCallback.ExecuteIfBound(OrderId);
-		return;
-	}
-
-	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
 
 void UXsollaStoreSubsystem::CreateCart_HttpRequestComplete(
@@ -1908,6 +1875,24 @@ void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData,
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
 		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
 	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
+}
+
+void UXsollaStoreSubsystem::HandlePurchaseFreeItemsRequest(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+
+		SuccessCallback.ExecuteIfBound(OrderId);
+		return;
+	}
+
+	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 }
 
 void UXsollaStoreSubsystem::LoadData()

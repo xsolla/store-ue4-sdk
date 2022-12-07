@@ -234,7 +234,6 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param ItemSKU Desired free item SKU.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after the payment was successfully completed.
@@ -243,7 +242,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Country, const FString& Locale,
+		const FString& Currency, const FString& Locale,
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
@@ -252,7 +251,6 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after the payment was successfully completed.
@@ -260,7 +258,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithFreeCart(const FString& AuthToken,
-		const FString& Currency, const FString& Country, const FString& Locale,
+		const FString& Currency, const FString& Locale,
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
@@ -270,7 +268,6 @@ public:
 	 * @param AuthToken User authorization token.
 	 * @param CartId Identifier of the cart for the purchase.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Callback function called after the payment was successfully completed.
@@ -278,7 +275,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithParticularFreeCart(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Country, const FString& Locale,
+		const FString& Currency, const FString& Locale,
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
@@ -778,6 +775,9 @@ protected:
 
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
+
+	void HandlePurchaseFreeItemsRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 protected:
 	/** Load save game and extract data */
