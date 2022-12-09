@@ -1396,9 +1396,11 @@ void UXsollaStoreSubsystem::UpdateCart_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
+	FStoreCart NewCart;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &NewCart, OutError))
 	{
+		Cart = NewCart;
 		OnCartUpdate.Broadcast(Cart);
 		SuccessCallback.ExecuteIfBound();
 	}
@@ -1451,9 +1453,11 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
+	FStoreCart NewCart;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &NewCart, OutError))
 	{
+		Cart = NewCart;
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1584,9 +1588,11 @@ void UXsollaStoreSubsystem::RedeemPromocode_HttpRequestComplete(
 	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
+	FStoreCart NewCart;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &NewCart, OutError))
 	{
+		Cart = NewCart;
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1600,9 +1606,11 @@ void UXsollaStoreSubsystem::RemovePromocodeFromCart_HttpRequestComplete(
 	const bool bSucceeded, FOnPromocodeUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
+	FStoreCart NewCart;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &NewCart, OutError))
 	{
+		Cart = NewCart;
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
