@@ -250,6 +250,7 @@ public:
 	 * Creates order with free cart.
 	 *
 	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
 	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
@@ -257,24 +258,7 @@ public:
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CreateOrderWithFreeCart(const FString& AuthToken,
-		const FString& Currency, const FString& Locale,
-		const FXsollaParameters CustomParameters,
-		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
-
-	/** Create Order With Particular Free Cart
-	 * Creates order with particular free cart.
-	 *
-	 * @param AuthToken User authorization token.
-	 * @param CartId Identifier of the cart for the purchase.
-	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after the payment was successfully completed.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void CreateOrderWithParticularFreeCart(const FString& AuthToken, const FString& CartId,
+	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Locale,
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
@@ -694,8 +678,6 @@ protected:
 	void CreateOrderWithSpecifiedFreeItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void CreateOrderWithFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void CreateOrderWithParticularFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
