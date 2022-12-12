@@ -2,14 +2,19 @@
 
 ## [1.3.0] - 2022-12-15
 
-- add native social authorization for IOS
-- add native payments for iOS
-- remove account linking
-- auth by device id for mobiles
-- separate demo and SDK
-- add deeplinks for IOS
-- added SDK methods for purchasing free items (CreateOrderWithSpecifiedFreeItem, CreateOrderWithFreeCart, CreateOrderWithParticularFreeCart)
-- updated checking order status process. added launch of a check for closing a payment order, shortpolling time limit
+### Added
+- Native social login for iOS
+- Native payments for iOS
+- Login by device ID for mobiles to demo
+- Deep links for iOS
+- SDK methods for ordering free items (`CreateOrderWithSpecifiedFreeItem` and `CreateOrderWithFreeCart` SDK methods)
+
+### Updated
+- Separated demo and SDK
+- Refinement of the payment status check (launching of the payment UI closing check and limiting short polling time)
+
+### Removed
+- Account linking function from demo
 
 ## [1.2.0] - 2022-09-02
 
