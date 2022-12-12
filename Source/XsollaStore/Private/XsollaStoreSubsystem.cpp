@@ -408,6 +408,17 @@ void UXsollaStoreSubsystem::CallCheckPendingOrder()
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	if (Settings->UsePlatformBrowser)
+	{
+		for (auto OrderCheckObject : CachedOrderCheckObjects)
+		{
+			OrderCheckObject->Destroy();
+			
+		}
+		CachedOrderCheckObjects.Empty();
+	}
+
 	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
 
 	FOnOrderCheckSuccess OrderCheckSuccessCallback;
@@ -428,9 +439,8 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 		ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, ErrorMessage);
 	});
 
-	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 	CachedOrderCheckObjects.Add(OrderCheckObject);
-	OrderCheckObject->Connect();
+	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
