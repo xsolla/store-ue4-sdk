@@ -18,10 +18,6 @@ public class XsollaNativePaymentsActivity extends Activity {
     public static String CALLBACK_ADDRESS = "callback_address";
     private static final int RC_PAY_STATION = 1;
 
-    public static native void onPaymentsSuccessCallback(long callback);
-    public static native void onPaymentsErrorCallback(long callback, String errorMessage);
-    public static native void onPaymentsCancelCallback(long callback);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,26 +45,9 @@ public class XsollaNativePaymentsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         XPayments.Result result = XPayments.Result.fromResultIntent(data);
         XPayments.Status status = result.getStatus();
         
-        if(status == XPayments.Status.COMPLETED)
-        {
-            onPaymentsSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
-        }
-
-        if(status == XPayments.Status.UNKNOWN)
-        {
-            String errorMessage = "Unknown error";
-            onPaymentsErrorCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), errorMessage);
-        }
-
-        if(status == XPayments.Status.CANCELLED)
-        {
-            onPaymentsCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
-        }
-         
         finish();
     }
 }

@@ -207,14 +207,10 @@ public:
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param SuccessCallback Callback function called after the payment was successfully completed.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param CancelCallback Callback function called if paystation widget was closed without payment.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback, CancelCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreCancelPayment& CancelCallback);
-
-	UFUNCTION()
-	void CallCheckPendingOrder();
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Check Pending Order
 	 * Checks pending order
@@ -892,26 +888,4 @@ private:
 
 	UPROPERTY()
 	UXsollaLoginSubsystem* LoginSubsystem;
-
-	UPROPERTY()
-	FString PaymentAccessToken;
-
-	UPROPERTY()
-	FString PaymentRedirectURI;
-
-	UPROPERTY()
-	bool PaymentEnableSandbox;
-
-	UPROPERTY()
-	int32 PaymentOrderId;
-
-	UPROPERTY()
-	FOnStoreSuccessPayment PaymentSuccessCallback;
-
-	UPROPERTY()
-	FOnError PaymentErrorCallback;
-
-	UPROPERTY()
-	FOnStoreCancelPayment PaymentCancelCallback;
-
 };
