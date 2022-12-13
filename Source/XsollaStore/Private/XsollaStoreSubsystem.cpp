@@ -332,10 +332,10 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #if PLATFORM_IOS
 		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
+			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken.GetNSString()
 				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
-				isSandbox:PaymentEnableSandbox
-				redirectUrl:PaymentRedirectURI.GetNSString()
+				isSandbox:Settings->EnableSandbox
+				redirectUrl:RedirectURI.GetNSString()
 				completionHandler:^(NSError* _Nullable error) {
 
 			}];
