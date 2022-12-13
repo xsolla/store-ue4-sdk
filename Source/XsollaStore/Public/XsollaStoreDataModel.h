@@ -464,6 +464,9 @@ struct XSOLLASTORE_API FStoreCartItem
 	bool is_free;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	bool is_bonus;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FXsollaPrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
