@@ -26,9 +26,6 @@ public:
 		const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime = 300, int32 InShortPollingLifeTime = 600);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
-	void Connect();
-
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
 	void Destroy();
 
 private:
@@ -63,6 +60,10 @@ private:
 	void OnWebSocketExpired();
 
 	void OnShortPollingExpired();
+
+	void ActivateWebSocket();
+
+	void DestroyWebSocket();
 
 	void ActivateShortPolling();
 

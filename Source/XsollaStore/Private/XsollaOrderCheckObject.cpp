@@ -26,48 +26,13 @@ void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrd
 	OnSuccess = InOnSuccess;
 	OnError = InOnError;
 
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
-		.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) // FString casting to prevent parameters reorder.
-		.AddStringQueryParam(TEXT("project_id"), Settings->ProjectID)
-		.Build();
-
-	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, TEXT("wss"));
-	Websocket->OnConnected().AddUObject(this, &UXsollaOrderCheckObject::OnConnected);
-	Websocket->OnConnectionError().AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
-	Websocket->OnMessage().AddUObject(this, &UXsollaOrderCheckObject::OnMessage);
-	Websocket->OnClosed().AddUObject(this, &UXsollaOrderCheckObject::OnClosed);
-}
-
-void UXsollaOrderCheckObject::Connect()
-{
-	if (!Websocket.IsValid())
-	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("Can't connect. Websocket invalid."));
-		ActivateShortPolling();
-		return;
-	}
-
-	Websocket->Connect();
-	GetWorld()->GetTimerManager().SetTimer(WebSocketTimerHandle, this, &UXsollaOrderCheckObject::OnWebSocketExpired, WebSocketLifeTime, false);
+	ActivateWebSocket();
 }
 
 void UXsollaOrderCheckObject::Destroy()
 {
-	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
-	if (Websocket.IsValid())
-	{
-		Websocket->OnConnected().RemoveAll(this);
-		Websocket->OnConnectionError().RemoveAll(this);
-		Websocket->OnClosed().RemoveAll(this);
-		Websocket->Close();
-		Websocket = nullptr;
-	}
-
+	DestroyWebSocket();
 	bShortPollingExpired = true;
-
-	GetWorld()->GetTimerManager().ClearTimer(WebSocketTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(ShortPollingTimerHandle);
 }
 
@@ -142,6 +107,40 @@ void UXsollaOrderCheckObject::OnWebSocketExpired()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("Websocket object expired."));
 
+	DestroyWebSocket();
+	ActivateWebSocket();
+}
+
+void UXsollaOrderCheckObject::OnShortPollingExpired()
+{
+	UE_LOG(LogXsollaStore, Log, TEXT("Short polling expired."));
+	bShortPollingExpired = true;
+}
+
+void UXsollaOrderCheckObject::ActivateWebSocket()
+{
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
+							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) // FString casting to prevent parameters reorder.
+							.AddStringQueryParam(TEXT("project_id"), Settings->ProjectID)
+							.Build();
+
+	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, TEXT("wss"));
+	Websocket->OnConnected().AddUObject(this, &UXsollaOrderCheckObject::OnConnected);
+	Websocket->OnConnectionError().AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
+	Websocket->OnMessage().AddUObject(this, &UXsollaOrderCheckObject::OnMessage);
+	Websocket->OnClosed().AddUObject(this, &UXsollaOrderCheckObject::OnClosed);
+
+	Websocket->Connect();
+	GetWorld()->GetTimerManager().SetTimer(WebSocketTimerHandle, this, &UXsollaOrderCheckObject::OnWebSocketExpired, WebSocketLifeTime, false);
+}
+
+void UXsollaOrderCheckObject::DestroyWebSocket()
+{
+	GetWorld()->GetTimerManager().ClearTimer(WebSocketTimerHandle);
+
+	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
 	if (Websocket.IsValid())
 	{
 		Websocket->OnConnected().RemoveAll(this);
@@ -150,14 +149,6 @@ void UXsollaOrderCheckObject::OnWebSocketExpired()
 		Websocket->Close();
 		Websocket = nullptr;
 	}
-
-	ActivateShortPolling();
-}
-
-void UXsollaOrderCheckObject::OnShortPollingExpired()
-{
-	UE_LOG(LogXsollaStore, Log, TEXT("Short polling expired."));
-	bShortPollingExpired = true;
 }
 
 void UXsollaOrderCheckObject::ActivateShortPolling()
