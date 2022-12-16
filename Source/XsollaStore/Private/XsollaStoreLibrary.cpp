@@ -34,7 +34,6 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 {
 	if (Currency.IsEmpty())
 	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: In PA there is no price provided for certain item"), *VA_FUNC_LINE);
 		return FString();
 	}
 
