@@ -484,12 +484,14 @@ struct XSOLLASTORE_API FStoreCartItem
 public:
 	FStoreCartItem()
 		: is_free(false)
+		, is_bonus(false)
 		, quantity(0){};
 
 	FStoreCartItem(const FStoreItem& Item)
 		: sku(Item.sku)
 		, name(Item.name)
 		, is_free(Item.is_free)
+		, is_bonus(false)
 		, price(Item.price)
 		, image_url(Item.image_url)
 		, quantity(0){};
@@ -498,6 +500,7 @@ public:
 		: sku(CurrencyPackage.sku)
 		, name(CurrencyPackage.name)
 		, is_free(CurrencyPackage.is_free)
+		, is_bonus(false)
 		, price(CurrencyPackage.price)
 		, image_url(CurrencyPackage.image_url)
 		, quantity(0){};
