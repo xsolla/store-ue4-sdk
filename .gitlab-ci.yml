@@ -27,7 +27,7 @@ build doc:
   stage: build
   only:
     - /^v.*/
-  image: node:14-alpine
+  image: node:14-alpine3.15
   script:
   - apk update && apk add doxygen graphviz ttf-freefont zip git
   - doxygen Documentation/Autogen/Doxyfile >/dev/null
