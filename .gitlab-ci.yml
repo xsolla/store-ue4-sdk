@@ -2,12 +2,16 @@ include:
   - project: 'sysadm-docker/ubuntu-sshclient'
     ref:     'master'
     file:    'gitlab-ci-template.yml'
+  - project: 'security/security-tools'
+    ref: 'develop'
+    file: 'gitlab-ci.yml'
 
 stages:
   - build
   - deploy
   - linking
   - build
+  - security scan
 
 variables:
     BUILD_SCRIPT_PATH: "CI\\ue_build_automation.py"
