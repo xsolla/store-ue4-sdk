@@ -14,7 +14,7 @@ The SDK consists of the following parts:
 
 ### SDK methods for calling the Xsolla APIs
 
-To send requests to Xsolla servers and receive responses, the SDK provides the `XsollaStoreSubsystem`, `XsollaLoginSubsystem` and `XsollaInventorySubsystem` classes. If you want to implement your own logic for buying items or inventory management, and don’t want to write boilerplate code for API calls, these classes are a good place to start.
+To send requests to Xsolla servers and receive responses, the SDK provides the `XsollaStoreSubsystem`, UXsollaLoginSubsystem and `XsollaInventorySubsystem` classes. If you want to implement your own logic for buying items or inventory management, and don’t want to write boilerplate code for API calls, these classes are a good place to start.
 
 The `XsollaLoginSubsystem` class includes methods to implement the following features:
 *   sign-up
