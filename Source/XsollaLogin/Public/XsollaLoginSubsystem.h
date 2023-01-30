@@ -97,13 +97,12 @@ public:
 	void ResendAccountConfirmationEmail(const FString& Username, const FString& State, const FString& Locale,
 		const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Authenticate User
-	 * Authenticates the user by the username and password specified via the authentication interface.
+	/** Authenticates the user by the username/email and password specified via the authentication interface.
 	 *
-	 * @param Username Username. Required.
+	 * @param Username Username or email. Required.
 	 * @param Password Password. Required.
-	 * @param SuccessCallback Callback function called after successful user authentication. Authentication data including the JWT will be received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Сalled after successful user authentication. Authentication data including the JWT will be received.
+	 * @param ErrorCallback Сalled after the request resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -194,7 +193,7 @@ public:
 	/** Authenticate With Session Ticket
 	 * Authenticates a user by exchanging the session ticket from Steam, Xbox, or Epic Games to the JWT.
 	 *
-	 * @param ProviderName Platform on which the session ticket was obtained. Can be `steam`, `xbox`, `epicgames`. 
+	 * @param ProviderName Platform on which the session ticket was obtained. Can be `steam`, `xbox`, `epicgames`.
 	 * @param SessionTicket Session ticket.
 	 * @param Code Code received from the platform.
 	 * @param AppId Platform application identifier.
@@ -307,14 +306,16 @@ public:
 	void UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId,
 		const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Auth via Device Id
-	 * Authenticates a platform account user via deviceId.
+	/** Authenticates the user via a particular device ID.
 	 *
 	 * @param DeviceName Name of the mobile device.
 	 * @param DeviceId Platform specific unique device ID.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
 	 * @param SuccessCallback Callback function called after successful user authentication via the device ID.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * [More information on usage ](https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/)
+	 * <see cref="https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/"/>.
+	 */
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State,
