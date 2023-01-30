@@ -308,14 +308,13 @@ public:
 
 	/** Authenticates the user via a particular device ID.
 	 *
+	 * [More information on usage ](https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/)
 	 * @param DeviceName Name of the mobile device.
 	 * @param DeviceId Platform specific unique device ID.
 	 * @param State Value used for additional user verification. Often used to mitigate CSRF attacks. The value will be returned in the response. Must be longer than 8 characters.
 	 * @param SuccessCallback Callback function called after successful user authentication via the device ID.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * [More information on usage ](https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/)
 	 * <see cref="https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/"/>.
-	 */
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticateViaDeviceId(const FString& DeviceName, const FString& DeviceId, const FString& State,
