@@ -39,18 +39,20 @@ public:
 	/**
 	 * Initialize the controller with provided Project ID (use to override project settings)
 	 *
-	 * @param InProjectId New Project ID value from Publisher Account Project settings > Project ID.
+	 * @param InProjectId New Project ID value from Publisher Account. It can be found in Publisher Account next to the name of your project.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
 	void Initialize(const FString& InProjectId);
 
-	/** Get List of Purchased Virtual Items
-	 * Gets the list of purchased virtual items.
+	/** Returns a list of virtual items from the user’s inventory according to pagination settings. For each virtual item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/player-inventory/display-inventory/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after purchased virtual items were successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Platform Publishing platform the user plays on.
+	 *
+	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
+	 * @param SuccessCallback Called after purchased virtual items were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -58,66 +60,75 @@ public:
 	void GetInventory(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Virtual Currency Balance
-	 * Gets virtual currency balance.
+	/** Returns the current user’s balance of virtual currency. For each virtual currency, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/player-inventory/display-inventory/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after virtual currency balance was successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Platform Publishing platform the user plays on.
+	 *
+	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
+	 * @param SuccessCallback Called after virtual currency balance was successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get User Time Limited Items
-	 * Gets the list of user time limited items.
+	/** Returns a list of time-limited items from the user’s inventory. For each item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/player-inventory/display-inventory/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after list of user time limited items was successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Platform Publishing platform the user plays on.
+	 *
+	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
+	 * @param SuccessCallback Called after list of user time limited items was successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|TimeLimitedItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetTimeLimitedItems(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 		const FOnTimeLimitedItemsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Consume Inventory Item
-	 * Consumes an inventory item.
+	/** Consumes an inventory item. Use for only for consumable virtual items.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/player-inventory/consume-item/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
 	 * @param Quantity Item quantity. If the item is uncountable, should be zero.
 	 * @param InstanceID Instance item ID. If the item is countable, should be empty.
-	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after successful inventory item consumption.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Platform Publishing platform the user plays on.
+	 *
+	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
+	 * @param SuccessCallback Called after successful inventory item consumption.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ConsumeInventoryItem(const FString& AuthToken, const FString& ItemSKU, const int32 Quantity,
 		const FString& InstanceID, const EXsollaPublishingPlatform Platform,
 		const FOnInventoryRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Coupon Rewards
-	 * Gets coupon rewards by its code. Can be used to let users choose one of many items as a bonus.
+	/** Returns a list of items that can be credited to the user when the coupon is redeemed. Can be used to let users choose one of many items as a bonus.
 	 * The usual case is choosing a DRM if the coupon contains a game as a bonus.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/coupons).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CouponCode Unique case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after receiving coupon rewards successfully.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after receiving coupon rewards successfully.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Coupons", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
 		const FOnCouponRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Redeem Coupon
-	 * Redeems a coupon code. The user gets a bonus after a coupon is redeemed.
+	/** Redeems the coupon code and delivers a reward to the user in one of the following ways:
+	 * - to their inventory (virtual items, virtual currency packages, or bundles)
+	 * - via email (game keys)
+	 * - to the entitlement system (game keys)
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/coupons).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CouponCode Unique case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successful coupon redemption.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful coupon redemption.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory|Coupons", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
@@ -149,7 +160,7 @@ private:
 
 	UPROPERTY()
 	UXsollaLoginSubsystem* LoginSubsystem;
-	
+
 protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectID;

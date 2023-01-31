@@ -19,7 +19,7 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (StoreCart)", CompactNodeTitle = "===", ScriptMethod = "Equals", ScriptOperator = "==", Keywords = "== equal"), Category = "Xsolla|Store|Cart")
 	static bool Equal_StoreCartStoreCart(const FStoreCart& A, const FStoreCart& B);
 
-	/** Gets currency-format data table. */
+	/** Returnscurrency-format data table. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static UDataTable* GetCurrencyLibrary();
 

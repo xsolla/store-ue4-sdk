@@ -14,9 +14,9 @@ The SDK consists of the following parts:
 
 ### SDK methods for calling the Xsolla APIs
 
-To send requests to Xsolla servers and receive responses, the SDK provides the `XsollaStoreSubsystem`, UXsollaLoginSubsystem and `XsollaInventorySubsystem` classes. If you want to implement your own logic for buying items or inventory management, and don’t want to write boilerplate code for API calls, these classes are a good place to start.
+To send requests to Xsolla servers and receive responses, the SDK provides the UXsollaStoreSubsystem, UXsollaLoginSubsystem and UXsollaInventorySubsystem classes. If you want to implement your own logic for buying items or inventory management, and don’t want to write boilerplate code for API calls, these classes are a good place to start.
 
-The `XsollaLoginSubsystem` class includes methods to implement the following features:
+The UXsollaLoginSubsystem class includes methods to implement the following features:
 *   sign-up
 *   email confirmation
 *   user authentication via various mechanisms
@@ -25,18 +25,18 @@ The `XsollaLoginSubsystem` class includes methods to implement the following fea
 *   managing user attributes
 *   user account
 
-The `XsollaStoreSubsystem` class includes methods to implement the following features:
+The UXsollaStoreSubsystem class includes methods to implement the following features:
 *   selling virtual items, virtual currency, and subscriptions
 *   managing an in-game store
 *   managing a shopping cart
 *   working with promotional campaigns (discounts, coupons, and promo codes)
 
-The `XsollaInventorySubsystem `class includes methods to implement the following features:
+The UXsollaInventorySubsystem class includes methods to implement the following features:
 *   managing user inventory
 *   managing cross-platform inventory
 *   managing virtual currency balance
 
-The `XsollaStoreSubsystem` and `XsollaLoginSubsystem` are wrapper classes for the standard [IHttpRequest](https://docs.unrealengine.com/en-US/API/Runtime/HTTP/Interfaces/IHttpRequest/index.html) class. Since the methods for API calls initiate asynchronous requests to the Xsolla servers, they use [delegates](https://docs.unrealengine.com/en-US/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Delegates/index.html) as parameters. Delegates are called when a response is received from the server.
+The UXsollaStoreSubsystem and UXsollaLoginSubsystem are wrapper classes for the standard [IHttpRequest](https://docs.unrealengine.com/en-US/API/Runtime/HTTP/Interfaces/IHttpRequest/index.html) class. Since the methods for API calls initiate asynchronous requests to the Xsolla servers, they use [delegates](https://docs.unrealengine.com/en-US/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Delegates/index.html) as parameters. Delegates are called when a response is received from the server.
 
 ### Data and classes for working with API
 
@@ -44,8 +44,8 @@ In addition to methods for calling the API, the SDK contains data and classes fo
 
 **Example:**
 
-*   The `FStoreCartItem` class describes a cart object (name, type, and other attributes).
-*   The `FXsollaSocialFriendsData` is data describing a user's list of friends.
+*   The FStoreCartItem class describes a cart object (name, type, and other attributes).
+*   The FXsollaSocialFriendsData is data describing a user's list of friends.
 
 
 ## Demo project module

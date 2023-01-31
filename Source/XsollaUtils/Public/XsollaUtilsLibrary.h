@@ -103,7 +103,7 @@ public:
 
 	static FString GetPluginName(const FName& ModuleName);
 
-	/** Gets URL query parameter with specified name. */
+	/** ReturnsURL query parameter with specified name. */
 	static FString GetUrlParameter(const FString& Url, const FString& ParamName);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))

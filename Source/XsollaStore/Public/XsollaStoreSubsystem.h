@@ -69,33 +69,41 @@ public:
 	/**
 	 * Initializes the controller with the provided Project ID (used to override project settings).
 	 *
-	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
+	 * @param InProjectId New Project ID value from Publisher Account. It can be found in Publisher Account next to the name of your project.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
-	/** Get Virtual Items
-	 * Gets the list of virtual items available for the configured project.
+	/** Returns a list of virtual items according to pagination settings. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after virtual items were successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after virtual items were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
-	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	/** Get Item Groups
-	 * Gets the list of virtual item groups.
+	/** Returns a full list of virtual item groups. The list includes groups for which display in the store is enabled in the settings
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale (optional) Response language (e.g. item name, item description). Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after virtual item groups were successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Locale (optional) Response language (e.g. item name, item description).
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param SuccessCallback Called after virtual item groups were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -103,14 +111,18 @@ public:
 	void GetItemGroups(const FString& Locale,
 		const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Virtual Currencies
-	 * Gets the list of virtual currencies.
+	/** Returns a list of virtual currencies according to pagination settings.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after virtual currencies were successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
+	 * @param SuccessCallback Called after virtual currencies were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -118,61 +130,77 @@ public:
 	void GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Virtual Currency Packages
-	 * Gets the list of virtual currency packages.
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after virtual currency packages were successfully received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after virtual currency packages were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
-	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	/** Get Items List By Specified Group
-	 * Gets an item list from the specified group for building a catalog.
+	/** Returns a list of items for the specified group according to pagination settings. The list includes items for which display in the store is enabled in the settings. In the settings of the group, the display in the store must be enabled.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param ExternalId Group external ID.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after server response.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after server response.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count start from 0).
-	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	/** Get All Items List
-	 * Gets a list of all virtual items.
+	/** Returns a full list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after server response.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
-	 * @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 * @param SuccessCallback Called after server response.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Fetch Payment Token
-	 * Initiates an item purchase session and fetches token for payment console.
+	/** Initiates an item purchase session and fetches token for payment console.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
+	 * @param Country (optional) Desired payment country .
+	 *
+	 * Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after payment token was successfully fetched.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after payment token was successfully fetched.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -181,17 +209,17 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
-	/** Fetch Cart Payment Token
-	 * Initiates a cart purchase session and fetches a token for payment console.
+	/** Creates an order with items from the cart with the specified ID or from the cart of the current user. Returns the payment token and order ID.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
-	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
 	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after the payment token was successfully fetched.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after the payment token was successfully fetched.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
@@ -199,41 +227,47 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Launch Payment Console
-	 * Opens payment console for the provided access token.
+	/** Opens payment console for the provided access token.
+	 * More about the use cases:
+	 * - [Cart purchase](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/)
+	 * - [Purchase in one click](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/)
+	 * - [Ordering free items](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/)
 	 *
 	 * @param WorldContextObject The world context.
 	 * @param OrderId Identifier of order.
 	 * @param AccessToken Payment token used during purchase processing.
-	 * @param SuccessCallback Callback function called after the payment was successfully completed.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Check Pending Order
-	 * Checks pending order
+	/** Checks pending order.
 	 *
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param OrderId Identifier of order.
-	 * @param SuccessCallback Callback function called after the payment was successfully completed.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Create Order With Specified Free Item
-	 * Creates an order with a specified free item.
+	/** Create order with specified free item. The created order will get a `done` order status.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired free item SKU.
-	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after the payment was successfully completed.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -242,16 +276,20 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
-	/** Create Order With Free Cart
-	 * Creates order with free cart.
+	/** Create order with free cart. The created order will get a `done` order status.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
-	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after the payment was successfully completed.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
@@ -259,188 +297,201 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Clear Cart
-	 * Removes all items from the cart.
+	/** Removes all items from the cart with the specified ID or from the cart of the current user.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of a cart to be cleared. The current user cart will be cleared if empty.
-	 * @param SuccessCallback Callback function called after successful cart clearing.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of a cart to be cleared.
+	 * @param SuccessCallback Called after successful cart clearing.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ClearCart(const FString& AuthToken, const FString& CartId,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Update Cart
-	 * Updates cart content (cached locally).
+	/** Returns a list of items from the cart with the specified ID or from the cart of the current user. For each item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart to be updated. The current user cart will be updated if empty.
-	 * @param Currency The currency in which prices are displayed (USD by default). Three-letter currency code per ISO 4217.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param SuccessCallback Callback function called after local cache of cart items was successfully updated.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Currency The currency in which prices are displayed (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 * @param SuccessCallback Called after local cache of cart items was successfully updated.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void UpdateCart(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Locale,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Add to Cart
-	 * Adds an item to the cart and changes its quantity.
+	/** Updates the quantity of a previously added item in the cart with the specified ID or in the current user cart. If there is no item with the specified SKU in the cart, it will be added.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
 	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Amount of items to be added to the cart.
-	 * @param SuccessCallback Callback function called after successfully adding a new item to the cart.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Quantity Number of items to be added to the cart.
+	 * @param SuccessCallback Called after successfully adding a new item to the cart.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Remove from Cart
-	 * Completely removes an item from the cart.
+	/** Removes the item from the cart with the specified ID or from the cart of the current user.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of a cart from which the item will be removed. The current user cart will be modified if empty.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of a cart from which the item will be removed.
 	 * @param ItemSKU Desired item SKU.
-	 * @param SuccessCallback Callback function called after successfully removing an item from the cart.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successfully removing an item from the cart.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Fill Cart By ID
-	 * Fills out the specific cart with items. If the cart already has an item, the existing item position will be replaced by the given value.
+	/** Fills the cart with the specified ID or the cart of the current user with items. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param CartId (optional) Identifier of cart which will be filled. The current user cart will be filled if empty.
-	 * @param Items Item for filling the cart.
-	 * @param SuccessCallback Callback function called after cart is successfully filled.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of cart which will be filled.
+	 * @param Items Item for filling the cart. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
+	 * @param SuccessCallback Called after cart is successfully filled.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Specified Bundle
-	* Gets a specified bundle.
+	/** Returnsinformation about the contents of the specified bundle. In the bundle settings, display in the store must be enabled.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	*
 	* @param Sku Bundle SKU.
-	* @param SuccessCallback Callback function called after the cart is successfully filled.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
-	* @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	* @param SuccessCallback Called after the cart is successfully filled.
+	* @param ErrorCallback Called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Get Bundles
-	* Gets a list of bundles for building a catalog.
+	/** Returnsa list of bundles according to pagination settings. The list includes bundles for which display in the store is enabled in the settings.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	*
-	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	* @param Locale Response language.
+	*
+	* The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	* @param SuccessCallback Callback function called after bundles are successfully received.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param SuccessCallback Called after bundles are successfully received.
+	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
-	* @param AuthToken User JWT obtained during authorization using Xsolla Login ([Bearer token](https://developers.xsolla.com/api/login/overview/#section/Authentication/Getting-a-user-token)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	/** Get Virtual Currency
-	 * Gets virtual currency with specified SKU.
+	/** Returnsvirtual currency with specified SKU.
 	 *
 	 * @param CurrencySKU Desired currency SKU.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified virtual currency data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrency(const FString& CurrencySKU,
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Virtual Currency Package
-	 * Gets virtual currency package with specified SKU.
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param PackageSKU Desired currency package SKU
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
-	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
+	 * @param PackageSKU Desired currency package SKU.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 *
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order' and 'long_description'.
-	 * @param SuccessCallback Callback function called after successful request of specified virtual currency package data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified virtual currency package data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackage(const FString& PackageSKU,
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyPackageUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Buy Item with Virtual Currency
-	 * Buys an item using virtual currency.
+	/** Creates an order with a specified item. The created order will get a `new` order status.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/purchase-for-vc/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param CurrencySKU Currency to buy virtual items with.
-	 * @param Platform Target platform
-	 * @param SuccessCallback Callback function called after the successful item purchase.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param CurrencySKU Currency to buy virtual items with. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default).
+	 * @param Platform Publishing platform the user plays on.
+	 *
+	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
+	 * @param SuccessCallback Called after the successful item purchase.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
 		const EXsollaPublishingPlatform Platform, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Promocode Rewards
-	 * Gets promo code rewards by its code. Can be used to let users choose one of many items as a bonus.
-	 * The usual case is choosing a DRM if the promo code contains a game as a bonus (type=unit).
+	/** Returns a list of items that can be credited to the user when the promo code is activated. Allows users to choose from several available items.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/#sdk_promo_codes).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successfully receiving promocode rewards.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successfully receiving promocode rewards.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Redeem Promocode
-	 * Redeems a promo code. After redeeming a promo code, the user will get free items and/or the price of cart will be decreased.
+	/** Activates a promo code. After activating the promo code, the user gets free items and/or the price of the cart is reduced.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
-	 * @param SuccessCallback Callback function called after successful promocode redemption.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful promocode redemption.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Remove Promocode From Cart
-	 * Removes a promo code from a cart. After the promo code is removed, the total price of all items in the cart will be recalculated without bonuses and discounts provided by a promo code.
+	/** Removes a promo code from a cart. After the promo code is removed, the total price of all items in the cart will be recalculated without bonuses and discounts provided by a promo code
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
-	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful promocode redemption.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param SuccessCallback Called after successful promocode redemption.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemovePromocodeFromCart(const FString& AuthToken,
 		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Games
-	 * Gets list of games for building a catalog.
+	/** Returnslist of games for building a catalog.
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calcualtions are based on the user's IP address if the country is not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calcualtions are based on the user's IP address if the country is not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified games list data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified games list data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -448,15 +499,16 @@ public:
 	void GetGamesList(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreGamesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Games By Specified Group
-	 * Gets the list of games from the specified group for building a catalog.
+	/** Returnsthe list of games from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address if the country is not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified game list data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified game list data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -464,43 +516,43 @@ public:
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Game Item
-	 * Gets a game item with the specified SKU for the catalog.
+	/** Returnsa game item with the specified SKU for the catalog.
 	 *
 	 * @param GameSKU Desired game SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address if the country is not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified game data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified game data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Get Game Key Item
-	 * Gets a game key item with the specified SKU for the catalog.
+	 * Returnsa game key item with the specified SKU for the catalog.
 	 *
 	 * @param ItemSKU Desired game item SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address if the country is not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified game data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified game data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameKeyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Game Key List
-	 * Gets a game key list from the specified group for building a catalog.
+	/** Returnsa game key list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
-	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address in not specified.
+	 * @param Locale Response language.
+	 *
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).
+	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address in not specified.
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
-	 * @param SuccessCallback Callback function called after successful request of specified game key data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified game key data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
@@ -508,22 +560,20 @@ public:
 	void GetGameKeysListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetGameKeysListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get DRM List
-	 * Gets the list of available DRMs.
+	/** Returnsthe list of available DRMs.
 	 *
-	 * @param SuccessCallback Callback function called after successful request of specified DRM data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified DRM data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetDRMList(const FOnDRMListUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Owned Games
-	 * Gets the list of games owned by the user. The response will contain an array of games owned by a particular user.
+	/** Returnsthe list of games owned by the user. The response will contain an array of games owned by a particular user.
 	 *
-	 * @param AuthToken User authorization token.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'attributes'.
-	 * @param SuccessCallback Callback function called after successful request of specified owned games data.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Called after successful request of specified owned games data.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param bIsSandbox What type of entitlements should be returned. If the parameter is set to true, the entitlements received by the user in the sandbox mode only are returned.
@@ -533,27 +583,28 @@ public:
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
 		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
 
-	/** Redeem Game Code By Client
-	* Grants an entitlement by a provided game code.
+	/** Grants an entitlement by a provided game code.
 	*
-	* @param AuthToken User authorization token.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param Code Game code.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|GameKeys", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RedeemGameCodeByClient(const FString& AuthToken, const FString& Code,
 		const FOnRedeemGameCodeSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Subscription Public Plans
-	* Returns a list of all plans, including plans purchased by the user while promotions are active.
+	/** Returns a list of all plans, including plans purchased by the user while promotions are active.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscriptions-purchase/).
 	*
 	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
-	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
-	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address.
+	*
+	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
 	*/
@@ -561,16 +612,18 @@ public:
 	void GetSubscriptionPublicPlans(const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPublicPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback,	const int Limit = 50, const int Offset = 0);
 
-	/** Get Subscription Plans
-	* Returns a list of all plans, including plans purchased by the user while promotions are active.
+	/** Returns a list of plans available to authorized users, including plans purchased by the user while promotions are active.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscriptions-purchase/).
 	*
-	* @param AuthToken User authorization token.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
-	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
-	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address.
+	*
+	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
 	*/
@@ -578,13 +631,15 @@ public:
 	void GetSubscriptionPlans(const FString& AuthToken, const TArray<int> PlanId, const TArray<FString>& PlanExternalId, const FString& Country, const FString& Locale,
 		const FOnSubscriptionPlansListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Subscriptions
-	* Returns a list of active recurrent subscriptions that have the status `active`, `non renewing`, and `pause`.
+	/** Returns a list of active recurrent subscriptions that have the status `active`, `non renewing`, and `pause`.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	*
-	* @param AuthToken User authorization token.
-	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address.
+	*
+	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
 	*/
@@ -592,63 +647,65 @@ public:
 	void GetSubscriptions(const FString& AuthToken, const FString& Locale,
 		const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Get Subscriptions Details
-	* Returns information about a subscription by its ID. Subscription can be have any status.
+	/** Returns information about a subscription by its ID. Subscription can be have any status.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	*
-	* @param AuthToken User authorization token.
-	* @param SubscriptionId Subscription ID. **Required**.
-	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	* @param SubscriptionId Subscription ID.
+	* @param Locale Language of the UI. By default, it is determined by the user's IP address.
+	*
+	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
 		const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Subscription Purchase Url
-	* Returns Pay Station URL for the subscription purchase.
+	/** Returns Pay Station URL for the subscription purchase.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscriptions-purchase/).
 	*
-	* @param AuthToken User authorization token.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param PlanExternalId Subscription plan external ID (32 characters). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
-	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Subscription Management Url
-	* Returns Pay Station URL for the subscription management.
+	/** Returns the URL of the management interface for the selected subscription.
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	*
-	* @param AuthToken User authorization token.
-	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	* @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Subscription Renewal Url
-	* Returns Pay Station URL for the subscription renewal.
+	/** Returns the URL of the renewal interface for the selected subscription
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	*
-	* @param AuthToken User authorization token.
-	* @param SubscriptionId Subscription ID. **Required**.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	* @param SubscriptionId Subscription ID.
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Cancel Subscription
-	* Changes a regular subscription status to non_renewing (subscription is automatically canceled after expiration).
+	/** Changes a regular subscription status to `non_renewing` (subscription is automatically canceled after expiration).
+	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	*
-	* @param AuthToken User authorization token.
-	* @param SubscriptionId Subscription ID. **Required**.
-	* @param SuccessCallback Callback function called after successful redemption.
-	* @param ErrorCallback Callback function called after the request resulted with an error.
+	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	* @param SubscriptionId Subscription ID.
+	* @param SuccessCallback Called after successful redemption.
+	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
@@ -794,31 +851,31 @@ private:
 	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
 
 public:
-	/** Gets the list of cached virtual items without any Category provided. */
+	/** Returnsthe list of cached virtual items without any Category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	TArray<FStoreItem> GetVirtualItemsWithoutGroup() const;
 
-	/** Gets cached items data. */
+	/** Returnscached items data. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FStoreItemsData& GetItemsData() const;
 
-	/** Gets cached cart data */
+	/** Returnscached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
 	const FStoreCart& GetCart() const;
 
-	/** Gets the pending PayStation URL to be opened in browser. */
+	/** Returnsthe pending PayStation URL to be opened in browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FString& GetPendingPaystationUrl() const;
 
-	/** Gets name of the cached item with the given SKU. */
+	/** Returnsname of the cached item with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	FString GetItemName(const FString& ItemSKU) const;
 
-	/** Gets item from the cache with the given SKU. */
+	/** Returnsitem from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FStoreItem& FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
 
-	/** Gets package from the cache with the given SKU. */
+	/** Returnspackage from the cache with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FVirtualCurrencyPackage& FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
 

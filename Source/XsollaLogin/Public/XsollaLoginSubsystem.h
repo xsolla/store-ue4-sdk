@@ -58,9 +58,9 @@ public:
 
 	/** Initializes controller with provided Project ID and Login ID (use to override project settings).
 	 *
-	 * @param InProjectId New Project ID value from Publisher Account > Project settings > Project ID.
-	 * @param InLoginId New Login ID value from Publisher Account > Login settings.
-	 * @param InClientId New Client ID value from Publisher Account > Login settings > OAuth 2.0 authentication settings.
+	 * @param InProjectId New Project ID value from Publisher Account. It can be found in Publisher Account next to the name of your project.
+	 * @param InLoginId New Login ID value from Publisher Account. To get it, open Publisher Account, go to the **Login > Dashboard** section, and click **Copy ID** beside the name of the Login project.
+	 * @param InClientId New Client ID value from Publisher Account. It can be found in Publisher Account in the **Login > your Login project > Security > OAuth 2.0 section**.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void Initialize(const FString& InProjectId, const FString& InLoginId, const FString& InClientId);
@@ -68,11 +68,12 @@ public:
 	/** Сreates a new user account in the application and sends a sign-up confirmation email to the specified email address. To complete registration, the user must follow the link from the email.
 	 * [More about the use cases](pers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
 	 *
-	 * @param Username Username. Required.
-	 * @param Password Password. Required.
-	 * @param Email Email address. Required.
+	 * @param Username Username.
+	 * @param Password Password.
+	 * @param Email Email address.
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param Locale Defines localization of the email the user receives.
+	 *
 	 * The following languages are supported: Arabic (`ar_AE`), Bulgarian (`bg_BG`), Czech (`cz_CZ`), German (`de_DE`), Spanish (`es_ES`), French (`fr_FR`), Hebrew (`he_IL`), Italian (`it_IT`), Japanese (`ja_JP`), Korean (`ko_KR`), Polish (`pl_PL`), Portuguese (`pt_BR`), Romanian (`ro_RO`), Russian (`ru_RU`), Thai (`th_TH`), Turkish (`tr_TR`), Vietnamese (`vi_VN`), Chinese Simplified (`zh_CN`), Chinese Traditional (`zh_TW`), Enlish (`en_XX`, default).
 	 * @param PersonalDataProcessingConsent Whether the user gave consent to processing of their personal data.
 	 * @param ReceiveNewsConsent Whether the user gave consent to receive the newsletters.
@@ -88,9 +89,10 @@ public:
 	/** Resends a sign-up confirmation email to the specified email address. To complete registration, the user must follow the link from the email.
 	 * [More about the use cases](pers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
 	 *
-	 * @param Username Username. Required.
+	 * @param Username Username.
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param Locale Defines localization of the email the user receives.
+	 *
 	 * The following languages are supported: Arabic (`ar_AE`), Bulgarian (`bg_BG`), Czech (`cz_CZ`), German (`de_DE`), Spanish (`es_ES`), French (`fr_FR`), Hebrew (`he_IL`), Italian (`it_IT`), Japanese (`ja_JP`), Korean (`ko_KR`), Polish (`pl_PL`), Portuguese (`pt_BR`), Romanian (`ro_RO`), Russian (`ru_RU`), Thai (`th_TH`), Turkish (`tr_TR`), Vietnamese (`vi_VN`), Chinese Simplified (`zh_CN`), Chinese Traditional (`zh_TW`), Enlish (`en_XX`, default).
 	 * @param SuccessCallback Called after successful sending of the request.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -102,10 +104,10 @@ public:
 	/** Authenticates the user by the username/email and password specified via the authentication interface.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
 	 *
-	 * @param Username Username or email. Required.
-	 * @param Password Password. Required.
-	 * @param SuccessCallback Сalled after successful user authentication. Authentication data including the JWT will be received.
-	 * @param ErrorCallback Сalled after the request resulted with an error.
+	 * @param Username Username or email.
+	 * @param Password Password.
+	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -115,8 +117,9 @@ public:
 	/** Resets the user’s current password and sends an email to change the password to the email address specified during sign-up.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
 	 *
-	 * @param User User identifier (name or email address depending on user data storage type). Required.
+	 * @param User User identifier (name or email address depending on user data storage type).
 	 * @param Locale Defines localization of the email the user receives.
+	 *
 	 * The following languages are supported: Arabic (`ar_AE`), Bulgarian (`bg_BG`), Czech (`cz_CZ`), German (`de_DE`), Spanish (`es_ES`), French (`fr_FR`), Hebrew (`he_IL`), Italian (`it_IT`), Japanese (`ja_JP`), Korean (`ko_KR`), Polish (`pl_PL`), Portuguese (`pt_BR`), Romanian (`ro_RO`), Russian (`ru_RU`), Thai (`th_TH`), Turkish (`tr_TR`), Vietnamese (`vi_VN`), Chinese Simplified (`zh_CN`), Chinese Traditional (`zh_TW`), Enlish (`en_XX`, default).
 	 * @param SuccessCallback Called after successful user password reset.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -132,11 +135,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Gets URL for authentication via the specified social network in a browser.
+	/** ReturnsURL for authentication via the specified social network in a browser.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/social-auth/#sdk_how_to_set_up_web_auth_via_social_networks).
 	 *
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account.
-	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`,` youtube`, or 'xbox'. Required.
+	 *
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, or `xbox`.
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param SuccessCallback Called after URL for social authentication was successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -157,7 +161,7 @@ public:
 
 	/** Opens the specified social network mobile app (if available) in order to authenticate the user.
 	 *
-	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can be `facebook`, `google`, `wechat`, or `qq_mobile`. Required.
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can be `facebook`, `google`, `wechat`, or `qq_mobile`.
 	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Called after user authentication was canceled.
 	 * @param ErrorCallback Called after user authentication resulted with an error.
@@ -209,11 +213,11 @@ public:
 		const FString& AppId, const FString& State,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Gets a list of particular user’s attributes with their values and descriptions. Returns only user-editable attributes.
+	/** Returnsa list of particular user’s attributes with their values and descriptions. Returns only user-editable attributes.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-attributes/).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param UserId Identifier of a user whose public attributes should be requested.
+	 * @param UserId Identifier of a user whose public attributes should be requested. If not specified, the method returns attrubutes for the current user.
 	 * @param AttributeKeys List of attributes’ keys which you want to get. If not specified, the method returns all user’s attributes.
 	 * @param SuccessCallback Called after user attributes were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -222,7 +226,7 @@ public:
 	void GetUserAttributes(const FString& AuthToken, const FString& UserId, const TArray<FString>& AttributeKeys,
 		const FOnUserAttributesUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets list of user read-only attributes.
+	/** Returnslist of user read-only attributes.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserId Identifier of a user whose attributes should be updated.
@@ -239,7 +243,9 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param AttributesToModify List of attributes of the specified game.
+	 *
 	 * To add attribute which doesn't exist, set this attribute to the `key` parameter.
+	 *
 	 * To update value of the attribute, specify its `key` parameter and set the new `value`. You can change several attributes at a time.
 	 * @param SuccessCallback Called after successful user attributes modification on the server side.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -291,7 +297,9 @@ public:
 	 * @param PlatformName Name of the mobile platform. Can be `android` or `ios`.
 	 * @param DeviceName Manufacturer and model name of the device.
 	 * @param DeviceId Platform specific unique device ID.
+	 *
 	 * For Android, it is an [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID) constant.
+	 *
 	 * For iOS, it is an [identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor?language=objc) property.
 	 * @param SuccessCallback Called after successful linking of the device.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -305,7 +313,9 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param DeviceId Platform specific unique device ID.
+	 *
 	 * For Android, it is an [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID) constant.
+	 *
 	 * For iOS, it is an [identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor?language=objc) property.
 	 * @param SuccessCallback Called after successful unlinking of the device.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -319,7 +329,9 @@ public:
 	 *
 	 * @param DeviceName Manufacturer and model name of the device.
 	 * @param DeviceId Platform specific unique device ID.
+	 *
 	 * For Android, it is an [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID) constant.
+	 *
 	 * For iOS, it is an [identifierForVendor](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor?language=objc) property.
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param SuccessCallback Called after successful user authentication via the device ID.
@@ -395,7 +407,7 @@ public:
 	void CompleteAuthByEmail(const FString& Code, const FString& OperationId, const FString& Email,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Gets confirmation code for completing authentication via email or phone number. User must follow the link provided via email/SMS to receive the code.
+	/** Returnsconfirmation code for completing authentication via email or phone number. User must follow the link provided via email/SMS to receive the code.
 	 *
 	 * @param UserId Identifier of the user (can be either email or phone number).
 	 * @param OperationId Identifier of the confirmation code.
@@ -407,7 +419,7 @@ public:
 	void GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
 		const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback);
 
-	/** Gets user details.
+	/** Returnsuser details.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-account/).
 	 *
 	 * @param AuthToken User authorization token.
@@ -433,7 +445,7 @@ public:
 	void ModifyUserDetails(const FString& AuthToken, const FString& Birthday, const FString& FirstName, const FString& LastName, const FString& Gender, const FString& Nickname,
 		const FOnUserDetailsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets the user’s email.
+	/** Returnsthe user’s email.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-account/).
 	 *
 	 * @param AuthToken User authorization token.
@@ -443,7 +455,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets user phone number that is used for two-factor authentication.
+	/** Returnsuser phone number that is used for two-factor authentication.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-account/).
 	 *
 	 * @param AuthToken User authorization token.
@@ -496,7 +508,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveProfilePicture(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets user friends data.
+	/** Returnsuser friends data.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Type Friends type.
@@ -522,12 +534,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ModifyFriends(const FString& AuthToken, const EXsollaFriendAction Action, const FString& UserID, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets list of links for social authentication enabled in Publisher Account.
+	/** Returnslist of links for social authentication enabled in Publisher Account.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Locale Region in the `<language code>_<country code>` format, where:
 	 * - `language code` — language code in the [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format;
 	 * - `country code` — country/region code in the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format.
+	 *
 	 * 	The list of the links will be sorted from most to least used social networks, according to the variable value.
 	 * @param SuccessCallback Called after list of links for social authentication was successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -535,7 +548,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnSocialAuthLinksUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets user friends data from a social provider.
+	/** Returnsuser friends data from a social provider.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of social provider. If empty, friends from all available social providers will be fetched.
@@ -549,7 +562,7 @@ public:
 	void GetSocialFriends(const FString& AuthToken, const FString& Platform,
 		const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Offset = 0, const int Limit = 500, const bool FromThisGame = false);
 
-	/** Gets friends on the server.
+	/** Returnsfriends on the server.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Platform Name of the chosen social provider. If not specified, the method gets friends from all social providers.
@@ -559,7 +572,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets specified user public profile information.
+	/** Returnsspecified user public profile information.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param UserID User identifier of public profile information to be received.
@@ -569,7 +582,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets a list of devices linked to the current user account.
+	/** Returnsa list of devices linked to the current user account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/auth-via-device-id/).
 	 *
 	 * @param AuthToken User authorization token.
@@ -597,8 +610,8 @@ public:
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account.
+	 *
 	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `instagram`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paradox`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, `xbox`, `playstation`.
-	 * Required.
 	 * @param SuccessCallback Called after the URL for social authentication was successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -606,7 +619,7 @@ public:
 	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Gets the list of linked social networks.
+	/** Returnsthe list of linked social networks.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param SuccessCallback Called after the list of linked social networks was successfully received.
@@ -729,7 +742,7 @@ private:
 	FString ClientID;
 
 public:
-	/** Gets user login state data. */
+	/** Returnsuser login state data. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
 	FXsollaLoginData GetLoginData() const;
 

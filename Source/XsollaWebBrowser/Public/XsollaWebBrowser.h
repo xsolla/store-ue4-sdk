@@ -41,7 +41,7 @@ public:
 	void ExecuteJavascript(FString ScriptText);
 
 	/**
-	 * Gets the currently loaded URL.
+	 * Returnsthe currently loaded URL.
 	 *
 	 * @return The URL, or empty string if no document is loaded.
 	 */

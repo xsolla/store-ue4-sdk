@@ -19,11 +19,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static bool IsEmailValid(const FString& EMail);
 
-	/** Gets the string command line parameter value. */
+	/** Returnsthe string command line parameter value. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetStringCommandLineParam(const FString& ParamName);
 
-	/** Gets the specific platform authentication session ticket to verify user's identity. */
+	/** Returnsthe specific platform authentication session ticket to verify user's identity. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetSessionTicket();
 
@@ -35,19 +35,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Library")
 	static TArray<uint8> ConvertTextureToByteArray(const UTexture2D* Texture);
 
-	/** Gets the specified parameter from a given URL. */
+	/** Returnsthe specified parameter from a given URL. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetUrlParameter(const FString& URL, const FString& Parameter);
 
-	/** Gets the device name. */
+	/** Returnsthe device name. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceName();
 
-	/** Gets the device ID. */
+	/** Returnsthe device ID. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetDeviceId();
 
-	/** Gets the app ID. */
+	/** Returnsthe app ID. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetAppId();
 };
