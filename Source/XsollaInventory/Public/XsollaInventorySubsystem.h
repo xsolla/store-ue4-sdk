@@ -118,7 +118,7 @@ public:
 	/** Redeems the coupon code and delivers a reward to the user in one of the following ways:
 	 * - to their inventory (virtual items, virtual currency packages, or bundles)
 	 * - via email (game keys)
-	 * - to the entitlement system (game keys)
+	 * - to the entitlement system (game keys)<br>
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/coupons).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).

@@ -164,7 +164,9 @@ public:
 	/** Returns a full list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
+	 * @param Locale Response language.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
 	 * @param SuccessCallback Called after server response.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
@@ -178,7 +180,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
 	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country .<br>
+	 * @param Country (optional) Desired payment country.<br>
 	 * Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).<br>
 	 * Leave empty to use the default value.
 	 * @param Locale (optional) Desired payment locale.<br>
