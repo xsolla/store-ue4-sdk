@@ -21,6 +21,10 @@ public class XsollaNativePaymentsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            finish();
+            return;
+        }
 
         Intent intent = getIntent();
         String token = intent.getStringExtra(ARG_TOKEN);
