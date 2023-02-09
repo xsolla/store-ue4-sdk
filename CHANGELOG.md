@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0] - 2022-12-15
+## [1.3.0] - 2023-01-11
 
 ### Added
 - Native social login for iOS

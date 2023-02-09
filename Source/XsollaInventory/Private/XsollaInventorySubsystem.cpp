@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaInventorySubsystem.h"
 
@@ -60,7 +60,7 @@ void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXs
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Platform, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, Platform, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);

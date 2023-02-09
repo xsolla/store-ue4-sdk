@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaLoginSubsystem.h"
 
@@ -902,7 +902,7 @@ void UXsollaLoginSubsystem::GetUserEmail(const FString& AuthToken, const FOnUser
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/email")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, TEXT(""), Token);
