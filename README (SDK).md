@@ -86,7 +86,7 @@ To start with the SDK, you need to install this plug-in and set up a project in 
 * macOS 10.13.6 and later
 * XCode 11.1 and later (for macOS)
 * Visual Studio 2017 and later
-* Unreal Engine 4.25 and later
+* Unreal Engine 4.27 and later
 
 ### Target OS
 
