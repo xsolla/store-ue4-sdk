@@ -29,6 +29,10 @@ public class XsollaNativeAuthActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            finish();
+            return;
+        }
 
         tokenUtils = new TokenUtils(this);
 
