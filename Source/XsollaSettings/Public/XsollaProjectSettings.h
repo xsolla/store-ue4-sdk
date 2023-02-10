@@ -163,4 +163,8 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString RedirectButtonCaption;
+
+	/** Enable to process payment tasks via Steam. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
+	bool BuildForSteam;
 };
