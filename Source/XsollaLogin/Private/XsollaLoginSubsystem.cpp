@@ -415,29 +415,18 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 	const FString& AppId, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
+	
 	if (ProviderName.ToLower() == TEXT("steam"))
 	{
 		FString OutError;
-
-		if (!Settings->BuildForSteam)
-		{
-			OutError = TEXT("Check the Build For Steam box in the settings");
-		} else if (!FModuleManager::Get().IsModuleLoaded("OnlineSubsystemSteam"))
-		{
-			OutError = TEXT("Enable the OnlineSubsystemSteam plug-in");
-		} else if (!IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
-		{
-			OutError = TEXT("Add Steam data to the Config/DefaultEngine.ini file");
-		}
-
-		if (!OutError.IsEmpty())
+		if (!UXsollaLoginLibrary::IsSteamBuildValid(OutError))
 		{
 			ErrorCallback.ExecuteIfBound(TEXT("Steam authentication failed"), OutError);
 			return;
 		}
 	}
+
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Generate endpoint url
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))

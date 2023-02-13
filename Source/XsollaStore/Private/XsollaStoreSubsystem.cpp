@@ -233,7 +233,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 			FString SteamId;
 			FString OutError;
 
-			if (!GetSteamUserId(Token, SteamId, OutError))
+			if (!UXsollaLoginLibrary::IsSteamBuildValid(OutError) || !GetSteamUserId(Token, SteamId, OutError))
 			{
 				ErrorCallback.ExecuteIfBound(0, 0, OutError);
 				return;
@@ -280,7 +280,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 			FString SteamId;
 			FString OutError;
 
-			if (!GetSteamUserId(Token, SteamId, OutError))
+			if (!UXsollaLoginLibrary::IsSteamBuildValid(OutError) || !GetSteamUserId(Token, SteamId, OutError))
 			{
 				ErrorCallback.ExecuteIfBound(0, 0, OutError);
 				return;
