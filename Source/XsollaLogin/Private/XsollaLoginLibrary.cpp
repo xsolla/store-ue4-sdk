@@ -12,6 +12,8 @@
 #include "Misc/CommandLine.h"
 #include "Online.h"
 #include "OnlineSubsystem.h"
+#include "XsollaSettings/Public/XsollaProjectSettings.h"
+#include "XsollaSettings/Public/XsollaSettingsModule.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -117,4 +119,27 @@ FString UXsollaLoginLibrary::GetDeviceId()
 FString UXsollaLoginLibrary::GetAppId()
 {
 	return UKismetSystemLibrary::GetGameBundleId();
+}
+
+bool UXsollaLoginLibrary::IsSteamBuildValid(FString& OutError)
+{
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	bool isValid = true;
+	if (!Settings->BuildForSteam)
+	{
+		isValid = false;
+		OutError = TEXT("Check the Build For Steam box in the settings");
+	}
+	else if (!FModuleManager::Get().IsModuleLoaded("OnlineSubsystemSteam"))
+	{
+		isValid = false;
+		OutError = TEXT("Enable the OnlineSubsystemSteam plug-in");
+	}
+	else if (!IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+	{
+		isValid = false;
+		OutError = TEXT("Add Steam data to the Config/DefaultEngine.ini file");
+	}
+
+	return isValid;
 }

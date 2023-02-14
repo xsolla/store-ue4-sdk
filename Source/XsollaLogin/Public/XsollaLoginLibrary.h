@@ -50,4 +50,7 @@ public:
 	/** Returns the app ID. */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
 	static FString GetAppId();
+
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Library")
+	static bool IsSteamBuildValid(FString& OutError);
 };
