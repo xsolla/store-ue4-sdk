@@ -22,6 +22,7 @@
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsDataModel.h"
+#include "XsollaLoginBrowserWrapper.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
@@ -42,7 +43,7 @@ UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
 #if !UE_SERVER
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
+	static ConstructorHelpers::FClassFinder<UXsollaLoginBrowserWrapper> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 #endif
@@ -273,6 +274,20 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 {
 	auto MyBrowser = CreateWidget<UUserWidget>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 	MyBrowser->AddToViewport(100000);
+
+	BrowserWidget = MyBrowser;
+
+	// Be sure we've dropped any saved info
+	LoginData = FXsollaLoginData();
+	LoginData.bRememberMe = bRememberMe;
+	SaveData();
+}
+
+void UXsollaLoginSubsystem::LaunchCustomUrlAuthentication(UObject* WorldContextObject, const FString& AuthUrl, UXsollaLoginBrowserWrapper*& BrowserWidget, const bool bRememberMe)
+{
+	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+	MyBrowser->AddToViewport(UINT_MAX - 100);
+	MyBrowser->LoadUrl(AuthUrl);
 
 	BrowserWidget = MyBrowser;
 

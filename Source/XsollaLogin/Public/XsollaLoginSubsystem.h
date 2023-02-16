@@ -15,6 +15,7 @@
 #include "XsollaLoginSubsystem.generated.h"
 
 class FJsonObject;
+class UXsollaLoginBrowserWrapper;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -152,8 +153,21 @@ public:
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
+	// TEXTREVIEW
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", DeprecatedFunction, DeprecationMessage = "Please use LaunchCustomUrlAuthentication instead"))
 	void LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
+
+	//TEXTREVIEW
+	/** Opens authentication URL in the browser.
+	 * [More about the use cases]().
+	 *
+	 * @param WorldContextObject The world context.
+	 * @param AuthUrl Url to display in the browser.
+	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
+	void LaunchCustomUrlAuthentication(UObject* WorldContextObject, const FString& AuthUrl, UXsollaLoginBrowserWrapper*& BrowserWidget, const bool bRememberMe);
 
 	/** Opens the specified social network mobile app (if available) in order to authenticate the user.
 	 *
@@ -757,7 +771,7 @@ protected:
 
 private:
 	UPROPERTY()
-	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaLoginBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
 	FOnAuthUpdate NativeSuccessCallback;
