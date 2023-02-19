@@ -153,8 +153,7 @@ public:
 	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
 	 */
-	// TEXTREVIEW
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", DeprecatedFunction, DeprecationMessage = "Please use LaunchCustomUrlAuthentication instead"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
 	void LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
 
 	//TEXTREVIEW
