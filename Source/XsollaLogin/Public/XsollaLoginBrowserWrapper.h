@@ -19,7 +19,4 @@ class XSOLLALOGIN_API UXsollaLoginBrowserWrapper : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Xsolla|Login|Browser")
 	void LoadUrl(const FString& Url);
-	
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnLoginBrowserClosed OnBrowserClosed;
 };
