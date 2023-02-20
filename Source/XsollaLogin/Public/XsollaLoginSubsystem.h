@@ -113,6 +113,19 @@ public:
 	void AuthenticateUser(const FString& Username, const FString& Password,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
+	// TEXTREVIEW
+	/** Authenticates the user with Xsolla Login widget.
+	 *
+	 * @param WorldContextObject The world context.
+	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
+	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
+	 * @param CancelCallback Called after user authentication was canceled.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, CancelCallback"))
+	void AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe = false);
+
 	/** Resets the user’s current password and sends an email to change the password to the email address specified during sign-up.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
 	 *
@@ -155,18 +168,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
 	void LaunchSocialAuthentication(UObject* WorldContextObject, UUserWidget*& BrowserWidget, const bool bRememberMe = false);
-
-	//TEXTREVIEW
-	/** Opens authentication URL in the browser.
-	 * [More about the use cases]().
-	 *
-	 * @param WorldContextObject The world context.
-	 * @param AuthUrl Url to display in the browser.
-	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
-	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
-	void LaunchCustomUrlAuthentication(UObject* WorldContextObject, const FString& AuthUrl, UXsollaLoginBrowserWrapper*& BrowserWidget, const bool bRememberMe);
 
 	/** Opens the specified social network mobile app (if available) in order to authenticate the user.
 	 *

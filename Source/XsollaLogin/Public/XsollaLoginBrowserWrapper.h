@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoginBrowserClosed, bool, bAuthenticationCompleted);
+DECLARE_DELEGATE_OneParam(FOnLoginBrowserClosed, bool);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginBrowserWrapper : public UUserWidget
@@ -19,4 +19,9 @@ class XSOLLALOGIN_API UXsollaLoginBrowserWrapper : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Xsolla|Login|Browser")
 	void LoadUrl(const FString& Url);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login|Browser")
+	void ExecuteBrowserClosed(bool bAuthenticationCompleted);
+
+	FOnLoginBrowserClosed OnBrowserClosed;
 };

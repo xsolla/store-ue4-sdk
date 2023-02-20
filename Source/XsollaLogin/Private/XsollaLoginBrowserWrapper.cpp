@@ -2,3 +2,8 @@
 
 
 #include "XsollaLoginBrowserWrapper.h"
+
+void UXsollaLoginBrowserWrapper::ExecuteBrowserClosed(bool bAuthenticationCompleted)
+{
+	OnBrowserClosed.ExecuteIfBound(bAuthenticationCompleted);
+}
