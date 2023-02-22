@@ -15,6 +15,7 @@
 #include "XsollaLoginSubsystem.generated.h"
 
 class FJsonObject;
+class UXsollaLoginBrowserWrapper;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -111,6 +112,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void AuthenticateUser(const FString& Username, const FString& Password,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
+
+	// TEXTREVIEW
+	/** Authenticates the user with Xsolla Login widget.
+	 *
+	 * @param WorldContextObject The world context.
+	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
+	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
+	 * @param CancelCallback Called after user authentication was canceled.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, CancelCallback"))
+	void AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe = false);
 
 	/** Resets the user’s current password and sends an email to change the password to the email address specified during sign-up.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
@@ -757,7 +771,7 @@ protected:
 
 private:
 	UPROPERTY()
-	TSubclassOf<UUserWidget> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaLoginBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
 	FOnAuthUpdate NativeSuccessCallback;

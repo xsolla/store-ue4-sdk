@@ -22,6 +22,7 @@
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsDataModel.h"
+#include "XsollaLoginBrowserWrapper.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
@@ -42,7 +43,7 @@ UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
 #if !UE_SERVER
-	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
+	static ConstructorHelpers::FClassFinder<UXsollaLoginBrowserWrapper> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 #endif
@@ -97,8 +98,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 #endif
 }
 
-void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale, 
-	const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
+void UXsollaLoginSubsystem::RegisterUser(const FString& Username, const FString& Password, const FString& Email, const FString& State, const FString& Locale, const bool PersonalDataProcessingConsent, const bool ReceiveNewsConsent, const TMap<FString, FString>& AdditionalFields,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -207,6 +207,46 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe)
+{
+	if (FEngineVersion::Current().GetMajor() < 5)
+	{
+		//TEXTREVIEW
+		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla autharization is not supported for this version of the engine. Please use 5.0 and greater"));
+		return;
+	}
+
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	// Generate endpoint url
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
+							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
+							.AddStringQueryParam(TEXT("login_url"), Settings->RedirectURI)
+							.Build();
+
+	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback](bool bAuthenticationCompleted) { 
+		if (bAuthenticationCompleted)
+		{
+			SuccessCallback.ExecuteIfBound(LoginData);
+		}
+		else
+		{
+			CancelCallback.ExecuteIfBound();
+		}
+	});
+	MyBrowser->AddToViewport(UINT_MAX - 100);
+	MyBrowser->LoadUrl(Url);
+
+	BrowserWidget = MyBrowser;
+
+	// Be sure we've dropped any saved info
+	LoginData = FXsollaLoginData();
+	LoginData.bRememberMe = bRememberMe;
+	SaveData();
 }
 
 void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FString& Locale, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
