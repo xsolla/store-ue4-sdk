@@ -17,122 +17,42 @@
     {
       "Name": "XsollaUIBuilderEditor",
       "Type": "Editor",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaSettings",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },	
     {
       "Name": "XsollaUIBuilder",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaWebBrowser",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaLogin",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaStore",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaInventory",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "XsollaUtils",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win32",
-        "Win64",
-        "Mac",
-        "IOS",
-        "Android",
-        "Linux",
-        "XboxOne",
-        "PS4"
-      ]
+      "LoadingPhase": "PreDefault"
     }
   ],
   "Plugins": [
