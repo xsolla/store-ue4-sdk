@@ -60,7 +60,7 @@ struct XSOLLASTORE_API FXsollaOrder
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Order")
-	int32 order_id;
+	int32 order_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Order")
 	FString status;
@@ -90,7 +90,7 @@ struct XSOLLASTORE_API FStoreBundleContent
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
-	int32 quantity;
+	int32 quantity = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	FXsollaPrice price;
@@ -653,7 +653,7 @@ struct XSOLLASTORE_API FStorePromocodeRewardData
 
 	/** If 'true', the user should choose the bonus before redeeming a promo code. */
 	UPROPERTY(BlueprintReadOnly, Category = "Promocode Reward Data")
-	bool is_selectable;
+	bool is_selectable = false;
 };
 
 inline FStoreItem::FStoreItem(const struct FStoreBundle& Bundle)
@@ -685,7 +685,7 @@ struct XSOLLASTORE_API FGameUnitItem
 	FString type;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
-	bool is_free;
+	bool is_free = false;
   
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	FXsollaPrice price;
@@ -700,10 +700,10 @@ struct XSOLLASTORE_API FGameUnitItem
 	FString drm_sku;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
-	bool has_keys;
+	bool has_keys = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
-	bool is_pre_order;
+	bool is_pre_order = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	FString release_date;
@@ -737,7 +737,7 @@ struct XSOLLASTORE_API FGameKeyItem
 	FString image_url;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
-	bool is_free;
+	bool is_free = false;
   
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FXsollaPrice price;
@@ -752,10 +752,10 @@ struct XSOLLASTORE_API FGameKeyItem
 	FString drm_sku;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
-	bool has_keys;
+	bool has_keys = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
-	bool is_pre_order;
+	bool is_pre_order = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString release_date;
@@ -850,7 +850,7 @@ struct XSOLLASTORE_API FDRMItem
 	FString redeem_instruction_link;
 
 	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
-	int32 drm_id;
+	int32 drm_id = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -874,7 +874,7 @@ struct XSOLLASTORE_API FOwnedGameItem
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
-	int32 project_id;
+	int32 project_id = 0;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString game_sku;
@@ -886,7 +886,7 @@ struct XSOLLASTORE_API FOwnedGameItem
 	FString image_url;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
-	bool is_pre_order;
+	bool is_pre_order = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	TArray<FXsollaItemAttribute> attributes;
@@ -898,10 +898,10 @@ struct XSOLLASTORE_API FOwnedGamesList
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
-	bool has_more;
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
-	int32 total_items_count;
+	int32 total_items_count = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
 	TArray<FOwnedGameItem> items;
@@ -922,7 +922,7 @@ struct XSOLLASTORE_API FSubscriptionPeriod
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
-	int32 value;
+	int32 value = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
 	FString unit;
@@ -934,10 +934,10 @@ struct XSOLLASTORE_API FSubscriptionCharge
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
-	float amount;
+	float amount = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
-	float amount_with_promotion;
+	float amount_with_promotion = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	FString currency;
@@ -949,10 +949,10 @@ struct XSOLLASTORE_API FSubscriptionPlanCharge
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
-	float amount;
+	float amount = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
-	float setup_fee;
+	float setup_fee = false;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	FString currency;
@@ -964,10 +964,10 @@ struct XSOLLASTORE_API FSubscriptionPlanPromotion
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
-	float promotion_charge_amount;
+	float promotion_charge_amount = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
-	float promotion_remaining_charges;
+	float promotion_remaining_charges = 0.f;
 };
 
 USTRUCT(BlueprintType)
@@ -976,7 +976,7 @@ struct XSOLLASTORE_API FSubscriptionPlan
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
-	int32 plan_id;
+	int32 plan_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	FString plan_external_id;
@@ -1000,7 +1000,7 @@ struct XSOLLASTORE_API FSubscriptionPlan
 	FDateTime plan_end_date;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
-	int32 trial_period;
+	int32 trial_period = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	FSubscriptionPeriod period;
@@ -1021,7 +1021,7 @@ struct XSOLLASTORE_API FSubscriptionPlansList
 	TArray<FSubscriptionPlan> items;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
-	bool has_more;
+	bool has_more = false;
 };
 
 USTRUCT(BlueprintType)
@@ -1030,10 +1030,10 @@ struct XSOLLASTORE_API FSubscription
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
-	int32 id;
+	int32 id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
-	int32 plan_id;
+	int32 plan_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString plan_external_id;
@@ -1051,7 +1051,7 @@ struct XSOLLASTORE_API FSubscription
 	FDateTime plan_end_date;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
-	int32 product_id;
+	int32 product_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_external_id;
@@ -1066,10 +1066,10 @@ struct XSOLLASTORE_API FSubscription
 	FString status;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
-	bool is_in_trial;
+	bool is_in_trial = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
-	int32 trial_period;
+	int32 trial_period = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime date_create;
@@ -1096,7 +1096,7 @@ struct XSOLLASTORE_API FSubscriptionsList
 	TArray<FSubscription> items;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
-	bool has_more;
+	bool has_more = false;
 };
 
 USTRUCT(BlueprintType)
@@ -1105,10 +1105,10 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	int32 id;
+	int32 id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	int32 plan_id;
+	int32 plan_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FString plan_external_id;
@@ -1126,7 +1126,7 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	FDateTime plan_end_date;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	int32 product_id;
+	int32 product_id = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FString product_external_id;
@@ -1141,10 +1141,10 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	FString status;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	bool is_in_trial;
+	bool is_in_trial = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	int32 trial_period;
+	int32 trial_period = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime date_create;
@@ -1165,11 +1165,11 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	FDateTime date_end;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	bool is_renew_possible;
+	bool is_renew_possible = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	bool is_change_to_non_renew_possible;
+	bool is_change_to_non_renew_possible = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
-	bool is_change_plan_allowed;
+	bool is_change_plan_allowed = false;
 };

@@ -40,10 +40,10 @@ public:
 	FString instance_id;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
-	int32 quantity;
+	int32 quantity = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Item")
-	int32 remaining_uses;
+	int32 remaining_uses = 0;
 };
 
 USTRUCT(BlueprintType)
