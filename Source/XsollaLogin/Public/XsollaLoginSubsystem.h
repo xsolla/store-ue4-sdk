@@ -113,11 +113,10 @@ public:
 	void AuthenticateUser(const FString& Username, const FString& Password,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
 
-	// TEXTREVIEW
 	/** Authenticates the user with Xsolla Login widget.
 	 *
 	 * @param WorldContextObject The world context.
-	 * @param BrowserWidget Widget to show the social network authentication form. Can be set in the project settings.
+	 * @param BrowserWidget Widget that shows the social network authentication form. Can be set in the project settings.
 	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Called after user authentication was canceled.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.

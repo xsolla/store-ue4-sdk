@@ -182,7 +182,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 		return;
 	}
 
-	// Be sure we've dropped any saved info
+	// Be sure we've erased all saved info
 	LoginData = FXsollaLoginData();
 	LoginData.Username = Username;
 	LoginData.Password = Password;
@@ -198,7 +198,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/token"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
@@ -214,21 +214,20 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 {
 	if (FEngineVersion::Current().GetMajor() < 5)
 	{
-		//TEXTREVIEW
-		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla autharization is not supported for this version of the engine. Please use 5.0 and greater"));
+		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla Login is not supported by this version of the engine. Please use version 5.0 and greater"));
 		return;
 	}
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
 							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
 							.AddStringQueryParam(TEXT("login_url"), Settings->RedirectURI)
 							.Build();
 
 	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
-	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback](bool bAuthenticationCompleted) { 
+	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback](bool bAuthenticationCompleted) {
 		if (bAuthenticationCompleted)
 		{
 			SuccessCallback.ExecuteIfBound(LoginData);
@@ -243,7 +242,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	BrowserWidget = MyBrowser;
 
-	// Be sure we've dropped any saved info
+	// Be sure we've erased any saved info
 	LoginData = FXsollaLoginData();
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
@@ -268,7 +267,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FString
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Endpoint = TEXT("https://login.xsolla.com/api/password/reset/request");
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
@@ -283,7 +282,7 @@ void UXsollaLoginSubsystem::ResetUserPassword(const FString& User, const FString
 
 void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(TEXT("https://login.xsolla.com/api/users/me"), EXsollaHttpRequestVerb::VERB_GET, TEXT(""), LoginData.AuthToken.JWT);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
@@ -294,7 +293,7 @@ void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderNa
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_url"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -316,7 +315,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 
 	BrowserWidget = MyBrowser;
 
-	// Be sure we've dropped any saved info
+	// Be sure we've erased any saved info
 	LoginData = FXsollaLoginData();
 	LoginData.bRememberMe = bRememberMe;
 	SaveData();
@@ -326,7 +325,7 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	
+
 	NativeSuccessCallback = SuccessCallback;
 	NativeErrorCallback = ErrorCallback;
 	NativeCancelCallback = CancelCallback;
@@ -339,9 +338,9 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 
 	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "xAuthSocial",
 		"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
-		FJavaWrapper::GameActivityThis, 
-		XsollaJavaConvertor::GetJavaString(ProviderName), 
-		bRememberMe, 
+		FJavaWrapper::GameActivityThis,
+		XsollaJavaConvertor::GetJavaString(ProviderName),
+		bRememberMe,
 		(jlong)nativeCallback);
 
 #endif
@@ -383,7 +382,7 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 			});
 			return;
 		}
-		
+
 		LoginData.AuthToken.JWT = tokenInfo.accessToken;
 		LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
 		LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
@@ -404,7 +403,7 @@ void UXsollaLoginSubsystem::SetToken(const FString& Token)
 void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
@@ -416,7 +415,7 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
@@ -429,7 +428,7 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
@@ -441,7 +440,7 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
@@ -455,7 +454,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 	const FString& AppId, const FString& State,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	
+
 	if (ProviderName.ToLower() == TEXT("steam"))
 	{
 		FString OutError;
@@ -468,7 +467,7 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -520,7 +519,7 @@ void UXsollaLoginSubsystem::GetUserAttributes(const FString& AuthToken, const FS
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::GetUserAttributes_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
-	
+
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
@@ -657,7 +656,7 @@ void UXsollaLoginSubsystem::LinkEmailAndPassword(const FString& AuthToken, const
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/link_email_password"))
 							.AddStringQueryParam(TEXT("login_url"), FGenericPlatformHttp::UrlEncode(Settings->RedirectURI))
@@ -687,7 +686,7 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices/{PlatformName}"))
 							.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
 							.Build();
@@ -706,7 +705,7 @@ void UXsollaLoginSubsystem::LinkDeviceToAccount(const FString& AuthToken, const 
 
 void UXsollaLoginSubsystem::UnlinkDeviceFromAccount(const FString& AuthToken, const int64 DeviceId, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices/{DeviceId}"))
 							.SetPathParam(TEXT("DeviceId"), DeviceId)
 							.Build();
@@ -745,7 +744,7 @@ void UXsollaLoginSubsystem::AuthenticateViaDeviceId(const FString& DeviceName, c
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/device/{PlatformName}"))
 							.SetPathParam(TEXT("PlatformName"), PlatformName.ToLower())
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -767,7 +766,7 @@ void UXsollaLoginSubsystem::AuthViaAccessTokenOfSocialNetwork(
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_with_token"))
 							.SetPathParam(TEXT("ProviderName"), ProviderName)
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
@@ -817,7 +816,7 @@ void UXsollaLoginSubsystem::StartAuthByPhoneNumber(const FString& PhoneNumber, c
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/phone/request"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
@@ -844,7 +843,7 @@ void UXsollaLoginSubsystem::CompleteAuthByPhoneNumber(const FString& Code, const
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/phone/confirm"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.Build();
@@ -873,7 +872,7 @@ void UXsollaLoginSubsystem::StartAuthByEmail(const FString& Email, const FString
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/email/request"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
@@ -900,7 +899,7 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/login/email/confirm"))
 							.AddStringQueryParam(TEXT("client_id"), ClientID)
 							.Build();
@@ -913,7 +912,7 @@ void UXsollaLoginSubsystem::CompleteAuthByEmail(const FString& Code, const FStri
 void UXsollaLoginSubsystem::GetAuthConfirmationCode(const FString& UserId, const FString& OperationId,
 	const FOnAuthCodeSuccess& SuccessCallback, const FOnAuthCodeTimeout& TimeoutCallback, const FOnAuthError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/otc/code"))
 							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("login"), FGenericPlatformHttp::UrlEncode(UserId))
@@ -973,7 +972,7 @@ void UXsollaLoginSubsystem::ModifyUserDetails(const FString& AuthToken, const FS
 
 void UXsollaLoginSubsystem::GetUserEmail(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/email")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
@@ -989,7 +988,7 @@ void UXsollaLoginSubsystem::GetUserEmail(const FString& AuthToken, const FOnUser
 
 void UXsollaLoginSubsystem::GetUserPhoneNumber(const FString& AuthToken, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone")).Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
@@ -1015,7 +1014,7 @@ void UXsollaLoginSubsystem::ModifyUserPhoneNumber(const FString& AuthToken, cons
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone")).Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
@@ -1033,7 +1032,7 @@ void UXsollaLoginSubsystem::ModifyUserPhoneNumber(const FString& AuthToken, cons
 void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, const FString& PhoneNumber,
 	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/phone/{phoneNumber}"))
 							.SetPathParam(TEXT("phoneNumber"), PhoneNumber)
 							.Build();
@@ -1075,7 +1074,7 @@ void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, c
 	UploadContent.Append(UXsollaLoginLibrary::ConvertTextureToByteArray(Picture));
 	UploadContent.Append((uint8*)TCHAR_TO_ANSI(*EndBoundary), EndBoundary.Len());
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/picture")).Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
@@ -1094,7 +1093,7 @@ void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, c
 
 void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/picture")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
@@ -1115,7 +1114,7 @@ void UXsollaLoginSubsystem::GetFriends(const FString& AuthToken, const EXsollaFr
 	const FString SortByCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
 	const FString SortOrderCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/relationships"))
 							.AddStringQueryParam(TEXT("type"), FriendType)
 							.AddStringQueryParam(TEXT("sort_by"), SortByCriteria)
@@ -1148,7 +1147,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, const EXsoll
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/relationships")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, PostContent, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
@@ -1164,7 +1163,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, const EXsoll
 
 void UXsollaLoginSubsystem::GetSocialAuthLinks(const FString& AuthToken, const FString& Locale, const FOnSocialAuthLinksUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/login_urls"))
 							.AddStringQueryParam(TEXT("locale"), Locale)
 							.Build();
@@ -1183,7 +1182,7 @@ void UXsollaLoginSubsystem::GetSocialAuthLinks(const FString& AuthToken, const F
 void UXsollaLoginSubsystem::GetSocialFriends(const FString& AuthToken, const FString& Platform,
 	const FOnUserSocialFriendsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Offset, const int Limit, const bool FromThisGame)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_friends"))
 							.AddNumberQueryParam(TEXT("limit"), Limit)
 							.AddNumberQueryParam(TEXT("offset"), Offset)
@@ -1205,7 +1204,7 @@ void UXsollaLoginSubsystem::GetSocialFriends(const FString& AuthToken, const FSt
 
 void UXsollaLoginSubsystem::GetUsersFriends(const FString& AuthToken, const FString& Platform, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_friends/update"))
 							.AddStringQueryParam(TEXT("platform"), Platform)
 							.Build();
@@ -1223,7 +1222,7 @@ void UXsollaLoginSubsystem::GetUsersFriends(const FString& AuthToken, const FStr
 
 void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FString& UserID, const FOnUserProfileReceived& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/{UserID}/public"))
 							.SetPathParam("UserID", UserID)
 							.Build();
@@ -1241,7 +1240,7 @@ void UXsollaLoginSubsystem::GetUserProfile(const FString& AuthToken, const FStri
 
 void UXsollaLoginSubsystem::GetUsersDevices(const FString& AuthToken, const FOnUserDevicesUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/devices")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
@@ -1258,7 +1257,7 @@ void UXsollaLoginSubsystem::GetUsersDevices(const FString& AuthToken, const FOnU
 void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, const FString& Nickname,
 	const FOnUserSearchUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Offset, const int Limit)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/search/by_nickname"))
 							.AddStringQueryParam(TEXT("nickname"), FGenericPlatformHttp::UrlEncode(Nickname))
 							.AddNumberQueryParam(TEXT("limit"), Limit)
@@ -1279,7 +1278,7 @@ void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, cons
 void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 	const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_providers/{ProviderName}/login_url"))
@@ -1301,7 +1300,7 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 
 void UXsollaLoginSubsystem::GetLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_providers")).Build();
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
@@ -1319,7 +1318,7 @@ void UXsollaLoginSubsystem::LogoutUser(const FString& AuthToken, const EXsollaSe
 	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString SessionsString = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaSessionType", Sessions);
-	
+
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/logout"))
 							.AddStringQueryParam(TEXT("sessions"), SessionsString)
 							.Build();
@@ -1895,7 +1894,7 @@ void UXsollaLoginSubsystem::RegisterUser_HttpRequestComplete(FHttpRequestPtr Htt
 {
 	if (HttpResponse->GetResponseCode() == EHttpResponseCodes::Type::Ok)
 	{
-		
+
 		HandleUrlWithCodeRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorCallback);
 		return;
 	}
@@ -1920,7 +1919,7 @@ void UXsollaLoginSubsystem::LogoutUser_HttpRequestComplete(FHttpRequestPtr HttpR
 	const bool bSucceeded, FOnRequestSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-	
+
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
 		SuccessCallback.ExecuteIfBound();
@@ -2016,7 +2015,7 @@ void UXsollaLoginSubsystem::SetLoginData(const FXsollaLoginData& Data, const boo
 
 	if (ClearCache)
 	{
-		// Drop saved data in cache
+		// Erase saved data in cache
 		UXsollaLoginSave::Save(LoginData);
 	}
 }
@@ -2031,12 +2030,12 @@ void UXsollaLoginSubsystem::UpdateAuthTokenData(const FString& AccessToken, int 
 
 void UXsollaLoginSubsystem::DropLoginData(const bool ClearCache)
 {
-	// Drop saved data in memory
+	// Erase saved data in memory
 	LoginData = FXsollaLoginData();
 
 	if (ClearCache)
 	{
-		// Drop saved data in cache
+		// Erase saved data in cache
 		UXsollaLoginSave::Save(LoginData);
 	}
 }
@@ -2074,7 +2073,7 @@ void UXsollaLoginSubsystem::InnerRefreshToken(const FString& RefreshToken, const
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
 
-	// Generate endpoint url
+	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
