@@ -101,9 +101,9 @@ public:
 
 	/**
 	 * Payment user interface size (desktop only).
-	 * Small: 620 x 630 px
-	 * Medium (recomended): 740 x 760 px
-	 * Large: 820 x 840 px
+	 * Small
+	 * Medium
+	 * Large
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiSize PaymentInterfaceSize;
