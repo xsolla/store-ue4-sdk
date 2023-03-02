@@ -322,7 +322,7 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 }
 
 void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
-	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe)
+	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe, const FString& State)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -346,16 +346,18 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #endif
 
 #if PLATFORM_IOS
+	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
+
 	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
-		state:@"xsollatest"
+		state:State.GetNSString()
 		scope:@"offline"
-		redirectUri:@"app://xsollalogin"];
+		redirectUri:RedirectURI.GetNSString()];
 
 	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
 		clientId:[Settings->ClientID.GetNSString() intValue]
 		refreshToken:nil
 		clientSecret:nil
-		redirectUri:@"app://xsollalogin"];
+		redirectUri:RedirectURI.GetNSString()];
 
 	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
 	WebAuthenticationPresentationContextProvider* Context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];

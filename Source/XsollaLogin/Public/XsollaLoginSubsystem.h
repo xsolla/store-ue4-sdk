@@ -175,10 +175,11 @@ public:
 	 * @param CancelCallback Called after user authentication was canceled.
 	 * @param ErrorCallback Called after user authentication resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
+	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
-		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false, const FString& State = TEXT("xsollatest"));
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
