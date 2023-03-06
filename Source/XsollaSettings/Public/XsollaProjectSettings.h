@@ -83,6 +83,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString FacebookAppId;
 
+	/** Facebook client token (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
+	FString FacebookClientToken;
+
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString GoogleAppId;
@@ -153,6 +157,7 @@ public:
 	 * "Purchase using virtual currency" - redirect when purchase is made using virtual currency.
 	 * "Successful payment" - redirect when a payment is successful.
 	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
+	 * "Any payment" - redirect for any payment status.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
