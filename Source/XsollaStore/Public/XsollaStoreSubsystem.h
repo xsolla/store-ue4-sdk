@@ -280,6 +280,7 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
 	/** Initiate purchase by given store item
 	 *
 	 * @param StoreItem Given store item
@@ -291,6 +292,7 @@ public:
 	void PurchaseStoreItem(const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	// TEXTREVIEW
 	/** Initiate purchase by given virtual currency package
 	 *
 	 * @param CurrencyPackage Given currency package
