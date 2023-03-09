@@ -199,7 +199,7 @@ public:
 	/** Exchanges the user authentication code to a valid JWT.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/general-info/#unreal_engine_sdk_how_to_set_up_oauth).
 	 *
-	 * @param AuthenticationCode Access code received from several other OAuth2.0 requests (example: code from social network authentication).
+	 * @param AuthenticationCode Access code received from several other OAuth 2.0 requests (example: code from social network authentication).
 	 * @param SuccessCallback Called after successful exchanging. Contains exchanged token.
 	 * @param ErrorCallback Called after request resulted with an error.
 	 */
@@ -343,7 +343,6 @@ public:
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 	/** Authenticates the user with the access token using social network credentials.
-	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/social-auth/#unreal_engine_sdk_how_to_set_up_native_auth_via_social_networks).
 	 *
 	 * @param AuthToken Access token received from a social network.
 	 * @param AuthTokenSecret Parameter `oauth_token_secret` received from the authorization request. Required for Twitter only.
@@ -627,7 +626,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth2.0 only).
+	/** Logs the user out and deletes the user session according to the value of the sessions parameter (OAuth 2.0 only).
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param Sessions Shows how the user is logged out and how the user session is deleted. Available strings: `sso` and `all`. Leave empty to use the default value (all).

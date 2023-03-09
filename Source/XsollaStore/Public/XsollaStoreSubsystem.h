@@ -425,7 +425,7 @@ public:
 	void BuyItemWithVirtualCurrency(const FString& AuthToken, const FString& ItemSKU, const FString& CurrencySKU,
 		const EXsollaPublishingPlatform Platform, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of items that can be credited to the user when the promo code is activated. Allows users to choose from several available items.
+	/** Returns a list of items that can be credited to the user when the promo code is redeemed. Allows users to choose from several available items.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/#sdk_promo_codes).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
@@ -437,7 +437,7 @@ public:
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Activates a promo code. After activating the promo code, the user gets free items and/or the price of the cart is reduced.
+	/** Redeems a promo code. After activating the promo code, the user gets free items and/or the price of the cart is reduced.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
@@ -576,7 +576,7 @@ public:
 	* @param User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
 	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after public plans have been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
@@ -594,7 +594,7 @@ public:
 	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
 	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after a list of plans has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
@@ -609,7 +609,7 @@ public:
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
 	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after the list pf subscriptions has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page (15 elements are displayed by default).
 	* @param Offset Number of elements from which the list is generated (the count starts from 0).
@@ -625,7 +625,7 @@ public:
 	* @param SubscriptionId Subscription ID.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
 	* Can be enforced by using language code: The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`).
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after subscription data have been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -638,7 +638,7 @@ public:
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param PlanExternalId Subscription plan external ID (32 characters). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -650,7 +650,7 @@ public:
 	*
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -662,7 +662,7 @@ public:
 	*
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param SubscriptionId Subscription ID.
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback >Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
@@ -674,7 +674,7 @@ public:
 	*
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param SubscriptionId Subscription ID.
-	* @param SuccessCallback Called after successful redemption.
+	* @param SuccessCallback Called after successful subscription cancelling.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
