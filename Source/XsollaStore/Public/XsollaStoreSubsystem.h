@@ -662,7 +662,7 @@ public:
 	*
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	* @param SubscriptionId Subscription ID.
-	* @param SuccessCallback >Called after the URL has been successfully recieved.
+	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
