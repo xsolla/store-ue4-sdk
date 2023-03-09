@@ -387,8 +387,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Locale,
-	const FXsollaParameters CustomParameters,
+	const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
@@ -438,6 +437,22 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 		HttpRequest->ProcessRequest(); });
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
+void UXsollaStoreSubsystem::PurchaseStoreItem(const FStoreItem& StoreItem,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	InnerPurchase(StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PaymentTokenRequestPayload,
+		SuccessCallback, ErrorCallback);
+}
+
+void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	InnerPurchase(CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PaymentTokenRequestPayload,
+		SuccessCallback, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
@@ -1859,6 +1874,58 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 #endif // UE_BUILD_SHIPPING
 
 	return bIsSandboxEnabled;
+}
+
+void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	const FString& AuthToken = LoginSubsystem->GetLoginData().AuthToken.JWT;
+
+	PaymentSuccessCallback = SuccessCallback;
+	PaymentErrorCallback = ErrorCallback;
+
+	bool bIsVirtual = VirtualPrices.Num() > 0;
+	if (bIsVirtual)
+	{
+		FOnPurchaseUpdate VirtualPurchaseSuccessCallback;
+		VirtualPurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
+		const FString& CurrencySku = VirtualPrices[0].sku;
+		BuyItemWithVirtualCurrency(AuthToken, Sku, CurrencySku, EXsollaPublishingPlatform::undefined, VirtualPurchaseSuccessCallback, PaymentErrorCallback);
+	}
+	else if (!bIsFree)
+	{
+		FOnFetchTokenSuccess FetchTokenSuccessCallback;
+		FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
+		FetchPaymentToken(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Country, PaymentTokenRequestPayload.Locale,
+			PaymentTokenRequestPayload.CustomParameters, FetchTokenSuccessCallback, PaymentErrorCallback);
+	}
+	else
+	{
+		FOnPurchaseUpdate FreePurchaseSuccessCallback;
+		FreePurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
+		CreateOrderWithSpecifiedFreeItem(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Locale,
+			PaymentTokenRequestPayload.CustomParameters, FreePurchaseSuccessCallback, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32 InOrderId)
+{
+	PaymentOrderId = InOrderId;
+	FOnStoreSuccessPayment SuccessPaymentCallback;
+	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback);
+}
+
+void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
+{
+	FOnStoreSuccessPayment SuccessPaymentCallback;
+	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
+	CheckPendingOrder(LoginSubsystem->GetLoginData().AuthToken.JWT, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
+}
+
+void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
+{
+	PaymentSuccessCallback.ExecuteIfBound(PaymentOrderId);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
