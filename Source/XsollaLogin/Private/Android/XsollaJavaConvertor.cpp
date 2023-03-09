@@ -1,9 +1,10 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaJavaConvertor.h"
 
 namespace XsollaJavaConvertor
 {
+#if PLATFORM_ANDROID
 	jstring GetJavaString(const FString& string)
 	{
 		JNIEnv* JEnv = AndroidJavaEnv::GetJavaEnv();
@@ -26,4 +27,5 @@ namespace XsollaJavaConvertor
 
 		return Result;
 	}
+#endif
 }

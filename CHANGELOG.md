@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0] - 2023-01-11
+
+### Added
+- Native social login for iOS
+- Native payments for iOS
+- Login by device ID for mobiles to demo
+- Deep links for iOS
+- SDK methods for ordering free items (`CreateOrderWithSpecifiedFreeItem` and `CreateOrderWithFreeCart` SDK methods)
+
+### Updated
+- Separated demo and SDK
+- Refinement of the payment status check (launching of the payment UI closing check and limiting short polling time)
+
+### Removed
+- Account linking function from demo
+
 ## [1.2.0] - 2022-09-02
 
 ### Added
@@ -272,7 +288,7 @@
 ### Added
 - The ability of cross-platform account linking for combining player’s inventory on different platforms
 
-### Fixed 
+### Fixed
 - Automatic SDK initialization when using Subsystems
 - Minor bugs
 
@@ -356,4 +372,3 @@
 ### Fixed
 
 - Minor bugs
-

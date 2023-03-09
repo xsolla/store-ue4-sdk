@@ -2,35 +2,44 @@ include:
   - project: 'sysadm-docker/ubuntu-sshclient'
     ref:     'master'
     file:    'gitlab-ci-template.yml'
-  - project: 'security/security-tools'
-    ref: 'develop'
-    file: 'gitlab-ci.yml'
 
 stages:
   - build
   - deploy
   - linking
-  - build
-  - security scan
+  - autotests
+  - code-analysis
+  - demo-win
+  - demo-android
+  - demo-ios
 
 variables:
-    BUILD_SCRIPT_PATH: "CI\\ue_build_automation.py"
-    PROJECT_PATH: "%cd%"
-    BUILD_ROOT_PATH: "Builds"
-    COMMERCE_SDK_NAME: "UeCommerceSdk"
-    GIT_CLEAN_FLAGS: -ffdx
-    GIT_CURRENT_BRANCH: $CI_COMMIT_BRANCH
+    TEST_PROJECT_DIR_WIN: C:\Users\Runner\Desktop\TestProjects\Ue427
+    TEST_PROJECT_DIR_MAC: /Users/runner/TestProjects/Ue427
+    TEST_PROJECT_BRANCH: master
+    PLUGIN_BRANCH: $CI_COMMIT_BRANCH
+    CI_WORK_DIR: $CI_PROJECT_DIR
+
+# =================================================================================================================
+# DOCS
 
 build doc:
   stage: build
   only:
     - /^v.*/
-  image: alpine
+  image: node:14-alpine3.15
   script:
-  - apk update && apk add doxygen graphviz ttf-freefont zip
-  - doxygen Documentation/Autogen/Doxyfile
-  - mv Documentation/Autogen/html/ docs/
-  - cd docs/ && zip -r ../build.zip *
+  - apk update && apk add doxygen graphviz ttf-freefont zip git
+  - doxygen Documentation/Autogen/Doxyfile >/dev/null
+  - git clone https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
+  - mkdir -p sdk-reference-parser-unity-ue/src
+  - mkdir -p sdk-reference-parser-unity-ue/dist
+  - mv Documentation/Autogen/html/ sdk-reference-parser-unity-ue/src >/dev/null
+  - cd sdk-reference-parser-unity-ue
+  - npm install
+  - npm start
+  - mv -v dist/html/* dist >/dev/null
+  - cd dist && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
   artifacts:
     paths:
     - build.zip
@@ -60,7 +69,7 @@ current doc:
     - deploy doc
   environment:
     name: doc/current
-    url: https://developers.xsolla.com/sdk-code-references/ue4-store
+    url: https://developers.xsolla.com/sdk-code-references/unreal-store/
   tags:
     - sshclient
 
@@ -74,21 +83,94 @@ stop doc:
   dependencies: []
   tags:
     - sshclient
+
+# =================================================================================================================
+# AUTOTESTS
     
-build:
-  stage: build
+run-autotests:
+  stage: autotests
   script:
-    - echo call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch %GIT_CURRENT_BRANCH% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
-    - call %BUILD_SCRIPT_PATH% --ue_base %UE_4.27_PATH% --demo_base %UE_27_COMMERCE_SDK_PATH% --demo_name %COMMERCE_SDK_NAME% --branch %GIT_CURRENT_BRANCH% --build_output %PROJECT_PATH%\%BUILD_ROOT_PATH% --inspect_tool %RESHARPER_CLT_BIN% --inspect_artifact %PROJECT_PATH% --test_artifact %PROJECT_PATH%
+    - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
   artifacts:
-    name: "UE4_%CI_COMMIT_REF_NAME%"
+    name: "UE4_AUTOTESTS_%CI_COMMIT_REF_NAME%"
     when: always
     paths:
-      - Builds
-      - Inspect
-      - Autotests
+      - Logs
     expire_in: 3 days
   dependencies: []
   tags:
     - sdk_ci
     - windows
+
+# =================================================================================================================
+# CODE ANALYSIS
+    
+analyze-code:
+  stage: code-analysis
+  script:
+    - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+  artifacts:
+    name: "UE4_CODE_ANALYSIS_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Logs
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO WIN
+    
+build-win-demo:
+  stage: demo-win
+  script:
+    - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+  artifacts:
+    name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO ANDROID
+    
+build-android-demo:
+  stage: demo-android
+  script:
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+  artifacts:
+    name: "UE4_BUILD_ANDROID_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO IOS
+    
+build-ios-demo:
+  stage: demo-ios
+  script:
+    - chmod 755 cicd/build-demo-ios.sh
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR
+  artifacts:
+    name: "UE4_BUILD_IOS_$CI_COMMIT_REF_NAME"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - mac

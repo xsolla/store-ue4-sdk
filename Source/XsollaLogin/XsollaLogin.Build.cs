@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 using System.IO;
 using UnrealBuildTool;
@@ -41,6 +41,33 @@ public class XsollaLogin : ModuleRules
             PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
             string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "XsollaLogin_UPL.xml"));
+        }
+        if (Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+
+            AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "XsollaLogin_IOS_UPL.xml"));
+
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKLoginKit",
+                "../ThirdParty/IOS/XsollaSDKLoginKit.embeddedframework.zip"
+            )
+            );
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKLoginKitObjectiveC",
+                "../ThirdParty/IOS/XsollaSDKLoginKitObjectiveC.embeddedframework.zip"
+            )
+            );
+            PublicAdditionalFrameworks.Add(
+            new Framework(
+                "XsollaSDKUtilities",
+                "../ThirdParty/IOS/XsollaSDKUtilities.embeddedframework.zip"
+
+            )
+            );
         }
 
         PublicDefinitions.Add("WITH_XSOLLA_LOGIN=1");

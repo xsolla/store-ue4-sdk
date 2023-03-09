@@ -1,10 +1,8 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
-#include "XsollaStoreDefines.h"
 #include "XsollaUtilsDataModel.h"
-
 #include "XsollaStoreDataModel.generated.h"
 
 UENUM(BlueprintType)
@@ -190,6 +188,9 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FStoreItemMediaList> media_list;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	TArray<FXsollaStoreItemPromotion> promotions;
+
 public:
 	FStoreItem()
 		: is_free(false)
@@ -303,6 +304,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	TArray<FStoreItemMediaList> media_list;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	TArray<FXsollaStoreItemPromotion> promotions;
+
 public:
 	FVirtualCurrency()
 		: is_free(false)
@@ -405,6 +409,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	TArray<FStoreItemMediaList> media_list;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	TArray<FXsollaStoreItemPromotion> promotions;
+
 public:
 	FVirtualCurrencyPackage()
 		: is_free(false)
@@ -457,6 +464,9 @@ struct XSOLLASTORE_API FStoreCartItem
 	bool is_free;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
+	bool is_bonus;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
 	FXsollaPrice price;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Cart Item")
@@ -474,12 +484,14 @@ struct XSOLLASTORE_API FStoreCartItem
 public:
 	FStoreCartItem()
 		: is_free(false)
+		, is_bonus(false)
 		, quantity(0){};
 
 	FStoreCartItem(const FStoreItem& Item)
 		: sku(Item.sku)
 		, name(Item.name)
 		, is_free(Item.is_free)
+		, is_bonus(false)
 		, price(Item.price)
 		, image_url(Item.image_url)
 		, quantity(0){};
@@ -488,6 +500,7 @@ public:
 		: sku(CurrencyPackage.sku)
 		, name(CurrencyPackage.name)
 		, is_free(CurrencyPackage.is_free)
+		, is_bonus(false)
 		, price(CurrencyPackage.price)
 		, image_url(CurrencyPackage.image_url)
 		, quantity(0){};
@@ -603,6 +616,9 @@ struct XSOLLASTORE_API FStoreBundle
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	TArray<FStoreBundleContent> content;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	TArray<FXsollaStoreItemPromotion> promotions;
 };
 
 USTRUCT(BlueprintType)

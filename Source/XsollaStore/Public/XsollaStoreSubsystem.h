@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -15,11 +15,12 @@
 
 enum class EXsollaPublishingPlatform : uint8;
 class FJsonObject;
-class UXsollaWebBrowserWrapper;
+class UXsollaStoreBrowserWrapper;
 class UXsollaLoginSubsystem;
 
 DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
+DECLARE_DYNAMIC_DELEGATE(FOnStoreCancelPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
@@ -122,7 +123,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after virtual currency packages were successfully received.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -139,7 +140,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after server response.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -223,11 +224,40 @@ public:
 	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
 
-	void ShortPollingCheckOrder(const FString& AccessToken, const int32 OrderId,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
+	/** Create Order With Specified Free Item
+	 * Creates an order with a specified free item.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param ItemSKU Desired free item SKU.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param Quantity Item quantity.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
+		const FString& Currency, const FString& Locale,
+		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
-	void CheckOrder(const FString& AuthToken, const int32 OrderId,
-		const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback);
+	/** Create Order With Free Cart
+	 * Creates order with free cart.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
+	 * @param Currency (optional) Desired payment currency. Leave empty to use the default value.
+	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
+	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
+	 * @param SuccessCallback Callback function called after the payment was successfully completed.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
+		const FString& Currency, const FString& Locale,
+		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Clear Cart
 	 * Removes all items from the cart.
@@ -312,7 +342,7 @@ public:
 	*
 	* @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	* @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	* @param SuccessCallback Callback function called after bundles are successfully received.
 	* @param ErrorCallback Callback function called after the request resulted with an error.
 	* @param Limit Limit for the number of elements on the page.
@@ -329,7 +359,7 @@ public:
 	 * @param CurrencySKU Desired currency SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1. Leave empty to use the default value.
 	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculated based on the user's IP address if not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified virtual currency data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -408,7 +438,7 @@ public:
 	 *
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calcualtions are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified games list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -424,7 +454,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game list data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -440,7 +470,7 @@ public:
 	 * @param GameSKU Desired game SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -454,7 +484,7 @@ public:
 	 * @param ItemSKU Desired game item SKU.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address if the country is not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 */
@@ -468,7 +498,7 @@ public:
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. Two-letter lowercase language code per ISO 639-1.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per ISO 3166-1 alpha-2. Calculations are based on the user's IP address in not specified.
-	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields 'media_list', 'order', and 'long_description'.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Callback function called after successful request of specified game key data.
 	 * @param ErrorCallback Callback function called after the request resulted with an error.
 	 * @param Limit Limit for the number of elements on the page.
@@ -518,7 +548,7 @@ public:
 	/** Get Subscription Public Plans
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
-	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
@@ -535,7 +565,7 @@ public:
 	* Returns a list of all plans, including plans purchased by the user while promotions are active.
 	*
 	* @param AuthToken User authorization token.
-	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (`https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}`).
+	* @param PlanId Array of subscription plan IDs. Plan ID can be found in the URL of the subscription details page in Publisher Account (https://publisher.xsolla.com/{merchant_id}/projects/{project_id}/subscriptions/plans/{merplan_id}).
 	* @param PlanExternalId Array of subscription plan external IDs (32 characters per ID). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
 	* @param Country User's country. Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param Locale Language of the UI. By default, it is determined by the user's IP address. Can be enforced by using an ISO 639-1 code.
@@ -640,8 +670,11 @@ protected:
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
-	void CheckOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback);
+
+	void CreateOrderWithSpecifiedFreeItem_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void CreateOrderWithFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
@@ -720,6 +753,9 @@ protected:
 
 	/** Return true if error is happened */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
+
+	void HandlePurchaseFreeItemsRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 protected:
 	/** Load save game and extract data */
@@ -823,11 +859,11 @@ protected:
 	/** Pending PayStation URL to be opened in browser */
 	FString PengindPaystationUrl;
 
-	UXsollaWebBrowserWrapper* MyBrowser;
+	UXsollaStoreBrowserWrapper* MyBrowser;
 
 private:
 	UPROPERTY()
-	TSubclassOf<UXsollaWebBrowserWrapper> DefaultBrowserWidgetClass;
+	TSubclassOf<UXsollaStoreBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
 	TArray<UXsollaOrderCheckObject*> CachedOrderCheckObjects;

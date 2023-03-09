@@ -77,3 +77,7 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 /_ReSharper.Caches/*
 .idea
+
+#iOS generated files
+.DS_Store
+*/**/.DS_Store

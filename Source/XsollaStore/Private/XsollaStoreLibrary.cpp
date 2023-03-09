@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaStoreLibrary.h"
 #include "XsollaStore.h"
@@ -15,7 +15,7 @@ UDataTable* UXsollaStoreLibrary::CurrencyLibrary;
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Store/Misc/currency-format.currency-format'"),
+	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Misc/currency-format.currency-format'"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
@@ -34,7 +34,6 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 {
 	if (Currency.IsEmpty())
 	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: In PA there is no price provided for certain item"), *VA_FUNC_LINE);
 		return FString();
 	}
 

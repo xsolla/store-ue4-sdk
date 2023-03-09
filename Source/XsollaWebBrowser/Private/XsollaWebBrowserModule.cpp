@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaWebBrowserModule.h"
 
@@ -17,10 +17,6 @@ void FXsollaWebBrowserModule::StartupModule()
 	{
 		WebBrowserAssetMgr = NewObject<UXsollaWebBrowserAssetManager>((UObject*)GetTransientPackage(), NAME_None, RF_Transient | RF_Public);
 		WebBrowserAssetMgr->LoadDefaultMaterials();
-
-		FWebBrowserInitSettings WebBrowserInitSettings;
-		WebBrowserInitSettings.ProductVersion = TEXT("");
-		IWebBrowserModule::Get().CustomInitialize(WebBrowserInitSettings);
 
 		IWebBrowserSingleton* WebBrowserSingleton = IWebBrowserModule::Get().GetSingleton();
 		if (WebBrowserSingleton)

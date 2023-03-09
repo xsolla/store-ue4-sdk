@@ -1,4 +1,4 @@
-// Copyright 2022 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 package com.xsolla.store;
 
@@ -15,6 +15,7 @@ public class XsollaNativePaymentsActivity extends Activity {
     public static final String ARG_SANDBOX = "sandbox";
     public static final String ARG_REDIRECT_SCHEME = "redirect_scheme";
     public static final String ARG_REDIRECT_HOST = "redirect_host";
+    public static String CALLBACK_ADDRESS = "callback_address";
     private static final int RC_PAY_STATION = 1;
 
     @Override
@@ -43,6 +44,10 @@ public class XsollaNativePaymentsActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        XPayments.Result result = XPayments.Result.fromResultIntent(data);
+        XPayments.Status status = result.getStatus();
+        
         finish();
     }
 }

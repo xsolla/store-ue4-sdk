@@ -1,4 +1,4 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -65,6 +65,75 @@ public:
 		: id(-1)
 		, level(0)
 		, order(1){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemDiscount
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Discount")
+	FString percent;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Discount")
+	FString value;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemBonus
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Bonus")
+	FString sku;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Bonus")
+	int32 quantity;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemLimitsPerUser
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
+	int32 available;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
+	int32 total;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemLimits
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Limits")
+	TArray<FXsollaStoreItemLimitsPerUser> per_user;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemPromotion
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	FString name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	FString date_start;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	FString date_end;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	FXsollaStoreItemDiscount discount;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	TArray<FXsollaStoreItemBonus> bonus;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
+	FXsollaStoreItemLimits limits;
 };
 
 USTRUCT(BlueprintType)

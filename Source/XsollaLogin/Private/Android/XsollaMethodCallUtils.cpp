@@ -1,9 +1,10 @@
-// Copyright 2021 Xsolla Inc. All Rights Reserved.
+// Copyright 2023 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaMethodCallUtils.h"
 
 namespace XsollaMethodCallUtils
 {
+#if PLATFORM_ANDROID
 	void CallStaticVoidMethod(const ANSICHAR* ClassName, const ANSICHAR* MethodName, const ANSICHAR* MethodSignature, ...)
 	{
 		bool bIsOptional = false;
@@ -21,4 +22,5 @@ namespace XsollaMethodCallUtils
 
 		Env->DeleteLocalRef(Class);
 	}
+#endif
 }

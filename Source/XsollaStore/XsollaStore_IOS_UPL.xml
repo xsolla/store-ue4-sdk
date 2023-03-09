@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+ <init>
+    <log text="Xsolla SDK iOS UPL initialization"/>
+    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKPaymentsKit.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKit.framework" />
+    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKPaymentsKitObjectiveC.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKitObjectiveC.framework" />
+    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKUtilities.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKUtilities.framework" />
+ </init>
+ <init>
+  <log text="Xsolla SDK iOS UPL Add deep linking settings"/>
+ </init>
+ <iosPListUpdates>
+  <addElements tag="dict" once="true">
+   <key>CFBundleURLTypes</key>
+   <array>
+    <dict>
+     <key>CFBundleURLName</key>
+     <string></string>
+     <key>CFBundleURLSchemes</key>
+     <array>
+      <string>app</string>
+     </array>
+    </dict>
+   </array>
+  </addElements>
+ </iosPListUpdates>
+</root>
