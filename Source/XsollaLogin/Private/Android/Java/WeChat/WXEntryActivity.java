@@ -11,7 +11,7 @@ import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.xsolla.android.login.social.LoginSocial;
+import com.xsolla.android.login.util.WechatUtils;
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
@@ -25,7 +25,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
             return;
         }
 
-        iwxapi = WXAPIFactory.createWXAPI(this, LoginSocial.getWechatAppId(), false);
+        iwxapi = WXAPIFactory.createWXAPI(this, WechatUtils.getWechatAppId(), false);
         iwxapi.handleIntent(getIntent(), this);
         finish();
     }
@@ -36,6 +36,6 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onResp(BaseResp resp) {
-        LoginSocial.setWechatResult(resp);
+        WechatUtils.setWechatResult(resp);
     }
 }
