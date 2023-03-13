@@ -258,8 +258,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Locale,
-		const FXsollaParameters CustomParameters,
+		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Create order with free cart. The created order will get a `done` order status.
@@ -279,6 +278,30 @@ public:
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Locale,
 		const FXsollaParameters CustomParameters,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
+	//TEXTREVIEW
+	/** Initiate purchase by given store item
+	 *
+	 * @param StoreItem Given store item
+	 * @param PaymentTokenRequestPayload (optional)
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void PurchaseStoreItem(const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
+	// TEXTREVIEW
+	/** Initiate purchase by given virtual currency package
+	 *
+	 * @param CurrencyPackage Given currency package
+	 * @param PaymentTokenRequestPayload (optional)
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes all items from the cart with the specified ID or from the cart of the current user.
@@ -794,6 +817,18 @@ protected:
 	/** Check whether sandbox is enabled */
 	bool IsSandboxEnabled() const;
 
+	void InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+		const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
+	UFUNCTION()
+	void FetchTokenCallback(const FString& AccessToken, int32 InOrderId);
+
+	UFUNCTION()
+	void BuyVirtualOrFreeItemCallback(int32 InOrderId);
+
+	UFUNCTION()
+	void CheckPendingOrderSuccessCallback();
+
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
@@ -906,4 +941,11 @@ private:
 
 	UPROPERTY()
 	bool PaymentEnableSandbox;
+
+	UPROPERTY()
+	int32 PaymentOrderId;
+
+	FOnPurchaseUpdate PaymentSuccessCallback;
+
+	FOnError PaymentErrorCallback;
 };

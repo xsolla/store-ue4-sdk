@@ -375,6 +375,24 @@ struct FXsollaParameters
 	TMap<FString, FXsollaJsonVariant> Parameters;
 };
 
+USTRUCT(BlueprintType)
+struct FXsollaPaymentTokenRequestPayload
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Currency;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Country;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Locale;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FXsollaParameters CustomParameters;
+};
+
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
 */
 UENUM()
