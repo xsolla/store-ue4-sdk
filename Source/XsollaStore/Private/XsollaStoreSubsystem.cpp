@@ -297,7 +297,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -310,6 +310,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	}
 
 	PengindPaystationUrl = PaystationUrl;
+	PaymentBrowserClosedCallback = BrowserClosedCallback;
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -323,6 +324,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #if PLATFORM_ANDROID
 		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
+		nativeCallback->BindBrowserClosedDelegate(BrowserClosedCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
 			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
@@ -345,13 +347,22 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 				isSandbox:PaymentEnableSandbox
 				redirectUrl:PaymentRedirectURI.GetNSString()
 				completionHandler:^(NSError* _Nullable error) {
-
+					bool isManually = (error != nil) && ([@(error.code) integerValue] == NSError.cancelledByUserError);
+					AsyncTask(ENamedThreads::GameThread, [=]()
+					{
+						PaymentBrowserClosedCallback.ExecuteIfBound(isManually);
+						PaymentBrowserClosedCallback.Unbind();
+					});
 			}];
 		});
 #endif
 #else
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 		MyBrowser = CreateWidget<UXsollaStoreBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+		MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually)
+		{ 
+			PaymentBrowserClosedCallback.ExecuteIfBound(bIsManually);
+		});
 		MyBrowser->AddToViewport(100000);
 #endif
 	}
@@ -2187,5 +2198,23 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 
 	return CartItem != nullptr;
 }
+
+#if PLATFORM_ANDROID
+
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
+{
+	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteBrowserClosed(isManually);
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+#endif
 
 #undef LOCTEXT_NAMESPACE

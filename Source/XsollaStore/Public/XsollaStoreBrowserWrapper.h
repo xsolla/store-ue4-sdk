@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DELEGATE(FOnBrowserClosed);
+DECLARE_DELEGATE_OneParam(FOnBrowserClosed, bool);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreBrowserWrapper : public UUserWidget
@@ -21,7 +21,7 @@ public:
 	void LoadUrl(const FString& Url);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Browser")
-	void ExecuteBrowserClosed();
+	void ExecuteBrowserClosed(bool bIsManually);
 	
 	FOnBrowserClosed OnBrowserClosed;
 };

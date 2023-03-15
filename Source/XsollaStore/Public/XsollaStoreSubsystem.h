@@ -22,6 +22,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnStoreUpdate);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCancelPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreBrowserClosed, bool, bIsManually);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
 DECLARE_DELEGATE_ThreeParams(FOnCheckOrder, int32, EXsollaOrderStatus, FXsollaOrderContent);
@@ -215,6 +216,7 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
 	/** Opens payment console for the provided access token.
 	 * More about the use cases:
 	 * - [Cart purchase](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/)
@@ -226,10 +228,11 @@ public:
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param BrowserClosedCallback Called after the browser was closed.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback, BrowserClosedCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
 
 	/** Checks pending order.
 	 *
@@ -948,4 +951,7 @@ private:
 	FOnPurchaseUpdate PaymentSuccessCallback;
 
 	FOnError PaymentErrorCallback;
+	
+	UPROPERTY()
+	FOnStoreBrowserClosed PaymentBrowserClosedCallback;
 };
