@@ -273,6 +273,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	/** Create Code for Linking Accounts
+	 * Creates code for linking the user platform account to the main account.
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param SuccessCallback Callback function called after successful account linking code creation. The new linking code will be received.
+	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Checks user age for a particular region. The age requirements depend on the region. Service determines the user location by the IP address.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-account/).
 	 *
@@ -653,6 +663,8 @@ protected:
 		FOnUserAttributesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetReadOnlyUserAttributes_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnUserAttributesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+		FOnCodeReceived SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 		FOnCheckUserAgeSuccess SuccessCallback, FOnAuthError ErrorCallback);
 	void DeviceId_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
