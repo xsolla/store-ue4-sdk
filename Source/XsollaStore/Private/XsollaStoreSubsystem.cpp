@@ -370,6 +370,22 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
 }
 
+void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
+	const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback)
+{
+	CachedAuthToken = AuthToken;
+
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/order/{OrderId}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("OrderId"), OrderId)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
+}
+
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
 	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
 {
@@ -1314,6 +1330,47 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	}
 
 	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+}
+
+void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
+{
+	FXsollaOrder Order;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaOrder::StaticStruct(), &Order, OutError))
+	{
+		FString OrderStatusStr = Order.status;
+
+		EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
+
+		if (OrderStatusStr == TEXT("new"))
+		{
+			OrderStatus = EXsollaOrderStatus::New;
+		}
+		else if (OrderStatusStr == TEXT("paid"))
+		{
+			OrderStatus = EXsollaOrderStatus::Paid;
+		}
+		else if (OrderStatusStr == TEXT("done"))
+		{
+			OrderStatus = EXsollaOrderStatus::Done;
+		}
+		else if (OrderStatusStr == TEXT("canceled"))
+		{
+			OrderStatus = EXsollaOrderStatus::Canceled;
+		}
+		else
+		{
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, Order.order_id);
+		}
+
+		SuccessCallback.ExecuteIfBound(Order.order_id, OrderStatus, Order.content);
+		return;
+	}
+
+	HandleRequestError(OutError, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete(
