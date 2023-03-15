@@ -1924,7 +1924,8 @@ void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32
 	PaymentOrderId = InOrderId;
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
-	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback);
+	FOnStoreBrowserClosed BrowserClosedCallback;
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback);
 }
 
 void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
