@@ -3,7 +3,6 @@
 #pragma once
 
 #include "XsollaStoreDataModel.h"
-#include "XsollaStoreDefines.h"
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "Blueprint/UserWidget.h"
 #include "Subsystems/GameInstanceSubsystem.h"
