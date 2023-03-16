@@ -215,7 +215,6 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Opens payment console for the provided access token.
 	 * More about the use cases:
 	 * - [Cart purchase](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/)
@@ -223,7 +222,7 @@ public:
 	 * - [Ordering free items](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/)
 	 *
 	 * @param WorldContextObject The world context.
-	 * @param OrderId Identifier of order.
+	 * @param OrderId Order identifier.
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -294,10 +293,9 @@ public:
 		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
-	/** Initiate purchase by given store item
+	/** Initiates purchase by passing store item
 	 *
-	 * @param StoreItem Given store item
+	 * @param StoreItem Desired store item.
 	 * @param PaymentTokenRequestPayload (optional)
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -306,11 +304,10 @@ public:
 	void PurchaseStoreItem(const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	// TEXTREVIEW
-	/** Initiate purchase by given virtual currency package
+	/** Initiate purchase by passing virtual currency package
 	 *
-	 * @param CurrencyPackage Given currency package
-	 * @param PaymentTokenRequestPayload (optional)
+	 * @param CurrencyPackage Desired currency package.
+	 * @param PaymentTokenRequestPayload (optional).
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -964,7 +961,7 @@ private:
 	FOnPurchaseUpdate PaymentSuccessCallback;
 
 	FOnError PaymentErrorCallback;
-	
+
 	UPROPERTY()
 	FOnStoreBrowserClosed PaymentBrowserClosedCallback;
 };
