@@ -626,6 +626,19 @@ void UXsollaLoginSubsystem::RemoveUserAttributes(const FString& AuthToken, const
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaLoginSubsystem::CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback)
+{
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+		{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(TEXT("https://login.xsolla.com/api/users/account/code"), EXsollaHttpRequestVerb::VERB_POST, TEXT(""), Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest(); });
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
 void UXsollaLoginSubsystem::CheckUserAge(const FString& DateOfBirth, const FOnCheckUserAgeSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -1443,6 +1456,28 @@ void UXsollaLoginSubsystem::GetReadOnlyUserAttributes_HttpRequestComplete(FHttpR
 	{
 		HandleRequestError(OutError, ErrorHandlersWrapper);
 	}
+}
+
+void UXsollaLoginSubsystem::AccountLinkingCode_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
+	FOnCodeReceived SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+	{
+		static const FString AccountLinkingCode = TEXT("code");
+		if (JsonObject->HasTypedField<EJson::String>(AccountLinkingCode))
+		{
+			const FString Code = JsonObject.Get()->GetStringField(AccountLinkingCode);
+			SuccessCallback.ExecuteIfBound(Code);
+			return;
+		}
+
+		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccountLinkingCode);
+	}
+
+	HandleRequestError(OutError, ErrorHandlersWrapper);
 }
 
 void UXsollaLoginSubsystem::CheckUserAge_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
