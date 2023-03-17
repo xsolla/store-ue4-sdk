@@ -273,12 +273,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void RemoveUserAttributes(const FString& AuthToken, const TArray<FString>& AttributesToRemove, const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Create Code for Linking Accounts
-	 * Creates code for linking the user platform account to the main account.
+	/**  Creates the code for linking the platform account to the existing main account when the user logs in to the game via a gaming console.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_platform_account).
 	 *
 	 * @param AuthToken User authorization token.
-	 * @param SuccessCallback Callback function called after successful account linking code creation. The new linking code will be received.
-	 * @param ErrorCallback Callback function called after the request resulted with an error.
+	 * @param SuccessCallback Сalled after successful account linking code creation. The new linking code will be received.
+	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateAccountLinkingCode(const FString& AuthToken, const FOnCodeReceived& SuccessCallback, const FOnError& ErrorCallback);
