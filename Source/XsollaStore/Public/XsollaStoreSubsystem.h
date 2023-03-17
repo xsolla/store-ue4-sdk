@@ -232,8 +232,7 @@ public:
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
 
-	/** Check Order
-	 * Checks pending order status by its ID.
+	/** Checks pending order status by its ID.
 	 *
 	 * @param AuthToken User authorization token.
 	 * @param OrderId Identifier of order to be checked.
