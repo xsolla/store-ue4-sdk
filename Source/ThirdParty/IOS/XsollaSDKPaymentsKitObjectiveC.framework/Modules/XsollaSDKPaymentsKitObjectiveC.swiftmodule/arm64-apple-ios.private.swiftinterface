@@ -1,0 +1,24 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKitObjectiveC
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import Foundation
+import Swift
+import UIKit
+import XsollaSDKPaymentsKit
+import _Concurrency
+import _StringProcessing
+extension XsollaSDKPaymentsKit.PaymentsKitError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension Foundation.NSError {
+  @objc public static let cancelledByUserError: Swift.Int
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc final public class PaymentsKitObjectiveC : ObjectiveC.NSObject {
+  @objc public static let shared: XsollaSDKPaymentsKitObjectiveC.PaymentsKitObjectiveC
+  @objc final public func performPayment(paymentToken: Foundation.NSString, presenter: XsollaSDKPaymentsKitObjectiveC.ViewControllerPresenting, isSandbox: Swift.Bool, redirectUrl: Foundation.NSString, completionHandler: ((Foundation.NSError?) -> Swift.Void)?)
+  @objc deinit
+}
+public typealias ViewControllerPresenting = UIKit.UIViewController

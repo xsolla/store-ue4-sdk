@@ -1,0 +1,404 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKLoginKit
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AuthenticationServices
+import Foundation
+import Swift
+import UIKit
+import XsollaSDKUtilities
+import _Concurrency
+import _StringProcessing
+public enum LogoutSessionType : Swift.String {
+  case sso
+  case all
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct RegisterNewUserParams {
+  public let username: Swift.String
+  public let password: Swift.String
+  public let email: Swift.String
+  public let acceptConsent: Swift.Bool?
+  public let fields: [Swift.String : Swift.String]?
+  public let promoEmailAgreement: Swift.Int?
+  public init(username: Swift.String, password: Swift.String, email: Swift.String, acceptConsent: Swift.Bool?, fields: [Swift.String : Swift.String]?, promoEmailAgreement: Swift.Int?)
+}
+public struct DeviceInfo {
+  public let modelName: Swift.String
+  public let xsollaDeviceId: Swift.Int
+  public let lastUsedAt: Foundation.Date
+  public let type: Swift.String
+}
+public enum FriendsListType : Swift.String {
+  case friends
+  case friendRequested
+  case friendRequestedBy
+  case blocked
+  case blockedBy
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum FriendsListSortType : Swift.String {
+  case byNickname
+  case byUpdated
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum FriendsListOrderType : Swift.String {
+  case asc
+  case desc
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum FriendsListUpdateAction : Swift.String {
+  case friendRequestAdd
+  case friendRequestCancel
+  case friendRequestApprove
+  case friendRequestDeny
+  case friendRemove
+  case block
+  case unblock
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct JWTGenerationParams {
+  public let grantType: XsollaSDKLoginKit.TokenGrantType
+  public let clientId: Swift.Int
+  public let refreshToken: Swift.String?
+  public let clientSecret: Swift.String?
+  public let redirectUri: Swift.String?
+  public init(grantType: XsollaSDKLoginKit.TokenGrantType = .authorizationCode, clientId: Swift.Int, refreshToken: Swift.String? = nil, clientSecret: Swift.String? = nil, redirectUri: Swift.String? = nil)
+}
+public typealias LoginKitResult<T> = Swift.Result<T, Swift.Error>
+public typealias LoginKitCompletion<T> = (XsollaSDKLoginKit.LoginKitResult<T>) -> Swift.Void
+public typealias LoginOperationId = Swift.String
+@_hasMissingDesignatedInitializers final public class LoginKit {
+  public static let shared: XsollaSDKLoginKit.LoginKit
+  final public var authCodeExtractor: XsollaSDKLoginKit.AuthCodeExtracting
+  @objc deinit
+}
+@available(iOS 13.4, *)
+extension XsollaSDKLoginKit.LoginKit {
+  final public func authBySocialNetwork(_ providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, presentationContextProvider: XsollaSDKLoginKit.WebAuthenticationSession.PresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+}
+extension XsollaSDKLoginKit.LoginKit {
+  final public func logUserOut(accessToken: Swift.String, sessionType: XsollaSDKLoginKit.LogoutSessionType, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func authByUsernameAndPassword(username: Swift.String, password: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func getLinkForSocialAuth(providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Foundation.URL>)
+  final public func authBySocialNetwork(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, providerName: Swift.String, socialNetworkAccessToken: Swift.String, socialNetworkAccessTokenSecret: Swift.String?, socialNetworkOpenId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func generateJWT(with authCode: Swift.String?, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func registerNewUser(params: XsollaSDKLoginKit.RegisterNewUserParams, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo?>)
+  final public func resetPassword(loginProjectId: Swift.String, username: Swift.String, loginUrl: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func startAuthByEmail(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, email: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LoginOperationId>)
+  final public func completeAuthByEmail(clientId: Swift.Int, code: Swift.String, email: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func startAuthByPhone(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, phoneNumber: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LoginOperationId>)
+  final public func completeAuthByPhone(clientId: Swift.Int, code: Swift.String, phoneNumber: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func getConfirmationCode(projectId: Swift.String, login: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
+  final public func authWithDeviceId(deviceId: Swift.String, device: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
+  final public func resendConfirmationLink(clientId: Swift.Int, redirectUri: Swift.String, state: Swift.String, username: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func getUserDevices(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.DeviceInfo]>)
+  final public func linkDeviceToAccount(device: Swift.String, deviceId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func unlinkDeviceFromAccount(deviceId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func addUsernameAndPassword(username: Swift.String, password: Swift.String, email: Swift.String, promoEmailAgreement: Swift.Bool, accessToken: Swift.String, redirectUri: Swift.String?, completion: @escaping (XsollaSDKLoginKit.LoginKitCompletion<Swift.Bool>))
+  final public func createCodeForLinkingAccounts(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
+  final public func getUserPublicProfile(userId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserPublicProfile>)
+  final public func getCurrentUserDetails(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserProfileDetails>)
+  final public func updateCurrentUserDetails(accessToken: Swift.String, birthday: Foundation.Date? = nil, firstName: Swift.String? = nil, lastName: Swift.String? = nil, nickname: Swift.String? = nil, gender: XsollaSDKLoginKit.UserProfileDetails.Gender? = nil, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserProfileDetails>)
+  final public func getUserEmail(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String?>)
+  final public func deleteUserPicture(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func uploadUserPicture(accessToken: Swift.String, imageURL: Foundation.URL, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
+  final public func getCurrentUserPhone(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String?>)
+  final public func updateCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func deleteCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func getCurrentUserFriends(accessToken: Swift.String, listType: XsollaSDKLoginKit.FriendsListType, sortType: XsollaSDKLoginKit.FriendsListSortType, sortOrderType: XsollaSDKLoginKit.FriendsListOrderType, after: Swift.String?, limit: Swift.Int? = nil, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.FriendsList>)
+  final public func updateCurrentUserFriends(accessToken: Swift.String, actionType: XsollaSDKLoginKit.FriendsListUpdateAction, userID: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func getLinksForSocialAuth(accessToken: Swift.String, locale: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LinksForSocialAuth>)
+  final public func getLinkedNetworks(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserSocialNetworkInfo]>)
+  final public func getURLToLinkSocialNetworkToAccount(accessToken: Swift.String, providerName: Swift.String, loginURL: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
+  final public func getSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, offset: Swift.Int, limit: Swift.Int, withLoginId: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.SocialNetworkFriendsList>)
+  final public func updateSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func searchUsersByNickname(nickname: Swift.String, accessToken: Swift.String, offset: Swift.Int?, limit: Swift.Int?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.SearchUsersByNicknameResult>)
+  final public func getClientUserAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserAttribute]>)
+  final public func getClientUserReadOnlyAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserAttribute]>)
+  final public func updateClientUserAttributes(accessToken: Swift.String, attributes: [XsollaSDKLoginKit.UserAttribute]?, publisherProjectId: Swift.Int?, removingKeys: [Swift.String]?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
+  final public func checkUserAge(birthday: Swift.String, accessToken: Swift.String, loginId: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Bool>)
+}
+extension XsollaSDKLoginKit.LoginKit {
+  public static let version: Swift.String
+}
+public struct SearchUsersByNicknameResult {
+  public let offset: Swift.Int
+  public let totalCount: Swift.Int
+  public let users: [XsollaSDKLoginKit.SearchUsersByNicknameResult.User]
+  public struct User {
+    public let avatar: Swift.String?
+    public let isMe: Swift.Bool
+    public let lastLogin: Swift.String
+    public let nickname: Swift.String
+    public let registered: Swift.String
+    public let tag: Swift.String?
+    public let userID: Swift.String
+  }
+}
+public struct AccessTokenInfo {
+  public let accessToken: Swift.String
+  public let expiresIn: Swift.Int?
+  public let refreshToken: Swift.String?
+  public let tokenType: Swift.String
+}
+public struct LinksForSocialAuthElement {
+  public let authURL: Swift.String
+  public let provider: Swift.String
+}
+public typealias LinksForSocialAuth = [XsollaSDKLoginKit.LinksForSocialAuthElement]
+extension XsollaSDKUtilities.LogCategory {
+  public static let all: [XsollaSDKUtilities.LogCategory]
+  public static func all(excluding: [XsollaSDKUtilities.LogCategory]) -> [XsollaSDKUtilities.LogCategory]
+}
+public struct UserProfileDetails {
+  public var ban: XsollaSDKLoginKit.UserProfileDetails.BanDetails?
+  public var birthday: Foundation.Date?
+  public var connectionInformation: Swift.String?
+  public var country: Swift.String?
+  public var email: Swift.String?
+  public var externalId: Swift.String?
+  public var firstName: Swift.String?
+  public var gender: XsollaSDKLoginKit.UserProfileDetails.Gender?
+  public var groups: [XsollaSDKLoginKit.UserProfileDetails.Group]
+  public var id: Swift.String
+  public var lastLogin: Foundation.Date
+  public var lastName: Swift.String?
+  public var name: Swift.String?
+  public var nickname: Swift.String?
+  public var phone: Swift.String?
+  public var picture: Swift.String?
+  public var registered: Foundation.Date
+  public var tag: Swift.String?
+  public var username: Swift.String?
+  public var isAnonymous: Swift.Bool
+  public var isLastEmailConfirmed: Swift.Bool?
+  public var isUserActive: Swift.Bool
+}
+extension XsollaSDKLoginKit.UserProfileDetails {
+  public struct BanDetails {
+    public var dateFrom: Foundation.Date
+    public var dateTo: Foundation.Date?
+    public var reason: Swift.String?
+  }
+  public struct Group {
+    public var id: Swift.Int
+    public var isDefault: Swift.Bool
+    public var isDeletable: Swift.Bool
+    public var name: Swift.String
+  }
+  public enum Gender : Swift.String {
+    case female
+    case male
+    case other
+    case unspecified
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+}
+public struct FriendsList {
+  public let nextPage: Swift.String?
+  public let nextPageURL: Foundation.URL?
+  public let relationships: [XsollaSDKLoginKit.FriendsList.Relationship]
+}
+extension XsollaSDKLoginKit.FriendsList {
+  public struct Relationship {
+    public let incomingStatus: XsollaSDKLoginKit.FriendsList.Relationship.Status
+    public let outgoingStatus: XsollaSDKLoginKit.FriendsList.Relationship.Status
+    public let updated: Foundation.Date
+    public let user: XsollaSDKLoginKit.FriendsList.Relationship.User
+  }
+}
+extension XsollaSDKLoginKit.FriendsList.Relationship {
+  public enum Status {
+    case friend
+    case friendRequested
+    case blocked
+    case none
+    public static func == (a: XsollaSDKLoginKit.FriendsList.Relationship.Status, b: XsollaSDKLoginKit.FriendsList.Relationship.Status) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public struct User {
+    public let id: Swift.String
+    public let name: Swift.String?
+    public let nickname: Swift.String?
+    public let pictureURL: Foundation.URL?
+    public let presenceStatus: XsollaSDKLoginKit.FriendsList.Relationship.User.PresenceStatus
+    public let tag: Swift.String?
+  }
+}
+extension XsollaSDKLoginKit.FriendsList.Relationship.User {
+  public enum PresenceStatus {
+    case online
+    case offline
+    public static func == (a: XsollaSDKLoginKit.FriendsList.Relationship.User.PresenceStatus, b: XsollaSDKLoginKit.FriendsList.Relationship.User.PresenceStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public enum LoginKitError : Swift.Error {
+  case failedURLExtraction
+  case authCodeExtractionError(Swift.String?)
+  case networkLinkingError(Swift.String?)
+  case invalidRedirectUrl(Swift.String?)
+  case invalidToken
+  case unknownError(Swift.String?)
+}
+extension XsollaSDKUtilities.LogLevel {
+  public static let all: [XsollaSDKUtilities.LogLevel]
+  public static func all(excluding: [XsollaSDKUtilities.LogLevel]) -> [XsollaSDKUtilities.LogLevel]
+}
+public struct UserAttribute {
+  public let key: Swift.String
+  public let value: Swift.String
+  public let permission: Swift.String?
+  public init(key: Swift.String, value: Swift.String, permission: Swift.String?)
+}
+public struct UserSocialNetworkInfo {
+  public let userFullName: Swift.String?
+  public let userNickname: Swift.String?
+  public let userPictureURL: Foundation.URL?
+  public let socialNetworkName: Swift.String
+  public let socialNetworkId: Swift.String
+}
+public enum TokenGrantType : Swift.String {
+  case authorizationCode
+  case refreshToken
+  case clientCredentials
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @available(iOS 13.4, *)
+public class WebAuthenticationSession {
+  public typealias PresentationContextProviding = AuthenticationServices.ASWebAuthenticationPresentationContextProviding
+  public enum WebAuthenticationSessionError : Swift.Error {
+    case unknown
+    case canceledLogin
+    case presentationContextNotProvided
+    case presentationContextInvalid
+    public static func == (a: XsollaSDKLoginKit.WebAuthenticationSession.WebAuthenticationSessionError, b: XsollaSDKLoginKit.WebAuthenticationSession.WebAuthenticationSessionError) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @objc deinit
+}
+@objc @available(iOS 13.4, *)
+open class WebAuthenticationPresentationContextProvider : ObjectiveC.NSObject, AuthenticationServices.ASWebAuthenticationPresentationContextProviding {
+  @objc public func presentationAnchor(for session: AuthenticationServices.ASWebAuthenticationSession) -> AuthenticationServices.ASPresentationAnchor
+  public init(presentationAnchor: UIKit.UIWindow)
+  @objc deinit
+}
+public protocol AuthCodeExtracting {
+  func extract(from url: Foundation.URL) -> Swift.Result<Swift.String, Swift.Error>
+  func extract(from result: Swift.Result<Foundation.URL, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  func extract(from result: Swift.Result<Swift.String, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  func extractError(url: Foundation.URL) -> Swift.Error?
+}
+@_hasMissingDesignatedInitializers public class AuthCodeExtractor : XsollaSDKLoginKit.AuthCodeExtracting {
+  public func extract(from url: Foundation.URL) -> Swift.Result<Swift.String, Swift.Error>
+  public func extract(from result: Swift.Result<Foundation.URL, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  public func extract(from result: Swift.Result<Swift.String, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  public func extractError(url: Foundation.URL) -> Swift.Error?
+  @objc deinit
+}
+public struct SocialNetworkFriendsList {
+  public let accountsData: [XsollaSDKLoginKit.SocialNetworkFriendsList.SocialAccountData]
+  public let limit: Swift.Int
+  public let offset: Swift.Int
+  public let platform: Swift.String?
+  public let totalCount: Swift.Int
+  public let withLoginId: Swift.Bool?
+}
+extension XsollaSDKLoginKit.SocialNetworkFriendsList {
+  public struct SocialAccountData {
+    public let avatar: Swift.String?
+    public let name: Swift.String
+    public let platform: Swift.String
+    public let tag: Swift.String?
+    public let userId: Swift.String
+    public let loginId: Swift.String?
+  }
+}
+public struct OAuth2Params {
+  public let clientId: Swift.Int
+  public let state: Swift.String
+  public let responseType: Swift.String
+  public let scope: Swift.String?
+  public let redirectUri: Swift.String?
+  public init(clientId: Swift.Int, state: Swift.String, scope: Swift.String?, redirectUri: Swift.String?)
+}
+extension XsollaSDKUtilities.LogDomain {
+  public static let loginKit: XsollaSDKUtilities.LogDomain
+  public static let all: [XsollaSDKUtilities.LogDomain]
+  public static func all(excluding: [XsollaSDKUtilities.LogDomain]) -> [XsollaSDKUtilities.LogDomain]
+}
+public struct UserPublicProfile {
+  public let avatar: Swift.String?
+  public let lastLogin: Swift.String
+  public let nickname: Swift.String?
+  public let registered: Swift.String
+  public let tag: Swift.String?
+  public let userID: Swift.String
+}
+extension XsollaSDKLoginKit.LogoutSessionType : Swift.Equatable {}
+extension XsollaSDKLoginKit.LogoutSessionType : Swift.Hashable {}
+extension XsollaSDKLoginKit.LogoutSessionType : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.FriendsListType : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsListType : Swift.Hashable {}
+extension XsollaSDKLoginKit.FriendsListType : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.FriendsListSortType : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsListSortType : Swift.Hashable {}
+extension XsollaSDKLoginKit.FriendsListSortType : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.FriendsListOrderType : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsListOrderType : Swift.Hashable {}
+extension XsollaSDKLoginKit.FriendsListOrderType : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.FriendsListUpdateAction : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsListUpdateAction : Swift.Hashable {}
+extension XsollaSDKLoginKit.FriendsListUpdateAction : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.UserProfileDetails.Gender : Swift.Equatable {}
+extension XsollaSDKLoginKit.UserProfileDetails.Gender : Swift.Hashable {}
+extension XsollaSDKLoginKit.UserProfileDetails.Gender : Swift.RawRepresentable {}
+extension XsollaSDKLoginKit.FriendsList.Relationship.Status : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsList.Relationship.Status : Swift.Hashable {}
+extension XsollaSDKLoginKit.FriendsList.Relationship.User.PresenceStatus : Swift.Equatable {}
+extension XsollaSDKLoginKit.FriendsList.Relationship.User.PresenceStatus : Swift.Hashable {}
+extension XsollaSDKLoginKit.TokenGrantType : Swift.Equatable {}
+extension XsollaSDKLoginKit.TokenGrantType : Swift.Hashable {}
+extension XsollaSDKLoginKit.TokenGrantType : Swift.RawRepresentable {}
+@available(iOS 13.4, *)
+extension XsollaSDKLoginKit.WebAuthenticationSession.WebAuthenticationSessionError : Swift.Equatable {}
+@available(iOS 13.4, *)
+extension XsollaSDKLoginKit.WebAuthenticationSession.WebAuthenticationSessionError : Swift.Hashable {}
