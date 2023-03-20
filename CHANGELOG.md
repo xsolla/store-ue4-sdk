@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.4.0] - 2023-04-10
+
+### Added
+- `AuthWithXsollaWidget` SDK method. Allows to open Login widget in the internal browser
+- SDK methods for single item purchase (`PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods)
+
+### Updated
+- Android libraries
+- `LaunchPaymentConsole` SDK method. Added `BrowserClosed` callback.
+- Project settings. Added:
+    - `BuildForSteam` checkbox for project settings. Allows to set up payments via Steam
+    - `FacebookClientToken` parameter for project settings. Allows to set up native user authentication via Facebook Android application
+
+
+### Fixed
+- Command line parameters truncation
+- Payment UI opening for iOS builds
+- Redirects for iOS builds
+
+### Reverted
+- `CheckOrder` and `CreateAccountLinkingCode` SDK methods
+
+
 ## [1.3.0] - 2023-01-11
 
 ### Added
