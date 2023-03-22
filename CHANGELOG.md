@@ -22,6 +22,10 @@
 ### Reverted
 - `CheckOrder` and `CreateAccountLinkingCode` SDK methods
 
+## [1.3.1] - 2023-02-09
+
+### Fixed
+- Undefined URL causing crashes (for certain API calls)
 
 ## [1.3.0] - 2023-01-11
 
