@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "XsollaStoreDefines.h"
-
 #include "Engine/DataTable.h"
 
 #include "XsollaStoreCurrencyFormat.generated.h"
