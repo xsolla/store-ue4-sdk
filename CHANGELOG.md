@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.0] - 2023-04-10
+## [1.4.0] - 2023-03-31
 
 ### Added
 - `AuthWithXsollaWidget` SDK method. Allows to open Login widget in the internal browser
