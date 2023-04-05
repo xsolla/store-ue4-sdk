@@ -1151,6 +1151,43 @@ void UXsollaStoreSubsystem::CancelSubscription(const FString& AuthToken, const i
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaStoreSubsystem::GetOrderById(const FString& AuthToken, const int32 OrderId,
+		const FOnGetOrderSuccess& SuccessCallback, const FOnError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/order/{OrderID}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("OrderID"), FString::FromInt(OrderId))
+							.Build();
+
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this,
+			&UXsollaStoreSubsystem::GetOrder_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
+void UXsollaStoreSubsystem::GetOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetOrderSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	XsollaHttpRequestError OutError;
+	FXsollaOrder OrderData;
+	
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaOrder::StaticStruct(), &OrderData, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(OrderData);
+	}
+	else
+	{
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	}
+}
+
 void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)

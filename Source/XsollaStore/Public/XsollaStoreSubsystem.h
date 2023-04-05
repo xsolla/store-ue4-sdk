@@ -52,6 +52,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionsListUpdate, FSubscriptionsList
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionDetailsSuccess, const FSubscriptionDetails&, SubscriptionDetails);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionPayStationLinkSuccess, const FString&, LinkToPaystation);
 DECLARE_DYNAMIC_DELEGATE(FOnCancelSubscriptionSuccess);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetOrderSuccess, const FXsollaOrder&, OrderDetails);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreSubsystem : public UGameInstanceSubsystem
@@ -654,6 +655,19 @@ public:
 	void CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+
+	/** Get order
+	* Get order by ID.
+	*
+	* @param AuthToken User authorization token.
+	* @param OrderId Order ID. **Required**.
+	* @param SuccessCallback Callback function called after successful redemption.
+	* @param ErrorCallback Callback function called after the request resulted with an error.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Orders", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetOrderById(const FString& AuthToken, const int32 OrderId,
+		const FOnGetOrderSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
 protected:
 	void GetVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
@@ -667,6 +681,8 @@ protected:
 		const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetAllItemsList_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetItemsList SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void GetOrder_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetOrderSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void FetchPaymentToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
