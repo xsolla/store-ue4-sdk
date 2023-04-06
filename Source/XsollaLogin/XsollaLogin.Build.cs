@@ -52,19 +52,19 @@ public class XsollaLogin : ModuleRules
             PublicAdditionalFrameworks.Add(
             new Framework(
                 "XsollaSDKLoginKit",
-                "../ThirdParty/IOS/XsollaSDKLoginKit.embeddedframework.zip"
+                "../IOS/XsollaSDKLoginKit.embeddedframework.zip"
             )
             );
             PublicAdditionalFrameworks.Add(
             new Framework(
                 "XsollaSDKLoginKitObjectiveC",
-                "../ThirdParty/IOS/XsollaSDKLoginKitObjectiveC.embeddedframework.zip"
+                "../IOS/XsollaSDKLoginKitObjectiveC.embeddedframework.zip"
             )
             );
             PublicAdditionalFrameworks.Add(
             new Framework(
                 "XsollaSDKUtilities",
-                "../ThirdParty/IOS/XsollaSDKUtilities.embeddedframework.zip"
+                "../IOS/XsollaSDKUtilities.embeddedframework.zip"
 
             )
             );

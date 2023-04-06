@@ -1,4 +1,0 @@
-framework module XsollaSDKLoginKitObjectiveC {
-  header "XsollaSDKLoginKitObjectiveC-Swift.h"
-  requires objc
-}

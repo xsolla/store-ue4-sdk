@@ -2,8 +2,8 @@
 <root>
   <init>
     <log text="Xsolla SDK iOS UPL initialization"/>
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKLoginKit.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKLoginKit.framework" />
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKLoginKitObjectiveC.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKLoginKitObjectiveC.framework" />
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKUtilities.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKUtilities.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKLoginKit.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKLoginKit.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKLoginKitObjectiveC.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKLoginKitObjectiveC.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKUtilities.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKUtilities.framework" />
   </init>
 </root>

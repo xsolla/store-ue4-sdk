@@ -1,4 +1,0 @@
-framework module XsollaSDKUtilities {
-  header "XsollaSDKUtilities-Swift.h"
-  requires objc
-}

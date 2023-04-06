@@ -2,9 +2,9 @@
 <root>
  <init>
     <log text="Xsolla SDK iOS UPL initialization"/>
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKPaymentsKit.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKit.framework" />
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKPaymentsKitObjectiveC.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKitObjectiveC.framework" />
-    <copyDir src="$S(PluginDir)/../ThirdParty/IOS/XsollaSDKUtilities.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKUtilities.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKPaymentsKit.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKit.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKPaymentsKitObjectiveC.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKPaymentsKitObjectiveC.framework" />
+    <copyDir src="$S(PluginDir)/../IOS/XsollaSDKUtilities.framework" dst="$S(BuildDir)/Frameworks/XsollaSDKUtilities.framework" />
  </init>
  <init>
   <log text="Xsolla SDK iOS UPL Add deep linking settings"/>
