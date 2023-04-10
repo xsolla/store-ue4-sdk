@@ -18,42 +18,66 @@
     {
       "Name": "XsollaUIBuilderEditor",
       "Type": "Editor",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaSettings",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
-    },	
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
+    },
     {
       "Name": "XsollaUIBuilder",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaWebBrowser",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaLogin",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaStore",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaInventory",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     },
     {
       "Name": "XsollaUtils",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
+      "LoadingPhase": "PreDefault",
+      "PlatformDenyList": [
+        "TVOS"
+      ]
     }
   ],
   "Plugins": [
