@@ -19,64 +19,120 @@
       "Name": "XsollaUIBuilderEditor",
       "Type": "Editor",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaSettings",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaUIBuilder",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaWebBrowser",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaLogin",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaStore",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaInventory",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     },
     {
       "Name": "XsollaUtils",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault",
-      "PlatformDenyList": [
-        "TVOS"
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android",
+        "Linux",
+        "LinuxArm64",
+        "XboxOne",
+        "PS4"
       ]
     }
   ],
