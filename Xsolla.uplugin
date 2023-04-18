@@ -1,7 +1,8 @@
 {
   "FileVersion": 3,
-  "Version": 24,
-  "VersionName": "1.3.1",
+  "Version": 25,
+  "VersionName": "1.4.0",
+  "EngineVersion": "4.27.0",
   "FriendlyName": "Xsolla SDK",
   "Description": "Xsolla SDK for Unreal Engine",
   "Category": "Other",
@@ -43,7 +44,7 @@
         "XboxOne",
         "PS4"
       ]
-    },	
+    },
     {
       "Name": "XsollaUIBuilder",
       "Type": "Runtime",

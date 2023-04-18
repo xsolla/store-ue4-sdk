@@ -5,7 +5,7 @@
 #include "XsollaStoreCurrencyFormat.h"
 #include "XsollaStoreDataModel.h"
 #include "XsollaUtilsLibrary.h"
-
+#include "XsollaStoreDefines.h"
 #include "Engine/DataTable.h"
 #include "Kismet/KismetTextLibrary.h"
 #include "UObject/ConstructorHelpers.h"

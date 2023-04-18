@@ -3,7 +3,7 @@
 
 #include "XsollaStoreBrowserWrapper.h"
 
-void UXsollaStoreBrowserWrapper::ExecuteBrowserClosed()
+void UXsollaStoreBrowserWrapper::ExecuteBrowserClosed(bool bIsManually)
 {
-	OnBrowserClosed.ExecuteIfBound();
+	OnBrowserClosed.ExecuteIfBound(bIsManually);
 }

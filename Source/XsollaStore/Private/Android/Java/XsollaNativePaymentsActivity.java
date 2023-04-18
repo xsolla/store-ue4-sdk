@@ -18,9 +18,16 @@ public class XsollaNativePaymentsActivity extends Activity {
     public static String CALLBACK_ADDRESS = "callback_address";
     private static final int RC_PAY_STATION = 1;
 
+    public static native void onPaymentsBrowserClosedCallback(long callback, boolean isManually);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            finish();
+            return;
+        }
+
 
         Intent intent = getIntent();
         String token = intent.getStringExtra(ARG_TOKEN);
@@ -48,6 +55,9 @@ public class XsollaNativePaymentsActivity extends Activity {
         XPayments.Result result = XPayments.Result.fromResultIntent(data);
         XPayments.Status status = result.getStatus();
         
+        boolean isManually = status == XPayments.Status.CANCELLED;
+        onPaymentsBrowserClosedCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), isManually);
+
         finish();
     }
 }

@@ -1,0 +1,1889 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "TopLevel",
+    "printedName": "TopLevel",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "WebKit",
+        "printedName": "WebKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PaystationWebViewDelegate",
+        "printedName": "PaystationWebViewDelegate",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "paystationWebView",
+            "printedName": "paystationWebView(_:didFinishPaymentWithInvoice:forUser:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "PaystationWebView",
+                "printedName": "XsollaSDKPaymentsKit.PaystationWebView",
+                "usr": "c:@M@XsollaSDKPaymentsKit@objc(cs)PaystationWebView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit25PaystationWebViewDelegateP010paystationeF0_27didFinishPaymentWithInvoice7forUseryAA0deF0C_SSSgAItF",
+            "mangledName": "$s20XsollaSDKPaymentsKit25PaystationWebViewDelegateP010paystationeF0_27didFinishPaymentWithInvoice7forUseryAA0deF0C_SSSgAItF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKPaymentsKit.PaystationWebViewDelegate>",
+            "sugared_genericSig": "<Self where Self : XsollaSDKPaymentsKit.PaystationWebViewDelegate>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:20XsollaSDKPaymentsKit25PaystationWebViewDelegateP",
+        "mangledName": "$s20XsollaSDKPaymentsKit25PaystationWebViewDelegateP",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PaystationWebView",
+        "printedName": "PaystationWebView",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "delegate",
+            "printedName": "delegate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "WeakStorage",
+                "printedName": "XsollaSDKPaymentsKit.PaystationWebViewDelegate?"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvp",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvp",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "Custom",
+              "HasInitialValue",
+              "HasStorage",
+              "ReferenceOwnership",
+              "AccessControl"
+            ],
+            "ownership": 1,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "XsollaSDKPaymentsKit.PaystationWebViewDelegate?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "PaystationWebViewDelegate",
+                        "printedName": "XsollaSDKPaymentsKit.PaystationWebViewDelegate",
+                        "usr": "s:20XsollaSDKPaymentsKit25PaystationWebViewDelegateP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvg",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvg",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "XsollaSDKPaymentsKit.PaystationWebViewDelegate?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "PaystationWebViewDelegate",
+                        "printedName": "XsollaSDKPaymentsKit.PaystationWebViewDelegate",
+                        "usr": "s:20XsollaSDKPaymentsKit25PaystationWebViewDelegateP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvs",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvs",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvM",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC8delegateAA0deF8Delegate_pSgvM",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "customUserAgent",
+            "printedName": "customUserAgent",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvp",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvp",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "HasInitialValue",
+              "Custom",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvg",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvg",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvs",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvs",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvM",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC15customUserAgentSSvM",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(frame:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "PaystationWebView",
+                "printedName": "XsollaSDKPaymentsKit.PaystationWebView",
+                "usr": "c:@M@XsollaSDKPaymentsKit@objc(cs)PaystationWebView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "CGRect",
+                "printedName": "CoreFoundation.CGRect",
+                "usr": "c:@S@CGRect"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@XsollaSDKPaymentsKit@objc(cs)PaystationWebView(im)initWithFrame:",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC5frameACSo6CGRectV_tcfc",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "overriding": true,
+            "objc_name": "initWithFrame:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "loadPaystation",
+            "printedName": "loadPaystation(with:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Configuration",
+                "printedName": "XsollaSDKPaymentsKit.PaystationWebView.Configuration",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC04loadD04withyAC13ConfigurationV_tF",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC04loadD04withyAC13ConfigurationV_tF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "Custom",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "webView",
+            "printedName": "webView(_:decidePolicyFor:decisionHandler:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "WKWebView",
+                "printedName": "WebKit.WKWebView",
+                "usr": "c:objc(cs)WKWebView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "WKNavigationAction",
+                "printedName": "WebKit.WKNavigationAction",
+                "usr": "c:objc(cs)WKNavigationAction"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(WebKit.WKNavigationActionPolicy) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "WKNavigationActionPolicy",
+                    "printedName": "WebKit.WKNavigationActionPolicy",
+                    "usr": "c:@E@WKNavigationActionPolicy"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@XsollaSDKPaymentsKit@objc(cs)PaystationWebView(im)webView:decidePolicyForNavigationAction:decisionHandler:",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC03webF0_15decidePolicyFor15decisionHandlerySo05WKWebF0C_So18WKNavigationActionCySo0noI0VctF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "objc_name": "webView:decidePolicyForNavigationAction:decisionHandler:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "Configuration",
+            "printedName": "Configuration",
+            "children": [
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(paymentToken:redirectURL:isSandbox:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Configuration",
+                    "printedName": "XsollaSDKPaymentsKit.PaystationWebView.Configuration",
+                    "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "hasDefaultArg": true,
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV12paymentToken11redirectURL9isSandboxAESS_SSSbtcfc",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV12paymentToken11redirectURL9isSandboxAESS_SSSbtcfc",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "declAttributes": [
+                  "AccessControl",
+                  "RawDocComment"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Function",
+                "name": "buildURL",
+                "printedName": "buildURL()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URL",
+                    "printedName": "Foundation.URL",
+                    "usr": "s:10Foundation3URLV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV8buildURL10Foundation0I0VyF",
+                "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV8buildURL10Foundation0I0VyF",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "funcSelfKind": "NonMutating"
+              }
+            ],
+            "declKind": "Struct",
+            "usr": "s:20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV",
+            "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC13ConfigurationV",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@XsollaSDKPaymentsKit@objc(cs)PaystationWebView",
+        "mangledName": "$s20XsollaSDKPaymentsKit17PaystationWebViewC",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "Custom",
+          "AccessControl",
+          "RawDocComment",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)UIView",
+        "hasMissingDesignatedInitializers": true,
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "UIKit.UIView",
+          "UIKit.UIResponder",
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "__DefaultCustomPlaygroundQuickLookable",
+            "printedName": "__DefaultCustomPlaygroundQuickLookable",
+            "usr": "s:s38__DefaultCustomPlaygroundQuickLookableP",
+            "mangledName": "$ss38__DefaultCustomPlaygroundQuickLookableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PaymentsKitError",
+        "printedName": "PaymentsKitError",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "cancelledByUserError",
+            "printedName": "cancelledByUserError",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(XsollaSDKPaymentsKit.PaymentsKitError.Type) -> XsollaSDKPaymentsKit.PaymentsKitError",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "PaymentsKitError",
+                    "printedName": "XsollaSDKPaymentsKit.PaymentsKitError",
+                    "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "XsollaSDKPaymentsKit.PaymentsKitError.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "PaymentsKitError",
+                        "printedName": "XsollaSDKPaymentsKit.PaymentsKitError",
+                        "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO015cancelledByUserE0yA2CmF",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO015cancelledByUserE0yA2CmF",
+            "moduleName": "XsollaSDKPaymentsKit"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "PaymentsKitError",
+                "printedName": "XsollaSDKPaymentsKit.PaymentsKitError",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "PaymentsKitError",
+                "printedName": "XsollaSDKPaymentsKit.PaymentsKitError",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO2eeoiySbAC_ACtFZ",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO2eeoiySbAC_ACtFZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO9hashValueSivp",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO9hashValueSivp",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO9hashValueSivg",
+                "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO9hashValueSivg",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO4hash4intoys6HasherVz_tF",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO4hash4intoys6HasherVz_tF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:20XsollaSDKPaymentsKit08PaymentsC5ErrorO",
+        "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC5ErrorO",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Error",
+            "printedName": "Error",
+            "usr": "s:s5ErrorP",
+            "mangledName": "$ss5ErrorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "WebKit",
+        "printedName": "WebKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PaymentsKit",
+        "printedName": "PaymentsKit",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "shared",
+            "printedName": "shared",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "PaymentsKit",
+                "printedName": "XsollaSDKPaymentsKit.PaymentsKit",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C6sharedACvpZ",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C6sharedACvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "PaymentsKit",
+                    "printedName": "XsollaSDKPaymentsKit.PaymentsKit",
+                    "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C6sharedACvgZ",
+                "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C6sharedACvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "createPaymentUrl",
+            "printedName": "createPaymentUrl(paymentToken:isSandbox:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URL?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URL",
+                    "printedName": "Foundation.URL",
+                    "usr": "s:10Foundation3URLV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C16createPaymentUrl12paymentToken9isSandbox10Foundation3URLVSgSS_SbtF",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C16createPaymentUrl12paymentToken9isSandbox10Foundation3URLVSgSS_SbtF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "performPayment",
+            "printedName": "performPayment(paymentToken:presenter:isSandbox:redirectUrl:completionHandler:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UIViewController",
+                "printedName": "UIKit.UIViewController",
+                "usr": "c:objc(cs)UIViewController"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "((Swift.Result<(), Swift.Error>) -> ())?",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(Swift.Result<(), Swift.Error>) -> ()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Result",
+                        "printedName": "Swift.Result<(), Swift.Error>",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Void",
+                            "printedName": "()"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Error",
+                            "printedName": "Swift.Error",
+                            "usr": "s:s5ErrorP"
+                          }
+                        ],
+                        "usr": "s:s6ResultO"
+                      }
+                    ]
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C14performPayment12paymentToken9presenter9isSandbox11redirectUrl17completionHandlerySS_So16UIViewControllerCSbSSys6ResultOyyts5Error_pGcSgtF",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C14performPayment12paymentToken9presenter9isSandbox11redirectUrl17completionHandlerySS_So16UIViewControllerCSbSSys6ResultOyyts5Error_pGcSgtF",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "version",
+            "printedName": "version",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C7versionSSvpZ",
+            "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C7versionSSvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage"
+            ],
+            "isFromExtension": true,
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C7versionSSvgZ",
+                "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C7versionSSvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:20XsollaSDKPaymentsKit08PaymentsC0C",
+        "mangledName": "$s20XsollaSDKPaymentsKit08PaymentsC0C",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "Final",
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "XsollaSDKUtilities",
+        "printedName": "XsollaSDKUtilities",
+        "declKind": "Import",
+        "moduleName": "XsollaSDKPaymentsKit"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "LogCategory",
+        "printedName": "LogCategory",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "all",
+            "printedName": "all",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogCategory]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogCategory",
+                    "printedName": "XsollaSDKUtilities.LogCategory",
+                    "usr": "s:18XsollaSDKUtilities11LogCategoryV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "mangledName": "$s18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[XsollaSDKUtilities.LogCategory]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "LogCategory",
+                        "printedName": "XsollaSDKUtilities.LogCategory",
+                        "usr": "s:18XsollaSDKUtilities11LogCategoryV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "mangledName": "$s18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "all",
+            "printedName": "all(excluding:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogCategory]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogCategory",
+                    "printedName": "XsollaSDKUtilities.LogCategory",
+                    "usr": "s:18XsollaSDKUtilities11LogCategoryV"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogCategory]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogCategory",
+                    "printedName": "XsollaSDKUtilities.LogCategory",
+                    "usr": "s:18XsollaSDKUtilities11LogCategoryV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "mangledName": "$s18XsollaSDKUtilities11LogCategoryV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:18XsollaSDKUtilities11LogCategoryV",
+        "mangledName": "$s18XsollaSDKUtilities11LogCategoryV",
+        "moduleName": "XsollaSDKUtilities",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "LogCategoryProtocol",
+            "printedName": "LogCategoryProtocol",
+            "usr": "s:18XsollaSDKUtilities19LogCategoryProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities19LogCategoryProtocolP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "LogDomain",
+        "printedName": "LogDomain",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "paymentsKit",
+            "printedName": "paymentsKit",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LogDomain",
+                "printedName": "XsollaSDKUtilities.LogDomain",
+                "usr": "s:18XsollaSDKUtilities9LogDomainV"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE08paymentsF0ACvpZ",
+            "mangledName": "$s18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE08paymentsF0ACvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogDomain",
+                    "printedName": "XsollaSDKUtilities.LogDomain",
+                    "usr": "s:18XsollaSDKUtilities9LogDomainV"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE08paymentsF0ACvgZ",
+                "mangledName": "$s18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE08paymentsF0ACvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "all",
+            "printedName": "all",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogDomain]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogDomain",
+                    "printedName": "XsollaSDKUtilities.LogDomain",
+                    "usr": "s:18XsollaSDKUtilities9LogDomainV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "mangledName": "$s18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[XsollaSDKUtilities.LogDomain]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "LogDomain",
+                        "printedName": "XsollaSDKUtilities.LogDomain",
+                        "usr": "s:18XsollaSDKUtilities9LogDomainV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "mangledName": "$s18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "all",
+            "printedName": "all(excluding:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogDomain]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogDomain",
+                    "printedName": "XsollaSDKUtilities.LogDomain",
+                    "usr": "s:18XsollaSDKUtilities9LogDomainV"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogDomain]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogDomain",
+                    "printedName": "XsollaSDKUtilities.LogDomain",
+                    "usr": "s:18XsollaSDKUtilities9LogDomainV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "mangledName": "$s18XsollaSDKUtilities9LogDomainV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:18XsollaSDKUtilities9LogDomainV",
+        "mangledName": "$s18XsollaSDKUtilities9LogDomainV",
+        "moduleName": "XsollaSDKUtilities",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "LogDomainProtocol",
+            "printedName": "LogDomainProtocol",
+            "usr": "s:18XsollaSDKUtilities17LogDomainProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities17LogDomainProtocolP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "LogLevel",
+        "printedName": "LogLevel",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "all",
+            "printedName": "all",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogLevel]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogLevel",
+                    "printedName": "XsollaSDKUtilities.LogLevel",
+                    "usr": "s:18XsollaSDKUtilities8LogLevelV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "mangledName": "$s18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3allSayACGvpZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[XsollaSDKUtilities.LogLevel]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "LogLevel",
+                        "printedName": "XsollaSDKUtilities.LogLevel",
+                        "usr": "s:18XsollaSDKUtilities8LogLevelV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "mangledName": "$s18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3allSayACGvgZ",
+                "moduleName": "XsollaSDKPaymentsKit",
+                "static": true,
+                "implicit": true,
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "all",
+            "printedName": "all(excluding:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogLevel]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogLevel",
+                    "printedName": "XsollaSDKUtilities.LogLevel",
+                    "usr": "s:18XsollaSDKUtilities8LogLevelV"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[XsollaSDKUtilities.LogLevel]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "LogLevel",
+                    "printedName": "XsollaSDKUtilities.LogLevel",
+                    "usr": "s:18XsollaSDKUtilities8LogLevelV"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "mangledName": "$s18XsollaSDKUtilities8LogLevelV0A14SDKPaymentsKitE3all9excludingSayACGAG_tFZ",
+            "moduleName": "XsollaSDKPaymentsKit",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:18XsollaSDKUtilities8LogLevelV",
+        "mangledName": "$s18XsollaSDKUtilities8LogLevelV",
+        "moduleName": "XsollaSDKUtilities",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "LogLevelProtocol",
+            "printedName": "LogLevelProtocol",
+            "usr": "s:18XsollaSDKUtilities16LogLevelProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities16LogLevelProtocolP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          }
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/UI\/PaystationWebView.swift",
+      "kind": "BooleanLiteral",
+      "offset": 4055,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Extensions\/DomainExtensions.swift",
+      "kind": "StringLiteral",
+      "offset": 227,
+      "length": 14,
+      "value": "\"Payments Kit\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/Base Classes\/PaymentsBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 106,
+      "length": 19,
+      "value": "\"XsollaSDKPaymentsKit.PaymentsBaseRequest\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/UI\/PaystationVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 441,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Version.swift",
+      "kind": "StringLiteral",
+      "offset": 117,
+      "length": 7,
+      "value": "\"0.4.2\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "Array",
+      "offset": 177,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "Array",
+      "offset": 225,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "Array",
+      "offset": 268,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 447,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 492,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 539,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 586,
+      "length": 2,
+      "value": "\"\""
+    }
+  ]
+}

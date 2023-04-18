@@ -14,17 +14,16 @@ class XSOLLASETTINGS_API UXsollaProjectSettings : public UObject
 public:
 
 	/**
-	 * Project ID from your Publisher Account.
-	 * Can be found in Publisher Account beside the name of your project.
+	 * Project ID from Publisher Account.
+	 * It can be found in Publisher Account next to the name of your project.
 	 * Required.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
 	FString ProjectID;
 
 	/**
-	 * Login ID in the UUID format from your Publisher Account.
-	 * Can be found in Publisher Account.
-	 * To get it, go to the "Login -> Dashbord" section and click "Copy ID" near the name of the Login project.
+	 * Login ID in the UUID format from Publisher Account.
+	 * To get it, open Publisher Account, go to the **Login > Dashboard** section, and click **Copy ID** beside the name of the Login project.
 	 * If you don't use Xsolla Login, leave this field blank.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
@@ -79,10 +78,14 @@ public:
 	/** Web Store URL to be opened in order to purchase virtual items. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Demo")
 	FString WebStoreURL;
-	
+
 	/** Facebook app identifier (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString FacebookAppId;
+
+	/** Facebook client token (can be obtained on Facebook developer page). Used for native user authentication via Facebook Android application. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
+	FString FacebookClientToken;
 
 	/** Google app identifier (can be obtained on Google developer page). Used for native user authentication via Google Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
@@ -95,16 +98,16 @@ public:
 	/** QQ app identifier (can be obtained on QQ developer page). Used for native user authentication via QQ Android application. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString QQAppId;
-	
+
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiTheme PaymentInterfaceTheme;
 
 	/**
 	 * Payment user interface size (desktop only).
-	 * Small: 620 x 630 px
-	 * Medium (recomended): 740 x 760 px
-	 * Large: 820 x 840 px
+	 * Small
+	 * Medium
+	 * Large
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	EXsollaPaymentUiSize PaymentInterfaceSize;
@@ -154,6 +157,7 @@ public:
 	 * "Purchase using virtual currency" - redirect when purchase is made using virtual currency.
 	 * "Successful payment" - redirect when a payment is successful.
 	 * "Successful or canceled payment" - redirect when a payment is successful or canceled.
+	 * "Any payment" - redirect for any payment status.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	EXsollaPaymentRedirectStatusManual RedirectStatusManual;
@@ -164,4 +168,8 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Redirect Policy", meta = (EditCondition = "!UseSettingsFromPublisherAccount"))
 	FString RedirectButtonCaption;
+
+	/** Enable to process payment tasks via Steam. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "General")
+	bool BuildForSteam;
 };

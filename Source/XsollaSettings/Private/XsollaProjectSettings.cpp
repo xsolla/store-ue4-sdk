@@ -15,6 +15,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
 	EnableSandbox = true;
 	UsePlatformBrowser = false;
+	BuildForSteam = false;
 	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;

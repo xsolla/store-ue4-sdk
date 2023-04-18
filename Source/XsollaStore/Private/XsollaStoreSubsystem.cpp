@@ -226,12 +226,14 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 	{
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
 
-		if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+		const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+		if (Settings->BuildForSteam)
 		{
 			FString SteamId;
 			FString OutError;
 
-			if (!GetSteamUserId(Token, SteamId, OutError))
+			if (!UXsollaLoginLibrary::IsSteamBuildValid(OutError) || !GetSteamUserId(Token, SteamId, OutError))
 			{
 				ErrorCallback.ExecuteIfBound(0, 0, OutError);
 				return;
@@ -271,12 +273,14 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 	{
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
 
-		if (IOnlineSubsystem::IsEnabled(STEAM_SUBSYSTEM))
+		const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+		if (Settings->BuildForSteam)
 		{
 			FString SteamId;
 			FString OutError;
 
-			if (!GetSteamUserId(Token, SteamId, OutError))
+			if (!UXsollaLoginLibrary::IsSteamBuildValid(OutError) || !GetSteamUserId(Token, SteamId, OutError))
 			{
 				ErrorCallback.ExecuteIfBound(0, 0, OutError);
 				return;
@@ -293,7 +297,7 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
 {
 	FString PaystationUrl;
 	if (IsSandboxEnabled())
@@ -306,6 +310,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	}
 
 	PengindPaystationUrl = PaystationUrl;
+	PaymentBrowserClosedCallback = BrowserClosedCallback;
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -319,6 +324,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #if PLATFORM_ANDROID
 		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
+		nativeCallback->BindBrowserClosedDelegate(BrowserClosedCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
 			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
@@ -331,24 +337,53 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #endif
 #if PLATFORM_IOS
 		FString RedirectURI = FString::Printf(TEXT("app://xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:AccessToken.GetNSString()
-				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
-				isSandbox:Settings->EnableSandbox
-				redirectUrl:RedirectURI.GetNSString()
-				completionHandler:^(NSError* _Nullable error) {
+		PaymentAccessToken = AccessToken;
+		PaymentRedirectURI = RedirectURI;
+		PaymentEnableSandbox = Settings->EnableSandbox;
 
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
+				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
+				isSandbox:PaymentEnableSandbox
+				redirectUrl:PaymentRedirectURI.GetNSString()
+				completionHandler:^(NSError* _Nullable error) {
+					bool isManually = (error != nil) && ([@(error.code) integerValue] == NSError.cancelledByUserError);
+					AsyncTask(ENamedThreads::GameThread, [=]()
+					{
+						PaymentBrowserClosedCallback.ExecuteIfBound(isManually);
+						PaymentBrowserClosedCallback.Unbind();
+					});
 			}];
 		});
 #endif
 #else
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 		MyBrowser = CreateWidget<UXsollaStoreBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+		MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually)
+		{ 
+			PaymentBrowserClosedCallback.ExecuteIfBound(bIsManually);
+		});
 		MyBrowser->AddToViewport(100000);
 #endif
 	}
 
 	CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+}
+
+void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
+	const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback)
+{
+	CachedAuthToken = AuthToken;
+
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/order/{OrderId}"))
+							.SetPathParam(TEXT("ProjectID"), ProjectID)
+							.SetPathParam(TEXT("OrderId"), OrderId)
+							.Build();
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this,
+		&UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
@@ -379,8 +414,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Locale,
-	const FXsollaParameters CustomParameters,
+	const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
@@ -430,6 +464,22 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 		HttpRequest->ProcessRequest(); });
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
+void UXsollaStoreSubsystem::PurchaseStoreItem(const FStoreItem& StoreItem,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	InnerPurchase(StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PaymentTokenRequestPayload,
+		SuccessCallback, ErrorCallback);
+}
+
+void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	InnerPurchase(CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PaymentTokenRequestPayload,
+		SuccessCallback, ErrorCallback);
 }
 
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
@@ -1282,6 +1332,47 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
 }
 
+void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
+	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
+{
+	FXsollaOrder Order;
+	XsollaHttpRequestError OutError;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FXsollaOrder::StaticStruct(), &Order, OutError))
+	{
+		FString OrderStatusStr = Order.status;
+
+		EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
+
+		if (OrderStatusStr == TEXT("new"))
+		{
+			OrderStatus = EXsollaOrderStatus::New;
+		}
+		else if (OrderStatusStr == TEXT("paid"))
+		{
+			OrderStatus = EXsollaOrderStatus::Paid;
+		}
+		else if (OrderStatusStr == TEXT("done"))
+		{
+			OrderStatus = EXsollaOrderStatus::Done;
+		}
+		else if (OrderStatusStr == TEXT("canceled"))
+		{
+			OrderStatus = EXsollaOrderStatus::Canceled;
+		}
+		else
+		{
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, Order.order_id);
+		}
+
+		SuccessCallback.ExecuteIfBound(Order.order_id, OrderStatus, Order.content);
+		return;
+	}
+
+	HandleRequestError(OutError, ErrorCallback);
+}
+
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
@@ -1853,6 +1944,59 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 	return bIsSandboxEnabled;
 }
 
+void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	const FString& AuthToken = LoginSubsystem->GetLoginData().AuthToken.JWT;
+
+	PaymentSuccessCallback = SuccessCallback;
+	PaymentErrorCallback = ErrorCallback;
+
+	bool bIsVirtual = VirtualPrices.Num() > 0;
+	if (bIsVirtual)
+	{
+		FOnPurchaseUpdate VirtualPurchaseSuccessCallback;
+		VirtualPurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
+		const FString& CurrencySku = VirtualPrices[0].sku;
+		BuyItemWithVirtualCurrency(AuthToken, Sku, CurrencySku, EXsollaPublishingPlatform::undefined, VirtualPurchaseSuccessCallback, PaymentErrorCallback);
+	}
+	else if (!bIsFree)
+	{
+		FOnFetchTokenSuccess FetchTokenSuccessCallback;
+		FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
+		FetchPaymentToken(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Country, PaymentTokenRequestPayload.Locale,
+			PaymentTokenRequestPayload.CustomParameters, FetchTokenSuccessCallback, PaymentErrorCallback);
+	}
+	else
+	{
+		FOnPurchaseUpdate FreePurchaseSuccessCallback;
+		FreePurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
+		CreateOrderWithSpecifiedFreeItem(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Locale,
+			PaymentTokenRequestPayload.CustomParameters, FreePurchaseSuccessCallback, ErrorCallback);
+	}
+}
+
+void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32 InOrderId)
+{
+	PaymentOrderId = InOrderId;
+	FOnStoreSuccessPayment SuccessPaymentCallback;
+	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
+	FOnStoreBrowserClosed BrowserClosedCallback;
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback);
+}
+
+void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
+{
+	FOnStoreSuccessPayment SuccessPaymentCallback;
+	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
+	CheckPendingOrder(LoginSubsystem->GetLoginData().AuthToken.JWT, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
+}
+
+void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
+{
+	PaymentSuccessCallback.ExecuteIfBound(PaymentOrderId);
+}
+
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {
@@ -2112,5 +2256,23 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FString& ItemSKU) const
 
 	return CartItem != nullptr;
 }
+
+#if PLATFORM_ANDROID
+
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
+{
+	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteBrowserClosed(isManually);
+	}
+	else
+	{
+		UE_LOG(LogXsollaStore, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+#endif
 
 #undef LOCTEXT_NAMESPACE

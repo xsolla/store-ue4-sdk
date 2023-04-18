@@ -29,13 +29,16 @@ public class XsollaNativeAuthActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            finish();
+            return;
+        }
 
         tokenUtils = new TokenUtils(this);
 
         SocialNetwork socialNetwork = SocialNetwork.valueOf(getIntent().getStringExtra(ARG_SOCIAL_NETWORK));
-        boolean rememberMe = getIntent().getBooleanExtra(REMEMBER_ME, false);
 
-        XLogin.startSocialAuth(this, socialNetwork, rememberMe, new StartSocialCallback() {
+        XLogin.startSocialAuth(this, socialNetwork, new StartSocialCallback() {
             @Override
             public void onAuthStarted() {
                 Log.d("XsollaAuthActivity", "onAuthStarted");
@@ -55,7 +58,7 @@ public class XsollaNativeAuthActivity extends Activity {
 
         SocialNetwork socialNetwork = SocialNetwork.valueOf(getIntent().getStringExtra(ARG_SOCIAL_NETWORK));
 
-        XLogin.finishSocialAuth(this, socialNetwork, requestCode, resultCode, data, false, new FinishSocialCallback() {
+        XLogin.finishSocialAuth(this, socialNetwork, requestCode, resultCode, data, new FinishSocialCallback() {
             @Override
             public void onAuthSuccess() {
                 Log.d("XsollaAuthActivity", "onAuthSuccess");                

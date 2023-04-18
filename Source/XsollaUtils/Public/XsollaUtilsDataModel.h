@@ -88,7 +88,7 @@ struct XSOLLAUTILS_API FXsollaStoreItemBonus
 	FString sku;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Bonus")
-	int32 quantity;
+	int32 quantity = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -97,10 +97,10 @@ struct XSOLLAUTILS_API FXsollaStoreItemLimitsPerUser
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
-	int32 available;
+	int32 available = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
-	int32 total;
+	int32 total = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -373,6 +373,24 @@ struct FXsollaParameters
 
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Parameters")
 	TMap<FString, FXsollaJsonVariant> Parameters;
+};
+
+USTRUCT(BlueprintType)
+struct FXsollaPaymentTokenRequestPayload
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Currency;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Country;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString Locale;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FXsollaParameters CustomParameters;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.

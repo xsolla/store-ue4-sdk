@@ -34,6 +34,8 @@ void UXsollaOrderCheckObject::Destroy()
 	DestroyWebSocket();
 	bShortPollingExpired = true;
 	GetWorld()->GetTimerManager().ClearTimer(ShortPollingTimerHandle);
+
+	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
 }
 
 void UXsollaOrderCheckObject::OnConnected()
@@ -140,7 +142,7 @@ void UXsollaOrderCheckObject::DestroyWebSocket()
 {
 	GetWorld()->GetTimerManager().ClearTimer(WebSocketTimerHandle);
 
-	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
+	UE_LOG(LogXsollaStore, Log, TEXT("Destroy DestroyWebSocket."));
 	if (Websocket.IsValid())
 	{
 		Websocket->OnConnected().RemoveAll(this);
