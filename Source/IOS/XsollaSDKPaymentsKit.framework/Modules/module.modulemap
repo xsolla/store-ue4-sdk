@@ -1,0 +1,4 @@
+framework module XsollaSDKPaymentsKit {
+  header "XsollaSDKPaymentsKit-Swift.h"
+  requires objc
+}
