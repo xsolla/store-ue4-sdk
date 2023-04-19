@@ -101,7 +101,7 @@ public:
 
 	/** Payment user interface theme. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	EXsollaPaymentUiTheme PaymentInterfaceTheme;
+	FString PaymentInterfaceTheme;
 
 	/**
 	 * Payment user interface size (desktop only).

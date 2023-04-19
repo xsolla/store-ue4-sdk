@@ -16,7 +16,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	EnableSandbox = true;
 	UsePlatformBrowser = false;
 	BuildForSteam = false;
-	PaymentInterfaceTheme = EXsollaPaymentUiTheme::ps4_default_dark;
+	PaymentInterfaceTheme = TEXT("default");
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
 	UseSettingsFromPublisherAccount = true;
