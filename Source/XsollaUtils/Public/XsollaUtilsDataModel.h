@@ -391,6 +391,9 @@ struct FXsollaPaymentTokenRequestPayload
 
 	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
 	FXsollaParameters CustomParameters;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString ExternalId;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
