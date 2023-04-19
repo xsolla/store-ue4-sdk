@@ -96,7 +96,10 @@ To start with the SDK, you need to install this plug-in and set up a project in 
 * macOS
 * Windows 64-bit
 
+The SDK uses [Google Mobile Services](https://www.android.com/gms/) and doesn’t support builds for devices without Google Mobile Services, such as Huawei.
+
 **NOTE:** To modify the SDK for your application specifics, follow the [SDK modification instruction](https://developers.xsolla.com/sdk/unreal-engine/usage/how-to-modify-sdk/).
+
 
 ## Usage
 
