@@ -158,9 +158,6 @@ struct XSOLLAUTILS_API FXsollaPromotionLimits
 
 	UPROPERTY(BlueprintReadOnly, Category = "Promotion Limits")
 	FXsollaPromotionLimitsPerUser per_user;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Promotion Limits")
-	FXsollaPromotionRecurrentSchedule recurrent_schedule;
 };
 
 USTRUCT(BlueprintType)
