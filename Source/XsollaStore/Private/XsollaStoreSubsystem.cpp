@@ -2079,7 +2079,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), GetPaymentInerfaceTheme());
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceTheme);
 	PaymentUiSettingsJson->SetStringField(TEXT("size"),
 		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiSize", Settings->PaymentInterfaceSize));
 
@@ -2125,36 +2125,6 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	}
 
 	return PaymentSettingsJson;
-}
-
-FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const
-{
-	FString theme;
-
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	switch (Settings->PaymentInterfaceTheme)
-	{
-	case EXsollaPaymentUiTheme::default_light:
-		theme = TEXT("default");
-		break;
-	case EXsollaPaymentUiTheme::default_dark:
-		theme = TEXT("default_dark");
-		break;
-	case EXsollaPaymentUiTheme::dark:
-		theme = TEXT("dark");
-		break;
-	case EXsollaPaymentUiTheme::ps4_default_light:
-		theme = TEXT("ps4-default-light");
-		break;
-	case EXsollaPaymentUiTheme::ps4_default_dark:
-		theme = TEXT("ps4-default-dark");
-		break;
-	default:
-		theme = TEXT("default");
-	}
-
-	return theme;
 }
 
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)
