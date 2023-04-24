@@ -413,9 +413,9 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
 	const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
-	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity, const FString& ExternalId)
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, ExternalId, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, TEXT(""), CustomParameters);
 
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
@@ -438,9 +438,9 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& Auth
 
 void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 	const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
-	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId)
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, ExternalId, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, TEXT(""), CustomParameters);
 
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/cart")

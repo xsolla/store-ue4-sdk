@@ -267,12 +267,11 @@ public:
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
-	 * @param ExternalId (optional) Transaction external ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
 		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
-		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1, const FString& ExternalId = TEXT(""));
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Create order with free cart. The created order will get a `done` order status.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/).
@@ -286,12 +285,11 @@ public:
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param ExternalId (optional) Transaction external ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
-		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId = TEXT(""));
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Initiates purchase by passing store item
 	 *
