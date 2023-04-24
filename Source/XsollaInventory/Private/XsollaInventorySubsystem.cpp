@@ -50,7 +50,7 @@ void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXs
 	const FOnInventoryUpdate& SuccessCallback, const FOnError& ErrorCallback,
 	const int Limit, const int Offset)
 {
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT(""):UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -75,7 +75,7 @@ void UXsollaInventorySubsystem::GetInventory(const FString& AuthToken, const EXs
 void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnCurrencyBalanceUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/virtual_currency_balance"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -98,7 +98,7 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance(const FString& AuthTok
 void UXsollaInventorySubsystem::GetTimeLimitedItems(const FString& AuthToken, const EXsollaPublishingPlatform Platform,
 	const FOnTimeLimitedItemsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/time_limited_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -144,7 +144,7 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem(const FString& AuthToken, c
 		RequestDataJson->SetStringField(TEXT("instance_id"), InstanceID);
 	}
 
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 	
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/user/inventory/item/consume"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)

@@ -769,7 +769,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 {
 	CachedAuthToken = AuthToken;
 
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}/virtual/{CurrencySKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -2081,11 +2081,11 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceTheme);
 	PaymentUiSettingsJson->SetStringField(TEXT("size"),
-		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiSize", Settings->PaymentInterfaceSize));
+		UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiSize>(Settings->PaymentInterfaceSize));
 
 	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
 		PaymentUiSettingsJson->SetStringField(TEXT("version"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiVersion", Settings->PaymentInterfaceVersion));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiVersion>(Settings->PaymentInterfaceVersion));
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
@@ -2097,9 +2097,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
 		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", Settings->RedirectCondition));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectCondition>(Settings->RedirectCondition));
 		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", Settings->RedirectStatusManual));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectStatusManual>(Settings->RedirectStatusManual));
 
 		RedirectSettingsJson->SetNumberField(TEXT("delay"), Settings->RedirectDelay);
 		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), Settings->RedirectButtonCaption);
@@ -2113,9 +2113,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
 		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectCondition>(EXsollaPaymentRedirectCondition::any));
 		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectStatusManual>(EXsollaPaymentRedirectStatusManual::none));
 
 		RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
 		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));

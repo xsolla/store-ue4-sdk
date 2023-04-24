@@ -393,7 +393,7 @@ struct FXsollaPaymentTokenRequestPayload
 	FXsollaParameters CustomParameters;
 };
 
-/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
+/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.
 */
 UENUM()
 enum class EXsollaVariantTypes : int8
