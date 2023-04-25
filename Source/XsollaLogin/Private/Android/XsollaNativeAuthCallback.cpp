@@ -4,9 +4,10 @@
 
 #include "Async/Async.h"
 
-void UXsollaNativeAuthCallback::BindSuccessDelegate(const FOnAuthUpdate& OnSuccess)
+void UXsollaNativeAuthCallback::BindSuccessDelegate(const FOnAuthUpdate& OnSuccess, UXsollaLoginSubsystem* InLoginSubsystem)
 {
 	OnAuthSuccessDelegate = OnSuccess;
+	LoginSubsystem = InLoginSubsystem;
 }
 
 void UXsollaNativeAuthCallback::BindCancelDelegate(const FOnAuthCancel& OnCancel)
@@ -21,7 +22,8 @@ void UXsollaNativeAuthCallback::BindErrorDelegate(const FOnAuthError& OnError)
 
 void UXsollaNativeAuthCallback::ExecuteSuccess(const FXsollaLoginData& LoginData)
 {
-	AsyncTask(ENamedThreads::GameThread, [=]() {
+	AsyncTask(ENamedThreads::GameThread, [=]() { 
+		LoginSubsystem->SetLoginData(LoginData);
 		OnAuthSuccessDelegate.ExecuteIfBound(LoginData);
 	});
 }

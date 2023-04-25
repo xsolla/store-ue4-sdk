@@ -170,7 +170,8 @@ public:
 
 	/** Opens the specified social network mobile app (if available) in order to authenticate the user.
 	 *
-	 * @param ProviderName Name of the social network connected to Login in Publisher Account. Can be `facebook`, `google`, `wechat`, or `qq_mobile`.
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account.
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`,`facebook`, `github`, `google`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, or `xbox`.
 	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Called after user authentication was canceled.
 	 * @param ErrorCallback Called after user authentication resulted with an error.
@@ -180,6 +181,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false, const FString& State = TEXT("xsollatest"));
+
+		/** Opens the specified social network in order to authenticate the user.
+	 *
+	 * @param ProviderName Name of the social network connected to Login in Publisher Account.
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`,`facebook`, `github`, `google`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, or `xbox`.
+	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
+	 * @param CancelCallback Called after user authentication was canceled.
+	 * @param ErrorCallback Called after user authentication resulted with an error.
+	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is `false`.
+	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	void AuthenticateViaSocialNetwork(const FString& ProviderName,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback,
+		const bool bRememberMe = false, const FString& State = TEXT("xsollatest"));
 
 	/** Sets a new value of a token (used when the token is obtained via social network authentication, etc.).
 	 *
@@ -779,6 +795,9 @@ public:
 protected:
 	/** Keeps state of user login. */
 	FXsollaLoginData LoginData;
+
+	UFUNCTION()
+	void SocialAuthUrlReceivedCallback(const FString& Url);
 
 private:
 	UPROPERTY()

@@ -6,13 +6,16 @@
 
 #include "XsollaNativeAuthCallback.generated.h"
 
+
+class UXsollaLoginSubsystem;
+
 UCLASS()
 class XSOLLALOGIN_API UXsollaNativeAuthCallback : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	void BindSuccessDelegate(const FOnAuthUpdate& OnSuccess);
+	void BindSuccessDelegate(const FOnAuthUpdate& OnSuccess, UXsollaLoginSubsystem* InLoginSubsystem);
 	void BindCancelDelegate(const FOnAuthCancel& OnCancel);
 	void BindErrorDelegate(const FOnAuthError& OnError);
 
@@ -27,4 +30,7 @@ private:
 	FOnAuthCancel OnAuthCancelDelegate;
 	UPROPERTY()
 	FOnAuthError OnAuthErrorDelegate;
+
+	UPROPERTY()
+	UXsollaLoginSubsystem* LoginSubsystem;
 };
