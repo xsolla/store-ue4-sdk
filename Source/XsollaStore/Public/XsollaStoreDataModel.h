@@ -191,6 +191,9 @@ struct XSOLLASTORE_API FStoreItem
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
 	TArray<FXsollaStoreItemPromotion> promotions;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Item")
+	FXsollaStoreItemLimits limits;
+
 public:
 	FStoreItem()
 		: is_free(false)
@@ -215,6 +218,8 @@ public:
 		, long_description(Item.long_description)
 		, order(Item.order)
 		, media_list(Item.media_list)
+		, promotions(Item.promotions)
+		, limits(Item.limits)
 	{
 	}
 
@@ -306,6 +311,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
 	TArray<FXsollaStoreItemPromotion> promotions;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency")
+	FXsollaStoreItemLimits limits;
 
 public:
 	FVirtualCurrency()
@@ -411,6 +419,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
 	TArray<FXsollaStoreItemPromotion> promotions;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Package")
+	FXsollaStoreItemLimits limits;
 
 public:
 	FVirtualCurrencyPackage()
@@ -619,6 +630,9 @@ struct XSOLLASTORE_API FStoreBundle
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	TArray<FXsollaStoreItemPromotion> promotions;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
+	FXsollaStoreItemLimits limits;
 };
 
 USTRUCT(BlueprintType)
