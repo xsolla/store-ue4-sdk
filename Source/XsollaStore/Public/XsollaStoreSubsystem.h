@@ -259,18 +259,12 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired free item SKU.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale.<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Create order with free cart. The created order will get a `done` order status.
@@ -278,17 +272,11 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale.<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Initiates purchase by passing store item
