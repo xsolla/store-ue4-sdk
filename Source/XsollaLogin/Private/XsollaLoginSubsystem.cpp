@@ -1126,9 +1126,9 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 void UXsollaLoginSubsystem::GetFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
 	const FOnUserFriendsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& After, const int Limit)
 {
-	const FString FriendType = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendsType", Type);
-	const FString SortByCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
-	const FString SortOrderCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
+	const FString FriendType = UXsollaUtilsLibrary::EnumToString<EXsollaFriendsType>(Type);
+	const FString SortByCriteria = UXsollaUtilsLibrary::EnumToString<EXsollaUsersSortCriteria>(SortBy);
+	const FString SortOrderCriteria = UXsollaUtilsLibrary::EnumToString<EXsollaUsersSortOrder>(SortOrder);
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/relationships"))
@@ -1157,7 +1157,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, const EXsoll
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendAction", Action));
+	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::EnumToString<EXsollaFriendAction>(Action));
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1333,7 +1333,7 @@ void UXsollaLoginSubsystem::GetLinkedSocialNetworks(const FString& AuthToken, co
 void UXsollaLoginSubsystem::LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
 	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString SessionsString = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaSessionType", Sessions);
+	const FString SessionsString = UXsollaUtilsLibrary::EnumToString<EXsollaSessionType>(Sessions);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/logout"))
 							.AddStringQueryParam(TEXT("sessions"), SessionsString)
@@ -1763,7 +1763,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		const FString Type = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("type"));
 
-		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
+		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>(Type));
 	}
 	else
 	{

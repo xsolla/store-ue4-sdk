@@ -88,7 +88,7 @@ TSharedRef<SWidget> FXsollaGenericWrapperDetails::OnGetAllEnums()
 
 	for (int32 Idx = 0; Idx < KeyValues.Num(); Idx++)
 	{
-		FString DisplayValue = UXsollaUtilsLibrary::GetEnumValueAsDisplayNameString("EWidgetType", KeyValues[Idx]);
+		FString DisplayValue = UXsollaUtilsLibrary::GetEnumValueAsDisplayNameString<EWidgetType>(KeyValues[Idx]);
 		FUIAction ItemAction(FExecuteAction::CreateSP(this, &FXsollaGenericWrapperDetails::OnEnumChanged, Idx));
 		MenuBuilder.AddMenuEntry(FText::FromString(DisplayValue), TAttribute<FText>(), FSlateIcon(), ItemAction);
 	}

@@ -55,7 +55,7 @@ void UXsollaUtilsLibrary::Internal_AddParametersToJsonObject(TSharedPtr<FJsonObj
 			break;
 		default:
 			UE_LOG(LogXsollaUtils, Log, TEXT("%s: parameter with type of %s was not added"),
-				*VA_FUNC_LINE, *UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaVariantTypes", static_cast<EXsollaVariantTypes>(Variant.GetType())));
+				*VA_FUNC_LINE, *UXsollaUtilsLibrary::EnumToString<EXsollaVariantTypes>(static_cast<EXsollaVariantTypes>(Variant.GetType())));
 			break;
 		}
 	}

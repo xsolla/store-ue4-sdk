@@ -39,39 +39,23 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Utils")
 	static int64 GetSecondsFromUnixTimestamp(const FDateTime& DateTime);
 
+
 	template <typename TEnum>
-	static FString GetEnumValueAsString(const FString& EnumName, TEnum Value)
+	static FString EnumToString(TEnum EnumValue)
 	{
-		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-		if (!EnumPtr)
-		{
-			return FString("Invalid");
-		}
-		const FString ValueStr = EnumPtr->GetNameByValue(static_cast<int64>(Value)).ToString();
-		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+		return StaticEnum<TEnum>()->GetNameStringByIndex((int32)EnumValue);
 	}
 
 	template <typename TEnum>
-	static FString GetEnumValueAsDisplayNameString(const FString& EnumName, TEnum Value)
+	static FString GetEnumValueAsDisplayNameString(TEnum EnumValue)
 	{
-		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-		if (!EnumPtr)
-		{
-			return FString("Invalid");
-		}
-		const FString ValueStr = EnumPtr->GetDisplayNameTextByIndex(static_cast<int64>(Value)).ToString();
-		return ValueStr.Replace(*FString::Printf(TEXT("%s::"), *EnumName), TEXT(""));
+		return StaticEnum<TEnum>()->GetDisplayNameTextByIndex((int32)EnumValue).ToString();
 	}
 
-	template <typename EnumType>
-	static EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
+	template <typename TEnum>
+	static TEnum GetEnumValueFromString(const FString& String)
 	{
-		UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-		if (!Enum)
-		{
-			return EnumType(0);
-		}
-		return static_cast<EnumType>(Enum->GetValueByName(FName(*String)));
+		return static_cast<TEnum>(StaticEnum<TEnum>()->GetValueByName(FName(*String)));
 	}
 
 	/** Add parameters to json object root */
