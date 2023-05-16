@@ -333,7 +333,7 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 
 #if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
-	nativeCallback->BindSuccessDelegate(SuccessCallback);
+	nativeCallback->BindSuccessDelegate(SuccessCallback, this);
 	nativeCallback->BindCancelDelegate(CancelCallback);
 	nativeCallback->BindErrorDelegate(ErrorCallback);
 
@@ -396,6 +396,29 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	}];
 #endif
 }
+
+void UXsollaLoginSubsystem::AuthenticateViaSocialNetwork(const FString& ProviderName,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback,
+	const bool bRememberMe, const FString& State)
+{
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+
+	LoginData.bRememberMe = bRememberMe;
+	NativeSuccessCallback = SuccessCallback;
+	NativeErrorCallback = ErrorCallback;
+	NativeCancelCallback = CancelCallback;
+
+	if (Platform == TEXT("android") || Platform == TEXT("ios"))
+	{
+		LaunchNativeSocialAuthentication(ProviderName, SuccessCallback, CancelCallback, ErrorCallback, bRememberMe, State);
+	}
+	else
+	{
+		FOnSocialUrlReceived UrlReceivedCallback;
+		UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback);
+		GetSocialAuthenticationUrl(ProviderName, State, UrlReceivedCallback, ErrorCallback);
+	}
+} 
 
 void UXsollaLoginSubsystem::SetToken(const FString& Token)
 {
@@ -2146,6 +2169,30 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 		auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
 		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
+	}
+}
+
+void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
+{
+	UUserWidget* BrowserWidget = nullptr;
+	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
+
+	UXsollaLoginBrowserWrapper* BrowserWidgetWrapper = Cast<UXsollaLoginBrowserWrapper>(BrowserWidget);
+
+	if (BrowserWidgetWrapper != nullptr)
+	{
+		BrowserWidgetWrapper->LoadUrl(Url);
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bAuthenticationCompleted)
+			{ 
+			if (bAuthenticationCompleted)
+			{
+				NativeSuccessCallback.ExecuteIfBound(LoginData);
+			}
+			else
+			{
+				NativeCancelCallback.ExecuteIfBound();
+			}
+		});
 	}
 }
 
