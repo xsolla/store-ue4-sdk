@@ -182,7 +182,7 @@ public:
 	void LaunchNativeSocialAuthentication(const FString& ProviderName,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false, const FString& State = TEXT("xsollatest"));
 
-		/** Authenticates user via social networks. Method incapsulates web-based and native authentication methods.
+	/** Authenticates user via social networks. Method incapsulates web-based and native authentication methods.
 	 *
 	 * @param ProviderName Name of the social network connected to Login in Publisher Account.
 	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`,`facebook`, `github`, `google`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, or `xbox`.
