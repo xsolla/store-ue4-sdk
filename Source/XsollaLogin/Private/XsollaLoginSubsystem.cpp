@@ -238,7 +238,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 			CancelCallback.ExecuteIfBound();
 		}
 	});
-	MyBrowser->AddToViewport(UINT_MAX - 100);
+	MyBrowser->AddToViewport(INT_MAX - 100);
 	MyBrowser->LoadUrl(Url);
 
 	BrowserWidget = MyBrowser;
