@@ -4,12 +4,12 @@ set PROJECT_DIR=%1
 set PROJECT_BRANCH=%2
 set PLUGIN_BRANCH=%3
 set CI_WORK_DIR=%4
+set ENGINE_VERSION=%5%
 
 echo ==========================
 echo ### CLONE TEST PROJECT ###
 
 set PROJECT_REMOTE=git@gitlab.loc:sdk_group/store-ue-sdk-test.git
-
 echo ### PROJECT_REMOTE: %PROJECT_REMOTE%
 echo ### PROJECT_DIR: %PROJECT_DIR%
 echo ### PROJECT_BRANCH: %PROJECT_BRANCH%
@@ -36,6 +36,23 @@ echo.
 git clone --depth 1 --branch %PLUGIN_BRANCH% %PLUGIN_REMOTE% %PLUGIN_DIR%
 if not %errorlevel%==0 goto onFinish
 
+echo.
+echo ========================================
+echo ### SWITCH ENGINE VERSION FOR PROJECT ##
+
+set UVS_PATH="C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe"
+set UPROJECT_PATH="%PROJECT_DIR%\%PROJECT_NAME%.uproject"
+set ENGINE_ROOT_PATH="C:\EpicGames\%ENGINE_VERSION%"
+
+echo.
+echo ### VERSION_SELECTOR_PATH: %UVS_PATH%
+echo ### UPROJECT_PATH: %UPROJECT_PATH%
+echo ### ENGINE_ROOT_PATH: %ENGINE_ROOT_PATH%
+
+call %UVS_PATH% /switchversionsilent %UPROJECT_PATH% %ENGINE_ROOT_PATH%
+if not %errorlevel%==0 goto onFinish
+
+rem ========================================
 :onFinish
 set EXIT_CODE=%errorlevel%
 cd %CI_WORK_DIR%
