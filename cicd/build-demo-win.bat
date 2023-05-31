@@ -18,7 +18,7 @@ echo.
 echo ============================
 echo ### PACKAGE TEST PROJECT ###
 
-set AT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\AutomationTool.exe"
+set AT_PATH="C:\EpicGames\%ENGINE_VERSION%\Engine\Binaries\DotNET\AutomationTool.exe"
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set PACKAGE_DIR=%CI_WORK_DIR%\Builds
 
