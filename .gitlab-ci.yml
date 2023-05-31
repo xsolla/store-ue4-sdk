@@ -12,6 +12,7 @@ stages:
   - demo-win
   - demo-android
   - demo-ios
+  - demo-win-ue5
 
 variables:
     TEST_PROJECT_DIR_WIN: C:\Users\Runner\Desktop\TestProjects\Ue427
@@ -19,11 +20,13 @@ variables:
     TEST_PROJECT_BRANCH: master
     PLUGIN_BRANCH: $CI_COMMIT_BRANCH
     CI_WORK_DIR: $CI_PROJECT_DIR
+    UE4_ENGINE_VERSION: "4.27"
+    UE5_ENGINE_VERSION: "5.2"
 
 # =================================================================================================================
 # DOCS
 
-.build doc:
+build doc:
   stage: build
   only:
     - /^v.*/
@@ -46,7 +49,7 @@ variables:
   tags:
     - devops
 
-.deploy doc:
+deploy doc:
   stage: deploy
   extends:      .deploy doc
   only:
@@ -61,7 +64,7 @@ variables:
   tags:
     - sshclient
 
-.current doc:
+current doc:
   extends:      .current doc
   only:
     - /^v.*/
@@ -73,7 +76,7 @@ variables:
   tags:
     - sshclient
 
-.stop doc:
+stop doc:
   extends:      .stop doc
   environment:
     name: doc/$CI_COMMIT_REF_SLUG
@@ -174,3 +177,21 @@ variables:
   tags:
     - sdk_ci
     - mac
+
+# =================================================================================================================
+# BUILD DEMO WIN UE5
+    
+build-win-demo-ue5:
+  stage: demo-win-ue5
+  script:
+    - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+  artifacts:
+    name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
