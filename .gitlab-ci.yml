@@ -184,6 +184,7 @@ stop doc:
 build-win-demo-ue5:
   stage: demo-win-ue5
   script:
+    - call cicd\engine-version-switcher.bat %TEST_PROJECT_DIR_WIN% %UE5_ENGINE_VERSION%
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
   artifacts:
     name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
