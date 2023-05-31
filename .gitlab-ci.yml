@@ -23,7 +23,7 @@ variables:
 # =================================================================================================================
 # DOCS
 
-build doc:
+.build doc:
   stage: build
   only:
     - /^v.*/
@@ -46,7 +46,7 @@ build doc:
   tags:
     - devops
 
-deploy doc:
+.deploy doc:
   stage: deploy
   extends:      .deploy doc
   only:
@@ -61,7 +61,7 @@ deploy doc:
   tags:
     - sshclient
 
-current doc:
+.current doc:
   extends:      .current doc
   only:
     - /^v.*/
@@ -73,7 +73,7 @@ current doc:
   tags:
     - sshclient
 
-stop doc:
+.stop doc:
   extends:      .stop doc
   environment:
     name: doc/$CI_COMMIT_REF_SLUG
@@ -87,7 +87,7 @@ stop doc:
 # =================================================================================================================
 # AUTOTESTS
     
-run-autotests:
+.run-autotests:
   stage: autotests
   script:
     - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -105,7 +105,7 @@ run-autotests:
 # =================================================================================================================
 # CODE ANALYSIS
     
-analyze-code:
+.analyze-code:
   stage: code-analysis
   script:
     - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -123,7 +123,7 @@ analyze-code:
 # =================================================================================================================
 # BUILD DEMO WIN
     
-build-win-demo:
+.build-win-demo:
   stage: demo-win
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -141,7 +141,7 @@ build-win-demo:
 # =================================================================================================================
 # BUILD DEMO ANDROID
     
-build-android-demo:
+.build-android-demo:
   stage: demo-android
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -159,7 +159,7 @@ build-android-demo:
 # =================================================================================================================
 # BUILD DEMO IOS
     
-build-ios-demo:
+.build-ios-demo:
   stage: demo-ios
   script:
     - chmod 755 cicd/build-demo-ios.sh
