@@ -52,6 +52,19 @@ echo ### ENGINE_ROOT_PATH: %ENGINE_ROOT_PATH%
 call %UVS_PATH% /switchversionsilent %UPROJECT_PATH% %ENGINE_ROOT_PATH%
 if not %errorlevel%==0 goto onFinish
 
+echo.
+echo ========================================
+echo ### SWITCH ENGINE VERSION FOR PLUGIN ##
+
+set PLUGIN_CONFIG_PATH=%PLUGIN_DIR%\Xsolla.uplugin
+set PLUGIN_VERSION=5.2.0
+
+echo.
+echo ### PLUGIN_CONFIG_PATH: %PLUGIN_CONFIG_PATH%
+
+python -c "import json; data = json.load(open(r'%PLUGIN_CONFIG_PATH%')); data['EngineVersion'] = '%PLUGIN_VERSION%'; json.dump(data, open(r'%PLUGIN_CONFIG_PATH%', 'w'), indent=2)"
+if not %errorlevel%==0 goto onFinish
+
 rem ========================================
 :onFinish
 set EXIT_CODE=%errorlevel%
