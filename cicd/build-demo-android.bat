@@ -21,7 +21,7 @@ echo ### DEFINE VARIABLES FOR PACKAGE TEST PROJECT ###
 
 set AT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%\Engine\Binaries\DotNET\AutomationTool.exe"
 if %MAJOR_VERSION%==5 (set AT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%\Engine\Binaries\DotNET\AutomationTool\AutomationTool.exe")
-if %MAJOR_VERSION%==5 (copy /Y "%CI_WORK_DIR%\cicd\project.properties" "%CI_WORK_DIR%\Build\Android\project.properties")
+if %MAJOR_VERSION%==5 (copy /Y "%CI_WORK_DIR%\cicd\project.properties" "%PROJECT_DIR%\Build\Android\project.properties")
 if %MAJOR_VERSION%==4 (copy /Y "%CI_WORK_DIR%\cicd\UserEngine-4.ini" "C:\Users\Runner\AppData\Local\Unreal Engine\Engine\Config\UserEngine.ini")
 if %MAJOR_VERSION%==5 (copy /Y "%CI_WORK_DIR%\cicd\UserEngine-5.ini" "C:\Users\Runner\AppData\Local\Unreal Engine\Engine\Config\UserEngine.ini")
 
