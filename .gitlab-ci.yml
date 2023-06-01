@@ -11,7 +11,8 @@ stages:
   - code-analysis
   - demo-win-ue4
   - demo-win-ue5
-  - demo-android
+  - demo-android-ue4
+  - demo-android-ue5
   - demo-ios
 
 variables:
@@ -126,7 +127,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO WIN UE4
     
-build-win-demo-ue4:
+.build-win-demo-ue4:
   stage: demo-win-ue4
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
@@ -144,7 +145,7 @@ build-win-demo-ue4:
 # =================================================================================================================
 # BUILD DEMO WIN UE5
     
-build-win-demo-ue5:
+.build-win-demo-ue5:
   stage: demo-win-ue5
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
@@ -160,14 +161,32 @@ build-win-demo-ue5:
     - windows
 
 # =================================================================================================================
-# BUILD DEMO ANDROID
+# BUILD DEMO ANDROID UE4
     
-.build-android-demo:
-  stage: demo-android
+build-android-demo-ue4:
+  stage: demo-android-ue4
   script:
-    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_BUILD_ANDROID_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO ANDROID UE5
+    
+build-android-demo-ue5:
+  stage: demo-android-ue5
+  script:
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
+  artifacts:
+    name: "UE5_BUILD_ANDROID_%CI_COMMIT_REF_NAME%"
     when: always
     paths:
       - Builds
