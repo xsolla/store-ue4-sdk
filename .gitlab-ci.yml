@@ -95,7 +95,7 @@ stop doc:
 run-autotests:
   stage: autotests
   script:
-    - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_AUTOTESTS_%CI_COMMIT_REF_NAME%"
     when: always
@@ -113,7 +113,7 @@ run-autotests:
 analyze-code:
   stage: code-analysis
   script:
-    - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_CODE_ANALYSIS_%CI_COMMIT_REF_NAME%"
     when: always
