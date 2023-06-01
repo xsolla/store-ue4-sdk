@@ -42,7 +42,7 @@ echo ### SWITCH ENGINE VERSION FOR PROJECT ##
 
 set UVS_PATH="C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe"
 set UPROJECT_PATH="%PROJECT_DIR%\%PROJECT_NAME%.uproject"
-set ENGINE_ROOT_PATH="C:\EpicGames\%ENGINE_VERSION%"
+set ENGINE_ROOT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%"
 
 echo.
 echo ### VERSION_SELECTOR_PATH: %UVS_PATH%
@@ -57,12 +57,11 @@ echo ========================================
 echo ### SWITCH ENGINE VERSION FOR PLUGIN ##
 
 set PLUGIN_CONFIG_PATH=%PLUGIN_DIR%\Xsolla.uplugin
-set PLUGIN_VERSION=5.2.0
 
 echo.
 echo ### PLUGIN_CONFIG_PATH: %PLUGIN_CONFIG_PATH%
 
-python -c "import json; data = json.load(open(r'%PLUGIN_CONFIG_PATH%')); data['EngineVersion'] = '%PLUGIN_VERSION%'; json.dump(data, open(r'%PLUGIN_CONFIG_PATH%', 'w'), indent=2)"
+python -c "import json; data = json.load(open(r'%PLUGIN_CONFIG_PATH%')); data['EngineVersion'] = '%ENGINE_VERSION%'; json.dump(data, open(r'%PLUGIN_CONFIG_PATH%', 'w'), indent=2)"
 if not %errorlevel%==0 goto onFinish
 
 rem ========================================
