@@ -16,11 +16,12 @@ call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% 
 if not %errorlevel%==0 goto onFinish
 
 echo.
-echo ============================
-echo ### PACKAGE TEST PROJECT ###
+echo =================================================
+echo ### DEFINE VARIABLES FOR PACKAGE TEST PROJECT ###
 
 set AT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%\Engine\Binaries\DotNET\AutomationTool.exe"
 if %MAJOR_VERSION%==5 (set AT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%\Engine\Binaries\DotNET\AutomationTool\AutomationTool.exe")
+if %MAJOR_VERSION%==5 (copy "%CI_WORK_DIR%\cicd\project.properties" "%CI_WORK_DIR%\Build\Android\project.properties" /s /z)
 
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set PACKAGE_ROOT_DIR=%CI_WORK_DIR%\Builds

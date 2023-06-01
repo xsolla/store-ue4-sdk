@@ -35,8 +35,8 @@ echo "UPROJECT_PATH: ${UPROJECT_PATH}"
 $UBT_PATH Development Mac -TargetType=Editor -Project=$UPROJECT_PATH -Progress -NoEngineChanges -NoHotReloadFromIDE
 
 echo ""
-echo "============================="
-echo "### PACKAGE TEST PROJECT ###"
+echo "================================================="
+echo "### DEFINE VARIABLES FOR PACKAGE TEST PROJECT ###"
 
 AT_PATH="/Users/Shared/EpicGames/UE_4.27/Engine/Build/BatchFiles/RunUAT.sh"
 PACKAGE_ROOT_DIR=$CI_WORK_DIR/Builds
