@@ -25,6 +25,9 @@ if %MAJOR_VERSION%==5 (xcopy /Y /S /F "%CI_WORK_DIR%\cicd\project.properties" "%
 if %MAJOR_VERSION%==4 (xcopy /Y /S /F "%CI_WORK_DIR%\cicd\UserEngine-4.ini" "C:\Users\Runner\AppData\Local\Unreal Engine\Engine\Config\UserEngine.ini*")
 if %MAJOR_VERSION%==5 (xcopy /Y /S /F "%CI_WORK_DIR%\cicd\UserEngine-5.ini" "C:\Users\Runner\AppData\Local\Unreal Engine\Engine\Config\UserEngine.ini*")
 
+if %MAJOR_VERSION%==5 (robocopy "%CI_WORK_DIR%\cicd\Build" "%PROJECT_DIR%\Build" /s /z)
+
+
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set PACKAGE_ROOT_DIR=%CI_WORK_DIR%\Builds
 set SETTINGS_INI_PATH=%PROJECT_DIR%\Config\DefaultEngine.ini
