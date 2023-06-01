@@ -6,14 +6,15 @@ set PLUGIN_BRANCH=%3
 set CI_WORK_DIR=%4
 set ENGINE_VERSION=%5%
 
+echo.
 echo ==========================
 echo ### CLONE TEST PROJECT ###
 
 set PROJECT_REMOTE=git@gitlab.loc:sdk_group/store-ue-sdk-test.git
+
 echo ### PROJECT_REMOTE: %PROJECT_REMOTE%
 echo ### PROJECT_DIR: %PROJECT_DIR%
 echo ### PROJECT_BRANCH: %PROJECT_BRANCH%
-echo.
 
 if exist %PROJECT_DIR% rd /q /s %PROJECT_DIR%
 if not %errorlevel%==0 goto onFinish
@@ -31,7 +32,6 @@ set PLUGIN_DIR=%PROJECT_DIR%\Plugins\XsollaSdk
 echo ### PLUGIN_REMOTE: %PLUGIN_REMOTE%
 echo ### PLUGIN_DIR: %PLUGIN_DIR%
 echo ### PLUGIN_BRANCH: %PLUGIN_BRANCH%
-echo.
 
 git clone --depth 1 --branch %PLUGIN_BRANCH% %PLUGIN_REMOTE% %PLUGIN_DIR%
 if not %errorlevel%==0 goto onFinish
@@ -44,7 +44,6 @@ set UVS_PATH="C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\U
 set UPROJECT_PATH="%PROJECT_DIR%\%PROJECT_NAME%.uproject"
 set ENGINE_ROOT_PATH="C:\EpicGames\UE_%ENGINE_VERSION%"
 
-echo.
 echo ### VERSION_SELECTOR_PATH: %UVS_PATH%
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### ENGINE_ROOT_PATH: %ENGINE_ROOT_PATH%
@@ -58,7 +57,6 @@ echo ### SWITCH ENGINE VERSION FOR PLUGIN ##
 
 set PLUGIN_CONFIG_PATH=%PLUGIN_DIR%\Xsolla.uplugin
 
-echo.
 echo ### PLUGIN_CONFIG_PATH: %PLUGIN_CONFIG_PATH%
 
 python -c "import json; data = json.load(open(r'%PLUGIN_CONFIG_PATH%')); data['EngineVersion'] = '%ENGINE_VERSION%'; json.dump(data, open(r'%PLUGIN_CONFIG_PATH%', 'w'), indent=2)"

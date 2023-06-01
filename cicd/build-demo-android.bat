@@ -12,7 +12,7 @@ echo.
 echo ===========================
 echo ### PREPARE TEST PROJECT ##
 
-call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %ENGINE_VERSION%
 if not %errorlevel%==0 goto onFinish
 
 echo.
@@ -26,7 +26,6 @@ set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set PACKAGE_ROOT_DIR=%CI_WORK_DIR%\Builds
 set SETTINGS_INI_PATH=%PROJECT_DIR%\Config\DefaultEngine.ini
 
-echo.
 echo ### AUTOMATION_TOOL_PATH: %AT_PATH%
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### PACKAGE_ROOT_DIR: %PACKAGE_ROOT_DIR%
