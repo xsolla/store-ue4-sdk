@@ -163,7 +163,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO ANDROID UE4
     
-.build-android-demo-ue4:
+build-android-demo-ue4:
   stage: demo-android-ue4
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
