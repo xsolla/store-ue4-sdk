@@ -13,7 +13,8 @@ stages:
   - demo-win-ue5
   - demo-android-ue4
   - demo-android-ue5
-  - demo-ios
+  - demo-ios-ue4
+  - demo-ios-ue5
 
 variables:
     TEST_PROJECT_DIR_WIN: C:\Users\Runner\Desktop\TestProjects\Ue427
@@ -163,7 +164,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO ANDROID UE4
     
-build-android-demo-ue4:
+.build-android-demo-ue4:
   stage: demo-android-ue4
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
@@ -181,7 +182,7 @@ build-android-demo-ue4:
 # =================================================================================================================
 # BUILD DEMO ANDROID UE5
     
-build-android-demo-ue5:
+.build-android-demo-ue5:
   stage: demo-android-ue5
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
@@ -197,15 +198,34 @@ build-android-demo-ue5:
     - windows
 
 # =================================================================================================================
-# BUILD DEMO IOS
+# BUILD DEMO IOS UE4
     
-.build-ios-demo:
-  stage: demo-ios
+.build-ios-demo-ue4:
+  stage: demo-ios-ue4
   script:
     - chmod 755 cicd/build-demo-ios.sh
-    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_BUILD_IOS_$CI_COMMIT_REF_NAME"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - mac
+
+# =================================================================================================================
+# BUILD DEMO IOS UE5
+    
+build-ios-demo-ue5:
+  stage: demo-ios-ue5
+  script:
+    - chmod 755 cicd/build-demo-ios.sh
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR %UE5_ENGINE_VERSION%
+  artifacts:
+    name: "UE5_BUILD_IOS_$CI_COMMIT_REF_NAME"
     when: always
     paths:
       - Builds

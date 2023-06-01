@@ -4,6 +4,7 @@ PROJECT_DIR=$1
 PROJECT_BRANCH=$2
 PLUGIN_BRANCH=$3
 CI_WORK_DIR=$4
+ENGINE_VERSION=$5
 PROJECT_NAME=StoreUeSdkTest
 
 echo ""
@@ -26,7 +27,7 @@ echo ""
 echo "============================="
 echo "### GENERATE TEST PROJECT ###"
 
-UBT_PATH="/Users/Shared/EpicGames/UE_4.27/Engine/Build/BatchFiles/Mac/Build.sh"
+UBT_PATH="/Users/Shared/EpicGames/UE_$ENGINE_VERSION/Engine/Build/BatchFiles/Mac/Build.sh"
 UPROJECT_PATH=$PROJECT_DIR/$PROJECT_NAME.uproject
 
 echo "UBT_PATH: ${UBT_PATH}"
@@ -38,7 +39,7 @@ echo ""
 echo "================================================="
 echo "### DEFINE VARIABLES FOR PACKAGE TEST PROJECT ###"
 
-AT_PATH="/Users/Shared/EpicGames/UE_4.27/Engine/Build/BatchFiles/RunUAT.sh"
+AT_PATH="/Users/Shared/EpicGames/UE_$ENGINE_VERSION/Engine/Build/BatchFiles/RunUAT.sh"
 PACKAGE_ROOT_DIR=$CI_WORK_DIR/Builds
 SETTINGS_INI_PATH=$PROJECT_DIR/Config/DefaultEngine.ini
 
