@@ -34,8 +34,6 @@ echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### PACKAGE_ROOT_DIR: %PACKAGE_ROOT_DIR%
 echo ### SETTINGS_INI_PATH: %SETTINGS_INI_PATH%
 
-if %MAJOR_VERSION%==5 (call %CI_WORK_DIR%\cicd\change-ini-settings.bat %SETTINGS_INI_PATH% "/Script/AndroidPlatformEditor.AndroidSDKSettings" NDKPath (Path="C:\Users\Runner\AppData\Local\Android\Sdk\ndk\25.1.8937393")
-
 echo =======================================
 echo ### PACKAGE IN GAME BROWSER VARIANT ###
 
