@@ -204,7 +204,7 @@ stop doc:
   stage: demo-ios-ue4
   script:
     - chmod 755 cicd/build-demo-ios.sh
-    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR %UE4_ENGINE_VERSION%
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR $UE4_ENGINE_VERSION
   artifacts:
     name: "UE4_BUILD_IOS_$CI_COMMIT_REF_NAME"
     when: always
@@ -223,7 +223,7 @@ build-ios-demo-ue5:
   stage: demo-ios-ue5
   script:
     - chmod 755 cicd/build-demo-ios.sh
-    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR %UE5_ENGINE_VERSION%
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR $UE5_ENGINE_VERSION
   artifacts:
     name: "UE5_BUILD_IOS_$CI_COMMIT_REF_NAME"
     when: always
