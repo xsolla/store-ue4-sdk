@@ -92,7 +92,7 @@ stop doc:
 # =================================================================================================================
 # AUTOTESTS
     
-.run-autotests:
+run-autotests:
   stage: autotests
   script:
     - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -110,7 +110,7 @@ stop doc:
 # =================================================================================================================
 # CODE ANALYSIS
     
-.analyze-code:
+analyze-code:
   stage: code-analysis
   script:
     - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
@@ -128,7 +128,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO WIN UE4
     
-.build-win-demo-ue4:
+build-win-demo-ue4:
   stage: demo-win-ue4
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
@@ -146,7 +146,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO WIN UE5
     
-.build-win-demo-ue5:
+build-win-demo-ue5:
   stage: demo-win-ue5
   script:
     - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
@@ -164,7 +164,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO ANDROID UE4
     
-.build-android-demo-ue4:
+build-android-demo-ue4:
   stage: demo-android-ue4
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
@@ -182,7 +182,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO ANDROID UE5
     
-.build-android-demo-ue5:
+build-android-demo-ue5:
   stage: demo-android-ue5
   script:
     - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
@@ -200,7 +200,7 @@ stop doc:
 # =================================================================================================================
 # BUILD DEMO IOS UE4
     
-.build-ios-demo-ue4:
+build-ios-demo-ue4:
   stage: demo-ios-ue4
   script:
     - chmod 755 cicd/build-demo-ios.sh
