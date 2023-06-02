@@ -35,6 +35,7 @@ echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### PACKAGE_ROOT_DIR: %PACKAGE_ROOT_DIR%
 echo ### SETTINGS_INI_PATH: %SETTINGS_INI_PATH%
 
+echo.
 echo =======================================
 echo ### PACKAGE IN GAME BROWSER VARIANT ###
 
@@ -44,6 +45,7 @@ if not %errorlevel%==0 goto onFinish
 call %AT_PATH% BuildCookRun -platform=Android -project=%UPROJECT_PATH% -archivedirectory=%PACKAGE_ROOT_DIR%\InGameBrowser -cookflavor=Multi -nop4 -cook -build -stage -prereqss -package -archive 
 if not %errorlevel%==0 goto onFinish
 
+echo.
 echo ========================================
 echo ### PACKAGE PLATFORM BROWSER VARIANT ###
 

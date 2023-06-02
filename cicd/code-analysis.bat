@@ -25,7 +25,6 @@ set UVS_PATH="C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\U
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### AUTOMATION_TOOL_PATH: %UAT_PATH%
 echo ### UNIVERSAL_VERSION_SELECTOR_PATH: %UVS_PATH%
-echo.
 
 call %UAT_PATH% BuildCookRun -platform=Win64 -project=%UPROJECT_PATH% -nop4 -cook -build -stage -prereqs
 if not %errorlevel%==0 goto onFinish
@@ -43,7 +42,6 @@ set REPORT_PATH=%CI_WORK_DIR%\Logs\code-analysis-report.xml
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### USLN_PATH: %USLN_PATH%
 echo ### REPORT_PATH: %REPORT_PATH%
-echo.
 
 set CODE_ANALYZER_PATH=C:\JetBrains.ReSharper.CommandLineTools.2021.1.3\inspectcode.exe
 call %CODE_ANALYZER_PATH% "%USLN_PATH%" --project=%PROJECT_NAME% -o="%REPORT_PATH%" -s=ERROR --exclude="Plugins\XsollaSdkTests\**.*"

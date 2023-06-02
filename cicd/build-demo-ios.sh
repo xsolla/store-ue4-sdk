@@ -61,10 +61,3 @@ echo "### PACKAGE PLATFORM BROWSER VARIANT ###"
 
 sh $CI_WORK_DIR/cicd/change-ini-settings.sh $SETTINGS_INI_PATH "/Script/XsollaSettings.XsollaProjectSettings" "UsePlatformBrowser" "True"
 $AT_PATH BuildCookRun -platform=IOS -project=$UPROJECT_PATH -archivedirectory=$PACKAGE_ROOT_DIR/PlatfromBrowser -nocompileeditor -nop4 -cook -build -stage -prereqss -package -archive
-
-
-
-
-
-
-

@@ -219,7 +219,7 @@ build-ios-demo-ue4:
 # =================================================================================================================
 # BUILD DEMO IOS UE5
     
-build-ios-demo-ue5:
+.build-ios-demo-ue5:
   stage: demo-ios-ue5
   script:
     - chmod 755 cicd/build-demo-ios.sh
