@@ -11,6 +11,13 @@ echo.
 echo ============================
 echo ### PREPARE TEST PROJECT ###
 
+echo ### PROJECT_DIR: %PROJECT_DIR%
+echo ### PROJECT_BRANCH: %PROJECT_BRANCH%
+echo ### PLUGIN_BRANCH: %PLUGIN_BRANCH%
+echo ### CI_WORK_DIR: %CI_WORK_DIR%
+echo ### ENGINE_VERSION: %ENGINE_VERSION%
+echo ### PROJECT_NAME: %PROJECT_NAME%
+
 call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %ENGINE_VERSION%
 if not %errorlevel%==0 goto onFinish
 
