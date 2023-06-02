@@ -25,6 +25,12 @@ variables:
     UE4_ENGINE_VERSION: "4.27"
     UE5_ENGINE_VERSION: "5.2"
 
+workflow:
+  rules:
+    - if: $PLUGIN_BRANCH == ""
+      variables:
+          PLUGIN_BRANCH: $CI_COMMIT_TAG
+
 # =================================================================================================================
 # DOCS
 
