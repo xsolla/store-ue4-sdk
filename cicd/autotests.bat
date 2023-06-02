@@ -4,13 +4,14 @@ set PROJECT_DIR=%1
 set PROJECT_BRANCH=%2
 set PLUGIN_BRANCH=%3
 set CI_WORK_DIR=%4
+set ENGINE_VERSION=%5
 set PROJECT_NAME=StoreUeSdkTest
 
 echo.
 echo ============================
 echo ### PREPARE TEST PROJECT ###
 
-call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+call %CI_WORK_DIR%\cicd\prepare-test-project.bat %PROJECT_DIR% %PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %ENGINE_VERSION%
 if not %errorlevel%==0 goto onFinish
 
 echo.
@@ -22,7 +23,6 @@ set UBT_PATH="C:\EpicGames\UE_4.27\Engine\Binaries\DotNET\UnrealBuildTool.exe"
 
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### UBT_PATH: %UBT_PATH%
-echo.
 
 call %UBT_PATH% -Mode=QueryTargets -Project=%UPROJECT_PATH%
 if not %errorlevel%==0 goto onFinish
@@ -54,11 +54,9 @@ set REPORT_PATH=%REPORTS_DIR%\index.json
 
 echo ### JSON_PARSER_PATH: %JSON_PARSER_PATH%
 echo ### REPORT_PATH: %REPORT_PATH%
-echo.
 
 FOR /F %%i IN ('type %REPORT_PATH% ^| "%JSON_PARSER_PATH%" ".succeeded"') DO set SUCCEEDED_TESTS=%%i
 if not %errorlevel%==0 goto onFinish
-
 
 FOR /F %%i IN ('type %REPORT_PATH% ^| "%JSON_PARSER_PATH%" ".failed"') DO set FAILED_TESTS=%%i
 if not %errorlevel%==0 goto onFinish

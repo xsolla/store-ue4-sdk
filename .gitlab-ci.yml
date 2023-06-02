@@ -9,16 +9,21 @@ stages:
   - linking
   - autotests
   - code-analysis
-  - demo-win
-  - demo-android
-  - demo-ios
+  - demo-win-ue4
+  - demo-win-ue5
+  - demo-android-ue4
+  - demo-android-ue5
+  - demo-ios-ue4
+  - demo-ios-ue5
 
 variables:
     TEST_PROJECT_DIR_WIN: C:\Users\Runner\Desktop\TestProjects\Ue427
     TEST_PROJECT_DIR_MAC: /Users/runner/TestProjects/Ue427
     TEST_PROJECT_BRANCH: master
-    PLUGIN_BRANCH: $CI_COMMIT_BRANCH
+    PLUGIN_BRANCH: $CI_COMMIT_REF_NAME
     CI_WORK_DIR: $CI_PROJECT_DIR
+    UE4_ENGINE_VERSION: "4.27"
+    UE5_ENGINE_VERSION: "5.2"
 
 # =================================================================================================================
 # DOCS
@@ -90,7 +95,7 @@ stop doc:
 run-autotests:
   stage: autotests
   script:
-    - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_AUTOTESTS_%CI_COMMIT_REF_NAME%"
     when: always
@@ -108,7 +113,7 @@ run-autotests:
 analyze-code:
   stage: code-analysis
   script:
-    - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_CODE_ANALYSIS_%CI_COMMIT_REF_NAME%"
     when: always
@@ -121,12 +126,12 @@ analyze-code:
     - windows
 
 # =================================================================================================================
-# BUILD DEMO WIN
+# BUILD DEMO WIN UE4
     
-build-win-demo:
-  stage: demo-win
+build-win-demo-ue4:
+  stage: demo-win-ue4
   script:
-    - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_BUILD_WIN_%CI_COMMIT_REF_NAME%"
     when: always
@@ -139,12 +144,30 @@ build-win-demo:
     - windows
 
 # =================================================================================================================
-# BUILD DEMO ANDROID
+# BUILD DEMO WIN UE5
     
-build-android-demo:
-  stage: demo-android
+build-win-demo-ue5:
+  stage: demo-win-ue5
   script:
-    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR%
+    - call cicd\build-demo-win.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
+  artifacts:
+    name: "UE5_BUILD_WIN_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO ANDROID UE4
+    
+build-android-demo-ue4:
+  stage: demo-android-ue4
+  script:
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
     name: "UE4_BUILD_ANDROID_%CI_COMMIT_REF_NAME%"
     when: always
@@ -157,15 +180,52 @@ build-android-demo:
     - windows
 
 # =================================================================================================================
-# BUILD DEMO IOS
+# BUILD DEMO ANDROID UE5
     
-build-ios-demo:
-  stage: demo-ios
+build-android-demo-ue5:
+  stage: demo-android-ue5
+  script:
+    - call cicd\build-demo-android.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE5_ENGINE_VERSION%
+  artifacts:
+    name: "UE5_BUILD_ANDROID_%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - windows
+
+# =================================================================================================================
+# BUILD DEMO IOS UE4
+    
+build-ios-demo-ue4:
+  stage: demo-ios-ue4
   script:
     - chmod 755 cicd/build-demo-ios.sh
-    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR $UE4_ENGINE_VERSION
   artifacts:
     name: "UE4_BUILD_IOS_$CI_COMMIT_REF_NAME"
+    when: always
+    paths:
+      - Builds
+    expire_in: 3 days
+  dependencies: []
+  tags:
+    - sdk_ci
+    - mac
+
+# =================================================================================================================
+# BUILD DEMO IOS UE5
+    
+.build-ios-demo-ue5:
+  stage: demo-ios-ue5
+  script:
+    - chmod 755 cicd/build-demo-ios.sh
+    - sh cicd/build-demo-ios.sh $TEST_PROJECT_DIR_MAC $TEST_PROJECT_BRANCH $PLUGIN_BRANCH $CI_WORK_DIR $UE5_ENGINE_VERSION
+  artifacts:
+    name: "UE5_BUILD_IOS_$CI_COMMIT_REF_NAME"
     when: always
     paths:
       - Builds
