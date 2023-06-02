@@ -8,6 +8,16 @@ set ENGINE_VERSION=%5%
 
 echo.
 echo ==========================
+echo ### VARS ###
+
+echo ### PROJECT_DIR: %PROJECT_DIR%
+echo ### PROJECT_BRANCH: %PROJECT_BRANCH%
+echo ### PLUGIN_BRANCH: %PLUGIN_BRANCH%
+echo ### CI_WORK_DIR: %CI_WORK_DIR%
+echo ### ENGINE_VERSION: %ENGINE_VERSION%
+
+echo.
+echo ==========================
 echo ### CLONE TEST PROJECT ###
 
 set PROJECT_REMOTE=git@gitlab.loc:sdk_group/store-ue-sdk-test.git
