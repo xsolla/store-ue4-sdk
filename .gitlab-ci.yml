@@ -20,7 +20,7 @@ variables:
     TEST_PROJECT_DIR_WIN: C:\Users\Runner\Desktop\TestProjects\Ue427
     TEST_PROJECT_DIR_MAC: /Users/runner/TestProjects/Ue427
     TEST_PROJECT_BRANCH: master
-    PLUGIN_BRANCH: $CI_COMMIT_BRANCH
+    PLUGIN_BRANCH: $CI_COMMIT_REF_NAME
     CI_WORK_DIR: $CI_PROJECT_DIR
     UE4_ENGINE_VERSION: "4.27"
     UE5_ENGINE_VERSION: "5.2"
@@ -94,10 +94,6 @@ stop doc:
     
 run-autotests:
   stage: autotests
-  rules:
-    - if: $PLUGIN_BRANCH == ""
-      variables:
-          PLUGIN_BRANCH: $CI_COMMIT_TAG
   script:
     - call cicd\autotests.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
@@ -116,10 +112,6 @@ run-autotests:
     
 analyze-code:
   stage: code-analysis
-  rules:
-    - if: $PLUGIN_BRANCH == ""
-      variables:
-          PLUGIN_BRANCH: $CI_COMMIT_TAG
   script:
     - call cicd\code-analysis.bat %TEST_PROJECT_DIR_WIN% %TEST_PROJECT_BRANCH% %PLUGIN_BRANCH% %CI_WORK_DIR% %UE4_ENGINE_VERSION%
   artifacts:
