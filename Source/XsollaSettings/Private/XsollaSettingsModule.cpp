@@ -11,8 +11,8 @@
 void FXsollaSettingsModule::StartupModule()
 {
 	// Register settings
-	XsollaSettings = NewObject<UXsollaProjectSettings>(GetTransientPackage(), "XsollaSettings", RF_Standalone);
-	XsollaSettings->AddToRoot();
+
+	XsollaSettings = GetMutableDefault<UXsollaProjectSettings>();
 
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
@@ -35,7 +35,10 @@ void FXsollaSettingsModule::ShutdownModule()
 	if (!GExitPurge)
 	{
 		// If we're in exit purge, this object has already been destroyed
-		XsollaSettings->RemoveFromRoot();
+		if (XsollaSettings->IsRooted())
+		{
+			XsollaSettings->RemoveFromRoot();
+		}
 	}
 	else
 	{
