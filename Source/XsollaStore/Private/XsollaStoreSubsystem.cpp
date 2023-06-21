@@ -26,6 +26,7 @@
 #include "XsollaStoreBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
+#include "Engine/GameInstance.h"
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"

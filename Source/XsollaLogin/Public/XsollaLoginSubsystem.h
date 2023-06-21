@@ -523,7 +523,7 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback);
+	void ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* const Picture, const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Deletes the user’s avatar. Changes are made on the user data storage side (server side).
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-account/).
