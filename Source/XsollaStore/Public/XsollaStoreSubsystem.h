@@ -190,12 +190,12 @@ public:
 	 * @param SuccessCallback Called after payment token was successfully fetched.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
+	 * @param ExternalId (optional) Transaction external ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Country, const FString& Locale,
-		const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
+		const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1, const FString& ExternalId = TEXT(""));
 
 	/** Creates an order with items from the cart with the specified ID or from the cart of the current user. Returns the payment token and order ID.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
@@ -208,12 +208,12 @@ public:
 	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment token was successfully fetched.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param ExternalId (optional) Transaction external ID.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Country, const FString& Locale,
-		const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId = TEXT(""));
 
 	/** Opens payment console for the provided access token.
 	 * More about the use cases:
@@ -259,18 +259,12 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired free item SKU.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale.<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param Quantity Item quantity.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1);
 
 	/** Create order with free cart. The created order will get a `done` order status.
@@ -278,18 +272,11 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale.<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Locale,
-		const FXsollaParameters CustomParameters,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Initiates purchase by passing store item
@@ -853,13 +840,11 @@ private:
 	void ProcessNextCartRequest();
 
 	/** Prepare payload for payment token request */
-	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters);
+	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country,
+		const FString& Locale, const FString& ExternalId, const FXsollaParameters& CustomParameters);
 
 	/** Prepare paystation settings */
 	TSharedPtr<FJsonObject> PreparePaystationSettings();
-
-	/** Get payment interface theme */
-	FString GetPaymentInerfaceTheme() const;
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);

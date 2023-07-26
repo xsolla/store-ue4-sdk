@@ -333,7 +333,7 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 
 #if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
-	nativeCallback->BindSuccessDelegate(SuccessCallback);
+	nativeCallback->BindSuccessDelegate(SuccessCallback, this);
 	nativeCallback->BindCancelDelegate(CancelCallback);
 	nativeCallback->BindErrorDelegate(ErrorCallback);
 
@@ -396,6 +396,29 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	}];
 #endif
 }
+
+void UXsollaLoginSubsystem::AuthenticateViaSocialNetwork(const FString& ProviderName,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback,
+	const bool bRememberMe, const FString& State)
+{
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+
+	LoginData.bRememberMe = bRememberMe;
+	NativeSuccessCallback = SuccessCallback;
+	NativeErrorCallback = ErrorCallback;
+	NativeCancelCallback = CancelCallback;
+
+	if (Platform == TEXT("android") || Platform == TEXT("ios"))
+	{
+		LaunchNativeSocialAuthentication(ProviderName, SuccessCallback, CancelCallback, ErrorCallback, bRememberMe, State);
+	}
+	else
+	{
+		FOnSocialUrlReceived UrlReceivedCallback;
+		UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback);
+		GetSocialAuthenticationUrl(ProviderName, State, UrlReceivedCallback, ErrorCallback);
+	}
+} 
 
 void UXsollaLoginSubsystem::SetToken(const FString& Token)
 {
@@ -1126,9 +1149,9 @@ void UXsollaLoginSubsystem::RemoveProfilePicture(const FString& AuthToken, const
 void UXsollaLoginSubsystem::GetFriends(const FString& AuthToken, const EXsollaFriendsType Type, const EXsollaUsersSortCriteria SortBy, const EXsollaUsersSortOrder SortOrder,
 	const FOnUserFriendsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& After, const int Limit)
 {
-	const FString FriendType = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendsType", Type);
-	const FString SortByCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortCriteria", SortBy);
-	const FString SortOrderCriteria = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaUsersSortOrder", SortOrder);
+	const FString FriendType = UXsollaUtilsLibrary::EnumToString<EXsollaFriendsType>(Type);
+	const FString SortByCriteria = UXsollaUtilsLibrary::EnumToString<EXsollaUsersSortCriteria>(SortBy);
+	const FString SortOrderCriteria = UXsollaUtilsLibrary::EnumToString<EXsollaUsersSortOrder>(SortOrder);
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/relationships"))
@@ -1157,7 +1180,7 @@ void UXsollaLoginSubsystem::ModifyFriends(const FString& AuthToken, const EXsoll
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
 	RequestDataJson->SetStringField(TEXT("user"), UserID);
-	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaFriendAction", Action));
+	RequestDataJson->SetStringField(TEXT("action"), UXsollaUtilsLibrary::EnumToString<EXsollaFriendAction>(Action));
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -1333,7 +1356,7 @@ void UXsollaLoginSubsystem::GetLinkedSocialNetworks(const FString& AuthToken, co
 void UXsollaLoginSubsystem::LogoutUser(const FString& AuthToken, const EXsollaSessionType Sessions,
 	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString SessionsString = UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaSessionType", Sessions);
+	const FString SessionsString = UXsollaUtilsLibrary::EnumToString<EXsollaSessionType>(Sessions);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/logout"))
 							.AddStringQueryParam(TEXT("sessions"), SessionsString)
@@ -1763,7 +1786,7 @@ void UXsollaLoginSubsystem::UserFriends_HttpRequestComplete(FHttpRequestPtr Http
 	{
 		const FString Type = UXsollaUtilsLibrary::GetUrlParameter(HttpRequest->GetURL(), TEXT("type"));
 
-		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>("EXsollaFriendsType", Type));
+		SuccessCallback.ExecuteIfBound(receivedUserFriendsData, UXsollaUtilsLibrary::GetEnumValueFromString<EXsollaFriendsType>(Type));
 	}
 	else
 	{
@@ -2146,6 +2169,30 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 		auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
 		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
+	}
+}
+
+void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
+{
+	UUserWidget* BrowserWidget = nullptr;
+	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
+
+	UXsollaLoginBrowserWrapper* BrowserWidgetWrapper = Cast<UXsollaLoginBrowserWrapper>(BrowserWidget);
+
+	if (BrowserWidgetWrapper != nullptr)
+	{
+		BrowserWidgetWrapper->LoadUrl(Url);
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bAuthenticationCompleted)
+			{ 
+			if (bAuthenticationCompleted)
+			{
+				NativeSuccessCallback.ExecuteIfBound(LoginData);
+			}
+			else
+			{
+				NativeCancelCallback.ExecuteIfBound();
+			}
+		});
 	}
 }
 

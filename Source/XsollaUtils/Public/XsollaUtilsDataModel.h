@@ -92,15 +92,30 @@ struct XSOLLAUTILS_API FXsollaStoreItemBonus
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaStoreItemRecurrentSchedule
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Recurrent Schedule")
+	FString interval_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Recurrent Schedule")
+	int32 reset_next_date = 0;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLAUTILS_API FXsollaStoreItemLimitsPerUser
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
-	int32 available = 0;
+	int32 available = -1;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
-	int32 total = 0;
+	int32 total = -1;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Item Limits Per User")
+	FXsollaStoreItemRecurrentSchedule recurrent_schedule;
 };
 
 USTRUCT(BlueprintType)
@@ -109,7 +124,40 @@ struct XSOLLAUTILS_API FXsollaStoreItemLimits
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Limits")
-	TArray<FXsollaStoreItemLimitsPerUser> per_user;
+	FXsollaStoreItemLimitsPerUser per_user;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaPromotionRecurrentSchedule
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promotion Recurrent Schedule")
+	FString interval_type;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promotion Recurrent Schedule")
+	FString time;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaPromotionLimitsPerUser
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promotion Limits Per User")
+	int32 available = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promotion Limits Per User")
+	int32 total = 0;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLAUTILS_API FXsollaPromotionLimits
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Promotion Limits")
+	FXsollaPromotionLimitsPerUser per_user;
 };
 
 USTRUCT(BlueprintType)
@@ -133,7 +181,7 @@ struct XSOLLAUTILS_API FXsollaStoreItemPromotion
 	TArray<FXsollaStoreItemBonus> bonus;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item Promotion")
-	FXsollaStoreItemLimits limits;
+	FXsollaPromotionLimits limits;
 };
 
 USTRUCT(BlueprintType)
@@ -391,9 +439,12 @@ struct FXsollaPaymentTokenRequestPayload
 
 	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
 	FXsollaParameters CustomParameters;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	FString ExternalId;
 };
 
-/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling GetEnumValueAsString with "EVariantTypes" as the first argument.
+/* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.
 */
 UENUM()
 enum class EXsollaVariantTypes : int8

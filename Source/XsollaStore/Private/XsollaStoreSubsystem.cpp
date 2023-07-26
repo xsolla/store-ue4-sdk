@@ -208,11 +208,10 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetI
 }
 
 void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Country, const FString& Locale,
-	const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
+	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity, const FString& ExternalId)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, ExternalId, CustomParameters);
 
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
@@ -250,14 +249,13 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 }
 
 void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
-	const FString& Currency, const FString& Country, const FString& Locale,
-	const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
 
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, ExternalId, CustomParameters);
 
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/cart")
@@ -414,11 +412,10 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Locale, const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
-
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/item/{ItemSKU}"))
@@ -439,12 +436,8 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& Auth
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
-	const FString& Currency, const FString& Locale,
-	const FXsollaParameters CustomParameters,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, FString(), Locale, CustomParameters);
-
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/cart")
 								 : TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/free/cart/{CartID}");
@@ -455,9 +448,9 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 		{
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token);
 
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CreateOrderWithFreeCart_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
@@ -769,7 +762,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency(const FString& AuthToken,
 {
 	CachedAuthToken = AuthToken;
 
-	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPublishingPlatform", Platform);
+	const FString PlatformName = Platform == EXsollaPublishingPlatform::undefined ? TEXT("") : UXsollaUtilsLibrary::EnumToString<EXsollaPublishingPlatform>(Platform);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}/virtual/{CurrencySKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1965,14 +1958,13 @@ void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, cons
 		FOnFetchTokenSuccess FetchTokenSuccessCallback;
 		FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
 		FetchPaymentToken(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Country, PaymentTokenRequestPayload.Locale,
-			PaymentTokenRequestPayload.CustomParameters, FetchTokenSuccessCallback, PaymentErrorCallback);
+			PaymentTokenRequestPayload.CustomParameters, FetchTokenSuccessCallback, PaymentErrorCallback, 1, PaymentTokenRequestPayload.ExternalId);
 	}
 	else
 	{
 		FOnPurchaseUpdate FreePurchaseSuccessCallback;
 		FreePurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
-		CreateOrderWithSpecifiedFreeItem(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Locale,
-			PaymentTokenRequestPayload.CustomParameters, FreePurchaseSuccessCallback, ErrorCallback);
+		CreateOrderWithSpecifiedFreeItem(AuthToken, Sku, FreePurchaseSuccessCallback, ErrorCallback);
 	}
 }
 
@@ -2042,8 +2034,8 @@ void UXsollaStoreSubsystem::ProcessNextCartRequest()
 	}
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(
-	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters& CustomParameters)
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country,
+	const FString& Locale, const FString& ExternalId, const FXsollaParameters& CustomParameters)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
@@ -2063,7 +2055,15 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
 
-	RequestDataJson->SetObjectField(TEXT("settings"), PreparePaystationSettings());
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings();
+
+	if (!ExternalId.IsEmpty())
+	PaystationSettingsJson->SetStringField(TEXT("external_id"), ExternalId);
+
+	RequestDataJson->SetObjectField(TEXT("settings"), PaystationSettingsJson);
+
+	RequestDataJson->SetStringField(TEXT("return_url"), Settings->ReturnUrl);
+
 	FString OutputString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
@@ -2079,13 +2079,13 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), GetPaymentInerfaceTheme());
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceTheme);
 	PaymentUiSettingsJson->SetStringField(TEXT("size"),
-		UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiSize", Settings->PaymentInterfaceSize));
+		UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiSize>(Settings->PaymentInterfaceSize));
 
 	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
 		PaymentUiSettingsJson->SetStringField(TEXT("version"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentUiVersion", Settings->PaymentInterfaceVersion));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiVersion>(Settings->PaymentInterfaceVersion));
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
@@ -2097,9 +2097,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
 		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", Settings->RedirectCondition));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectCondition>(Settings->RedirectCondition));
 		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", Settings->RedirectStatusManual));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectStatusManual>(Settings->RedirectStatusManual));
 
 		RedirectSettingsJson->SetNumberField(TEXT("delay"), Settings->RedirectDelay);
 		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), Settings->RedirectButtonCaption);
@@ -2113,9 +2113,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 		TSharedPtr<FJsonObject> RedirectSettingsJson = MakeShareable(new FJsonObject);
 
 		RedirectSettingsJson->SetStringField(TEXT("redirect_conditions"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectCondition", EXsollaPaymentRedirectCondition::any));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectCondition>(EXsollaPaymentRedirectCondition::any));
 		RedirectSettingsJson->SetStringField(TEXT("status_for_manual_redirection"),
-			UXsollaUtilsLibrary::GetEnumValueAsString("EXsollaPaymentRedirectStatusManual", EXsollaPaymentRedirectStatusManual::none));
+			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentRedirectStatusManual>(EXsollaPaymentRedirectStatusManual::none));
 
 		RedirectSettingsJson->SetNumberField(TEXT("delay"), 0);
 		RedirectSettingsJson->SetStringField(TEXT("redirect_button_caption"), TEXT(""));
@@ -2125,36 +2125,6 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	}
 
 	return PaymentSettingsJson;
-}
-
-FString UXsollaStoreSubsystem::GetPaymentInerfaceTheme() const
-{
-	FString theme;
-
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	switch (Settings->PaymentInterfaceTheme)
-	{
-	case EXsollaPaymentUiTheme::default_light:
-		theme = TEXT("default");
-		break;
-	case EXsollaPaymentUiTheme::default_dark:
-		theme = TEXT("default_dark");
-		break;
-	case EXsollaPaymentUiTheme::dark:
-		theme = TEXT("dark");
-		break;
-	case EXsollaPaymentUiTheme::ps4_default_light:
-		theme = TEXT("ps4-default-light");
-		break;
-	case EXsollaPaymentUiTheme::ps4_default_dark:
-		theme = TEXT("ps4-default-dark");
-		break;
-	default:
-		theme = TEXT("default");
-	}
-
-	return theme;
 }
 
 bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError)

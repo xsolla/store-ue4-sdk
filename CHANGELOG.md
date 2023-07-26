@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0] - 2023-05-20
+
+### Added
+- `AuthenticateViaSocialNetwork` SDK method. It authenticates user via social networks. Method incapsulates web-based and native authentication methods
+
+### Changed
+- `FetchPaymentToken` and `FetchCartPaymentToken` SDK methods. Added the `ExternalId` parameter
+- Xsolla settings. The `PaymentInterfaceTheme` is converted to `string`
+- SDK methods for getting catalog (`UXsollaStoreSubsystem` class). Added the `limits` parameter for items and promotions
+
+### Fixed
+- Compilation warnings
+
 ## [1.4.0] - 2023-03-31
 
 ### Added
