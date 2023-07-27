@@ -1,14 +1,12 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
 // swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKLoginKit
-// swift-module-flags-ignorable: -enable-bare-slash-regex
 import AuthenticationServices
 import Foundation
 import Swift
 import UIKit
 import XsollaSDKUtilities
 import _Concurrency
-import _StringProcessing
 public enum LogoutSessionType : Swift.String {
   case sso
   case all
@@ -85,59 +83,60 @@ public struct JWTGenerationParams {
   public let redirectUri: Swift.String?
   public init(grantType: XsollaSDKLoginKit.TokenGrantType = .authorizationCode, clientId: Swift.Int, refreshToken: Swift.String? = nil, clientSecret: Swift.String? = nil, redirectUri: Swift.String? = nil)
 }
-public typealias LoginKitResult<T> = Swift.Result<T, Swift.Error>
-public typealias LoginKitCompletion<T> = (XsollaSDKLoginKit.LoginKitResult<T>) -> Swift.Void
 public typealias LoginOperationId = Swift.String
 @_hasMissingDesignatedInitializers final public class LoginKit {
   public static let shared: XsollaSDKLoginKit.LoginKit
   final public var authCodeExtractor: XsollaSDKLoginKit.AuthCodeExtracting
+  final public var authTokenExtractor: XsollaSDKLoginKit.AuthTokenExtracting
   @objc deinit
 }
 @available(iOS 13.4, *)
 extension XsollaSDKLoginKit.LoginKit {
   final public func authBySocialNetwork(_ providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, presentationContextProvider: XsollaSDKLoginKit.WebAuthenticationSession.PresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func authWithXsollaWidget(loginProjectId: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, presentationContextProvider: XsollaSDKLoginKit.WebAuthenticationSession.PresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
 }
 extension XsollaSDKLoginKit.LoginKit {
-  final public func logUserOut(accessToken: Swift.String, sessionType: XsollaSDKLoginKit.LogoutSessionType, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func authByUsernameAndPassword(username: Swift.String, password: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func getLinkForSocialAuth(providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Foundation.URL>)
-  final public func authBySocialNetwork(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, providerName: Swift.String, socialNetworkAccessToken: Swift.String, socialNetworkAccessTokenSecret: Swift.String?, socialNetworkOpenId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func generateJWT(with authCode: Swift.String?, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func registerNewUser(params: XsollaSDKLoginKit.RegisterNewUserParams, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo?>)
-  final public func resetPassword(loginProjectId: Swift.String, username: Swift.String, loginUrl: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func startAuthByEmail(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, email: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LoginOperationId>)
-  final public func completeAuthByEmail(clientId: Swift.Int, code: Swift.String, email: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func startAuthByPhone(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, phoneNumber: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LoginOperationId>)
-  final public func completeAuthByPhone(clientId: Swift.Int, code: Swift.String, phoneNumber: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func getConfirmationCode(projectId: Swift.String, login: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
-  final public func authWithDeviceId(deviceId: Swift.String, device: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.AccessTokenInfo>)
-  final public func resendConfirmationLink(clientId: Swift.Int, redirectUri: Swift.String, state: Swift.String, username: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func getUserDevices(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.DeviceInfo]>)
-  final public func linkDeviceToAccount(device: Swift.String, deviceId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func unlinkDeviceFromAccount(deviceId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func addUsernameAndPassword(username: Swift.String, password: Swift.String, email: Swift.String, promoEmailAgreement: Swift.Bool, accessToken: Swift.String, redirectUri: Swift.String?, completion: @escaping (XsollaSDKLoginKit.LoginKitCompletion<Swift.Bool>))
-  final public func createCodeForLinkingAccounts(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
-  final public func getUserPublicProfile(userId: Swift.String, accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserPublicProfile>)
-  final public func getCurrentUserDetails(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserProfileDetails>)
-  final public func updateCurrentUserDetails(accessToken: Swift.String, birthday: Foundation.Date? = nil, firstName: Swift.String? = nil, lastName: Swift.String? = nil, nickname: Swift.String? = nil, gender: XsollaSDKLoginKit.UserProfileDetails.Gender? = nil, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.UserProfileDetails>)
-  final public func getUserEmail(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String?>)
-  final public func deleteUserPicture(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func uploadUserPicture(accessToken: Swift.String, imageURL: Foundation.URL, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
-  final public func getCurrentUserPhone(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String?>)
-  final public func updateCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func deleteCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func getCurrentUserFriends(accessToken: Swift.String, listType: XsollaSDKLoginKit.FriendsListType, sortType: XsollaSDKLoginKit.FriendsListSortType, sortOrderType: XsollaSDKLoginKit.FriendsListOrderType, after: Swift.String?, limit: Swift.Int? = nil, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.FriendsList>)
-  final public func updateCurrentUserFriends(accessToken: Swift.String, actionType: XsollaSDKLoginKit.FriendsListUpdateAction, userID: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func getLinksForSocialAuth(accessToken: Swift.String, locale: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.LinksForSocialAuth>)
-  final public func getLinkedNetworks(accessToken: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserSocialNetworkInfo]>)
-  final public func getURLToLinkSocialNetworkToAccount(accessToken: Swift.String, providerName: Swift.String, loginURL: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.String>)
-  final public func getSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, offset: Swift.Int, limit: Swift.Int, withLoginId: Swift.Bool, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.SocialNetworkFriendsList>)
-  final public func updateSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func searchUsersByNickname(nickname: Swift.String, accessToken: Swift.String, offset: Swift.Int?, limit: Swift.Int?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<XsollaSDKLoginKit.SearchUsersByNicknameResult>)
-  final public func getClientUserAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserAttribute]>)
-  final public func getClientUserReadOnlyAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<[XsollaSDKLoginKit.UserAttribute]>)
-  final public func updateClientUserAttributes(accessToken: Swift.String, attributes: [XsollaSDKLoginKit.UserAttribute]?, publisherProjectId: Swift.Int?, removingKeys: [Swift.String]?, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Void>)
-  final public func checkUserAge(birthday: Swift.String, accessToken: Swift.String, loginId: Swift.String, completion: @escaping XsollaSDKLoginKit.LoginKitCompletion<Swift.Bool>)
+  final public func logUserOut(accessToken: Swift.String, sessionType: XsollaSDKLoginKit.LogoutSessionType, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func authByUsernameAndPassword(username: Swift.String, password: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func getLinkForSocialAuth(providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, completion: @escaping (Swift.Result<Foundation.URL, Swift.Error>) -> Swift.Void)
+  final public func authBySocialNetwork(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, providerName: Swift.String, socialNetworkAccessToken: Swift.String, socialNetworkAccessTokenSecret: Swift.String?, socialNetworkOpenId: Swift.String?, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func deleteLinkedNetwork(accessToken: Swift.String, providerName: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func generateJWT(with authCode: Swift.String?, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func registerNewUser(params: XsollaSDKLoginKit.RegisterNewUserParams, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, locale: Swift.String? = nil, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo?, Swift.Error>) -> Swift.Void)
+  final public func resetPassword(loginProjectId: Swift.String, username: Swift.String, loginUrl: Swift.String?, locale: Swift.String? = nil, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func startAuthByEmail(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, email: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, locale: Swift.String? = nil, completion: @escaping (Swift.Result<XsollaSDKLoginKit.LoginOperationId, Swift.Error>) -> Swift.Void)
+  final public func completeAuthByEmail(clientId: Swift.Int, code: Swift.String, email: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func startAuthByPhone(oAuth2Params: XsollaSDKLoginKit.OAuth2Params, phoneNumber: Swift.String, linkUrl: Swift.String?, sendLink: Swift.Bool, completion: @escaping (Swift.Result<XsollaSDKLoginKit.LoginOperationId, Swift.Error>) -> Swift.Void)
+  final public func completeAuthByPhone(clientId: Swift.Int, code: Swift.String, phoneNumber: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func getConfirmationCode(projectId: Swift.String, login: Swift.String, operationId: XsollaSDKLoginKit.LoginOperationId, completion: @escaping (Swift.Result<Swift.String, Swift.Error>) -> Swift.Void)
+  final public func authWithDeviceId(deviceId: Swift.String, device: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, Swift.Error>) -> Swift.Void)
+  final public func resendConfirmationLink(clientId: Swift.Int, redirectUri: Swift.String, state: Swift.String, username: Swift.String, locale: Swift.String? = nil, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func getUserDevices(accessToken: Swift.String, completion: @escaping (Swift.Result<[XsollaSDKLoginKit.DeviceInfo], Swift.Error>) -> Swift.Void)
+  final public func linkDeviceToAccount(device: Swift.String, deviceId: Swift.String, accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func unlinkDeviceFromAccount(deviceId: Swift.String, accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func addUsernameAndPassword(username: Swift.String, password: Swift.String, email: Swift.String, promoEmailAgreement: Swift.Bool, accessToken: Swift.String, redirectUri: Swift.String?, completion: @escaping ((Swift.Result<Swift.Bool, Swift.Error>) -> Swift.Void))
+  final public func createCodeForLinkingAccounts(accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.String, Swift.Error>) -> Swift.Void)
+  final public func getUserPublicProfile(userId: Swift.String, accessToken: Swift.String, completion: @escaping (Swift.Result<XsollaSDKLoginKit.UserPublicProfile, Swift.Error>) -> Swift.Void)
+  final public func getCurrentUserDetails(accessToken: Swift.String, completion: @escaping (Swift.Result<XsollaSDKLoginKit.UserProfileDetails, Swift.Error>) -> Swift.Void)
+  final public func updateCurrentUserDetails(accessToken: Swift.String, birthday: Foundation.Date? = nil, firstName: Swift.String? = nil, lastName: Swift.String? = nil, nickname: Swift.String? = nil, gender: XsollaSDKLoginKit.UserProfileDetails.Gender? = nil, completion: @escaping (Swift.Result<XsollaSDKLoginKit.UserProfileDetails, Swift.Error>) -> Swift.Void)
+  final public func getUserEmail(accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.String?, Swift.Error>) -> Swift.Void)
+  final public func deleteUserPicture(accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func uploadUserPicture(accessToken: Swift.String, imageURL: Foundation.URL, completion: @escaping (Swift.Result<Swift.String, Swift.Error>) -> Swift.Void)
+  final public func getCurrentUserPhone(accessToken: Swift.String, completion: @escaping (Swift.Result<Swift.String?, Swift.Error>) -> Swift.Void)
+  final public func updateCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func deleteCurrentUserPhone(accessToken: Swift.String, phoneNumber: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func getCurrentUserFriends(accessToken: Swift.String, listType: XsollaSDKLoginKit.FriendsListType, sortType: XsollaSDKLoginKit.FriendsListSortType, sortOrderType: XsollaSDKLoginKit.FriendsListOrderType, after: Swift.String?, limit: Swift.Int? = nil, completion: @escaping (Swift.Result<XsollaSDKLoginKit.FriendsList, Swift.Error>) -> Swift.Void)
+  final public func updateCurrentUserFriends(accessToken: Swift.String, actionType: XsollaSDKLoginKit.FriendsListUpdateAction, userID: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func getLinksForSocialAuth(accessToken: Swift.String, locale: Swift.String?, completion: @escaping (Swift.Result<XsollaSDKLoginKit.LinksForSocialAuth, Swift.Error>) -> Swift.Void)
+  final public func getLinkedNetworks(accessToken: Swift.String, completion: @escaping (Swift.Result<[XsollaSDKLoginKit.UserSocialNetworkInfo], Swift.Error>) -> Swift.Void)
+  final public func getURLToLinkSocialNetworkToAccount(accessToken: Swift.String, providerName: Swift.String, loginURL: Swift.String, completion: @escaping (Swift.Result<Swift.String, Swift.Error>) -> Swift.Void)
+  final public func getSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, offset: Swift.Int, limit: Swift.Int, withLoginId: Swift.Bool, completion: @escaping (Swift.Result<XsollaSDKLoginKit.SocialNetworkFriendsList, Swift.Error>) -> Swift.Void)
+  final public func updateSocialNetworkFriends(accessToken: Swift.String, platform: Swift.String, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func searchUsersByNickname(nickname: Swift.String, accessToken: Swift.String, offset: Swift.Int?, limit: Swift.Int?, completion: @escaping (Swift.Result<XsollaSDKLoginKit.SearchUsersByNicknameResult, Swift.Error>) -> Swift.Void)
+  final public func getClientUserAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping (Swift.Result<[XsollaSDKLoginKit.UserAttribute], Swift.Error>) -> Swift.Void)
+  final public func getClientUserReadOnlyAttributes(accessToken: Swift.String, keys: [Swift.String]?, publisherProjectId: Swift.Int?, userId: Swift.String?, completion: @escaping (Swift.Result<[XsollaSDKLoginKit.UserAttribute], Swift.Error>) -> Swift.Void)
+  final public func updateClientUserAttributes(accessToken: Swift.String, attributes: [XsollaSDKLoginKit.UserAttribute]?, publisherProjectId: Swift.Int?, removingKeys: [Swift.String]?, completion: @escaping (Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)
+  final public func checkUserAge(birthday: Swift.String, accessToken: Swift.String, loginId: Swift.String, completion: @escaping (Swift.Result<Swift.Bool, Swift.Error>) -> Swift.Void)
 }
 extension XsollaSDKLoginKit.LoginKit {
   public static let version: Swift.String
@@ -267,6 +266,7 @@ extension XsollaSDKLoginKit.FriendsList.Relationship.User {
 public enum LoginKitError : Swift.Error {
   case failedURLExtraction
   case authCodeExtractionError(Swift.String?)
+  case authTokenExtractionError(Swift.String?)
   case networkLinkingError(Swift.String?)
   case invalidRedirectUrl(Swift.String?)
   case invalidToken
@@ -319,6 +319,19 @@ public class WebAuthenticationSession {
 open class WebAuthenticationPresentationContextProvider : ObjectiveC.NSObject, AuthenticationServices.ASWebAuthenticationPresentationContextProviding {
   @objc public func presentationAnchor(for session: AuthenticationServices.ASWebAuthenticationSession) -> AuthenticationServices.ASPresentationAnchor
   public init(presentationAnchor: UIKit.UIWindow)
+  @objc deinit
+}
+public protocol AuthTokenExtracting {
+  func extract(from url: Foundation.URL) -> Swift.Result<Swift.String, Swift.Error>
+  func extract(from result: Swift.Result<Foundation.URL, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  func extract(from result: Swift.Result<Swift.String, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  func extractError(url: Foundation.URL) -> Swift.Error?
+}
+@_hasMissingDesignatedInitializers public class AuthTokenExtractor : XsollaSDKLoginKit.AuthTokenExtracting {
+  public func extract(from url: Foundation.URL) -> Swift.Result<Swift.String, Swift.Error>
+  public func extract(from result: Swift.Result<Foundation.URL, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  public func extract(from result: Swift.Result<Swift.String, Swift.Error>) -> Swift.Result<Swift.String, Swift.Error>
+  public func extractError(url: Foundation.URL) -> Swift.Error?
   @objc deinit
 }
 public protocol AuthCodeExtracting {

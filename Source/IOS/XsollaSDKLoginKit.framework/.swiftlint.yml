@@ -15,6 +15,7 @@ disabled_rules:
     - todo
     - type_body_length
     - file_length
+    - no_space_in_method_call
 
 opt_in_rules:
     - closure_end_indentation
