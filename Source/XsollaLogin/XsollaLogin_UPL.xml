@@ -72,11 +72,11 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:login:6.0.0'
-        implementation 'com.xsolla.android:login-facebook:6.0.0'
-        implementation 'com.xsolla.android:login-google:6.0.0'
-        implementation 'com.xsolla.android:login-wechat:6.0.0'
-        implementation 'com.xsolla.android:login-qq:6.0.0'
+        implementation 'com.xsolla.android:login:6.0.2'
+        implementation 'com.xsolla.android:login-facebook:6.0.2'
+        implementation 'com.xsolla.android:login-google:6.0.2'
+        implementation 'com.xsolla.android:login-wechat:6.0.2'
+        implementation 'com.xsolla.android:login-qq:6.0.2'
         implementation 'com.google.android.gms:play-services-auth:18.0.0'
         implementation 'com.google.android.gms:play-services-games:18.0.0'
       }
