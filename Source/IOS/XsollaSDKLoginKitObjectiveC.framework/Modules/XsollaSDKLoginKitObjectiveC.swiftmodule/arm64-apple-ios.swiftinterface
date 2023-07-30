@@ -19,6 +19,7 @@ import _Concurrency
 @available(iOS 13.4, *)
 extension XsollaSDKLoginKitObjectiveC.LoginKitObjectiveC {
   @objc final public func authBySocialNetwork(_ providerName: Foundation.NSString, oAuth2Params: XsollaSDKLoginKitObjectiveC.OAuth2Params, jwtParams: XsollaSDKLoginKitObjectiveC.JWTGenerationParams, presentationContextProvider: XsollaSDKLoginKitObjectiveC.PresentationContextProviding, completion: @escaping (XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> Swift.Void)
+  @objc final public func authWithXsollaWidget(loginId: Swift.String, oAuth2Params: XsollaSDKLoginKitObjectiveC.OAuth2Params, presentationContextProvider: XsollaSDKLoginKitObjectiveC.PresentationContextProviding, completion: @escaping (XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> Swift.Void)
 }
 public typealias ViewControllerPresenting = UIKit.UIViewController
 @objc public class OAuth2Params : ObjectiveC.NSObject {

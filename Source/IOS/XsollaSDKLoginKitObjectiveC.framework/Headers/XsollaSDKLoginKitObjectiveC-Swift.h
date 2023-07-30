@@ -332,6 +332,22 @@ SWIFT_AVAILABILITY(ios,introduced=13.4)
 ///   </li>
 /// </ul>
 - (void)authBySocialNetwork:(NSString * _Nonnull)providerName oAuth2Params:(OAuth2Params * _Nonnull)oAuth2Params jwtParams:(JWTGenerationParams * _Nonnull)jwtParams presentationContextProvider:(id <ASWebAuthenticationPresentationContextProviding> _Nonnull)presentationContextProvider completion:(void (^ _Nonnull)(AccessTokenInfo * _Nullable, NSError * _Nullable))completion;
+/// Performs user authentication via xsolla widget
+/// <ul>
+///   <li>
+///     Parameters:
+///   </li>
+///   <li>
+///     loginId: Login ID from <a href="https://publisher.xsolla.com/">Publisher Account</a>.
+///   </li>
+///   <li>
+///     oAuth2Params: Instance of <em>OAuth2Params</em>.
+///   </li>
+///   <li>
+///     completion: Completion with <code>Result</code>: <em>AccessTokenInfo</em> on success and Error on failure.
+///   </li>
+/// </ul>
+- (void)authWithXsollaWidgetWithLoginId:(NSString * _Nonnull)loginId oAuth2Params:(OAuth2Params * _Nonnull)oAuth2Params presentationContextProvider:(id <ASWebAuthenticationPresentationContextProviding> _Nonnull)presentationContextProvider completion:(void (^ _Nonnull)(AccessTokenInfo * _Nullable, NSError * _Nullable))completion;
 @end
 
 

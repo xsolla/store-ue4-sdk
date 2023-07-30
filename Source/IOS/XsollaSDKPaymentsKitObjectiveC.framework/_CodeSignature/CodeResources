@@ -18,7 +18,7 @@
 		</data>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/Frameworks/XsollaSDKUtilities.framework/XsollaSDKUtilities</key>
 		<data>
-		N1sNRrtH4677WcicCClGDJNyI9s=
+		sAp2rU9n4JQ5TxC0auMkam2EQqU=
 		</data>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/Frameworks/XsollaSDKUtilities.framework/_CodeSignature/CodeResources</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/XsollaSDKPaymentsKit</key>
 		<data>
-		cbEk5wAgZABeqP/HqbpVTJlgbE8=
+		8r3AAEiIB9akS3wtDzBBwdETM6E=
 		</data>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/_CodeSignature/CodeResources</key>
 		<data>
-		jxrxtj4Ke9nSPnGSWJnQfFVBYic=
+		Si84MoYEk0aWq78Iu5aCJajuh8s=
 		</data>
 		<key>Headers/PaymentsKitObjectiveC.h</key>
 		<data>
@@ -92,7 +92,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			0FW02Hcjfly5gCxDM6IVIZe/bDZUtoyfNfeQWCl6EqE=
+			yWYjC8pxpfrxALdGWpwBeFbZFq0ocwUmJKdCjlNF2Q8=
 			</data>
 		</dict>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/Frameworks/XsollaSDKUtilities.framework/_CodeSignature/CodeResources</key>
@@ -113,14 +113,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			KHKCGpZ6IsVLmjwjIRfzrssvNi06aXtqgwHCE5IrwkA=
+			IN3yUzIcEQshxzdXCFDu54peT8N3NJcTIVZ+ECUVseY=
 			</data>
 		</dict>
 		<key>Frameworks/XsollaSDKPaymentsKit.framework/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			O3riedJnpqjLrUegRWhVqChJ7+kjOVbEELcRIPtsX1w=
+			oYPAzrUOJiX91JEsKhkKPm7jPVbxVBVfjru46+HUHI4=
 			</data>
 		</dict>
 		<key>Headers/PaymentsKitObjectiveC.h</key>
