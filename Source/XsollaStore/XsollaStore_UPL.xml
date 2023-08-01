@@ -13,7 +13,7 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:payments:1.0.0'
+        implementation 'com.xsolla.android:payments:1.0.5'
       }
       repositories {
         maven { url 'https://maven.google.com' }
