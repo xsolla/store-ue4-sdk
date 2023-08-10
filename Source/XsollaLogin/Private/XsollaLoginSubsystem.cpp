@@ -213,6 +213,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 #if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
@@ -226,18 +227,52 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 #endif
 #if PLATFORM_IOS
-	// ios implementation
+	NativeSuccessCallback = SuccessCallback;
+	NativeCancelCallback = CancelCallback;
+
+	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+	WebAuthenticationPresentationContextProvider* context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];
+
+	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
+
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+		state:FString("xsollatest").GetNSString()
+		scope:@"offline"
+		redirectUri:RedirectURI.GetNSString()];
+
+	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
+		oAuth2Params:OAuthParams
+		presentationContextProvider:context
+		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
+			if (error != nil)
+			{
+				NSLog(@"Error code: %ld", error.code);
+
+				if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
+				{
+					AsyncTask(ENamedThreads::GameThread, [=]() {
+						NativeCancelCallback.ExecuteIfBound();
+					});
+				}
+				return;
+			}
+
+			LoginData.AuthToken.JWT = tokenInfo.accessToken;
+			LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
+
+			AsyncTask(ENamedThreads::GameThread, [=]() {
+				NativeSuccessCallback.ExecuteIfBound(LoginData);
+			});
+		}];
 #endif
 #else
-
 
 	if (FEngineVersion::Current().GetMajor() < 5)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla Login is not supported by this version of the engine. Please use version 5.0 and greater"));
 		return;
 	}
-
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
