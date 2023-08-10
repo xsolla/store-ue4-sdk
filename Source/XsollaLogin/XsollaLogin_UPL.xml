@@ -134,6 +134,12 @@
     <addAttribute tag="$XsollaNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
     <addElement tag="application" name="XsollaNativeAuthActivity"/>
 
+    <setElement result="XsollaNativeXsollaWidgetAuthActivity" value="activity"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeXsollaWidgetAuthActivity"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+    <addElement tag="application" name="XsollaNativeXsollaWidgetAuthActivity"/>
+
   </androidManifestUpdates>
 
 </root>

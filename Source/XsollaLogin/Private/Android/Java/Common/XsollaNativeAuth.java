@@ -29,6 +29,12 @@ public class XsollaNativeAuth {
         intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
     }
+	
+	public static void authViaXsollaWidget(Activity activity, long callback) {
+        Intent intent = new Intent(activity, XsollaNativeXsollaWidgetAuthActivity.class);
+        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.CALLBACK_ADDRESS, callback);
+        activity.startActivity(intent);
+    }
 
     private static int tryParseInt(String value, int defaultVal) {
         try {
