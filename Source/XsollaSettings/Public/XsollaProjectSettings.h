@@ -101,7 +101,7 @@ public:
 
 	//TEXTREVIEW
 	/** Payment user interface theme id.
-	* To use default themes, enter "63295a9a2e47fab76f7708e1" (light) or "63295aab2e47fab76f7708e3" (dark) values. Or enter the ID of the custom theme you've configured in Publisher Account to use it.
+	* To use default themes, enter "63295a9a2e47fab76f7708e1" (light) or "63295aab2e47fab76f7708e3" (dark) values. Or enter the ID of a custom theme you've configured in Publisher Account to use it.
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
 	FString PaymentInterfaceThemeId;
