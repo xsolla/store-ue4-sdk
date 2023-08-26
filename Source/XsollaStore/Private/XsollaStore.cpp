@@ -28,3 +28,4 @@ void FXsollaStoreModule::ShutdownModule()
 IMPLEMENT_MODULE(FXsollaStoreModule, XsollaStore)
 
 DEFINE_LOG_CATEGORY(LogXsollaStore);
+DEFINE_LOG_CATEGORY(LogXsollaCentrifugo);
