@@ -47,6 +47,12 @@ void UCentrifugoClient::Send(const FString& Data)
 	WebSocket->Send(CleanData);
 }
 
+void UCentrifugoClient::SendPing()
+{
+	UE_LOG(LogXsollaCentrifugo, Log, TEXT("Centrifugo. Websocket send ping."));
+	WebSocket->Send(PingMessage);
+}
+
 bool UCentrifugoClient::IsAlive()
 {
 	return WebSocket->IsConnected();

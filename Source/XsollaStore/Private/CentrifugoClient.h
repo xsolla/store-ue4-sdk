@@ -24,6 +24,7 @@ public:
 	void Connect();
 	void Disconnect();
 	void Send(const FString& Data);
+	void SendPing();
 	bool IsAlive();
 
 private:

@@ -128,6 +128,7 @@ void UCentrifugoServiceSubsystem::DoPing()
 	if (PingCounter >= PingInterval)
 	{
 		PingCounter = 0;
+		CentrifugoClient->SendPing();
 		if (CentrifugoClient->IsAlive())
 		{
 			TimeoutCounter = 0;
