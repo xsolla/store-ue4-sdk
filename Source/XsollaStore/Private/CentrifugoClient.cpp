@@ -14,11 +14,12 @@ FString UCentrifugoClient::PongMessage = TEXT("{}");
 UCentrifugoClient::UCentrifugoClient(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	WebSocket = FWebSocketsModule::Get().CreateWebSocket(TEXT("wss://ws-store.xsolla.com/connection/websocket"), TEXT("wss"));
+	
 }
 
 void UCentrifugoClient::Connect()
 {
+	WebSocket = FWebSocketsModule::Get().CreateWebSocket(TEXT("wss://ws-store.xsolla.com/connection/websocket"), TEXT("wss"));
 	WebSocket->OnConnected().AddUObject(this, &UCentrifugoClient::OnSocketConnected);
 	WebSocket->OnMessage().AddUObject(this, &UCentrifugoClient::OnSocketMessage);
 	WebSocket->OnConnectionError().AddUObject(this, &UCentrifugoClient::OnSocketConnectionError);
