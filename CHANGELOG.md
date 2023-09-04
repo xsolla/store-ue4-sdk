@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0] - 2023-09-11
+
+### Added
+- Centrifugo integration
+
+### Updated
+- `AuthWithXsollaWidget` SDK method. Allows to open Login widget on mobile platforms
+- Project settings. PaymentInterfaceTheme renamed to PaymentInterfaceThemeId.
+
+### Fixed
+- ZOrder of internal browser for `AuthWithXsollaWidget` SDK method
+
 ## [1.5.0] - 2023-05-20
 
 ### Added
