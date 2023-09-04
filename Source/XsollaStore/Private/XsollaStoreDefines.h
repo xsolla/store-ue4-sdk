@@ -8,6 +8,7 @@
 #include "Logging/LogVerbosity.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogXsollaStore, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogXsollaCentrifugo, Warning, All);
 
 #define VA_FUNC (FString(__FUNCTION__))				 // Current Class Name + Function Name where this is called
 #define VA_LINE (FString::FromInt(__LINE__))		 // Current Line Number in the code where this is called
