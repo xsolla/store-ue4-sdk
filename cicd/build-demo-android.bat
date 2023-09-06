@@ -28,18 +28,18 @@ if %MAJOR_VERSION%==5 (xcopy /Y /S /F "%CI_WORK_DIR%\cicd\UserEngine-5.ini" %GLO
 
 set UPROJECT_PATH=%PROJECT_DIR%\%PROJECT_NAME%.uproject
 set PACKAGE_ROOT_DIR=%CI_WORK_DIR%\Builds
-set SETTINGS_INI_PATH=%PROJECT_DIR%\Config\DefaultEngine.ini
 
 echo ### AUTOMATION_TOOL_PATH: %AT_PATH%
 echo ### UPROJECT_PATH: %UPROJECT_PATH%
 echo ### PACKAGE_ROOT_DIR: %PACKAGE_ROOT_DIR%
-echo ### SETTINGS_INI_PATH: %SETTINGS_INI_PATH%
 
 echo.
 echo ===================================
 echo ### SWITCH NDK AND SDK API LEVEL ##
 
 set USER_SETTINGS_INI_PATH="C:\Users\Runner\AppData\Local\Unreal Engine\Engine\Config\UserEngine.ini"
+echo ### SETTINGS_INI_PATH: %SETTINGS_INI_PATH%
+
 call %CI_WORK_DIR%\cicd\change-ini-settings.bat %USER_SETTINGS_INI_PATH% "/Script/AndroidPlatformEditor.AndroidSDKSettings" SDKAPILevel android-31
 call %CI_WORK_DIR%\cicd\change-ini-settings.bat %USER_SETTINGS_INI_PATH% "/Script/AndroidPlatformEditor.AndroidSDKSettings" NDKAPILevel android-21
 if not %errorlevel%==0 goto onFinish
@@ -47,6 +47,10 @@ if not %errorlevel%==0 goto onFinish
 echo.
 echo =======================================
 echo ### PACKAGE IN GAME BROWSER VARIANT ###
+
+set SETTINGS_INI_PATH=%PROJECT_DIR%\Config\DefaultEngine.ini
+echo ### SETTINGS_INI_PATH: %SETTINGS_INI_PATH%
+
 
 call %CI_WORK_DIR%\cicd\change-ini-settings.bat %SETTINGS_INI_PATH% "/Script/XsollaSettings.XsollaProjectSettings" UsePlatformBrowser False
 if not %errorlevel%==0 goto onFinish
