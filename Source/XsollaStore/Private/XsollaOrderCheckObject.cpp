@@ -16,7 +16,7 @@
 #include "CentrifugoServiceSubsystem.h"
 #include "Engine/GameInstance.h"
 
-void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime)
+void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrderId, bool bShouldStartWithCentrifugo, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime)
 {
 	AuthToken = InAuthToken;
 	OrderId = InOrderId;
@@ -25,7 +25,14 @@ void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrd
 	OnSuccess = InOnSuccess;
 	OnError = InOnError;
 
-	StartCentrifugoTracking();
+	if (bShouldStartWithCentrifugo)
+	{
+		StartCentrifugoTracking();
+	}
+	else
+	{
+		ActivateShortPolling();
+	}
 }
 
 void UXsollaOrderCheckObject::Destroy()
