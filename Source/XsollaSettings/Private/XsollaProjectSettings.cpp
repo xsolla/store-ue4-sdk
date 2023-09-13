@@ -16,7 +16,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	EnableSandbox = true;
 	UsePlatformBrowser = false;
 	BuildForSteam = false;
-	PaymentInterfaceTheme = TEXT("default");
+	PaymentInterfaceThemeId = TEXT("63295aab2e47fab76f7708e3");
 	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
 	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
 	UseSettingsFromPublisherAccount = true;

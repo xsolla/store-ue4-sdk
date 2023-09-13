@@ -10,7 +10,7 @@
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaOrderCheckObject.generated.h"
 
-class IWebSocket;
+struct FOrderStatusData;
 
 DECLARE_DELEGATE_OneParam(FOnOrderCheckSuccess, int32);
 DECLARE_DELEGATE_ThreeParams(FOnOrderCheckError, int32, int32, const FString&);
@@ -22,15 +22,13 @@ class UXsollaOrderCheckObject : public UObject
 	GENERATED_BODY()
 	
 public:
-	void Init(const FString& InAuthToken, const int32 InOrderId,
-		const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime = 300, int32 InShortPollingLifeTime = 600);
+	void Init(const FString& InAuthToken, const int32 InOrderId, bool bShouldStartWithCentrifugo,
+		const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime = 600);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
 	void Destroy();
 
 private:
-	TSharedPtr<IWebSocket> Websocket;
-
 	FOnOrderCheckSuccess OnSuccess;
 
 	FOnOrderCheckError OnError;
@@ -39,31 +37,23 @@ private:
 
 	int32 OrderId;
 
-	int32 WebSocketLifeTime;
-
 	int32 ShortPollingLifeTime;
-
-	FTimerHandle WebSocketTimerHandle;
 
 	FTimerHandle ShortPollingTimerHandle;
 
 	bool bShortPollingExpired = false;
 
-	void OnConnected();
+	void OnConnectionError();
 
-	void OnConnectionError(const FString& Error);
+	void OnOrderStatusUpdated(const FOrderStatusData Data);
 
-	void OnMessage(const FString& Message);
-
-	void OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean);
-	
-	void OnWebSocketExpired();
+	void OnClosed();
 
 	void OnShortPollingExpired();
 
-	void ActivateWebSocket();
+	void StartCentrifugoTracking();
 
-	void DestroyWebSocket();
+	void StopCentrifugoTracking();
 
 	void ActivateShortPolling();
 

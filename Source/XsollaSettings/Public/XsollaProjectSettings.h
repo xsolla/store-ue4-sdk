@@ -99,11 +99,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString QQAppId;
 
-	/** Payment user interface theme. 
-	* To use default themes, enter "default" or "default_dark" values. Or enter the name of the custom theme you configured in Publisher Account to use it.
+	/** Payment user interface theme ID.
+	* To use default themes, enter "63295a9a2e47fab76f7708e1" (light) or "63295aab2e47fab76f7708e3" (dark) values. Or enter the ID of a custom theme you've configured in Publisher Account to use it.
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	FString PaymentInterfaceTheme;
+	FString PaymentInterfaceThemeId;
 
 	/**
 	 * Payment user interface size (desktop only).

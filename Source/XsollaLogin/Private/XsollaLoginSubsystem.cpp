@@ -213,13 +213,66 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+#if PLATFORM_ANDROID || PLATFORM_IOS
+#if PLATFORM_ANDROID
+	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
+	nativeCallback->BindSuccessDelegate(SuccessCallback, this);
+	nativeCallback->BindCancelDelegate(CancelCallback);
+
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "authViaXsollaWidget",
+		"(Landroid/app/Activity;J)V",
+		FJavaWrapper::GameActivityThis,
+		(jlong)nativeCallback);
+
+#endif
+#if PLATFORM_IOS
+	NativeSuccessCallback = SuccessCallback;
+	NativeCancelCallback = CancelCallback;
+
+	UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+	WebAuthenticationPresentationContextProvider* context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:window];
+
+	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
+
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+		state:FString("xsollatest").GetNSString()
+		scope:@"offline"
+		redirectUri:RedirectURI.GetNSString()];
+
+	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
+		oAuth2Params:OAuthParams
+		presentationContextProvider:context
+		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
+			if (error != nil)
+			{
+				NSLog(@"Error code: %ld", error.code);
+
+				if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
+				{
+					AsyncTask(ENamedThreads::GameThread, [=]() {
+						NativeCancelCallback.ExecuteIfBound();
+					});
+				}
+				return;
+			}
+
+			LoginData.AuthToken.JWT = tokenInfo.accessToken;
+			LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
+
+			AsyncTask(ENamedThreads::GameThread, [=]() {
+				NativeSuccessCallback.ExecuteIfBound(LoginData);
+			});
+		}];
+#endif
+#else
+
 	if (FEngineVersion::Current().GetMajor() < 5)
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla Login is not supported by this version of the engine. Please use version 5.0 and greater"));
 		return;
 	}
-
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
@@ -238,10 +291,12 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 			CancelCallback.ExecuteIfBound();
 		}
 	});
-	MyBrowser->AddToViewport(UINT_MAX - 100);
+	MyBrowser->AddToViewport(INT_MAX - 100);
 	MyBrowser->LoadUrl(Url);
 
 	BrowserWidget = MyBrowser;
+
+#endif
 
 	// Be sure we've erased any saved info
 	LoginData = FXsollaLoginData();
@@ -2239,6 +2294,40 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallba
 	if (IsValid(callback))
 	{
 		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
+	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
+{
+	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		FXsollaLoginData receivedData;
+		receivedData.AuthToken.JWT = XsollaJavaConvertor::FromJavaString(accessToken);
+		receivedData.AuthToken.RefreshToken = XsollaJavaConvertor::FromJavaString(refreshToken);
+		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
+		receivedData.bRememberMe = rememberMe;
+		callback->ExecuteSuccess(receivedData);
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+{
+	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteCancel();
 	}
 	else
 	{

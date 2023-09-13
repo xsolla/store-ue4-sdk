@@ -1,14 +1,12 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
 // swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKit
-// swift-module-flags-ignorable: -enable-bare-slash-regex
 import Foundation
 import Swift
 import UIKit
 import WebKit
 import XsollaSDKUtilities
 import _Concurrency
-import _StringProcessing
 extension XsollaSDKUtilities.LogCategory {
   public static let all: [XsollaSDKUtilities.LogCategory]
   public static func all(excluding: [XsollaSDKUtilities.LogCategory]) -> [XsollaSDKUtilities.LogCategory]
@@ -22,7 +20,7 @@ public protocol PaystationWebViewDelegate : AnyObject {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreGraphics.CGRect)
   @_Concurrency.MainActor(unsafe) public func loadPaystation(with configuration: XsollaSDKPaymentsKit.PaystationWebView.Configuration)
   @objc deinit
 }

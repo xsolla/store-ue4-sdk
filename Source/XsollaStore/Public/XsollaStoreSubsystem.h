@@ -249,10 +249,11 @@ public:
 	 * @param OrderId Identifier of order.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param bIsUserInvolvedToPayment Whether payment UI involved in purchase. `true` for purchase for real currency. `false` for free item purchase and purchase for virtual currency
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, bool bIsUserInvolvedToPayment = false);
 
 	/** Create order with specified free item. The created order will get a `done` order status.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/free-items/).

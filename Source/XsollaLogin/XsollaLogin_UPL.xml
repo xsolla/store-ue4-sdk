@@ -72,11 +72,11 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:login:6.0.0'
-        implementation 'com.xsolla.android:login-facebook:6.0.0'
-        implementation 'com.xsolla.android:login-google:6.0.0'
-        implementation 'com.xsolla.android:login-wechat:6.0.0'
-        implementation 'com.xsolla.android:login-qq:6.0.0'
+        implementation 'com.xsolla.android:login:6.0.3'
+        implementation 'com.xsolla.android:login-facebook:6.0.3'
+        implementation 'com.xsolla.android:login-google:6.0.3'
+        implementation 'com.xsolla.android:login-wechat:6.0.3'
+        implementation 'com.xsolla.android:login-qq:6.0.3'
         implementation 'com.google.android.gms:play-services-auth:18.0.0'
         implementation 'com.google.android.gms:play-services-games:18.0.0'
       }
@@ -133,6 +133,12 @@
     <addAttribute tag="$XsollaNativeAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
     <addAttribute tag="$XsollaNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
     <addElement tag="application" name="XsollaNativeAuthActivity"/>
+
+    <setElement result="XsollaNativeXsollaWidgetAuthActivity" value="activity"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeXsollaWidgetAuthActivity"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
+    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+    <addElement tag="application" name="XsollaNativeXsollaWidgetAuthActivity"/>
 
   </androidManifestUpdates>
 

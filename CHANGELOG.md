@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0] - 2023-09-13
+
+### Added
+- Centrifugo integration
+
+### Changed
+- `AuthWithXsollaWidget` SDK method. Supports opening the widget on mobile platforms
+- Project settings. `PaymentInterfaceTheme` renamed to `PaymentInterfaceThemeId`
+
+### Fixed
+- Negative ZOrder value for Xsolla Login widget in internal browser
+
 ## [1.5.0] - 2023-05-20
 
 ### Added
@@ -19,7 +31,7 @@
 - `AuthWithXsollaWidget` SDK method. Allows to open Login widget in the internal browser
 - SDK methods for single item purchase (`PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods)
 
-### Updated
+### Changed
 - Android libraries
 - `LaunchPaymentConsole` SDK method. Added `BrowserClosed` callback.
 - Project settings. Added:
@@ -49,7 +61,7 @@
 - Deep links for iOS
 - SDK methods for ordering free items (`CreateOrderWithSpecifiedFreeItem` and `CreateOrderWithFreeCart` SDK methods)
 
-### Updated
+### Changed
 - Separated demo and SDK
 - Refinement of the payment status check (launching of the payment UI closing check and limiting short polling time)
 

@@ -365,7 +365,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 #endif
 	}
 
-	CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback);
+	CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback, true);
 }
 
 void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
@@ -385,7 +385,7 @@ void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 Ord
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const int32 OrderId,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, bool bIsUserInvolvedToPayment)
 {
 	auto OrderCheckObject = NewObject<UXsollaOrderCheckObject>(this);
 
@@ -408,7 +408,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	});
 
 	CachedOrderCheckObjects.Add(OrderCheckObject);
-	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, OrderCheckSuccessCallback, OrderCheckErrorCallback);
+	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, bIsUserInvolvedToPayment, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
@@ -2079,7 +2079,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
-	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceTheme);
+	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceThemeId);
 	PaymentUiSettingsJson->SetStringField(TEXT("size"),
 		UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiSize>(Settings->PaymentInterfaceSize));
 
