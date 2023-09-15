@@ -40,7 +40,7 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 	const FXsollaStoreCurrency* Row = GetCurrencyLibrary()->FindRow<FXsollaStoreCurrency>(FName(*Currency), FString());
 	if (Row)
 	{
-		const FString SanitizedAmount = UKismetTextLibrary::Conv_FloatToText(Amount, ERoundingMode::HalfToEven,
+		const FString SanitizedAmount = UKismetTextLibrary::Conv_DoubleToText(Amount, ERoundingMode::HalfToEven,
 			false, true, 1, 324, Row->fractionSize, Row->fractionSize)
 											.ToString();
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);

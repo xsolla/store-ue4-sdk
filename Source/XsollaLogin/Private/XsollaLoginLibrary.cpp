@@ -14,6 +14,7 @@
 #include "OnlineSubsystem.h"
 #include "XsollaSettings/Public/XsollaProjectSettings.h"
 #include "XsollaSettings/Public/XsollaSettingsModule.h"
+#include "TextureResource.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -2,7 +2,7 @@
 
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaUtilsLibrary.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Dom/JsonObject.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
