@@ -9,7 +9,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
-
+#include "Engine/GameInstance.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"

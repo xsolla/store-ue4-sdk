@@ -10,6 +10,7 @@
 class UXsollaOrderCheckObject;
 class UCentrifugoClient;
 class UXsollaLoginSubsystem;
+struct FTimerHandle;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOrderStatusUpdated, const FOrderStatusData);
 

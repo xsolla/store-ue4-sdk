@@ -8,8 +8,10 @@
 #include "XsollaLoginSubsystem.h"
 #include "XsollaStoreDefines.h"
 #include "Engine/World.h"
+#include "Engine/EngineTypes.h"
 #include "TimerManager.h"
 #include "XsollaCentrifugoDataModel.h"
+#include "Engine/GameInstance.h"
 
 void UCentrifugoServiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
