@@ -66,7 +66,7 @@ void UCentrifugoServiceSubsystem::CreateCentrifugoClient()
 		CentrifugoClient->Send(Data);
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(PingTimerHandle, this, &UCentrifugoServiceSubsystem::DoPing, 1.f, true, 1.f);
+	GetWorld()->GetTimerManager().SetTimer(PingTimerHandle, this, &UCentrifugoServiceSubsystem::DoPing, 1.f, true);
 	UE_LOG(LogXsollaCentrifugo, Log, TEXT("Centrifugo client created"));
 }
 
