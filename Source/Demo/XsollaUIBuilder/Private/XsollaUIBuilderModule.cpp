@@ -13,8 +13,7 @@ const FName FXsollaUIBuilderModule::ModuleName = "XsollaUIBuilder";
 void FXsollaUIBuilderModule::StartupModule()
 {
 	// Register settings
-	XsollaUIBuilderSettings = NewObject<UXsollaUIBuilderSettings>(GetTransientPackage(), "XsollaUIBuilderSettings", RF_Standalone);
-	XsollaUIBuilderSettings->AddToRoot();
+	XsollaUIBuilderSettings = GetMutableDefault<UXsollaUIBuilderSettings>();
 
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
@@ -38,6 +37,10 @@ void FXsollaUIBuilderModule::ShutdownModule()
 	{
 		// If we're in exit purge, this object has already been destroyed
 		XsollaUIBuilderSettings->RemoveFromRoot();
+		if (XsollaUIBuilderSettings->IsRooted())
+		{
+			XsollaUIBuilderSettings->RemoveFromRoot();
+		}
 	}
 	else
 	{
