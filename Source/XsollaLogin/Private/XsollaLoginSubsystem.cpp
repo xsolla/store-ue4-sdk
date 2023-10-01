@@ -23,6 +23,7 @@
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaLoginBrowserWrapper.h"
+#include "Async/Async.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
