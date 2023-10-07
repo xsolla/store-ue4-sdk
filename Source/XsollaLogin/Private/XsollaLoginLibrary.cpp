@@ -14,6 +14,7 @@
 #include "OnlineSubsystem.h"
 #include "XsollaSettings/Public/XsollaProjectSettings.h"
 #include "XsollaSettings/Public/XsollaSettingsModule.h"
+#include "TextureResource.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -46,7 +47,7 @@ void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(const UTexture2D* Texture)
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
 {
 	int Width = Texture->GetSizeX();
 	int Height = Texture->GetSizeY();

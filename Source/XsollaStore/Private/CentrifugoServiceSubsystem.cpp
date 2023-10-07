@@ -10,12 +10,13 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "XsollaCentrifugoDataModel.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/GameInstance.h"
 
 void UCentrifugoServiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
 
-	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
+	LoginSubsystem = UGameInstance::GetSubsystem<UXsollaLoginSubsystem>(GetGameInstance());
 
 	UE_LOG(LogXsollaCentrifugo, Log, TEXT("%s: CentrifugoService subsystem initialized"), *VA_FUNC_LINE);
 }
@@ -43,7 +44,7 @@ void UCentrifugoServiceSubsystem::RemoveTracker(const UXsollaOrderCheckObject* T
 
 void UCentrifugoServiceSubsystem::CreateCentrifugoClient()
 {
-	CentrifugoClient = NewObject<UCentrifugoClient>(this);
+	CentrifugoClient = NewObject<UCentrifugoClient>();
 	CentrifugoClient->MessageReceived.BindUObject(this, &UCentrifugoServiceSubsystem::OnCentrifugoMessageReceived);
 	CentrifugoClient->Error.BindUObject(this, &UCentrifugoServiceSubsystem::OnCentrifugoError);
 	CentrifugoClient->Closed.BindUObject(this, &UCentrifugoServiceSubsystem::OnCentrifugoClosed);
@@ -64,7 +65,7 @@ void UCentrifugoServiceSubsystem::CreateCentrifugoClient()
 		CentrifugoClient->Send(Data);
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(PingTimerHandle, this, &UCentrifugoServiceSubsystem::DoPing, 1.f, true, 1.f);
+	GetWorld()->GetTimerManager().SetTimer(PingTimerHandle, this, &UCentrifugoServiceSubsystem::DoPing, 1.f, true);
 	UE_LOG(LogXsollaCentrifugo, Log, TEXT("Centrifugo client created"));
 }
 

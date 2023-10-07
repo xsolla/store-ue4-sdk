@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "XsollaCentrifugoDataModel.h"
+#include "Engine/EngineTypes.h"
 #include "CentrifugoServiceSubsystem.generated.h"
 
 class UXsollaOrderCheckObject;

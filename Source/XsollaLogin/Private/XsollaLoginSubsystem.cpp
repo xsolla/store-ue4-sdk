@@ -9,7 +9,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
-
+#include "Async/Async.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
@@ -23,6 +23,7 @@
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaLoginBrowserWrapper.h"
+#include "Misc/EngineVersion.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
@@ -1143,7 +1144,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, const UTexture2D* const Picture,
+void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* const Picture,
 	const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	if (!IsValid(Picture))
