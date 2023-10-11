@@ -18,6 +18,13 @@ UXsollaUtilsImageLoader::UXsollaUtilsImageLoader(const FObjectInitializer& Objec
 
 void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback)
 {
+	if (ImageBrushes == nullptr)
+	{
+		ImageBrushes = MakeShareable(new TMap<FString, TSharedPtr<FSlateDynamicImageBrush>>());
+		PendingRequests = MakeShareable(new TMap<FString, FOnRequestCompleted>());
+	}
+
+
 	if (URL.IsEmpty())
 	{
 		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Found empty String URL"), *VA_FUNC_LINE);
@@ -26,20 +33,21 @@ void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded
 	UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loading image from: %s"), *VA_FUNC_LINE, *URL);
 
 	const FString ResourceId = GetCacheName(URL).ToString();
-	if (ImageBrushes.Contains(ResourceId))
+	if (ImageBrushes->Contains(ResourceId))
 	{
 		UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
-		SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
+		SuccessCallback.ExecuteIfBound(*ImageBrushes->Find(ResourceId)->Get(), URL);
 	}
 	else
 	{
-		if (PendingRequests.Contains(ResourceId))
+		if (PendingRequests->Contains(ResourceId))
 		{
-			PendingRequests[ResourceId].AddLambda([=](bool IsCompleted) {
+			(*PendingRequests)[ResourceId].AddLambda([URL, ResourceId, Brushes = ImageBrushes, SuccessCallback, ErrorCallback](bool IsCompleted)
+				{
 				if (IsCompleted)
 				{
 					UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
-					SuccessCallback.ExecuteIfBound(*ImageBrushes.Find(ResourceId)->Get(), URL);
+					SuccessCallback.ExecuteIfBound(*Brushes->Find(ResourceId)->Get(), URL);
 				}
 				else
 				{
@@ -51,7 +59,7 @@ void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded
 		else
 		{
 			FOnRequestCompleted imageLoadingCompletedDelegate;
-			PendingRequests.Add(ResourceId, imageLoadingCompletedDelegate);
+			PendingRequests->Add(ResourceId, imageLoadingCompletedDelegate);
 
 			TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
 
@@ -91,12 +99,12 @@ void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 				if (FSlateApplication::Get().GetRenderer()->GenerateDynamicImageResource(ResourceName, ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), RawData))
 				{
 					TSharedPtr<FSlateDynamicImageBrush> ImageBrush = MakeShareable(new FSlateDynamicImageBrush(ResourceName, FVector2D(ImageWrapper->GetWidth(), ImageWrapper->GetHeight())));
-					ImageBrushes.Add(ResourceName.ToString(), ImageBrush);
+					ImageBrushes->Add(ResourceName.ToString(), ImageBrush);
 
 					SuccessCallback.ExecuteIfBound(*ImageBrush.Get(), HttpRequest->GetURL());
 
-					PendingRequests[ResourceName.ToString()].Broadcast(true);
-					PendingRequests.Remove(ResourceName.ToString());
+					(*PendingRequests)[ResourceName.ToString()].Broadcast(true);
+					PendingRequests->Remove(ResourceName.ToString());
 
 					return;
 				}
@@ -122,10 +130,10 @@ void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr Http
 
 	ErrorCallback.ExecuteIfBound(HttpRequest->GetURL());
 
-	if (PendingRequests.Contains(ResourceName.ToString()))
+	if (PendingRequests->Contains(ResourceName.ToString()))
 	{
-		PendingRequests[ResourceName.ToString()].Broadcast(false);
-		PendingRequests.Remove(ResourceName.ToString());
+		(*PendingRequests)[ResourceName.ToString()].Broadcast(false);
+		PendingRequests->Remove(ResourceName.ToString());
 	}
 }
 

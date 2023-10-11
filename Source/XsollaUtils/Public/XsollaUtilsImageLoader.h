@@ -32,8 +32,8 @@ private:
 	FName GetCacheName(const FString& URL) const;
 
 	/** Internal brushes cache */
-	TMap<FString, TSharedPtr<FSlateDynamicImageBrush>> ImageBrushes;
+	TSharedPtr<TMap<FString, TSharedPtr<FSlateDynamicImageBrush>>> ImageBrushes;
 
 	/** Internal cache for pending requests callbacks */
-	TMap<FString, FOnRequestCompleted> PendingRequests;
+	TSharedPtr<TMap<FString, FOnRequestCompleted>> PendingRequests;
 };
