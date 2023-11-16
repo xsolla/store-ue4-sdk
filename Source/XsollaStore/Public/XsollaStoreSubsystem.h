@@ -84,7 +84,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
 	 * @param SuccessCallback Called after virtual items were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -117,7 +117,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
 	 * @param SuccessCallback Called after virtual currencies were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
@@ -134,7 +134,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Called after virtual currency packages were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -153,7 +153,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Called after server response.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count start from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -390,7 +390,7 @@ public:
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	* @param SuccessCallback Called after bundles are successfully received.
 	* @param ErrorCallback Called after the request resulted with an error.
-	* @param Limit Limit for the number of elements on the page.
+	* @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	*/
@@ -414,7 +414,7 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages for which display in the store is enabled in the settings. 
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.

@@ -52,7 +52,7 @@ public:
 	 * Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.
 	 * @param SuccessCallback Called after purchased virtual items were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
