@@ -90,7 +90,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -150,7 +150,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -176,7 +176,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -196,7 +196,7 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetI
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -684,7 +684,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku,
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -709,7 +709,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
