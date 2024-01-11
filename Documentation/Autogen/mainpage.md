@@ -50,7 +50,9 @@ In addition to methods for calling the API, the SDK contains data and classes fo
 
 ## Demo project module
 
+
 Blueprints from the `Content` catalog represent one of the possible logics for the login system, inventory, and in-game store. You can use the demo project in two ways:
+
 *   as an example
 *   as an initial version of the login system, inventory, and in-game store in order to get a quick result and expand its capabilities if necessary
 
