@@ -50,23 +50,33 @@ In addition to methods for calling the API, the SDK contains data and classes fo
 
 ## Demo project module
 
+### General information
 
-Blueprints from the `Content` catalog represent one of the possible logics for the login system, inventory, and in-game store. You can use the demo project in two ways:
+The demo project represents one of the possible logics for the login system, inventory, and in-game store based on Xsolla products. The demo uses the preset project in Publisher Account with a fully configured in-game store.
 
-*   as an example
-*   as an initial version of the login system, inventory, and in-game store in order to get a quick result and expand its capabilities if necessary
+You can use the demo project in two ways:
+
+* As an example.
+* As an initial version of the login system, inventory, and in-game store. You can get an instant result and expand the demo features if needed.
+
+To try the demo, launch the demo map from the `Content Browser > Xsolla Content > Maps` directory.
+
+See the [SDK documentation](https://developers.xsolla.com/sdk/unreal-engine/demo/general-info/) to learn more.
+
+### Blueprints
 
 Most of the code in the demo project is the ordinary widget blueprints that use the SDK:
+
 *   Page controllers.
 
-**Example:**
+  **Example:**
 
-The `W_LoginDemo` manages the user's login page. It determines whether the user is authorized, and if not, it can display a sign-up page or a new user registration page.
+  The `W_LoginDemo` manages the user's login page. It determines whether the user is authorized, and if not, it can display a sign-up page or a new user registration page.
 
 *   Blueprints for UI building and managing.
 
-**Example:**
+  **Example:**
 
-The `W_CartPanel` builds a page with information about the cart data (e.g., the number of items to purchase) and counts and shows the total purchase price, etc.
+  The `W_CartPanel` builds a page with information about the cart data (e.g., the number of items to purchase) and counts and shows the total purchase price, etc.
 
 *   Pop-up windows displaying various information to the user (e.g., successful purchase information or a field for entering a coupon).
