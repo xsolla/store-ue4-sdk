@@ -27,6 +27,7 @@
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
 #include "Async/Async.h"
+#include "Kismet/GameplayStatics.h"
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
@@ -1091,7 +1092,7 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, con
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1103,7 +1104,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1120,7 +1121,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/manage"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1130,7 +1131,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1147,7 +1148,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/renew"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1157,7 +1158,7 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -2050,7 +2051,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", PaymentTokenRequestPayload.CustomParameters);
 
-	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(PaymentTokenRequestPayload.bShowCloseButton);
 
 	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
 		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
@@ -2068,7 +2069,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bShowCloseButton)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
@@ -2081,6 +2082,22 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
 	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
 		PaymentUiSettingsJson->SetStringField(TEXT("version"),
 			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiVersion>(Settings->PaymentInterfaceVersion));
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsHeaderJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsHeaderJson->SetBoolField("close_button", bShowCloseButton);
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsPlatformNameJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsPlatformNameJson->SetObjectField("header", PaymentUiSettingsHeaderJson);
+
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+	if (Platform == TEXT("android") || Platform == TEXT("ios"))
+	{
+		PaymentUiSettingsJson->SetObjectField(TEXT("mobile"), PaymentUiSettingsPlatformNameJson);
+	}
+	else
+	{
+		PaymentUiSettingsJson->SetObjectField(TEXT("desktop"), PaymentUiSettingsPlatformNameJson);
+	}
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 

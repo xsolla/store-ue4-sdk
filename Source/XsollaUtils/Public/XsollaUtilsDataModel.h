@@ -461,6 +461,12 @@ struct FXsollaPaymentTokenRequestPayload
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString ExternalId;
+
+	/**
+	 * bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bShowCloseButton = false;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.
