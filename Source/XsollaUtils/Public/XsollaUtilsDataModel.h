@@ -428,19 +428,38 @@ struct FXsollaPaymentTokenRequestPayload
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default).
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString Currency;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
-	FString Country;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Locale (optional) Desired payment locale.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString Locale;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Quantity Item quantity.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	int32 Quantity = 1;
+
+	/**
+	 * CustomParameters (optional) Map of custom parameters.
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FXsollaParameters CustomParameters;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * ExternalId (optional) Transaction external ID.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString ExternalId;
 };
 
