@@ -408,7 +408,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	});
 
 	CachedOrderCheckObjects.Add(OrderCheckObject);
-	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, bIsUserInvolvedToPayment, OrderCheckSuccessCallback, OrderCheckErrorCallback);
+	OrderCheckObject->Init(AccessToken, OrderId, bIsUserInvolvedToPayment, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
@@ -459,19 +459,19 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::PurchaseStoreItem(const FStoreItem& StoreItem,
+void UXsollaStoreSubsystem::PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem,
 	const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	InnerPurchase(StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PurchaseParams,
+	InnerPurchase(AuthToken, StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PurchaseParams,
 		SuccessCallback, ErrorCallback);
 }
 
-void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage,
+void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage,
 	const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	InnerPurchase(CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PurchaseParams,
+	InnerPurchase(AuthToken, CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PurchaseParams,
 		SuccessCallback, ErrorCallback);
 }
 
@@ -1937,10 +1937,10 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 	return bIsSandboxEnabled;
 }
 
-void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+void UXsollaStoreSubsystem::InnerPurchase(const FString& AuthToken, const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
 	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString& AuthToken = LoginSubsystem->GetLoginData().AuthToken.JWT;
+	CachedAuthToken = AuthToken;
 
 	PaymentSuccessCallback = SuccessCallback;
 	PaymentErrorCallback = ErrorCallback;
@@ -1980,7 +1980,7 @@ void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
 {
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
-	CheckPendingOrder(LoginSubsystem->GetLoginData().AuthToken.JWT, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
+	CheckPendingOrder(CachedAuthToken, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
