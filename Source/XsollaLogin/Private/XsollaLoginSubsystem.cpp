@@ -244,6 +244,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
 		oAuth2Params:OAuthParams
+		locale:Locale.GetNSString()
 		presentationContextProvider:context
 		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
 			if (error != nil)
