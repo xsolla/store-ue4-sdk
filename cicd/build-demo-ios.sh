@@ -24,14 +24,41 @@ git clone --depth 1 --branch $PROJECT_BRANCH $PROJECT_REMOTE $PROJECT_DIR
 git clone --depth 1 --branch $PLUGIN_BRANCH $PLUGIN_REMOTE $PLUGIN_DIR
 
 echo ""
+echo "========================================="
+echo "### SWITCH ENGINE VERSION FOR PROJECT ###"
+
+UPROJECT_PATH=$PROJECT_DIR/$PROJECT_NAME.uproject
+echo "UPROJECT_PATH: ${UPROJECT_PATH}"
+
+sed -i '' "s/\"EngineAssociation\": \".*\"/\"EngineAssociation\": \"$ENGINE_VERSION\"/" $UPROJECT_PATH
+
+if [ $? -eq 0 ]; then
+    echo "Engine version for project updated successfully to $ENGINE_VERSION."
+else
+    echo "Failed to update engine version for proeject."
+fi
+
+echo ""
+echo "========================================="
+echo "### SWITCH ENGINE VERSION FOR PLUGIN ###"
+
+PLUGIN_CONFIG_PATH=$PLUGIN_DIR/Xsolla.uplugin
+echo "PLUGIN_CONFIG_PATH: ${PLUGIN_CONFIG_PATH}"
+
+sed -i '' "s/\"EngineVersion\": \".*\"/\"EngineVersion\": \"$ENGINE_VERSION\"/" $PLUGIN_CONFIG_PATH
+
+if [ $? -eq 0 ]; then
+    echo "Engine version for plugin updated successfully to $ENGINE_VERSION."
+else
+    echo "Failed to update engine version for plugin."
+fi
+
+echo ""
 echo "============================="
 echo "### GENERATE TEST PROJECT ###"
 
-UBT_PATH="/Users/Shared/EpicGames/UE_$ENGINE_VERSION/Engine/Build/BatchFiles/Mac/Build.sh"
-UPROJECT_PATH=$PROJECT_DIR/$PROJECT_NAME.uproject
-
+UBT_PATH="/Volumes/External_SSD_256/EpicGames/UE_5.2/Engine/Build/BatchFiles/Mac/Build.sh"
 echo "UBT_PATH: ${UBT_PATH}"
-echo "UPROJECT_PATH: ${UPROJECT_PATH}"
 
 $UBT_PATH Development Mac -TargetType=Editor -Project=$UPROJECT_PATH -Progress -NoEngineChanges -NoHotReloadFromIDE
 
@@ -39,7 +66,7 @@ echo ""
 echo "================================================="
 echo "### DEFINE VARIABLES FOR PACKAGE TEST PROJECT ###"
 
-AT_PATH="/Users/Shared/EpicGames/UE_$ENGINE_VERSION/Engine/Build/BatchFiles/RunUAT.sh"
+AT_PATH="/Volumes/External_SSD_256/EpicGames/UE_5.2/Engine/Build/BatchFiles/RunUAT.sh"
 PACKAGE_ROOT_DIR=$CI_WORK_DIR/Builds
 SETTINGS_INI_PATH=$PROJECT_DIR/Config/DefaultEngine.ini
 
