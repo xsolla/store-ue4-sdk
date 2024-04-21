@@ -63,6 +63,25 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
+
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
+
+#if PLATFORM_ANDROID
+	
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "configureAnalytics",
+		"(Ljava/lang/String;Ljava/lang/String;)V",
+		XsollaJavaConvertor::GetJavaString(Engine),
+		XsollaJavaConvertor::GetJavaString(ENGINE_VERSION_STRING));
+
+#endif
+
+#if PLATFORM_IOS
+
+	[[PaymentsKitObjectiveC shared] configureAnalytics:Engine.GetNSString()
+		gameEngineVersion:EngineVersion.GetNSString()];
+
+#endif
 }
 
 void UXsollaStoreSubsystem::Deinitialize()

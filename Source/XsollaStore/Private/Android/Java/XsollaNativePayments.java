@@ -5,6 +5,7 @@ package com.xsolla.store;
 import android.app.Activity;
 import android.content.Intent;
 import androidx.annotation.Keep;
+import com.xsolla.android.payments.util.AnalyticsUtils;
 
 @Keep
 public class XsollaNativePayments {
@@ -18,5 +19,10 @@ public class XsollaNativePayments {
         intent.putExtra(XsollaNativePaymentsActivity.ARG_REDIRECT_SCHEME, redirectScheme);
         intent.putExtra(XsollaNativePaymentsActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
+    }
+
+    public static void configureAnalytics(String gameEngine, String gameEngineVersion) {
+        AnalyticsUtils.setGameEngine(gameEngine);
+        AnalyticsUtils.setGameEngineVersion(gameEngineVersion);
     }
 }
