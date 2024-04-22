@@ -15,6 +15,7 @@ import com.xsolla.android.login.callback.StartXsollaWidgetAuthCallback;
 public class XsollaNativeXsollaWidgetAuthActivity extends Activity {
 
     public static String CALLBACK_ADDRESS = "callback_address";
+    public static String LOCALE = "locale";
 
 	public static native void onAuthSuccessCallback(long callback, String accessToken, String refreshToken, long expiresAt, boolean rememberMe);
     public static native void onAuthCancelCallback(long callback);
@@ -28,6 +29,8 @@ public class XsollaNativeXsollaWidgetAuthActivity extends Activity {
             return;
         }
 
+        String locale = getIntent().getStringExtra(LOCALE);
+
         XLogin.startAuthWithXsollaWidget(this, new StartXsollaWidgetAuthCallback() {
             @Override
             public void onAuthStarted() {
@@ -39,7 +42,7 @@ public class XsollaNativeXsollaWidgetAuthActivity extends Activity {
                 Log.d("XsollaNativeXsollaWidgetAuthActivity", "onError");
                 finish();
             }
-        });
+        }, locale);
     }
 
     @Override

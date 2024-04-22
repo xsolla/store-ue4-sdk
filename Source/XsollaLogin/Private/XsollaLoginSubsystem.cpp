@@ -212,7 +212,7 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 }
 
 void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe, const FString& Locale)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 #if PLATFORM_ANDROID || PLATFORM_IOS
@@ -222,8 +222,9 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 	nativeCallback->BindCancelDelegate(CancelCallback);
 
 	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "authViaXsollaWidget",
-		"(Landroid/app/Activity;J)V",
+		"(Landroid/app/Activity;Ljava/lang/String;J)V",
 		FJavaWrapper::GameActivityThis,
+		XsollaJavaConvertor::GetJavaString(Locale),
 		(jlong)nativeCallback);
 
 #endif
@@ -243,6 +244,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
 		oAuth2Params:OAuthParams
+		locale:Locale.GetNSString()
 		presentationContextProvider:context
 		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
 			if (error != nil)
@@ -279,6 +281,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
 							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
 							.AddStringQueryParam(TEXT("login_url"), Settings->RedirectURI)
+							.AddStringQueryParam(TEXT("locale"), Locale)
 							.Build();
 
 	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
