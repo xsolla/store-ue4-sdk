@@ -267,24 +267,26 @@ public:
 
 	/** Initiates purchase by passing store item
 	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
 	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
-	void PurchaseStoreItem(const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+	void PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Initiate purchase by passing virtual currency package
 	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CurrencyPackage Desired currency package.
 	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
-	void PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+	void PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes all items from the cart with the specified ID or from the cart of the current user.
@@ -805,7 +807,7 @@ protected:
 	/** Check whether sandbox is enabled */
 	bool IsSandboxEnabled() const;
 
-	void InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+	void InnerPurchase(const FString& AuthToken, const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
 		const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	UFUNCTION()
