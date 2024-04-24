@@ -109,7 +109,7 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 
 #if PLATFORM_IOS
 
-	[[LoginKitObjectiveC shared] configureAnalytics:Engine.GetNSString()
+	[[LoginKitObjectiveC shared] configureAnalyticsWithGameEngine:Engine.GetNSString()
 		gameEngineVersion:EngineVersion.GetNSString()
 	];
 

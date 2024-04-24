@@ -78,7 +78,7 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 #if PLATFORM_IOS
 
-	[[PaymentsKitObjectiveC shared] configureAnalytics:Engine.GetNSString()
+	[[PaymentsKitObjectiveC shared] configureAnalyticsWithGameEngine:Engine.GetNSString()
 		gameEngineVersion:EngineVersion.GetNSString()];
 
 #endif
