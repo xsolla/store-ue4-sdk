@@ -906,7 +906,7 @@ protected:
 	FString CachedCartLocale;
 
 	/** Pending PayStation URL to be opened in browser */
-	FString PengindPaystationUrl;
+	FString PendingPaystationUrl;
 
 	UXsollaStoreBrowserWrapper* MyBrowser;
 
