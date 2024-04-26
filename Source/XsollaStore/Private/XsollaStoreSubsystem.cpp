@@ -63,6 +63,25 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
+
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
+
+#if PLATFORM_ANDROID
+	
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "configureAnalytics",
+		"(Ljava/lang/String;Ljava/lang/String;)V",
+		XsollaJavaConvertor::GetJavaString(Engine),
+		XsollaJavaConvertor::GetJavaString(ENGINE_VERSION_STRING));
+
+#endif
+
+#if PLATFORM_IOS
+
+	[[PaymentsKitObjectiveC shared] configureAnalyticsWithGameEngine:Engine.GetNSString()
+		gameEngineVersion:EngineVersion.GetNSString()];
+
+#endif
 }
 
 void UXsollaStoreSubsystem::Deinitialize()
@@ -297,17 +316,18 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
 	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
 {
-	FString PaystationUrl;
-	if (IsSandboxEnabled())
-	{
-		PaystationUrl = FString::Printf(TEXT("https://sandbox-secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
-	}
-	else
-	{
-		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
-	}
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
 
-	PengindPaystationUrl = PaystationUrl;
+	const FString PaystationUrl = XsollaUtilsUrlBuilder(IsSandboxEnabled() ? TEXT("https://sandbox-secure.xsolla.com/paystation3") : TEXT("https://secure.xsolla.com/paystation3"))
+							.AddStringQueryParam(TEXT("access_token"), AccessToken)
+							.AddStringQueryParam(TEXT("engine"), Engine)
+							.AddStringQueryParam(TEXT("engine_v"), EngineVersion)
+							.AddStringQueryParam(TEXT("sdk"), TEXT("STORE"))
+							.AddStringQueryParam(TEXT("sdk_v"), XSOLLA_STORE_VERSION)
+							.Build();
+
+	PendingPaystationUrl = PaystationUrl;
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -2177,7 +2197,7 @@ const FStoreCart& UXsollaStoreSubsystem::GetCart() const
 
 const FString& UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 {
-	return PengindPaystationUrl;
+	return PendingPaystationUrl;
 }
 
 FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const

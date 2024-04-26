@@ -83,6 +83,9 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 		LoginData.AuthToken.JWT = LauncherLoginJwt;
 	}
 
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
+
 #if PLATFORM_ANDROID
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -96,6 +99,19 @@ void UXsollaLoginSubsystem::Initialize(const FString& InProjectId, const FString
 		XsollaJavaConvertor::GetJavaString(Settings->GoogleAppId),
 		XsollaJavaConvertor::GetJavaString(Settings->WeChatAppId),
 		XsollaJavaConvertor::GetJavaString(Settings->QQAppId));
+
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeLogin", "configureAnalytics",
+		"(Ljava/lang/String;Ljava/lang/String;)V",
+		XsollaJavaConvertor::GetJavaString(Engine),
+		XsollaJavaConvertor::GetJavaString(EngineVersion));
+
+#endif
+
+#if PLATFORM_IOS
+
+	[[LoginKitObjectiveC shared] configureAnalyticsWithGameEngine:Engine.GetNSString()
+		gameEngineVersion:EngineVersion.GetNSString()
+	];
 
 #endif
 }
