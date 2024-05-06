@@ -17,8 +17,6 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	UsePlatformBrowser = false;
 	BuildForSteam = false;
 	PaymentInterfaceThemeId = TEXT("63295aab2e47fab76f7708e3");
-	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
-	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
 	UseSettingsFromPublisherAccount = true;
 	ReturnUrl = TEXT("");
 	RedirectCondition = EXsollaPaymentRedirectCondition::none;

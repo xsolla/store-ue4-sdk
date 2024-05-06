@@ -2096,12 +2096,6 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceThemeId);
-	PaymentUiSettingsJson->SetStringField(TEXT("size"),
-		UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiSize>(Settings->PaymentInterfaceSize));
-
-	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
-		PaymentUiSettingsJson->SetStringField(TEXT("version"),
-			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiVersion>(Settings->PaymentInterfaceVersion));
 
 	TSharedPtr<FJsonObject> PaymentUiSettingsHeaderJson = MakeShareable(new FJsonObject);
 	PaymentUiSettingsHeaderJson->SetBoolField("close_button", bShowCloseButton);

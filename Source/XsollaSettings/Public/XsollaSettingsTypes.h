@@ -24,7 +24,7 @@ enum class EXsollaPublishingPlatform : uint8
 };
 
 /** User interface size for the payment interface. */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DeprecationMessage = "EXsollaPaymentUiSize enum parameter isn't used anymore"))
 enum class EXsollaPaymentUiSize : uint8
 {
 	small UMETA(DisplayName = "Small"),
@@ -33,7 +33,7 @@ enum class EXsollaPaymentUiSize : uint8
 };
 
 /** Device type used to display the payment interface. */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DeprecationMessage = "EXsollaPaymentUiVersion enum parameter isn't used anymore"))
 enum class EXsollaPaymentUiVersion : uint8
 {
 	not_specified UMETA(DisplayName = "Not specified"),
