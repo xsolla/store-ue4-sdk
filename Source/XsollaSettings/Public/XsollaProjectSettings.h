@@ -106,23 +106,6 @@ public:
 	FString PaymentInterfaceThemeId;
 
 	/**
-	 * Payment user interface size (desktop only).
-	 * Small
-	 * Medium
-	 * Large
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	EXsollaPaymentUiSize PaymentInterfaceSize;
-
-	/**
-	 * Device type used to present payment interface.
-	 * The Pay Station UI depends on the device type.
-	 * If Not specified, the app automatically uses Pay Station UI supported by the device.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	EXsollaPaymentUiVersion PaymentInterfaceVersion;
-
-	/**
 	 * Use settings from Publisher Account.
 	 * If the option is enabled, SDK uses redirect settings
 	 * specified in Publisher Account in the "Pay Station -> Settings -> Redirect policy" section.
