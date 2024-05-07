@@ -212,10 +212,12 @@ public:
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 * @param PayStationVersion Pay Station version. V4 by default.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback, BrowserClosedCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
+		const EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4);
 
 	/** Checks pending order status by its ID.
 	 *
@@ -842,6 +844,10 @@ private:
 	/** Queue to store cart change requests */
 	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
 
+	FString GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const;
+
+	FString GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const;
+
 public:
 	/** Returns the list of cached virtual items without any Category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
@@ -896,8 +902,11 @@ protected:
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
 
-	/** Cached auth token (used for silent cart update) */
+	/** Cached auth token */
 	FString CachedAuthToken;
+
+	/** Cached payload */
+	FXsollaPaymentTokenRequestPayload CachedPaymentTokenRequestPayload;
 
 	/** Cached cart identifier (used for silent cart update) */
 	FString CachedCartId;
