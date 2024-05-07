@@ -342,17 +342,19 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 #if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
+		int32 PayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
 		nativeCallback->BindBrowserClosedDelegate(BrowserClosedCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
-			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;IJ)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken),
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
 			XsollaJavaConvertor::GetJavaString(RedirectURI),
+			PayStationVersionNumber,
 			(jlong)nativeCallback);
 #endif
 #if PLATFORM_IOS
