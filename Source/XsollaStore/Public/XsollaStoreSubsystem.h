@@ -941,6 +941,9 @@ private:
 	UPROPERTY()
 	int32 PaymentOrderId;
 
+	UPROPERTY()
+	int32 PaymentPayStationVersionNumber;
+
 	FOnPurchaseUpdate PaymentSuccessCallback;
 
 	FOnError PaymentErrorCallback;

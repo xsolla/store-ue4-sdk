@@ -362,8 +362,11 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaymentAccessToken = AccessToken;
 		PaymentRedirectURI = RedirectURI;
 		PaymentEnableSandbox = Settings->EnableSandbox;
+		PaymentPayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
+			[[PaymentsKitObjectiveC shared] setPaystationVersionWithPaystationVersion:PaymentPayStationVersionNumber];
+
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
 				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
 				isSandbox:PaymentEnableSandbox
