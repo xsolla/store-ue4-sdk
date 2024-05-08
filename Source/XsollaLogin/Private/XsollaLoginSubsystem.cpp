@@ -228,7 +228,8 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 }
 
 void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe, const FString& Locale)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe,
+	const FString& Locale, const FString& State)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 #if PLATFORM_ANDROID || PLATFORM_IOS
@@ -295,20 +296,32 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
-							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
-							.AddStringQueryParam(TEXT("login_url"), Settings->RedirectURI)
+							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("client_id"), ClientID)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
+							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();
 
 	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
-	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback](bool bAuthenticationCompleted) {
-		if (bAuthenticationCompleted)
+	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+	{
+		if (!AuthenticationCode.IsEmpty())
 		{
-			SuccessCallback.ExecuteIfBound(LoginData);
+			ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
 		}
 		else
 		{
-			CancelCallback.ExecuteIfBound();
+			if (bIsManually)
+			{
+				CancelCallback.ExecuteIfBound();
+			}
+			else
+			{
+				ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+			}
 		}
 	});
 	MyBrowser->AddToViewport(INT_MAX - 100);
@@ -2257,15 +2270,22 @@ void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 	if (BrowserWidgetWrapper != nullptr)
 	{
 		BrowserWidgetWrapper->LoadUrl(Url);
-		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bAuthenticationCompleted)
-			{ 
-			if (bAuthenticationCompleted)
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bIsManually, const FString& AuthenticationCode)
+		{
+			if (!AuthenticationCode.IsEmpty())
 			{
-				NativeSuccessCallback.ExecuteIfBound(LoginData);
+				ExchangeAuthenticationCodeToToken(AuthenticationCode, NativeSuccessCallback, NativeErrorCallback);
 			}
 			else
 			{
-				NativeCancelCallback.ExecuteIfBound();
+				if (bIsManually)
+				{
+					NativeCancelCallback.ExecuteIfBound();
+				}
+				else
+				{
+					NativeErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+				}
 			}
 		});
 	}

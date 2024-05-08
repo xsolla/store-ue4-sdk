@@ -119,14 +119,17 @@ public:
 	 * @param BrowserWidget Widget that shows the social network authentication form. Can be set in the project settings.
 	 * @param SuccessCallback Called after successful user authentication. Authentication data including the JWT will be received.
 	 * @param CancelCallback Called after user authentication was canceled.
+	 * @param ErrorCallback Called after user authentication resulted with an error.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. `false` by default.
 	 * @param Locale (optional) Login widget UI language.
 	 * Supported languages: Arabic (ar_AE), Bulgarian (bg_BG), Czech (cz_CZ), Filipino (fil-PH), English (en_XX), German (de_DE), Spanish (es_ES), French (fr_FR), Hebrew (he_IL), Indonesian (id-ID), Italian (it_IT), Japanese (ja_JP), Khmer (km-KH), Korean (ko_KR), Lao language ( lo-LA), Myanmar (my-MM), NepaliPolish (ne-NP), (pl_PL), Portuguese (pt_BR), Romanian (ro_RO), Russian (ru_RU), Thai (th_TH), Turkish (tr_TR), Vietnamese (vi_VN), Chinese Simplified (zh_CN), Chinese Traditional (zh_TW).
 	 * By default, the locale is determined by the user's IP
+	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, CancelCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, CancelCallback, ErrorCallback"))
 	void AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
-		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe = false, const FString& Locale = TEXT(""));
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe = false,
+		const FString& Locale = TEXT(""), const FString& State = TEXT("xsollatest"));
 
 	/** Resets the user’s current password and sends an email to change the password to the email address specified during sign-up.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/authentication/classic-auth/).
