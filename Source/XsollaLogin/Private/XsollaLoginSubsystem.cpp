@@ -254,12 +254,12 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
 
-	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
 		state:FString("xsollatest").GetNSString()
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
-	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
+	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:LoginID.GetNSString()
 		oAuth2Params:OAuthParams
 		locale:Locale.GetNSString()
 		presentationContextProvider:context
@@ -437,13 +437,13 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #if PLATFORM_IOS
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
 
-	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
 		state:State.GetNSString()
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
 	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
-		clientId:[Settings->ClientID.GetNSString() intValue]
+		clientId:[ClientID.GetNSString() intValue]
 		refreshToken:nil
 		clientSecret:nil
 		redirectUri:RedirectURI.GetNSString()];
