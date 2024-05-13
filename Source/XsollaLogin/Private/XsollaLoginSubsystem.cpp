@@ -255,7 +255,7 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
 
 	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
-		state:FString("xsollatest").GetNSString()
+		state:State.GetNSString()
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
