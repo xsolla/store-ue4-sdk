@@ -423,6 +423,14 @@ struct FXsollaParameters
 	TMap<FString, FXsollaJsonVariant> Parameters;
 };
 
+/** Pay Station version. */
+UENUM(BlueprintType)
+enum class EXsollaPayStationVersion : uint8
+{
+	v3 UMETA(DisplayName = "V3"),
+	v4 UMETA(DisplayName = "V4")
+};
+
 USTRUCT(BlueprintType)
 struct FXsollaPaymentTokenRequestPayload
 {
@@ -467,6 +475,12 @@ struct FXsollaPaymentTokenRequestPayload
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	bool bShowCloseButton = false;
+
+	/**
+	 * PayStationVersion Pay Station version. V4 by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.

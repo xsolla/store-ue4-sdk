@@ -314,13 +314,15 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
+	const EXsollaPayStationVersion PayStationVersion)
 {
 	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
 	FString EngineVersion = ENGINE_VERSION_STRING;
 
-	const FString PaystationUrl = XsollaUtilsUrlBuilder(IsSandboxEnabled() ? TEXT("https://sandbox-secure.xsolla.com/paystation3") : TEXT("https://secure.xsolla.com/paystation3"))
-							.AddStringQueryParam(TEXT("access_token"), AccessToken)
+	const FString PaystationUrl = XsollaUtilsUrlBuilder(IsSandboxEnabled() ? TEXT("https://sandbox-secure.xsolla.com/{PayStationVersion}") : TEXT("https://secure.xsolla.com/{PayStationVersion}"))
+							.SetPathParam(TEXT("PayStationVersion"), GetPayStationVersionPath(PayStationVersion))
+							.AddStringQueryParam(GetTokenQueryParameterName(PayStationVersion), AccessToken)
 							.AddStringQueryParam(TEXT("engine"), Engine)
 							.AddStringQueryParam(TEXT("engine_v"), EngineVersion)
 							.AddStringQueryParam(TEXT("sdk"), TEXT("STORE"))
@@ -340,17 +342,19 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 #if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
+		int32 PayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
 		nativeCallback->BindBrowserClosedDelegate(BrowserClosedCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
-			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;IJ)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken),
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
 			XsollaJavaConvertor::GetJavaString(RedirectURI),
+			PayStationVersionNumber,
 			(jlong)nativeCallback);
 #endif
 #if PLATFORM_IOS
@@ -358,8 +362,11 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaymentAccessToken = AccessToken;
 		PaymentRedirectURI = RedirectURI;
 		PaymentEnableSandbox = Settings->EnableSandbox;
+		PaymentPayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
+			[[PaymentsKitObjectiveC shared] setPaystationVersionWithPaystationVersion:PaymentPayStationVersionNumber];
+
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
 				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
 				isSandbox:PaymentEnableSandbox
@@ -1961,6 +1968,7 @@ void UXsollaStoreSubsystem::InnerPurchase(const FString& AuthToken, const FStrin
 	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
+	CachedPaymentTokenRequestPayload = PaymentTokenRequestPayload;
 
 	PaymentSuccessCallback = SuccessCallback;
 	PaymentErrorCallback = ErrorCallback;
@@ -1993,7 +2001,7 @@ void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
 	FOnStoreBrowserClosed BrowserClosedCallback;
-	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback);
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback, CachedPaymentTokenRequestPayload.PayStationVersion);
 }
 
 void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
@@ -2170,6 +2178,31 @@ bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& St
 	}
 
 	return true;
+}
+
+FString UXsollaStoreSubsystem::GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const
+{
+	switch (PayStationVersion)
+	{
+	case EXsollaPayStationVersion::v3:
+		return TEXT("paystation3");
+	case EXsollaPayStationVersion::v4:
+		return TEXT("paystation4");
+	}
+	return TEXT("");
+}
+
+FString UXsollaStoreSubsystem::GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const
+{
+	switch (PayStationVersion)
+	{
+	case EXsollaPayStationVersion::v3:
+		return TEXT("access_token");
+	case EXsollaPayStationVersion::v4:
+		return TEXT("token");
+	}
+
+	return TEXT("");
 }
 
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
