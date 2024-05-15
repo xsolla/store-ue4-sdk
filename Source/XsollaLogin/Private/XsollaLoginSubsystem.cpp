@@ -281,6 +281,8 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 			LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
 			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
 
+			SaveData();
+
 			AsyncTask(ENamedThreads::GameThread, [=]() {
 				NativeSuccessCallback.ExecuteIfBound(LoginData);
 			});
@@ -2354,6 +2356,8 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAut
 		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
 		receivedData.bRememberMe = rememberMe;
 		callback->ExecuteSuccess(receivedData);
+
+		SaveData();
 	}
 	else
 	{
