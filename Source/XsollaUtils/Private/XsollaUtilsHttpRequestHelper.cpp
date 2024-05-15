@@ -35,7 +35,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> XsollaUtilsHttpRequestHelper::Crea
 	// Xsolla analytics URL meta
 	const FString MetaUrl = FString::Printf(TEXT("%sengine=%s&engine_v=%s&sdk=%s&sdk_v=%s&build_platform=%s"),
 		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
-		Engine,
+		*Engine,
 		ENGINE_VERSION_STRING,
 		*SdkModuleName.ToLower(),
 		*SdkModuleVersion,
