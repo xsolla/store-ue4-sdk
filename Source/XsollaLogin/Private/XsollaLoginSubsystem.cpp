@@ -239,9 +239,10 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 	nativeCallback->BindCancelDelegate(CancelCallback);
 
 	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "authViaXsollaWidget",
-		"(Landroid/app/Activity;Ljava/lang/String;J)V",
+		"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
 		FJavaWrapper::GameActivityThis,
 		XsollaJavaConvertor::GetJavaString(Locale),
+		bRememberMe,
 		(jlong)nativeCallback);
 
 #endif

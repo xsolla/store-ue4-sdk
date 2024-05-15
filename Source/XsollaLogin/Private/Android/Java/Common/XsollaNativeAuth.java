@@ -30,9 +30,10 @@ public class XsollaNativeAuth {
         activity.startActivity(intent);
     }
 	
-	public static void authViaXsollaWidget(Activity activity, String locale, long callback) {
+	public static void authViaXsollaWidget(Activity activity, String locale, boolean rememberMe, long callback) {
         Intent intent = new Intent(activity, XsollaNativeXsollaWidgetAuthActivity.class);
         intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.LOCALE, locale);
+        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.REMEMBER_ME, rememberMe);
         intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
     }
