@@ -3,7 +3,7 @@
 
 #include "XsollaLoginBrowserWrapper.h"
 
-void UXsollaLoginBrowserWrapper::ExecuteBrowserClosed(bool bAuthenticationCompleted)
+void UXsollaLoginBrowserWrapper::ExecuteBrowserClosed(bool bIsManually, const FString& AuthenticationCode)
 {
-	OnBrowserClosed.ExecuteIfBound(bAuthenticationCompleted);
+	OnBrowserClosed.ExecuteIfBound(bIsManually, AuthenticationCode);
 }

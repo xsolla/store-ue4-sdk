@@ -228,7 +228,8 @@ void UXsollaLoginSubsystem::AuthenticateUser(const FString& Username, const FStr
 }
 
 void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UXsollaLoginBrowserWrapper*& BrowserWidget,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const bool bRememberMe, const FString& Locale)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe,
+	const FString& Locale, const FString& State)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 #if PLATFORM_ANDROID || PLATFORM_IOS
@@ -238,9 +239,10 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 	nativeCallback->BindCancelDelegate(CancelCallback);
 
 	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "authViaXsollaWidget",
-		"(Landroid/app/Activity;Ljava/lang/String;J)V",
+		"(Landroid/app/Activity;Ljava/lang/String;ZJ)V",
 		FJavaWrapper::GameActivityThis,
 		XsollaJavaConvertor::GetJavaString(Locale),
+		bRememberMe,
 		(jlong)nativeCallback);
 
 #endif
@@ -253,12 +255,12 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
 
-	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
-		state:FString("xsollatest").GetNSString()
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
+		state:State.GetNSString()
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
-	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:Settings->LoginID.GetNSString()
+	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:LoginID.GetNSString()
 		oAuth2Params:OAuthParams
 		locale:Locale.GetNSString()
 		presentationContextProvider:context
@@ -280,6 +282,8 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 			LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
 			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + tokenInfo.expiresIn;
 
+			SaveData();
+
 			AsyncTask(ENamedThreads::GameThread, [=]() {
 				NativeSuccessCallback.ExecuteIfBound(LoginData);
 			});
@@ -295,20 +299,32 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
-							.AddStringQueryParam(TEXT("projectId"), Settings->LoginID)
-							.AddStringQueryParam(TEXT("login_url"), Settings->RedirectURI)
+							.AddStringQueryParam(TEXT("projectId"), LoginID)
 							.AddStringQueryParam(TEXT("locale"), Locale)
+							.AddStringQueryParam(TEXT("client_id"), ClientID)
+							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
+							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+							.AddStringQueryParam(TEXT("state"), State)
+							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
 							.Build();
 
 	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
-	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback](bool bAuthenticationCompleted) {
-		if (bAuthenticationCompleted)
+	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+	{
+		if (!AuthenticationCode.IsEmpty())
 		{
-			SuccessCallback.ExecuteIfBound(LoginData);
+			ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
 		}
 		else
 		{
-			CancelCallback.ExecuteIfBound();
+			if (bIsManually)
+			{
+				CancelCallback.ExecuteIfBound();
+			}
+			else
+			{
+				ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+			}
 		}
 	});
 	MyBrowser->AddToViewport(INT_MAX - 100);
@@ -424,13 +440,13 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #if PLATFORM_IOS
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
 
-	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[Settings->ClientID.GetNSString() intValue]
+	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
 		state:State.GetNSString()
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
 	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
-		clientId:[Settings->ClientID.GetNSString() intValue]
+		clientId:[ClientID.GetNSString() intValue]
 		refreshToken:nil
 		clientSecret:nil
 		redirectUri:RedirectURI.GetNSString()];
@@ -2257,15 +2273,22 @@ void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 	if (BrowserWidgetWrapper != nullptr)
 	{
 		BrowserWidgetWrapper->LoadUrl(Url);
-		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bAuthenticationCompleted)
-			{ 
-			if (bAuthenticationCompleted)
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bIsManually, const FString& AuthenticationCode)
+		{
+			if (!AuthenticationCode.IsEmpty())
 			{
-				NativeSuccessCallback.ExecuteIfBound(LoginData);
+				ExchangeAuthenticationCodeToToken(AuthenticationCode, NativeSuccessCallback, NativeErrorCallback);
 			}
 			else
 			{
-				NativeCancelCallback.ExecuteIfBound();
+				if (bIsManually)
+				{
+					NativeCancelCallback.ExecuteIfBound();
+				}
+				else
+				{
+					NativeErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+				}
 			}
 		});
 	}

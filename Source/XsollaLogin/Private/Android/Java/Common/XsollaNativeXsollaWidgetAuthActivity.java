@@ -15,6 +15,7 @@ import com.xsolla.android.login.callback.StartXsollaWidgetAuthCallback;
 public class XsollaNativeXsollaWidgetAuthActivity extends Activity {
 
     public static String CALLBACK_ADDRESS = "callback_address";
+    public static String REMEMBER_ME = "remember_me";
     public static String LOCALE = "locale";
 
 	public static native void onAuthSuccessCallback(long callback, String accessToken, String refreshToken, long expiresAt, boolean rememberMe);
@@ -56,7 +57,7 @@ public class XsollaNativeXsollaWidgetAuthActivity extends Activity {
 				XLogin.getToken(),
 				XLogin.getRefreshToken(),
 				XLogin.getTokenExpireTime(),
-				false);
+				getIntent().getBooleanExtra(REMEMBER_ME, false));
                 finish();
             }
 
