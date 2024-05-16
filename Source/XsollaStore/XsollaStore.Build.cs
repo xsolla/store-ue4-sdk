@@ -40,14 +40,14 @@ public class XsollaStore : ModuleRules
 
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
 			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "XsollaStore_UPL.xml"));
 		}
 
         if (Target.Platform == UnrealTargetPlatform.IOS)
         {
-            PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+            PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
             string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 
             AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "XsollaStore_IOS_UPL.xml"));
