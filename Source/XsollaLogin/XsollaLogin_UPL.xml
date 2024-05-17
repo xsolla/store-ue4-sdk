@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 
-    Copyright 2023 Xsolla Inc. All Rights Reserved.
+    Copyright 2024 Xsolla Inc. All Rights Reserved.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
@@ -78,7 +78,7 @@
         implementation 'com.xsolla.android:login-wechat:6.0.7'
         implementation 'com.xsolla.android:login-qq:6.0.7'
         implementation 'com.google.android.gms:play-services-auth:18.0.0'
-        implementation 'com.google.android.gms:play-services-games:18.0.0'
+        implementation 'com.google.android.gms:play-services-games-v2:19.0.0'
       }
       repositories {
         maven { url 'https://maven.google.com' }
