@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -84,7 +84,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
 	 * @param SuccessCallback Called after virtual items were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -117,7 +117,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
 	 * @param SuccessCallback Called after virtual currencies were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
@@ -134,7 +134,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Called after virtual currency packages were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -153,7 +153,7 @@ public:
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	 * @param SuccessCallback Called after server response.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	 * @param Offset Number of the element from which the list is generated (the count start from 0).
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
@@ -179,43 +179,28 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country.<br>
-	 * Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).<br>
-	 * Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale.<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after payment token was successfully fetched.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Quantity Item quantity.
-	 * @param ExternalId (optional) Transaction external ID.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback, PurchaseParams"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
-		const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity = 1, const FString& ExternalId = TEXT(""));
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FXsollaPaymentTokenRequestPayload& PurchaseParams);
 
 	/** Creates an order with items from the cart with the specified ID or from the cart of the current user. Returns the payment token and order ID.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
-	 * @param Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default). Leave empty to use the default value.
-	 * @param Country (optional) Desired payment country ISO code. Leave empty to use the default value.
-	 * @param Locale (optional) Desired payment locale. Leave empty to use the default value.
-	 * @param CustomParameters (optional) Map of custom parameters. Leave empty to use the default value.
 	 * @param SuccessCallback Called after the payment token was successfully fetched.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param ExternalId (optional) Transaction external ID.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback, PurchaseParams"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
-		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId = TEXT(""));
+		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FXsollaPaymentTokenRequestPayload& PurchaseParams);
 
-	/** Opens payment console for the provided access token.
+	/** Opens payment UI for the provided access token.
 	 * More about the use cases:
 	 * - [Cart purchase](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/)
 	 * - [Purchase in one click](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/)
@@ -226,11 +211,13 @@ public:
 	 * @param AccessToken Payment token used during purchase processing.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param BrowserClosedCallback Called after the browser was closed.
+	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 * @param PayStationVersion Pay Station version. V4 by default.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback, BrowserClosedCallback"))
 	void LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
+		const EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4);
 
 	/** Checks pending order status by its ID.
 	 *
@@ -282,24 +269,26 @@ public:
 
 	/** Initiates purchase by passing store item
 	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
-	 * @param PaymentTokenRequestPayload (optional)
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void PurchaseStoreItem(const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
+	void PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Initiate purchase by passing virtual currency package
 	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CurrencyPackage Desired currency package.
-	 * @param PaymentTokenRequestPayload (optional).
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
+	void PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes all items from the cart with the specified ID or from the cart of the current user.
@@ -390,7 +379,7 @@ public:
 	* @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
 	* @param SuccessCallback Called after bundles are successfully received.
 	* @param ErrorCallback Called after the request resulted with an error.
-	* @param Limit Limit for the number of elements on the page.
+	* @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
 	* @param Offset Number of the element from which the list is generated (the count starts from 0).
 	* @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	*/
@@ -414,7 +403,7 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages for which display in the store is enabled in the settings.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
@@ -661,10 +650,11 @@ public:
 	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
+	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
 
 	/** Returns the URL of the management interface for the selected subscription.
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -673,10 +663,11 @@ public:
 	* @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
+	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
 
 	/** Returns the URL of the renewal interface for the selected subscription
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -685,10 +676,11 @@ public:
 	* @param SubscriptionId Subscription ID.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
+	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
 
 	/** Changes a regular subscription status to `non_renewing` (subscription is automatically canceled after expiration).
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -817,7 +809,7 @@ protected:
 	/** Check whether sandbox is enabled */
 	bool IsSandboxEnabled() const;
 
-	void InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+	void InnerPurchase(const FString& AuthToken, const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
 		const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	UFUNCTION()
@@ -841,17 +833,20 @@ private:
 	void ProcessNextCartRequest();
 
 	/** Prepare payload for payment token request */
-	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country,
-		const FString& Locale, const FString& ExternalId, const FXsollaParameters& CustomParameters);
+	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload);
 
 	/** Prepare paystation settings */
-	TSharedPtr<FJsonObject> PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bShowCloseButton);
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
 	/** Queue to store cart change requests */
 	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
+
+	FString GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const;
+
+	FString GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const;
 
 public:
 	/** Returns the list of cached virtual items without any Category provided. */
@@ -907,8 +902,11 @@ protected:
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
 
-	/** Cached auth token (used for silent cart update) */
+	/** Cached auth token */
 	FString CachedAuthToken;
+
+	/** Cached payload */
+	FXsollaPaymentTokenRequestPayload CachedPaymentTokenRequestPayload;
 
 	/** Cached cart identifier (used for silent cart update) */
 	FString CachedCartId;
@@ -917,7 +915,7 @@ protected:
 	FString CachedCartLocale;
 
 	/** Pending PayStation URL to be opened in browser */
-	FString PengindPaystationUrl;
+	FString PendingPaystationUrl;
 
 	UXsollaStoreBrowserWrapper* MyBrowser;
 
@@ -942,6 +940,9 @@ private:
 
 	UPROPERTY()
 	int32 PaymentOrderId;
+
+	UPROPERTY()
+	int32 PaymentPayStationVersionNumber;
 
 	FOnPurchaseUpdate PaymentSuccessCallback;
 

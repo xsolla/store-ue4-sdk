@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -13,7 +13,7 @@ struct XSOLLASTORE_API FConnectionData
 	FString auth;
 
 	UPROPERTY()
-	int32 project_id;
+	int32 project_id = 0;
 
 	FConnectionData(const FString& Auth, int32 ProjectId)
 		: auth(Auth)
@@ -45,7 +45,7 @@ struct XSOLLASTORE_API FConnectionMessage
 	FConnectCommand connect;
 
 	UPROPERTY()
-	int32 id;
+	int32 id = 0;
 
 	FConnectionMessage(const FString& Auth, int32 ProjectId, int32 Id)
 		: connect(FConnectCommand(Auth, ProjectId))
@@ -60,7 +60,7 @@ struct XSOLLASTORE_API FOrderStatusData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	int32 order_id;
+	int32 order_id = 0;
 
 	UPROPERTY()
 	FString status;
@@ -75,7 +75,7 @@ struct XSOLLASTORE_API FOrderStatusPub
 	FOrderStatusData data;
 
 	UPROPERTY()
-	int32 offset;
+	int32 offset = 0;
 };
 
 USTRUCT()

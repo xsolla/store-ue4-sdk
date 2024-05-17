@@ -1,10 +1,12 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
+#if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
-#include "Launch/Public/Android/AndroidJNI.h"
+#include "Android/AndroidJNI.h"
 #include "Android/AndroidJava.h"
+#endif
 
 namespace XsollaJavaConvertor
 {

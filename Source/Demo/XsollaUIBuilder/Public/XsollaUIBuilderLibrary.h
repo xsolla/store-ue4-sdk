@@ -1,8 +1,7 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
-#include "EngineMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUIBuilderTypes.h"
 

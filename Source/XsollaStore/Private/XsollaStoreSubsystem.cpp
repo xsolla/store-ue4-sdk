@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaStoreSubsystem.h"
 
@@ -9,7 +9,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
-
+#include "Engine/GameInstance.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "JsonObjectConverter.h"
@@ -26,6 +26,8 @@
 #include "XsollaStoreBrowserWrapper.h"
 #include "XsollaLoginSubsystem.h"
 #include "XsollaLoginLibrary.h"
+#include "Async/Async.h"
+#include "Kismet/GameplayStatics.h"
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
@@ -61,6 +63,25 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LoginSubsystem = GetGameInstance()->GetSubsystem<UXsollaLoginSubsystem>();
 
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: XsollaStore subsystem initialized"), *VA_FUNC_LINE);
+
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
+
+#if PLATFORM_ANDROID
+	
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "configureAnalytics",
+		"(Ljava/lang/String;Ljava/lang/String;)V",
+		XsollaJavaConvertor::GetJavaString(Engine),
+		XsollaJavaConvertor::GetJavaString(ENGINE_VERSION_STRING));
+
+#endif
+
+#if PLATFORM_IOS
+
+	[[PaymentsKitObjectiveC shared] configureAnalyticsWithGameEngine:Engine.GetNSString()
+		gameEngineVersion:EngineVersion.GetNSString()];
+
+#endif
 }
 
 void UXsollaStoreSubsystem::Deinitialize()
@@ -89,7 +110,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -149,7 +170,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -175,7 +196,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -195,7 +216,7 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetI
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -208,12 +229,11 @@ void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetI
 }
 
 void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
-	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const int32 Quantity, const FString& ExternalId)
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FXsollaPaymentTokenRequestPayload& PurchaseParams)
 {
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, ExternalId, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(PurchaseParams);
 
-	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
+	RequestDataJson->SetNumberField(TEXT("quantity"), PurchaseParams.Quantity);
 
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/item/{ItemSKU}"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -249,13 +269,12 @@ void UXsollaStoreSubsystem::FetchPaymentToken(const FString& AuthToken, const FS
 }
 
 void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
-	const FString& Currency, const FString& Country, const FString& Locale, const FXsollaParameters CustomParameters,
-	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FString& ExternalId)
+	const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FXsollaPaymentTokenRequestPayload& PurchaseParams)
 {
 	CachedAuthToken = AuthToken;
 	CachedCartId = CartId;
 
-	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(Currency, Country, Locale, ExternalId, CustomParameters);
+	TSharedPtr<FJsonObject> RequestDataJson = PreparePaymentTokenRequestPayload(PurchaseParams);
 
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/payment/cart")
@@ -295,19 +314,22 @@ void UXsollaStoreSubsystem::FetchCartPaymentToken(const FString& AuthToken, cons
 }
 
 void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, const int32 OrderId, const FString& AccessToken,
-	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
+	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
+	const EXsollaPayStationVersion PayStationVersion)
 {
-	FString PaystationUrl;
-	if (IsSandboxEnabled())
-	{
-		PaystationUrl = FString::Printf(TEXT("https://sandbox-secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
-	}
-	else
-	{
-		PaystationUrl = FString::Printf(TEXT("https://secure.xsolla.com/paystation3?access_token=%s"), *AccessToken);
-	}
+	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
+	FString EngineVersion = ENGINE_VERSION_STRING;
 
-	PengindPaystationUrl = PaystationUrl;
+	const FString PaystationUrl = XsollaUtilsUrlBuilder(IsSandboxEnabled() ? TEXT("https://sandbox-secure.xsolla.com/{PayStationVersion}") : TEXT("https://secure.xsolla.com/{PayStationVersion}"))
+							.SetPathParam(TEXT("PayStationVersion"), GetPayStationVersionPath(PayStationVersion))
+							.AddStringQueryParam(GetTokenQueryParameterName(PayStationVersion), AccessToken)
+							.AddStringQueryParam(TEXT("engine"), Engine)
+							.AddStringQueryParam(TEXT("engine_v"), EngineVersion)
+							.AddStringQueryParam(TEXT("sdk"), TEXT("STORE"))
+							.AddStringQueryParam(TEXT("sdk_v"), XSOLLA_STORE_VERSION)
+							.Build();
+
+	PendingPaystationUrl = PaystationUrl;
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
@@ -320,17 +342,19 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	{
 #if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
+		int32 PayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 		FString RedirectURI = FString::Printf(TEXT("xpayment.%s"), *UXsollaLoginLibrary::GetAppId());
 		UXsollaNativePaymentsCallback* nativeCallback = NewObject<UXsollaNativePaymentsCallback>();
 		nativeCallback->BindBrowserClosedDelegate(BrowserClosedCallback);
 
 		XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "openPurchaseUI",
-			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;J)V",
+			"(Landroid/app/Activity;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;IJ)V",
 			FJavaWrapper::GameActivityThis,
 			XsollaJavaConvertor::GetJavaString(AccessToken),
 			Settings->EnableSandbox,
 			XsollaJavaConvertor::GetJavaString("app"),
 			XsollaJavaConvertor::GetJavaString(RedirectURI),
+			PayStationVersionNumber,
 			(jlong)nativeCallback);
 #endif
 #if PLATFORM_IOS
@@ -338,8 +362,11 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		PaymentAccessToken = AccessToken;
 		PaymentRedirectURI = RedirectURI;
 		PaymentEnableSandbox = Settings->EnableSandbox;
+		PaymentPayStationVersionNumber = PayStationVersion == EXsollaPayStationVersion::v3 ? 3 : 4;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
+			[[PaymentsKitObjectiveC shared] setPaystationVersionWithPaystationVersion:PaymentPayStationVersionNumber];
+
 			[[PaymentsKitObjectiveC shared] performPaymentWithPaymentToken:PaymentAccessToken.GetNSString()
 				presenter:[UIApplication sharedApplication].keyWindow.rootViewController
 				isSandbox:PaymentEnableSandbox
@@ -408,7 +435,7 @@ void UXsollaStoreSubsystem::CheckPendingOrder(const FString& AccessToken, const 
 	});
 
 	CachedOrderCheckObjects.Add(OrderCheckObject);
-	OrderCheckObject->Init(LoginSubsystem->GetLoginData().AuthToken.JWT, OrderId, bIsUserInvolvedToPayment, OrderCheckSuccessCallback, OrderCheckErrorCallback);
+	OrderCheckObject->Init(AccessToken, OrderId, bIsUserInvolvedToPayment, OrderCheckSuccessCallback, OrderCheckErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& AuthToken, const FString& ItemSKU,
@@ -459,19 +486,19 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::PurchaseStoreItem(const FStoreItem& StoreItem,
-	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+void UXsollaStoreSubsystem::PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem,
+	const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	InnerPurchase(StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PaymentTokenRequestPayload,
+	InnerPurchase(AuthToken, StoreItem.sku, StoreItem.is_free, StoreItem.virtual_prices, PurchaseParams,
 		SuccessCallback, ErrorCallback);
 }
 
-void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FVirtualCurrencyPackage& CurrencyPackage,
-	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload,
+void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage,
+	const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	InnerPurchase(CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PaymentTokenRequestPayload,
+	InnerPurchase(AuthToken, CurrencyPackage.sku, CurrencyPackage.is_free, CurrencyPackage.virtual_prices, PurchaseParams,
 		SuccessCallback, ErrorCallback);
 }
 
@@ -683,7 +710,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku,
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -708,7 +735,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 							.Build();
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
@@ -1092,7 +1119,7 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, con
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1104,7 +1131,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1121,7 +1148,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/manage"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1131,7 +1158,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1148,7 +1175,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/renew"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1158,7 +1185,7 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(bShowCloseButton);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
 
@@ -1937,10 +1964,11 @@ bool UXsollaStoreSubsystem::IsSandboxEnabled() const
 	return bIsSandboxEnabled;
 }
 
-void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
+void UXsollaStoreSubsystem::InnerPurchase(const FString& AuthToken, const FString& Sku, bool bIsFree, const TArray<FXsollaVirtualCurrencyPrice>& VirtualPrices,
 	const FXsollaPaymentTokenRequestPayload PaymentTokenRequestPayload, const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString& AuthToken = LoginSubsystem->GetLoginData().AuthToken.JWT;
+	CachedAuthToken = AuthToken;
+	CachedPaymentTokenRequestPayload = PaymentTokenRequestPayload;
 
 	PaymentSuccessCallback = SuccessCallback;
 	PaymentErrorCallback = ErrorCallback;
@@ -1957,8 +1985,7 @@ void UXsollaStoreSubsystem::InnerPurchase(const FString& Sku, bool bIsFree, cons
 	{
 		FOnFetchTokenSuccess FetchTokenSuccessCallback;
 		FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
-		FetchPaymentToken(AuthToken, Sku, PaymentTokenRequestPayload.Currency, PaymentTokenRequestPayload.Country, PaymentTokenRequestPayload.Locale,
-			PaymentTokenRequestPayload.CustomParameters, FetchTokenSuccessCallback, PaymentErrorCallback, 1, PaymentTokenRequestPayload.ExternalId);
+		FetchPaymentToken(AuthToken, Sku, FetchTokenSuccessCallback, PaymentErrorCallback, PaymentTokenRequestPayload);
 	}
 	else
 	{
@@ -1974,14 +2001,14 @@ void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
 	FOnStoreBrowserClosed BrowserClosedCallback;
-	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback);
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback, CachedPaymentTokenRequestPayload.PayStationVersion);
 }
 
 void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
 {
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
-	CheckPendingOrder(LoginSubsystem->GetLoginData().AuthToken.JWT, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
+	CheckPendingOrder(CachedAuthToken, InOrderId, SuccessPaymentCallback, PaymentErrorCallback);
 }
 
 void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
@@ -2034,31 +2061,28 @@ void UXsollaStoreSubsystem::ProcessNextCartRequest()
 	}
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(const FString& Currency, const FString& Country,
-	const FString& Locale, const FString& ExternalId, const FXsollaParameters& CustomParameters)
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload)
 {
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// General
-	if (!Currency.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("currency"), Currency);
-	if (!Country.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("country"), Country);
-	if (!Locale.IsEmpty())
-		RequestDataJson->SetStringField(TEXT("locale"), Locale);
+	if (!PaymentTokenRequestPayload.Currency.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("currency"), PaymentTokenRequestPayload.Currency);
+	if (!PaymentTokenRequestPayload.Locale.IsEmpty())
+		RequestDataJson->SetStringField(TEXT("locale"), PaymentTokenRequestPayload.Locale);
 
 	// Sandbox
 	RequestDataJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
 
 	// Custom parameters
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", CustomParameters);
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", PaymentTokenRequestPayload.CustomParameters);
 
-	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings();
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(PaymentTokenRequestPayload.bShowCloseButton);
 
-	if (!ExternalId.IsEmpty())
-	PaystationSettingsJson->SetStringField(TEXT("external_id"), ExternalId);
+	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
+		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
 
 	RequestDataJson->SetObjectField(TEXT("settings"), PaystationSettingsJson);
 
@@ -2073,19 +2097,29 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings()
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bShowCloseButton)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
 	TSharedPtr<FJsonObject> PaymentUiSettingsJson = MakeShareable(new FJsonObject);
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceThemeId);
-	PaymentUiSettingsJson->SetStringField(TEXT("size"),
-		UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiSize>(Settings->PaymentInterfaceSize));
 
-	if (Settings->PaymentInterfaceVersion != EXsollaPaymentUiVersion::not_specified)
-		PaymentUiSettingsJson->SetStringField(TEXT("version"),
-			UXsollaUtilsLibrary::EnumToString<EXsollaPaymentUiVersion>(Settings->PaymentInterfaceVersion));
+	TSharedPtr<FJsonObject> PaymentUiSettingsHeaderJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsHeaderJson->SetBoolField("close_button", bShowCloseButton);
+
+	TSharedPtr<FJsonObject> PaymentUiSettingsPlatformNameJson = MakeShareable(new FJsonObject);
+	PaymentUiSettingsPlatformNameJson->SetObjectField("header", PaymentUiSettingsHeaderJson);
+
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+	if (Platform == TEXT("android") || Platform == TEXT("ios"))
+	{
+		PaymentUiSettingsJson->SetObjectField(TEXT("mobile"), PaymentUiSettingsPlatformNameJson);
+	}
+	else
+	{
+		PaymentUiSettingsJson->SetObjectField(TEXT("desktop"), PaymentUiSettingsPlatformNameJson);
+	}
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
@@ -2146,6 +2180,31 @@ bool UXsollaStoreSubsystem::GetSteamUserId(const FString& AuthToken, FString& St
 	return true;
 }
 
+FString UXsollaStoreSubsystem::GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const
+{
+	switch (PayStationVersion)
+	{
+	case EXsollaPayStationVersion::v3:
+		return TEXT("paystation3");
+	case EXsollaPayStationVersion::v4:
+		return TEXT("paystation4");
+	}
+	return TEXT("");
+}
+
+FString UXsollaStoreSubsystem::GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const
+{
+	switch (PayStationVersion)
+	{
+	case EXsollaPayStationVersion::v3:
+		return TEXT("access_token");
+	case EXsollaPayStationVersion::v4:
+		return TEXT("token");
+	}
+
+	return TEXT("");
+}
+
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
 {
 	return ItemsData.Items.FilterByPredicate([](const FStoreItem& InStoreItem) {
@@ -2165,7 +2224,7 @@ const FStoreCart& UXsollaStoreSubsystem::GetCart() const
 
 const FString& UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 {
-	return PengindPaystationUrl;
+	return PendingPaystationUrl;
 }
 
 FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const

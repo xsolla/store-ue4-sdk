@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaOrderCheckObject.h"
 
@@ -16,9 +16,9 @@
 #include "CentrifugoServiceSubsystem.h"
 #include "Engine/GameInstance.h"
 
-void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrderId, bool bShouldStartWithCentrifugo, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime)
+void UXsollaOrderCheckObject::Init(const FString& InAccessToken, const int32 InOrderId, bool bShouldStartWithCentrifugo, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime)
 {
-	AuthToken = InAuthToken;
+	AccessToken = InAccessToken;
 	OrderId = InOrderId;
 	ShortPollingLifeTime = FMath::Clamp(InShortPollingLifeTime, 1, 3600);
 
@@ -175,7 +175,7 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 							.SetPathParam(TEXT("OrderId"), OrderId)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AccessToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaOrderCheckObject::CheckOrder_HttpRequestComplete, CheckOrderSuccessCallback, OnError);
 	HttpRequest->ProcessRequest();
 }

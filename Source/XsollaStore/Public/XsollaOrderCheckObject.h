@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -22,7 +22,7 @@ class UXsollaOrderCheckObject : public UObject
 	GENERATED_BODY()
 	
 public:
-	void Init(const FString& InAuthToken, const int32 InOrderId, bool bShouldStartWithCentrifugo,
+	void Init(const FString& InAccessToken, const int32 InOrderId, bool bShouldStartWithCentrifugo,
 		const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime = 600);
 
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
@@ -33,7 +33,7 @@ private:
 
 	FOnOrderCheckError OnError;
 
-	FString AuthToken;
+	FString AccessToken;
 
 	int32 OrderId;
 

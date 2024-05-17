@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -236,6 +236,9 @@ struct XSOLLASTORE_API FStoreItemsList
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadOnly, Category = "Items List", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Items List")
 	TArray<FStoreItem> Items;
 };
@@ -245,6 +248,9 @@ struct XSOLLASTORE_API FStoreItemsData
 {
 public:
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Items Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
@@ -326,6 +332,9 @@ struct XSOLLASTORE_API FVirtualCurrencyData
 {
 public:
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Data")
 	TArray<FVirtualCurrency> Items;
@@ -434,6 +443,9 @@ struct XSOLLASTORE_API FVirtualCurrencyPackagesData
 {
 public:
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Packages Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Packages Data")
 	TArray<FVirtualCurrencyPackage> Items;

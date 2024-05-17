@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 
-    Copyright 2023 Xsolla Inc. All Rights Reserved.
+    Copyright 2024 Xsolla Inc. All Rights Reserved.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
@@ -13,7 +13,7 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:payments:1.0.6'
+        implementation 'com.xsolla.android:payments:1.3.3'
       }
       repositories {
         maven { url 'https://maven.google.com' }

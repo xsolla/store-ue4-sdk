@@ -1,9 +1,9 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 
 #include "XsollaLoginBrowserWrapper.h"
 
-void UXsollaLoginBrowserWrapper::ExecuteBrowserClosed(bool bAuthenticationCompleted)
+void UXsollaLoginBrowserWrapper::ExecuteBrowserClosed(bool bIsManually, const FString& AuthenticationCode)
 {
-	OnBrowserClosed.ExecuteIfBound(bAuthenticationCompleted);
+	OnBrowserClosed.ExecuteIfBound(bIsManually, AuthenticationCode);
 }

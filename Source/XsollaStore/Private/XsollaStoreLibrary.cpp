@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaStoreLibrary.h"
 #include "XsollaStore.h"
@@ -46,6 +46,6 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 		return Row->symbol.format.Replace(TEXT("$"), *Row->symbol.grapheme).Replace(TEXT("1"), *SanitizedAmount);
 	}
 
-	UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to format price (%d %s)"), *VA_FUNC_LINE, Amount, *Currency);
+	UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to format price (%s %s)"), *VA_FUNC_LINE, *FString::SanitizeFloat(Amount), *Currency);
 	return FString();
 }

@@ -1,10 +1,11 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "XsollaCentrifugoDataModel.h"
+#include "Engine/EngineTypes.h"
 #include "CentrifugoServiceSubsystem.generated.h"
 
 class UXsollaOrderCheckObject;
