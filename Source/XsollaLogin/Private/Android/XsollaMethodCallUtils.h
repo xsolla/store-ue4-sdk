@@ -2,9 +2,11 @@
 
 #pragma once
 
+#if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
-#include "Launch/Public/Android/AndroidJNI.h"
+#include "Android/AndroidJNI.h"
 #include "Android/AndroidJava.h"
+#endif
 
 namespace XsollaMethodCallUtils
 {
