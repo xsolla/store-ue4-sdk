@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.0.0] - 2024-05-17
+
+### Added
+- Game engine analytics to API requests (for mobile and desktop builds)
+- Minor demo improvements 
+
+### Changed
+- `PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods. Added `AuthToken` parameter. Renamed `PaymentTokenRequestPayload` parameter to `PurchaseParams`
+- `FetchPaymentToken` and `FetchCartPaymentToken` SDK methods. Added `PurchaseParams` parameter. Parameters `Currency`, `Country`, `Locale`, `CustomParameters`, `Quantity` and `ExternalId` moved to the `PurchaseParams`
+- `GetSubscriptionPurchaseUrl`, `GetSubscriptionManagementUrl` and `GetSubscriptionRenewalUrl` SDK methods. Added `bShowCloseButton` optional parameter
+- `AuthWithXsollaWidget` SDK method. Added `Locale`, `State` and `ErrorCallback` parameters. This method uses OAuth2.0 authorization now
+- `LaunchPaymentConsole` SDK method. Added `PayStationVersion` optional parameter, uses `V4` by default
+- Methods for working with catalog (`UXsollaStoreSubsystem` class). The `has_more` parameter added in response
+- Default Pay Station version was changed to 4
+- Xsolla Pay Station UI settings. Removed `PaymentInterfaceSize` and `PaymentInterfaceVersion` parameters
+- Updated iOS and Android libraries
+- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters tgat are used in purchase methods:
+    - `bShowCloseButton`
+    - `PayStationVersion`
+
+### Fixed
+- Сleanup of the `SuccessTokenUpdate` local variable by garbage collector in  `UXsollaStoreSubsystem` and `UXsollaInventorySubsystem` classes methods 
+- `CheckPendingOrder` method uses only passed `AccessToken` parameter
+
 ## [1.6.0] - 2023-09-13
 
 ### Added
