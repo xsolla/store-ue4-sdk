@@ -28,6 +28,7 @@
 #include "XsollaLoginLibrary.h"
 #include "Async/Async.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Launch/Resources/Version.h"
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
