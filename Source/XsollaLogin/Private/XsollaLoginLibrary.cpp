@@ -15,6 +15,7 @@
 #include "XsollaSettings/Public/XsollaProjectSettings.h"
 #include "XsollaSettings/Public/XsollaSettingsModule.h"
 #include "TextureResource.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
