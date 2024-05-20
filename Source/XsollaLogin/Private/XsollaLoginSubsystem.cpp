@@ -24,6 +24,7 @@
 #include "XsollaUtilsDataModel.h"
 #include "XsollaLoginBrowserWrapper.h"
 #include "Misc/EngineVersion.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 #if PLATFORM_ANDROID
 #include "Android/XsollaJavaConvertor.h"
