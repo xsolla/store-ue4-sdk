@@ -7,6 +7,7 @@
 #include "Runtime/Launch/Resources/Version.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "Misc/EngineVersion.h"
 
 const FString XsollaUtilsHttpRequestHelper::NoResponseErrorMsg(TEXT("No response"));
 const FString XsollaUtilsHttpRequestHelper::UnknownErrorMsg(TEXT("Unknown error"));
