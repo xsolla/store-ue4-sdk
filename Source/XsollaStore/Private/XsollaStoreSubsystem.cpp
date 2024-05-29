@@ -2123,6 +2123,8 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		PaymentUiSettingsJson->SetObjectField(TEXT("desktop"), PaymentUiSettingsPlatformNameJson);
 	}
 
+	PaymentUiSettingsJson->SetBoolField(TEXT("is_independent_windows"), true);
+
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
 
 	if (!Settings->UseSettingsFromPublisherAccount)
