@@ -22,8 +22,8 @@ struct XSOLLAUTILS_API XsollaHttpRequestError
 	FString code;
 	FString description;
 	FString errorMessage;
-	int32 statusCode;
-	int32 errorCode;
+	int32 statusCode = -1;
+	int32 errorCode = -1;
 
 	XsollaHttpRequestError()
 	{
