@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0] - 2024-06-14
+
+### Fixed
+- Subscriptions methods (`GetSubscriptionPurchaseUrl`, `GetSubscriptionManagementUrl`, `GetSubscriptionRenewalUrl`):
+    - Improved response structure for error handling
+    -`bShowCloseButton` parameter deleted from request
+
 ## [2.0.0] - 2024-05-17
 
 ### Added
