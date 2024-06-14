@@ -209,7 +209,28 @@ bool XsollaUtilsHttpRequestHelper::ParseError(TSharedPtr<FJsonObject> JsonObject
 	{
 		TSharedPtr<FJsonObject> ErrorObject = JsonObject.Get()->GetObjectField(TEXT("error"));
 		OutError.code = ErrorObject.Get()->GetStringField(TEXT("code"));
-		OutError.description = ErrorObject.Get()->GetStringField(TEXT("description"));
+		if (ErrorObject.Get()->HasTypedField<EJson::String>(TEXT("description")))
+		{
+			OutError.description = ErrorObject.Get()->GetStringField(TEXT("description"));
+		}
+		else if (ErrorObject.Get()->HasTypedField<EJson::Array>(TEXT("description")))
+		{
+			const TArray<TSharedPtr<FJsonValue>> DescriptionArray = ErrorObject.Get()->GetArrayField(TEXT("description"));
+			if (DescriptionArray.Num() > 0)
+			{
+				TSharedPtr<FJsonObject> DescriptionObject = DescriptionArray[0]->AsObject();
+				if (DescriptionObject->HasTypedField<EJson::String>(TEXT("property")))
+				{
+					OutError.description += DescriptionObject->GetStringField(TEXT("property"));
+					OutError.description += TEXT(" ");
+				}
+				if (DescriptionObject->HasTypedField<EJson::String>(TEXT("message")))
+				{
+					OutError.description += DescriptionObject->GetStringField(TEXT("message"));
+				}
+			}
+		}
+		
 		return true;
 	}
 
