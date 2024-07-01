@@ -650,11 +650,10 @@ public:
 	* @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
-	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns the URL of the management interface for the selected subscription.
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -663,11 +662,10 @@ public:
 	* @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
-	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns the URL of the renewal interface for the selected subscription
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -676,11 +674,10 @@ public:
 	* @param SubscriptionId Subscription ID.
 	* @param SuccessCallback Called after the URL has been successfully recieved.
 	* @param ErrorCallback Called after the request resulted with an error.
-	* @param bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback, const bool bShowCloseButton = false);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Changes a regular subscription status to `non_renewing` (subscription is automatically canceled after expiration).
 	* [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -836,7 +833,7 @@ private:
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload);
 
 	/** Prepare paystation settings */
-	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bShowCloseButton);
+	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bAddCloseButtonParameter = false, const bool bShowCloseButton = false);
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
