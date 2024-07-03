@@ -2107,6 +2107,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 
 	PaymentUiSettingsJson->SetStringField(TEXT("theme"), Settings->PaymentInterfaceThemeId);
 
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+	bool bIsMobile = Platform == TEXT("android") || Platform == TEXT("ios");
+
 	if (bAddCloseButtonParameter)
 	{
 		TSharedPtr<FJsonObject> PaymentUiSettingsHeaderJson = MakeShareable(new FJsonObject);
@@ -2115,8 +2118,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		TSharedPtr<FJsonObject> PaymentUiSettingsPlatformNameJson = MakeShareable(new FJsonObject);
 		PaymentUiSettingsPlatformNameJson->SetObjectField("header", PaymentUiSettingsHeaderJson);
 
-		FString Platform = UGameplayStatics::GetPlatformName().ToLower();
-		if (Platform == TEXT("android") || Platform == TEXT("ios"))
+		if (bIsMobile)
 		{
 			PaymentUiSettingsJson->SetObjectField(TEXT("mobile"), PaymentUiSettingsPlatformNameJson);
 		}
@@ -2124,6 +2126,11 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		{
 			PaymentUiSettingsJson->SetObjectField(TEXT("desktop"), PaymentUiSettingsPlatformNameJson);
 		}
+	}
+
+	if (!Settings->UsePlatformBrowser && !bIsMobile)
+	{
+		PaymentUiSettingsJson->SetBoolField(TEXT("is_independent_windows"), true);
 	}
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
