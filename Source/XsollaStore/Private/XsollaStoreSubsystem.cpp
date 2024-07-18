@@ -2081,7 +2081,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", PaymentTokenRequestPayload.CustomParameters);
 
-	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bShowCloseButton);
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bShowCloseButton, PaymentTokenRequestPayload.CloseButtonIcon, PaymentTokenRequestPayload.bGpQuickPaymentButton);
 
 	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
 		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
@@ -2099,7 +2099,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddCloseButtonParameter, const bool bShowCloseButton)
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddAdditionalParameters, const bool bShowCloseButton, const FString& CloseButtonIcon, const bool bGpQuickPaymentButton)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
@@ -2110,10 +2110,26 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
 	bool bIsMobile = Platform == TEXT("android") || Platform == TEXT("ios");
 
-	if (bAddCloseButtonParameter)
+	if (bAddAdditionalParameters)
 	{
 		TSharedPtr<FJsonObject> PaymentUiSettingsHeaderJson = MakeShareable(new FJsonObject);
 		PaymentUiSettingsHeaderJson->SetBoolField("close_button", bShowCloseButton);
+		PaymentUiSettingsHeaderJson->SetStringField("close_button_icon", CloseButtonIcon);
+		PaymentUiSettingsJson->SetBoolField("gp_quick_payment_button", bGpQuickPaymentButton);
+
+		if (bIsMobile || Settings->UsePlatformBrowser)
+		{
+			TSharedPtr<FJsonObject> SdkTokenSettingsJson = MakeShareable(new FJsonObject);
+			if (bIsMobile)
+			{
+				SdkTokenSettingsJson->SetStringField("platform", Platform);
+			}
+			if (Settings->UsePlatformBrowser)
+			{
+				SdkTokenSettingsJson->SetStringField("browser_type", TEXT("system"));
+			}
+			PaymentSettingsJson->SetObjectField(TEXT("sdk"), SdkTokenSettingsJson);
+		}
 
 		TSharedPtr<FJsonObject> PaymentUiSettingsPlatformNameJson = MakeShareable(new FJsonObject);
 		PaymentUiSettingsPlatformNameJson->SetObjectField("header", PaymentUiSettingsHeaderJson);
