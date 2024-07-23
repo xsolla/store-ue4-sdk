@@ -22,5 +22,24 @@ namespace XsollaMethodCallUtils
 
 		Env->DeleteLocalRef(Class);
 	}
+
+	bool CallStaticBooleanMethod(const ANSICHAR* ClassName, const ANSICHAR* MethodName, const ANSICHAR* MethodSignature, ...)
+	{
+		bool bIsOptional = false;
+
+		JNIEnv* Env = FAndroidApplication::GetJavaEnv();
+
+		jclass Class = FAndroidApplication::FindJavaClass(ClassName);
+
+		jmethodID Method = FJavaWrapper::FindStaticMethod(Env, Class, MethodName, MethodSignature, bIsOptional);
+
+		va_list Args;
+		va_start(Args, MethodSignature);
+		jboolean Return = Env->CallStaticBooleanMethodV(Class, Method, Args);
+		va_end(Args);
+
+		Env->DeleteLocalRef(Class);
+		return (bool)Return;
+	}
 #endif
 }
