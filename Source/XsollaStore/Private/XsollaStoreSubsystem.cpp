@@ -1223,6 +1223,16 @@ void UXsollaStoreSubsystem::CancelSubscription(const FString& AuthToken, const i
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+bool UXsollaStoreSubsystem::IsCustomTabsBrowserAvailable(UObject* WorldContextObject)
+{
+#if PLATFORM_ANDROID
+	return XsollaMethodCallUtils::CallStaticBooleanMethod("com/xsolla/store/XsollaNativePayments", "isCustomTabsBrowserAvailable",
+		"(Landroid/app/Activity;)Z",
+		FJavaWrapper::GameActivityThis);
+#endif
+	return false;
+}
+
 void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
