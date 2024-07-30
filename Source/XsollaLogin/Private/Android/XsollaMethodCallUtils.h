@@ -12,5 +12,7 @@ namespace XsollaMethodCallUtils
 {
 #if PLATFORM_ANDROID
 	void CallStaticVoidMethod(const ANSICHAR* ClassName, const ANSICHAR* MethodName, const ANSICHAR* MethodSignature, ...);
+
+	bool CallStaticBooleanMethod(const ANSICHAR* ClassName, const ANSICHAR* MethodName, const ANSICHAR* MethodSignature, ...);
 #endif
 }

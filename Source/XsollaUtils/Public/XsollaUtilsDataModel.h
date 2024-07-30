@@ -471,16 +471,28 @@ struct FXsollaPaymentTokenRequestPayload
 	FString ExternalId;
 
 	/**
-	 * bShowCloseButton (optional) Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
+	 * bShowCloseButton Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	bool bShowCloseButton = false;
+
+	/**
+	 * CloseButtonIcon Defines the icon of the **Close** button in the payment UI. Can be `arrow` or `cross`. `cross` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	FString CloseButtonIcon = TEXT("cross");
 
 	/**
 	 * PayStationVersion Pay Station version. V4 by default.
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4;
+
+	/**
+	 * bGpQuickPaymentButton Defines the way the Google Pay payment method is displayed. If true, the button for quick payment via Google Pay is displayed at the top of the payment UI. If `true`, Google Pay is displayed in the list of payment methods according to the PayRank algorithm. `false` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bGpQuickPaymentButton = false;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.
