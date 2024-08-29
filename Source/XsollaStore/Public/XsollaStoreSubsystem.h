@@ -43,6 +43,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, Game
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrenciesUpdate, const FVirtualCurrencyData&, VirtualCurrencyData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreGamesUpdate, const FStoreGamesData&, GamesData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreItemsUpdate, const FStoreItemsData&, ItemsData);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSellableItemsUpdate, const FSellableItemsList&, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrencyPackagesUpdate, const FVirtualCurrencyPackagesData&, Data);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const TArray<FXsollaItemGroup>&, ItemGroups);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
@@ -91,6 +92,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
+
+	//TEXTREVIEW
+	/** Returns a list of virtual items according to pagination settings. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
+	 *
+	 * @param Locale Response language.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
+	 * @param PromoCode Unique case sensitive code. Contains letters and numbers.
+	 * @param bShowInactiveTimeLimitedItems Shows time-limited items that are not available to the user. The validity period of such items has not started or has already expired.
+	 * @param SuccessCallback Called after virtual items were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param Limit Limit for the number of elements on the page. The maximum number of elements on a page is 50.
+	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetSellableItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FString& PromoCode, const bool bShowInactiveTimeLimitedItems, const FOnSellableItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
+		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
 	/** Returns a full list of virtual item groups. The list includes groups for which display in the store is enabled in the settings
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
@@ -701,6 +724,8 @@ public:
 protected:
 	void GetVirtualItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void GetSellableItems_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnSellableItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 	void GetItemGroups_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback);
 	void GetVirtualCurrencies_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,

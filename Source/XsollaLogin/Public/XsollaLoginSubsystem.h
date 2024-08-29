@@ -650,6 +650,20 @@ public:
 	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
+	/** Unlinks a social network.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
+	 *
+	 * @param AuthToken User authorization token.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account.<br>
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `instagram`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paradox`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, `xbox`, `playstation`.
+	 * @param SuccessCallback Called after successful unlinking.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void UnlinkSocialNetworkFromUserAccount(const FString& AuthToken, const FString& ProviderName,
+		const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Returns the list of linked social networks.
 	 *
 	 * @param AuthToken User authorization token.

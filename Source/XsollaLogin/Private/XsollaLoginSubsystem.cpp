@@ -1429,6 +1429,27 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaLoginSubsystem::UnlinkSocialNetworkFromUserAccount(const FString& AuthToken, const FString& ProviderName,
+	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
+{
+	// Generate endpoint URL
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/users/me/social_providers/{ProviderName}"))
+							.SetPathParam(TEXT("ProviderName"), ProviderName)
+							.Build();
+
+	FOnTokenUpdate SuccessTokenUpdate;
+	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+		{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_DELETE, TEXT(""), Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::DefaultWithHandlerWrapper_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest(); });
+
+	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
 void UXsollaLoginSubsystem::GetLinkedSocialNetworks(const FString& AuthToken, const FOnLinkedSocialNetworksUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Generate endpoint URL

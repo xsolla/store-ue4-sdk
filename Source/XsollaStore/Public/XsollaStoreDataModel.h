@@ -232,6 +232,133 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FXsollaStoreCustomAttributes
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Custom Attributes")
+	int32 purchased;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Custom Attributes")
+	FString attr;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FtoreVpReward
+{
+	GENERATED_BODY()
+
+	//TEXTREVIEW
+	/* Unique item ID. */
+	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	int32 item_id;
+
+	/* Unique item ID. */
+	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	FString sku;
+
+	/* Amount. */
+	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	int32 amount;
+
+	/* Item name. */
+	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	FString name;
+
+	/* Image URL. */
+	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	FString image_url;
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSellableItem
+{
+	GENERATED_BODY()
+
+	// TEXTREVIEW
+	/* Unique item ID. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	int32 item_id;
+
+	/* Unique item ID. The SKU may only contain lowercase Latin alphanumeric characters, periods, dashes, and underscores. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FString sku;
+
+	/* Type of item: Consumable/Expiration/Permanent/Lootboxes/Physical. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FString type;
+
+	/* Item name. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FString name;
+
+	/* Item description. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FString description;
+
+	/* Image URL. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FString image_url;
+
+	/* Item prices */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FXsollaPrice price;
+
+	/* Virtual prices. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
+
+	// TEXTREVIEW
+	/* If `true`, the item can be bought. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	bool can_be_bought;
+
+	/* Promotions. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	TArray<FXsollaStoreItemPromotion> promotions;
+
+	/* List of attributes and their values corresponding to the item. Can be used for catalog filtering. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item Bundle")
+	TArray<FXsollaItemAttribute> attributes;
+
+	/* If `true`, the item is free. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	bool is_free;
+
+	/* Groups the item belongs to. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	TArray<FXsollaItemGroup> groups;
+
+	/* Defines the inventory item options. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FXsollaItemOptions inventory_options;
+
+	/* Limits. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FXsollaStoreItemLimits limits;
+
+	/* Custom attributes. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	FXsollaStoreCustomAttributes custom_attributes;
+
+	// TEXTREVIEW
+	/* VP rewards. */
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
+	TArray<FtoreVpReward> vp_rewards;
+
+public:
+	FSellableItem()
+		: item_id(0)
+		, can_be_bought(false)
+		, is_free(false){};
+
+	bool operator==(const FSellableItem& Item) const
+	{
+		return sku == Item.sku;
+	}
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FStoreItemsList
 {
 	GENERATED_BODY()
@@ -265,6 +392,22 @@ public:
 
 public:
 	FStoreItemsData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSellableItemsList
+{
+public:
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Items List", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Items List")
+	TArray<FSellableItem> Items;
+
+public:
+	FSellableItemsList(){};
 };
 
 USTRUCT(BlueprintType)
