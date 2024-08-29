@@ -330,7 +330,7 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void AddToCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
+	void UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes the item from the cart with the specified ID or from the cart of the current user.
