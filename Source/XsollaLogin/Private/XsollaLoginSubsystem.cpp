@@ -1183,7 +1183,7 @@ void UXsollaLoginSubsystem::RemoveUserPhoneNumber(const FString& AuthToken, cons
 void UXsollaLoginSubsystem::ModifyUserProfilePicture(const FString& AuthToken, UTexture2D* const Picture,
 	const FOnUserDetailsParamUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
-	if (!IsValid(Picture))
+	if (!Picture)
 	{
 		ErrorCallback.Execute(-1, -1, "Picture is invalid.");
 		return;
