@@ -93,8 +93,7 @@ public:
 	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	//TEXTREVIEW
-	/** Returns a list of virtual items according to pagination settings. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	/** Returns a list of items of any type according to pagination settings. The list includes items for which display in the store is enabled in the settings. For each item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -715,7 +714,7 @@ public:
 		const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Checks whether Custom Tabs can be used on the current Android device to open payment UI. If the method returns false for Android build, WebView is used.  For desktop builds, the method always returns false and doesn't affect the way the payment UI is opened.
-	 * 
+	 *
 	 * @param WorldContextObject The world context.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Xsolla|Store|Utils", meta = (WorldContext = "WorldContextObject"))

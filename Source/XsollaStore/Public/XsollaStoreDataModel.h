@@ -248,25 +248,24 @@ struct XSOLLASTORE_API FtoreVpReward
 {
 	GENERATED_BODY()
 
-	//TEXTREVIEW
-	/* Unique item ID. */
-	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	/* Internal unique value point ID that is provided upon item creation. */
+	UPROPERTY(BlueprintReadOnly, Category = "VP Reward")
 	int32 item_id;
 
-	/* Unique item ID. */
-	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	/* Unique value point ID. The SKU may only contain lowercase Latin alphanumeric characters, periods, dashes, and underscores. */
+	UPROPERTY(BlueprintReadOnly, Category = "VP Reward")
 	FString sku;
 
 	/* Amount. */
-	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	UPROPERTY(BlueprintReadOnly, Category = "VP Reward")
 	int32 amount;
 
-	/* Item name. */
-	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	/* Value point name. */
+	UPROPERTY(BlueprintReadOnly, Category = "VP Reward")
 	FString name;
 
 	/* Image URL. */
-	UPROPERTY(BlueprintReadOnly, Category = "Vp Reward")
+	UPROPERTY(BlueprintReadOnly, Category = "VP Reward")
 	FString image_url;
 };
 
@@ -275,8 +274,7 @@ struct XSOLLASTORE_API FSellableItem
 {
 	GENERATED_BODY()
 
-	// TEXTREVIEW
-	/* Unique item ID. */
+	/* Internal unique item ID that is provided upon item creation. */
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	int32 item_id;
 
@@ -308,8 +306,7 @@ struct XSOLLASTORE_API FSellableItem
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	TArray<FXsollaVirtualCurrencyPrice> virtual_prices;
 
-	// TEXTREVIEW
-	/* If `true`, the item can be bought. */
+	/* If `true`, the user can buy an item. */
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	bool can_be_bought;
 
@@ -318,7 +315,7 @@ struct XSOLLASTORE_API FSellableItem
 	TArray<FXsollaStoreItemPromotion> promotions;
 
 	/* List of attributes and their values corresponding to the item. Can be used for catalog filtering. */
-	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item Bundle")
+	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	TArray<FXsollaItemAttribute> attributes;
 
 	/* If `true`, the item is free. */
@@ -341,8 +338,7 @@ struct XSOLLASTORE_API FSellableItem
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	FXsollaStoreCustomAttributes custom_attributes;
 
-	// TEXTREVIEW
-	/* VP rewards. */
+	/* Value points  that can be received for the item purchase. */
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
 	TArray<FtoreVpReward> vp_rewards;
 
@@ -855,7 +851,7 @@ struct XSOLLASTORE_API FGameUnitItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	bool is_free = false;
-  
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	FXsollaPrice price;
 
@@ -888,7 +884,7 @@ struct XSOLLASTORE_API FGameKeyItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString type;
 
@@ -904,10 +900,10 @@ struct XSOLLASTORE_API FGameKeyItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString image_url;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	bool is_free = false;
-  
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FXsollaPrice price;
 
@@ -979,7 +975,7 @@ struct XSOLLASTORE_API FStoreGamesData
 
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
 	TArray<FGameItem> Items;
-	
+
 	/** All category IDs used by games (calculated locally!). */
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
 	TSet<FString> GroupIds;
@@ -1008,7 +1004,7 @@ struct XSOLLASTORE_API FDRMItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
 	FString image;
 
@@ -1038,13 +1034,13 @@ struct XSOLLASTORE_API FOwnedGameItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	int32 project_id = 0;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString game_sku;
 
@@ -1089,7 +1085,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPeriod
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
 	int32 value = 0;
 
@@ -1101,7 +1097,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionCharge
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	float amount = 0.f;
 
@@ -1116,13 +1112,13 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlanCharge
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	float amount = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	float setup_fee = false;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	FString currency;
 };
@@ -1131,7 +1127,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlanPromotion
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
 	float promotion_charge_amount = 0.f;
 
@@ -1185,7 +1181,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlansList
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
 	TArray<FSubscriptionPlan> items;
 
@@ -1197,7 +1193,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscription
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	int32 id = 0;
 
@@ -1224,7 +1220,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_external_id;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_name;
 
@@ -1233,7 +1229,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString status;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	bool is_in_trial = false;
 
@@ -1251,7 +1247,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FSubscriptionCharge charge;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FSubscriptionPeriod period;
 };
@@ -1260,7 +1256,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionsList
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
 	TArray<FSubscription> items;
 
