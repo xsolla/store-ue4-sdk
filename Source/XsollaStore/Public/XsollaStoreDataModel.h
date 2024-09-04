@@ -244,7 +244,7 @@ struct XSOLLASTORE_API FXsollaStoreCustomAttributes
 };
 
 USTRUCT(BlueprintType)
-struct XSOLLASTORE_API FtoreVpReward
+struct XSOLLASTORE_API FStoreVpReward
 {
 	GENERATED_BODY()
 
@@ -344,7 +344,7 @@ struct XSOLLASTORE_API FSellableItem
 	// TEXTREVIEW
 	/* VP rewards. */
 	UPROPERTY(BlueprintReadOnly, Category = "Sellable Item")
-	TArray<FtoreVpReward> vp_rewards;
+	TArray<FStoreVpReward> vp_rewards;
 
 public:
 	FSellableItem()
