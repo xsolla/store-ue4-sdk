@@ -559,7 +559,7 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 	ProcessNextCartRequest();
 }
 
-void UXsollaStoreSubsystem::AddToCart(const FString& AuthToken, const FString& CartId,
+void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FString& CartId,
 	const FString& ItemSKU, const int32 Quantity,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
