@@ -4,12 +4,12 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUIBuilderTypes.h"
+#include "XsollaUIBuilderWidgetsLibrary.h"
 
 #include "XsollaUIBuilderLibrary.generated.h"
 
 class UXsollaUIBuilderSettings;
 class UXsollaUIBuilderTheme;
-class UXsollaUIBuilderWidgetsLibrary;
 
 UCLASS()
 class XSOLLAUIBUILDER_API UXsollaUIBuilderLibrary : public UBlueprintFunctionLibrary
