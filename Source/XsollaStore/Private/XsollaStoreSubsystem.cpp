@@ -124,33 +124,6 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSellableItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FString& PromoCode, const bool bShowInactiveTimeLimitedItems, const FOnSellableItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
-	const int Limit, const int Offset, const FString& AuthToken)
-{
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items"))
-							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("locale"), Locale)
-							.AddStringQueryParam(TEXT("country"), Country)
-							.AddArrayQueryParam(TEXT("additional_fields[]"), AdditionalFields)
-							.AddStringQueryParam(TEXT("promo_code"), PromoCode)
-							.AddBoolQueryParam(TEXT("show_inactive_time_limited_items"), bShowInactiveTimeLimitedItems)
-							.AddNumberQueryParam(TEXT("limit"), Limit)
-							.AddNumberQueryParam(TEXT("offset"), Offset)
-							.Build();
-
-	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
-		{
-		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
-		HttpRequest->OnProcessRequestComplete().BindUObject(this,
-			&UXsollaStoreSubsystem::GetSellableItems_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
-		HttpRequest->ProcessRequest(); });
-
-	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
-}
-
 void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
 	const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
@@ -1278,23 +1251,6 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 		}
 
 		SuccessCallback.ExecuteIfBound(ItemsData);
-	}
-	else
-	{
-		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
-	}
-}
-
-void UXsollaStoreSubsystem::GetSellableItems_HttpRequestComplete(
-	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-	const bool bSucceeded, FOnSellableItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
-{
-	XsollaHttpRequestError OutError;
-	FSellableItemsList SellableItemsList;
-
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSellableItemsList::StaticStruct(), &SellableItemsList, OutError))
-	{
-		SuccessCallback.ExecuteIfBound(SellableItemsList);
 	}
 	else
 	{
