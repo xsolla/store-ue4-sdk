@@ -692,7 +692,7 @@ public:
 		const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Checks whether Custom Tabs can be used on the current Android device to open payment UI. If the method returns false for Android build, WebView is used.  For desktop builds, the method always returns false and doesn't affect the way the payment UI is opened.
-	 * 
+	 *
 	 * @param WorldContextObject The world context.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Xsolla|Store|Utils", meta = (WorldContext = "WorldContextObject"))
