@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.0.0] - 2024-09-16
+
+### Added
+- `UnlinkSocialNetworkFromUserAccount` SDK method
+- Support for browser pop-ups for desktop (only built-in browser)
+
+### Changed
+- `AddToCart` SDK method. The method was renamed to `UpdateItemInCart`
+- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters that are used in purchase methods:
+    - `CloseButtonIcon`. Defines the icon of the `Close` button in the payment UI. Can be `arrow` or `cross`. `cross` by default
+    - `bGpQuickPaymentButton`. Defines the way the Google Pay payment method is displayed. If `true`, the button for quick payment via Google Pay is displayed at the top of the payment UI. If `true`, Google Pay is displayed in the list of payment methods according to the PayRank algorithm. `false` by default
+
+### Fixed
+- Redirects in Android WebView for specific cases
+- Compilation of the project in non-unity mode
+- Crash of demo project on Android devices while icons loading
+
 ## [2.1.0] - 2024-06-14
 
 ### Fixed
@@ -23,7 +40,7 @@
 - Default Pay Station version was changed to 4
 - Xsolla Pay Station UI settings. Removed `PaymentInterfaceSize` and `PaymentInterfaceVersion` parameters
 - Updated iOS and Android libraries
-- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters tgat are used in purchase methods:
+- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters that are used in purchase methods:
     - `bShowCloseButton`
     - `PayStationVersion`
 
