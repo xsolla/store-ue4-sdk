@@ -329,6 +329,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 							.AddStringQueryParam(TEXT("engine_v"), EngineVersion)
 							.AddStringQueryParam(TEXT("sdk"), TEXT("STORE"))
 							.AddStringQueryParam(TEXT("sdk_v"), XSOLLA_STORE_VERSION)
+							.AddStringQueryParam(TEXT("browser_type"), GetBrowserType())
+							.AddStringQueryParam(TEXT("build_platform"), GetBuildPlatform())
 							.Build();
 
 	PendingPaystationUrl = PaystationUrl;
@@ -2241,6 +2243,17 @@ FString UXsollaStoreSubsystem::GetTokenQueryParameterName(const EXsollaPayStatio
 	}
 
 	return TEXT("");
+}
+
+FString UXsollaStoreSubsystem::GetBrowserType() const
+{
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	return Settings->UsePlatformBrowser ? FString("system") : FString("inapp");
+}
+
+FString UXsollaStoreSubsystem::GetBuildPlatform() const
+{
+	return UGameplayStatics::GetPlatformName().ToLower();
 }
 
 TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
