@@ -3296,7 +3296,7 @@
       "kind": "StringLiteral",
       "offset": 117,
       "length": 7,
-      "value": "\"0.7.3\""
+      "value": "\"1.0.2\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/Logging\/Filters\/LoggerKitDefaultFilter.swift",
@@ -3539,21 +3539,35 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/PaymentsAPI.swift",
       "kind": "StringLiteral",
-      "offset": 3478,
+      "offset": 3361,
+      "length": 14,
+      "value": "\"browser_type\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/PaymentsAPI.swift",
+      "kind": "StringLiteral",
+      "offset": 3384,
+      "length": 10,
+      "value": "\"web_view\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/PaymentsAPI.swift",
+      "kind": "StringLiteral",
+      "offset": 3536,
       "length": 13,
       "value": "\"game_engine\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/PaymentsAPI.swift",
       "kind": "StringLiteral",
-      "offset": 3675,
+      "offset": 3733,
       "length": 15,
       "value": "\"game_engine_v\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKit\/PaymentsKit\/API\/PaymentsAPI.swift",
       "kind": "StringLiteral",
-      "offset": 4060,
+      "offset": 4118,
       "length": 22,
       "value": "\"http:\/\/0.0.0.0:3000\/\""
     }

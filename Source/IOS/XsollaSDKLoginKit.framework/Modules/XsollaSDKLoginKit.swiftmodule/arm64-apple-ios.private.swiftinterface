@@ -86,6 +86,21 @@ public enum FriendsListUpdateAction : Swift.String {
     get
   }
 }
+public struct LoginAPIErrorModel : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension XsollaSDKLoginKit.LoginAPIErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol {
+  public var code: Swift.Int {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+  public var extendedDescription: Swift.String {
+    get
+  }
+}
 public struct JWTGenerationParams {
   public let grantType: XsollaSDKLoginKit.TokenGrantType
   public let clientId: Swift.Int
@@ -105,7 +120,7 @@ final public class LoginKit {
 @available(iOS 13.4, *)
 extension XsollaSDKLoginKit.LoginKit {
   final public func authBySocialNetwork(_ providerName: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, any Swift.Error>) -> Swift.Void)
-  final public func authWithXsollaWidget(loginProjectId: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, locale: Swift.String? = nil, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, any Swift.Error>) -> Swift.Void)
+  final public func authWithXsollaWidget(loginProjectId: Swift.String, oAuth2Params: XsollaSDKLoginKit.OAuth2Params, jwtParams: XsollaSDKLoginKit.JWTGenerationParams, locale: Swift.String? = nil, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (Swift.Result<XsollaSDKLoginKit.AccessTokenInfo, any Swift.Error>) -> Swift.Void)
 }
 extension XsollaSDKLoginKit.LoginKit {
   final public func logUserOut(accessToken: Swift.String, sessionType: XsollaSDKLoginKit.LogoutSessionType, completion: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
@@ -153,6 +168,11 @@ extension XsollaSDKLoginKit.LoginKit {
 extension XsollaSDKLoginKit.LoginKit {
   public static let version: Swift.String
 }
+@_inheritsConvenienceInitializers final public class LoginAPIDefaultErrorHandler : XsollaSDKUtilities.APIBaseErrorHandler {
+  override final public func setHandlers()
+  override public init()
+  @objc deinit
+}
 public struct SearchUsersByNicknameResult {
   public let offset: Swift.Int
   public let totalCount: Swift.Int
@@ -172,6 +192,13 @@ public struct AccessTokenInfo {
   public let expiresIn: Swift.Int?
   public let refreshToken: Swift.String?
   public let tokenType: Swift.String
+}
+public class LoginAPIResponseProcessor {
+  public init(decoder: Foundation.JSONDecoder = JSONDecoder())
+  @objc deinit
+}
+extension XsollaSDKLoginKit.LoginAPIResponseProcessor : XsollaSDKUtilities.ResponseProcessor {
+  public func process<ResponseModel>(response: Foundation.URLResponse?, data: Foundation.Data?, request: Foundation.URLRequest, error: (any Swift.Error)?, errorHandler: any XsollaSDKUtilities.APIErrorHandlerProtocol, decoder: Foundation.JSONDecoder?) -> Swift.Result<ResponseModel, any Swift.Error> where ResponseModel : Swift.Decodable
 }
 public struct LinksForSocialAuthElement {
   public let authURL: Swift.String
@@ -288,6 +315,17 @@ extension XsollaSDKUtilities.LogLevel {
   public static let all: [XsollaSDKUtilities.LogLevel]
   public static func all(excluding: [XsollaSDKUtilities.LogLevel]) -> [XsollaSDKUtilities.LogLevel]
 }
+open class LoginBaseRequest<ParamsType> : XsollaSDKUtilities.APIBaseRequest where ParamsType : XsollaSDKUtilities.RequestParams {
+  final public let params: ParamsType
+  public init(params: ParamsType, apiConfiguration: any XsollaSDKUtilities.APIConfigurationProtocol)
+  @objc deinit
+  override public var headers: XsollaSDKUtilities.APIBaseRequest.HTTPHeaders {
+    get
+  }
+  override public var queryParameters: XsollaSDKUtilities.APIBaseRequest.QueryParameters {
+    get
+  }
+}
 public struct UserAttribute {
   public let key: Swift.String
   public let value: Swift.String
@@ -332,6 +370,12 @@ open class WebAuthenticationPresentationContextProvider : ObjectiveC.NSObject, A
   @objc public func presentationAnchor(for session: AuthenticationServices.ASWebAuthenticationSession) -> AuthenticationServices.ASPresentationAnchor
   public init(presentationAnchor: UIKit.UIWindow)
   @objc deinit
+}
+public struct LoginAPIConfiguration : XsollaSDKUtilities.APIConfigurationProtocol {
+  public let requestPerformer: any XsollaSDKUtilities.RequestPerformer
+  public let responseProcessor: any XsollaSDKUtilities.ResponseProcessor
+  public let apiBasePath: Swift.String
+  public init(requestPerformer: any XsollaSDKUtilities.RequestPerformer, responseProcessor: any XsollaSDKUtilities.ResponseProcessor, apiBasePath: Swift.String)
 }
 public protocol AuthTokenExtracting {
   func extract(from url: Foundation.URL) -> Swift.Result<Swift.String, any Swift.Error>

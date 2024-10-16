@@ -612,7 +612,7 @@
           {
             "kind": "Function",
             "name": "authWithXsollaWidget",
-            "printedName": "authWithXsollaWidget(loginId:oAuth2Params:locale:presentationContextProvider:completion:)",
+            "printedName": "authWithXsollaWidget(loginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -630,6 +630,12 @@
                 "name": "OAuth2Params",
                 "printedName": "XsollaSDKLoginKitObjectiveC.OAuth2Params",
                 "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)OAuth2Params"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "JWTGenerationParams",
+                "printedName": "XsollaSDKLoginKitObjectiveC.JWTGenerationParams",
+                "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)JWTGenerationParams"
               },
               {
                 "kind": "TypeNominal",
@@ -692,10 +698,10 @@
               }
             ],
             "declKind": "Func",
-            "usr": "c:@CM@XsollaSDKLoginKitObjectiveC@objc(cs)LoginKitObjectiveC(im)authWithXsollaWidgetWithLoginId:oAuth2Params:locale:presentationContextProvider:completion:",
-            "mangledName": "$s27XsollaSDKLoginKitObjectiveC05LogincD1CC08authWithA6Widget7loginId12oAuth2Params6locale27presentationContextProvider10completionySo8NSStringC_AA06OAuth2L0CAKSo031ASWebAuthenticationPresentationO9Providing_pyAA15AccessTokenInfoCSg_So7NSErrorCSgtctF",
+            "usr": "c:@CM@XsollaSDKLoginKitObjectiveC@objc(cs)LoginKitObjectiveC(im)authWithXsollaWidgetWithLoginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:",
+            "mangledName": "$s27XsollaSDKLoginKitObjectiveC05LogincD1CC08authWithA6Widget7loginId12oAuth2Params03jwtL06locale27presentationContextProvider10completionySo8NSStringC_AA06OAuth2L0CAA013JWTGenerationL0CALSo031ASWebAuthenticationPresentationP9Providing_pyAA15AccessTokenInfoCSg_So7NSErrorCSgtctF",
             "moduleName": "XsollaSDKLoginKitObjectiveC",
-            "objc_name": "authWithXsollaWidgetWithLoginId:oAuth2Params:locale:presentationContextProvider:completion:",
+            "objc_name": "authWithXsollaWidgetWithLoginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:",
             "declAttributes": [
               "Final",
               "AccessControl",
@@ -3521,7 +3527,7 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
       "kind": "IntegerLiteral",
-      "offset": 13144,
+      "offset": 13324,
       "length": 2,
       "value": "-1"
     },

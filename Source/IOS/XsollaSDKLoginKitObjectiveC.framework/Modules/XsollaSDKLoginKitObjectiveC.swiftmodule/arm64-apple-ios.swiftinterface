@@ -24,7 +24,7 @@ import _SwiftConcurrencyShims
 @available(iOS 13.4, *)
 extension XsollaSDKLoginKitObjectiveC.LoginKitObjectiveC {
   @objc final public func authBySocialNetwork(_ providerName: Foundation.NSString, oAuth2Params: XsollaSDKLoginKitObjectiveC.OAuth2Params, jwtParams: XsollaSDKLoginKitObjectiveC.JWTGenerationParams, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> Swift.Void)
-  @objc final public func authWithXsollaWidget(loginId: Foundation.NSString, oAuth2Params: XsollaSDKLoginKitObjectiveC.OAuth2Params, locale: Foundation.NSString, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> Swift.Void)
+  @objc final public func authWithXsollaWidget(loginId: Foundation.NSString, oAuth2Params: XsollaSDKLoginKitObjectiveC.OAuth2Params, jwtParams: XsollaSDKLoginKitObjectiveC.JWTGenerationParams, locale: Foundation.NSString, presentationContextProvider: any AuthenticationServices.ASWebAuthenticationPresentationContextProviding, completion: @escaping (XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> Swift.Void)
 }
 public typealias ViewControllerPresenting = UIKit.UIViewController
 @objc public class OAuth2Params : ObjectiveC.NSObject {
