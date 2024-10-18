@@ -433,7 +433,7 @@ SWIFT_AVAILABILITY(ios,introduced=13.4)
 ///     completion: Completion with <code>Result</code>: <em>AccessTokenInfo</em> on success and Error on failure.
 ///   </li>
 /// </ul>
-- (void)authWithXsollaWidgetWithLoginId:(NSString * _Nonnull)loginId oAuth2Params:(OAuth2Params * _Nonnull)oAuth2Params locale:(NSString * _Nonnull)locale presentationContextProvider:(id <ASWebAuthenticationPresentationContextProviding> _Nonnull)presentationContextProvider completion:(void (^ _Nonnull)(AccessTokenInfo * _Nullable, NSError * _Nullable))completion;
+- (void)authWithXsollaWidgetWithLoginId:(NSString * _Nonnull)loginId oAuth2Params:(OAuth2Params * _Nonnull)oAuth2Params jwtParams:(JWTGenerationParams * _Nonnull)jwtParams locale:(NSString * _Nonnull)locale presentationContextProvider:(id <ASWebAuthenticationPresentationContextProviding> _Nonnull)presentationContextProvider completion:(void (^ _Nonnull)(AccessTokenInfo * _Nullable, NSError * _Nullable))completion;
 @end
 
 

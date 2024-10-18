@@ -145,12 +145,14 @@ public protocol APIRequestProtocol {
   var customJSONDecoder: Foundation.JSONDecoder? { get }
   var errorHandler: Self.ErrorHandler { get }
   func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
+  func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
   func handleSuccess(model: Self.ResponseModel, completionHandler: Self.Callback)
   func handleFailure(error: any Swift.Error, completionHandler: Self.Callback)
 }
 extension XsollaSDKUtilities.APIRequestProtocol {
   @discardableResult
   public func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
+  public func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
 }
 public struct LogCategory : XsollaSDKUtilities.LogCategoryProtocol {
   public let title: Swift.String

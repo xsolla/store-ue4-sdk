@@ -852,6 +852,10 @@ private:
 
 	FString GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const;
 
+	FString GetBrowserType() const;
+
+	FString GetBuildPlatform() const;
+
 public:
 	/** Returns the list of cached virtual items without any Category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")

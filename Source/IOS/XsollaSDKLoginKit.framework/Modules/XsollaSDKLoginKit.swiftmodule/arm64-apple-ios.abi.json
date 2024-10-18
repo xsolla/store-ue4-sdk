@@ -2611,6 +2611,220 @@
         "moduleName": "XsollaSDKLoginKit"
       },
       {
+        "kind": "TypeDecl",
+        "name": "LoginAPIErrorModel",
+        "printedName": "LoginAPIErrorModel",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(from:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginAPIErrorModel",
+                "printedName": "XsollaSDKLoginKit.LoginAPIErrorModel",
+                "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Decoder",
+                "printedName": "Swift.Decoder",
+                "usr": "s:s7DecoderP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV4fromACs7Decoder_p_tKcfc",
+            "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV4fromACs7Decoder_p_tKcfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "implicit": true,
+            "throwing": true,
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "encode",
+            "printedName": "encode(to:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Encoder",
+                "printedName": "Swift.Encoder",
+                "usr": "s:s7EncoderP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV6encode2toys7Encoder_p_tKF",
+            "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV6encode2toys7Encoder_p_tKF",
+            "moduleName": "XsollaSDKLoginKit",
+            "implicit": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "code",
+            "printedName": "code",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV4codeSivp",
+            "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV4codeSivp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV4codeSivg",
+                "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV4codeSivg",
+                "moduleName": "XsollaSDKLoginKit",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "description",
+            "printedName": "description",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV11descriptionSSvp",
+            "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV11descriptionSSvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV11descriptionSSvg",
+                "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV11descriptionSSvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "extendedDescription",
+            "printedName": "extendedDescription",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV19extendedDescriptionSSvp",
+            "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV19extendedDescriptionSSvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV19extendedDescriptionSSvg",
+                "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV19extendedDescriptionSSvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:17XsollaSDKLoginKit18LoginAPIErrorModelV",
+        "mangledName": "$s17XsollaSDKLoginKit18LoginAPIErrorModelV",
+        "moduleName": "XsollaSDKLoginKit",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Decodable",
+            "printedName": "Decodable",
+            "usr": "s:Se",
+            "mangledName": "$sSe"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Encodable",
+            "printedName": "Encodable",
+            "usr": "s:SE",
+            "mangledName": "$sSE"
+          },
+          {
+            "kind": "Conformance",
+            "name": "APIDecodableErrorModelProtocol",
+            "printedName": "APIDecodableErrorModelProtocol",
+            "usr": "s:18XsollaSDKUtilities30APIDecodableErrorModelProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities30APIDecodableErrorModelProtocolP"
+          }
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -3571,7 +3785,7 @@
           {
             "kind": "Function",
             "name": "authWithXsollaWidget",
-            "printedName": "authWithXsollaWidget(loginProjectId:oAuth2Params:locale:presentationContextProvider:completion:)",
+            "printedName": "authWithXsollaWidget(loginProjectId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -3589,6 +3803,12 @@
                 "name": "OAuth2Params",
                 "printedName": "XsollaSDKLoginKit.OAuth2Params",
                 "usr": "s:17XsollaSDKLoginKit12OAuth2ParamsV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "JWTGenerationParams",
+                "printedName": "XsollaSDKLoginKit.JWTGenerationParams",
+                "usr": "s:17XsollaSDKLoginKit19JWTGenerationParamsV"
               },
               {
                 "kind": "TypeNominal",
@@ -3645,8 +3865,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:17XsollaSDKLoginKit05LoginC0C08authWithA6Widget14loginProjectId12oAuth2Params6locale27presentationContextProvider10completionySS_AA06OAuth2L0VSSSgSo031ASWebAuthenticationPresentationO9Providing_pys6ResultOyAA15AccessTokenInfoVs5Error_pGctF",
-            "mangledName": "$s17XsollaSDKLoginKit05LoginC0C08authWithA6Widget14loginProjectId12oAuth2Params6locale27presentationContextProvider10completionySS_AA06OAuth2L0VSSSgSo031ASWebAuthenticationPresentationO9Providing_pys6ResultOyAA15AccessTokenInfoVs5Error_pGctF",
+            "usr": "s:17XsollaSDKLoginKit05LoginC0C08authWithA6Widget14loginProjectId12oAuth2Params03jwtL06locale27presentationContextProvider10completionySS_AA06OAuth2L0VAA013JWTGenerationL0VSSSgSo031ASWebAuthenticationPresentationP9Providing_pys6ResultOyAA15AccessTokenInfoVs5Error_pGctF",
+            "mangledName": "$s17XsollaSDKLoginKit05LoginC0C08authWithA6Widget14loginProjectId12oAuth2Params03jwtL06locale27presentationContextProvider10completionySS_AA06OAuth2L0VAA013JWTGenerationL0VSSSgSo031ASWebAuthenticationPresentationP9Providing_pys6ResultOyAA15AccessTokenInfoVs5Error_pGctF",
             "moduleName": "XsollaSDKLoginKit",
             "declAttributes": [
               "Final",
@@ -7238,6 +7458,81 @@
         "moduleName": "XsollaSDKLoginKit"
       },
       {
+        "kind": "TypeDecl",
+        "name": "LoginAPIDefaultErrorHandler",
+        "printedName": "LoginAPIDefaultErrorHandler",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "setHandlers",
+            "printedName": "setHandlers()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerC11setHandlersyyF",
+            "mangledName": "$s17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerC11setHandlersyyF",
+            "moduleName": "XsollaSDKLoginKit",
+            "overriding": true,
+            "declAttributes": [
+              "Final",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginAPIDefaultErrorHandler",
+                "printedName": "XsollaSDKLoginKit.LoginAPIDefaultErrorHandler",
+                "usr": "s:17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerCACycfc",
+            "mangledName": "$s17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerCACycfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "overriding": true,
+            "implicit": true,
+            "declAttributes": [
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerC",
+        "mangledName": "$s17XsollaSDKLoginKit27LoginAPIDefaultErrorHandlerC",
+        "moduleName": "XsollaSDKLoginKit",
+        "declAttributes": [
+          "Final",
+          "AccessControl"
+        ],
+        "superclassUsr": "s:18XsollaSDKUtilities19APIBaseErrorHandlerC",
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "XsollaSDKUtilities.APIBaseErrorHandler"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "APIErrorHandlerProtocol",
+            "printedName": "APIErrorHandlerProtocol",
+            "usr": "s:18XsollaSDKUtilities23APIErrorHandlerProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities23APIErrorHandlerProtocolP"
+          }
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -8088,6 +8383,162 @@
         "printedName": "XsollaSDKUtilities",
         "declKind": "Import",
         "moduleName": "XsollaSDKLoginKit"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "LoginAPIResponseProcessor",
+        "printedName": "LoginAPIResponseProcessor",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(decoder:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginAPIResponseProcessor",
+                "printedName": "XsollaSDKLoginKit.LoginAPIResponseProcessor",
+                "usr": "s:17XsollaSDKLoginKit25LoginAPIResponseProcessorC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "JSONDecoder",
+                "printedName": "Foundation.JSONDecoder",
+                "hasDefaultArg": true,
+                "usr": "s:10Foundation11JSONDecoderC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit25LoginAPIResponseProcessorC7decoderAC10Foundation11JSONDecoderC_tcfc",
+            "mangledName": "$s17XsollaSDKLoginKit25LoginAPIResponseProcessorC7decoderAC10Foundation11JSONDecoderC_tcfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "process",
+            "printedName": "process(response:data:request:error:errorHandler:decoder:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Result",
+                "printedName": "Swift.Result<τ_0_0, Swift.Error>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Error",
+                    "printedName": "Swift.Error",
+                    "usr": "s:s5ErrorP"
+                  }
+                ],
+                "usr": "s:s6ResultO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLResponse?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URLResponse",
+                    "printedName": "Foundation.URLResponse",
+                    "usr": "c:objc(cs)NSURLResponse"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URLRequest",
+                "printedName": "Foundation.URLRequest",
+                "usr": "s:10Foundation10URLRequestV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.Error?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Error",
+                    "printedName": "Swift.Error",
+                    "usr": "s:s5ErrorP"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "APIErrorHandlerProtocol",
+                "printedName": "XsollaSDKUtilities.APIErrorHandlerProtocol",
+                "usr": "s:18XsollaSDKUtilities23APIErrorHandlerProtocolP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.JSONDecoder?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "JSONDecoder",
+                    "printedName": "Foundation.JSONDecoder",
+                    "usr": "s:10Foundation11JSONDecoderC"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:17XsollaSDKLoginKit25LoginAPIResponseProcessorC7process8response4data7request5error0K7Handler7decoders6ResultOyxs5Error_pGSo13NSURLResponseCSg_10Foundation4DataVSgAR10URLRequestVsAM_pSg0A12SDKUtilities08APIErrorL8Protocol_pAR11JSONDecoderCSgtSeRzlF",
+            "mangledName": "$s17XsollaSDKLoginKit25LoginAPIResponseProcessorC7process8response4data7request5error0K7Handler7decoders6ResultOyxs5Error_pGSo13NSURLResponseCSg_10Foundation4DataVSgAR10URLRequestVsAM_pSg0A12SDKUtilities08APIErrorL8Protocol_pAR11JSONDecoderCSgtSeRzlF",
+            "moduleName": "XsollaSDKLoginKit",
+            "genericSig": "<τ_0_0 where τ_0_0 : Swift.Decodable>",
+            "sugared_genericSig": "<ResponseModel where ResponseModel : Swift.Decodable>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:17XsollaSDKLoginKit25LoginAPIResponseProcessorC",
+        "mangledName": "$s17XsollaSDKLoginKit25LoginAPIResponseProcessorC",
+        "moduleName": "XsollaSDKLoginKit",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "ResponseProcessor",
+            "printedName": "ResponseProcessor",
+            "usr": "s:18XsollaSDKUtilities17ResponseProcessorP",
+            "mangledName": "$s18XsollaSDKUtilities17ResponseProcessorP"
+          }
+        ]
       },
       {
         "kind": "Import",
@@ -13292,6 +13743,316 @@
         "moduleName": "XsollaSDKLoginKit"
       },
       {
+        "kind": "TypeDecl",
+        "name": "LoginBaseRequest",
+        "printedName": "LoginBaseRequest",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "params",
+            "printedName": "params",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC6paramsxvp",
+            "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC6paramsxvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "HasStorage",
+              "Final",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC6paramsxvg",
+                "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC6paramsxvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+                "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(params:apiConfiguration:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginBaseRequest",
+                "printedName": "XsollaSDKLoginKit.LoginBaseRequest<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "APIConfigurationProtocol",
+                "printedName": "XsollaSDKUtilities.APIConfigurationProtocol",
+                "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC6params16apiConfigurationACyxGx_0A12SDKUtilities24APIConfigurationProtocol_ptcfc",
+            "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC6params16apiConfigurationACyxGx_0A12SDKUtilities24APIConfigurationProtocol_ptcfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+            "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Var",
+            "name": "headers",
+            "printedName": "headers",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Dictionary",
+                "printedName": "[Swift.String : Swift.String]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:SD"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC7headersSDyS2SGvp",
+            "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC7headersSDyS2SGvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "overriding": true,
+            "declAttributes": [
+              "Override",
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.String]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC7headersSDyS2SGvg",
+                "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC7headersSDyS2SGvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+                "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+                "overriding": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "queryParameters",
+            "printedName": "queryParameters",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Dictionary",
+                "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.CustomStringConvertible?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "CustomStringConvertible",
+                        "printedName": "Swift.CustomStringConvertible",
+                        "usr": "s:s23CustomStringConvertibleP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "usr": "s:SD"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvp",
+            "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "overriding": true,
+            "declAttributes": [
+              "Override",
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.CustomStringConvertible?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "CustomStringConvertible",
+                            "printedName": "Swift.CustomStringConvertible",
+                            "usr": "s:s23CustomStringConvertibleP"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvg",
+                "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+                "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+                "overriding": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(apiConfiguration:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginBaseRequest",
+                "printedName": "XsollaSDKLoginKit.LoginBaseRequest<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "APIConfigurationProtocol",
+                "printedName": "XsollaSDKUtilities.APIConfigurationProtocol",
+                "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC16apiConfigurationACyxG0A12SDKUtilities24APIConfigurationProtocol_p_tcfc",
+            "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC16apiConfigurationACyxG0A12SDKUtilities24APIConfigurationProtocol_p_tcfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+            "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+            "overriding": true,
+            "implicit": true,
+            "declAttributes": [
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:17XsollaSDKLoginKit16LoginBaseRequestC",
+        "mangledName": "$s17XsollaSDKLoginKit16LoginBaseRequestC",
+        "moduleName": "XsollaSDKLoginKit",
+        "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.RequestParams>",
+        "sugared_genericSig": "<ParamsType where ParamsType : XsollaSDKUtilities.RequestParams>",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "superclassUsr": "s:18XsollaSDKUtilities14APIBaseRequestC",
+        "superclassNames": [
+          "XsollaSDKUtilities.APIBaseRequest"
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -14845,6 +15606,200 @@
         "printedName": "XsollaSDKUtilities",
         "declKind": "Import",
         "moduleName": "XsollaSDKLoginKit"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "LoginAPIConfiguration",
+        "printedName": "LoginAPIConfiguration",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "requestPerformer",
+            "printedName": "requestPerformer",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "RequestPerformer",
+                "printedName": "XsollaSDKUtilities.RequestPerformer",
+                "usr": "s:18XsollaSDKUtilities16RequestPerformerP"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer0A12SDKUtilities07RequestG0_pvp",
+            "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer0A12SDKUtilities07RequestG0_pvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RequestPerformer",
+                    "printedName": "XsollaSDKUtilities.RequestPerformer",
+                    "usr": "s:18XsollaSDKUtilities16RequestPerformerP"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer0A12SDKUtilities07RequestG0_pvg",
+                "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer0A12SDKUtilities07RequestG0_pvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "responseProcessor",
+            "printedName": "responseProcessor",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ResponseProcessor",
+                "printedName": "XsollaSDKUtilities.ResponseProcessor",
+                "usr": "s:18XsollaSDKUtilities17ResponseProcessorP"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV17responseProcessor0A12SDKUtilities08ResponseG0_pvp",
+            "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV17responseProcessor0A12SDKUtilities08ResponseG0_pvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ResponseProcessor",
+                    "printedName": "XsollaSDKUtilities.ResponseProcessor",
+                    "usr": "s:18XsollaSDKUtilities17ResponseProcessorP"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV17responseProcessor0A12SDKUtilities08ResponseG0_pvg",
+                "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV17responseProcessor0A12SDKUtilities08ResponseG0_pvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "apiBasePath",
+            "printedName": "apiBasePath",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV11apiBasePathSSvp",
+            "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV11apiBasePathSSvp",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV11apiBasePathSSvg",
+                "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV11apiBasePathSSvg",
+                "moduleName": "XsollaSDKLoginKit",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(requestPerformer:responseProcessor:apiBasePath:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "LoginAPIConfiguration",
+                "printedName": "XsollaSDKLoginKit.LoginAPIConfiguration",
+                "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "RequestPerformer",
+                "printedName": "XsollaSDKUtilities.RequestPerformer",
+                "usr": "s:18XsollaSDKUtilities16RequestPerformerP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ResponseProcessor",
+                "printedName": "XsollaSDKUtilities.ResponseProcessor",
+                "usr": "s:18XsollaSDKUtilities17ResponseProcessorP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer17responseProcessor11apiBasePathAC0A12SDKUtilities07RequestG0_p_AG08ResponseI0_pSStcfc",
+            "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV16requestPerformer17responseProcessor11apiBasePathAC0A12SDKUtilities07RequestG0_p_AG08ResponseI0_pSStcfc",
+            "moduleName": "XsollaSDKLoginKit",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:17XsollaSDKLoginKit21LoginAPIConfigurationV",
+        "mangledName": "$s17XsollaSDKLoginKit21LoginAPIConfigurationV",
+        "moduleName": "XsollaSDKLoginKit",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "APIConfigurationProtocol",
+            "printedName": "APIConfigurationProtocol",
+            "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP",
+            "mangledName": "$s18XsollaSDKUtilities24APIConfigurationProtocolP"
+          }
+        ]
       },
       {
         "kind": "Import",
@@ -19238,14 +20193,14 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIErrorModel.swift",
       "kind": "StringLiteral",
-      "offset": 1008,
+      "offset": 1015,
       "length": 3,
       "value": "\"-\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIErrorModel.swift",
       "kind": "StringLiteral",
-      "offset": 1019,
+      "offset": 1026,
       "length": 2,
       "value": "\"\""
     },
@@ -19777,84 +20732,105 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "Array",
-      "offset": 5475,
+      "offset": 5601,
       "length": 17,
       "value": "[\"http\", \"https\"]"
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "BooleanLiteral",
-      "offset": 5521,
+      "offset": 5647,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
-      "offset": 5606,
+      "offset": 5732,
       "length": 42,
       "value": "\"Invalid callback URL in OAuth parameters\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
-      "offset": 5744,
-      "length": 108,
+      "offset": 5870,
+      "length": 183,
       "value": "\"https:\/\/login-widget.xsolla.com\/latest\/?projectId=\""
-    },
-    {
-      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
-      "kind": "StringLiteral",
-      "offset": 5812,
-      "length": 1,
-      "value": "\"&login_url=\""
-    },
-    {
-      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
-      "kind": "StringLiteral",
-      "offset": 5851,
-      "length": 1,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
-      "kind": "StringLiteral",
-      "offset": 5920,
-      "length": 19,
-      "value": "\"&locale=\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
       "offset": 5938,
       "length": 1,
+      "value": "\"&client_id=\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 5981,
+      "length": 1,
+      "value": "\"&response_type=\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 6024,
+      "length": 1,
+      "value": "\"&state=\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 6052,
+      "length": 1,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
-      "kind": "IntegerLiteral",
-      "offset": 6559,
-      "length": 4,
-      "value": "3600"
+      "kind": "StringLiteral",
+      "offset": 6130,
+      "length": 19,
+      "value": "\"&locale=\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
-      "offset": 6629,
-      "length": 2,
+      "offset": 6148,
+      "length": 1,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
-      "offset": 6694,
-      "length": 8,
-      "value": "\"bearer\""
+      "offset": 6249,
+      "length": 30,
+      "value": "\"&redirect_uri=\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
       "kind": "StringLiteral",
-      "offset": 50372,
+      "offset": 6278,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 6367,
+      "length": 17,
+      "value": "\"&scope=\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 6383,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/LoginKit.swift",
+      "kind": "StringLiteral",
+      "offset": 50548,
       "length": 12,
       "value": "\"YYYY-MM-dd\""
     },
@@ -20108,7 +21084,7 @@
       "kind": "StringLiteral",
       "offset": 114,
       "length": 7,
-      "value": "\"0.7.3\""
+      "value": "\"1.0.2\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/Requests\/Get User Devices\/GetUserDevicesRequest.swift",
@@ -20337,28 +21313,28 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIResponseProcessor.swift",
       "kind": "Array",
-      "offset": 1413,
+      "offset": 1434,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIResponseProcessor.swift",
       "kind": "Array",
-      "offset": 1467,
+      "offset": 1488,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIResponseProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 1516,
+      "offset": 1537,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/LoginAPIResponseProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 2547,
+      "offset": 2568,
       "length": 1,
       "value": "0"
     },
@@ -20785,91 +21761,91 @@
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1405,
+      "offset": 1438,
       "length": 8,
       "value": "\"engine\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1415,
+      "offset": 1448,
       "length": 5,
       "value": "\"ios\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1434,
+      "offset": 1467,
       "length": 10,
       "value": "\"engine_v\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1470,
+      "offset": 1503,
       "length": 5,
       "value": "\"sdk\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1514,
+      "offset": 1547,
       "length": 7,
       "value": "\"sdk_v\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1644,
+      "offset": 1677,
       "length": 13,
       "value": "\"game_engine\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 1798,
+      "offset": 1831,
       "length": 15,
       "value": "\"game_engine_v\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 2057,
+      "offset": 2090,
       "length": 12,
       "value": "\"X-ENGINE-V\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 2108,
+      "offset": 2141,
       "length": 7,
       "value": "\"X-SDK\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 2167,
+      "offset": 2200,
       "length": 9,
       "value": "\"X-SDK-V\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 2313,
+      "offset": 2346,
       "length": 15,
       "value": "\"X-GAME-ENGINE\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 2483,
+      "offset": 2516,
       "length": 17,
       "value": "\"X-GAME-ENGINE-V\""
     },
     {
       "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKit\/LoginKit\/API\/Base Classes\/LoginBaseRequest.swift",
       "kind": "StringLiteral",
-      "offset": 106,
+      "offset": 111,
       "length": 16,
       "value": "\"XsollaSDKLoginKit.LoginBaseRequest\""
     },

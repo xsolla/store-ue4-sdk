@@ -261,8 +261,15 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 		scope:@"offline"
 		redirectUri:RedirectURI.GetNSString()];
 
+	JWTGenerationParams* JwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
+		clientId:[ClientID.GetNSString() intValue]
+		refreshToken:nil
+		clientSecret:nil
+		redirectUri:RedirectURI.GetNSString()];
+
 	[[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:LoginID.GetNSString()
 		oAuth2Params:OAuthParams
+		jwtParams:JwtGenerationParams
 		locale:Locale.GetNSString()
 		presentationContextProvider:context
 		completion:^(AccessTokenInfo* _Nullable tokenInfo, NSError* _Nullable error) {
