@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.1] - 2024-10-25
+
+### Updated 
+- SDK internal analytics
+
 ## [3.0.0] - 2024-09-16
 
 ### Added
