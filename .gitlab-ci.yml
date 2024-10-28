@@ -13,7 +13,7 @@ stages:
 
 variables:
     BUILD_DEMO_SCRIPT: cicd/build_demo.py
-    UE52_ENGINE_VERSION: "5.2"
+    BUILD_DEMO_SCRIPT2: 1
 
 # =================================================================================================================
 # DOCS
@@ -107,59 +107,59 @@ stop doc:
 # =================================================================================================================
 # DEMO WINIDOWS
 
-demo_win_52_inapp_browser:
+demo_52_win_inapp_browser:
   extends: .win_job_base
   stage: demo_win
   script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% %UE52_ENGINE_VERSION% Win64 False
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 False
   artifacts:
-    name: "UE52_windows_inapp_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
 
-demo_win_52_system_browser:
+demo_52_win_system_browser:
   extends: .win_job_base
   stage: demo_win
   when: manual
   script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% %UE52_ENGINE_VERSION% Win64 True
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 True
   artifacts:
-    name: "UE52_windows_system_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-win-system_browser-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO ANDROID
 
-demo_android_52_inapp_browser:
+demo_52_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
   script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% %UE52_ENGINE_VERSION% Android False
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android False
   artifacts:
-    name: "UE52_android_inapp_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
 
-demo_android_52_system_browser:
+demo_52_android_system_browser:
   extends: .win_job_base
   stage: demo_android
   when: manual
   script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% %UE52_ENGINE_VERSION% Android True
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android True
   artifacts:
-    name: "UE52_android_system_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-android-system_browser-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO IOS
 
-demo_ios_52_inapp_browser:
+demo_52_ios_inapp_browser:
   extends: .mac_job_base
   stage: demo_ios
   script:
-    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME $UE52_ENGINE_VERSION IOS False
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" IOS False
   artifacts:
-    name: "UE52_ios_inapp_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-ios-inapp_browser-$CI_COMMIT_REF_SLUG"
 
-demo_ios_52_system_browser:
+demo_52_ios_system_browser:
   extends: .mac_job_base
   stage: demo_ios
   when: manual
   script:
-    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME $UE52_ENGINE_VERSION IOS True
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" IOS True
   artifacts:
-    name: "UE52_ios_system_browser_%CI_COMMIT_REF_NAME%"
+    name: "demo-UE52-ios-system_browser-$CI_COMMIT_REF_SLUG"
