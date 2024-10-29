@@ -91,7 +91,7 @@ public:
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
 		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	// TEXTREVIEW
+	//TEXTREVIEW
 	/** Returns total list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
@@ -172,7 +172,25 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
+		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback,
+		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
+
+	//TEXTREVIEW
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
+	 *
+	 * @param Locale Response language.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
+	 * @param SuccessCallback Called after virtual currency packages were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetAllVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of items for the specified group according to pagination settings. The list includes items for which display in the store is enabled in the settings. In the settings of the group, the display in the store must be enabled.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
@@ -874,6 +892,15 @@ protected:
 	void GetVirtualCurrenciesError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);
 
 	void CallGetVirtualCurrencies();
+
+	// virtual currency packages
+	UFUNCTION()
+	void GetVirtualCurrencyPackagesCallback(const FVirtualCurrencyPackagesData& InPackagesData);
+
+	UFUNCTION()
+	void GetVirtualCurrencyPackagesError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);
+
+	void CallGetVirtualCurrencyPackages();
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
@@ -1015,4 +1042,7 @@ private:
 
 	UPROPERTY(Transient)
 	FGetAllVirtualCurrenciesParams GetAllVirtualCurrenciesParams;
+
+	UPROPERTY(Transient)
+	FGetAllVirtualCurrencyPackagesParams GetAllVirtualCurrencyPackagesParams;
 };
