@@ -30,6 +30,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "Misc/EngineVersion.h"
+#include "XsollaStoreAuxiliaryDataModel.h"
 #if PLATFORM_ANDROID
 #include "XsollaLogin/Private/Android/XsollaJavaConvertor.h"
 #include "XsollaLogin/Private/Android/XsollaMethodCallUtils.h"
@@ -100,8 +101,10 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 }
 
 void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
+	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
+	const int Limit, const int Offset, const FString& AuthToken)
 {
+
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.AddStringQueryParam(TEXT("locale"), Locale)
@@ -122,6 +125,15 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
+void UXsollaStoreSubsystem::GetAllVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
+{
+	GetAllVirtualItemsParams = FGetAllVirtualItemsParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
+	GetAllVirtualItemsParams.CurrentSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetVirtualItemsCallback);
+	GetAllVirtualItemsParams.CurrentErrorCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetVirtualItemsError);
+	CallGetVirtualItems();
 }
 
 void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
@@ -1243,6 +1255,8 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualItems request: JSON received. Items count: %d. has_more: %s"), ItemsData.Items.Num(), ItemsData.has_more ? TEXT("true") : TEXT("false"));
+
 		// Update categories
 		for (const auto& Item : ItemsData.Items)
 		{
@@ -2030,6 +2044,29 @@ void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
 	PaymentSuccessCallback.ExecuteIfBound(PaymentOrderId);
 }
 
+void UXsollaStoreSubsystem::GetVirtualItemsCallback(const FStoreItemsData& InItemsData)
+{
+	GetAllVirtualItemsParams.ProcessNextPartOfData(InItemsData, [this] { CallGetVirtualItems(); });
+}
+
+void UXsollaStoreSubsystem::GetVirtualItemsError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
+{
+	GetAllVirtualItemsParams.ResultErrorData = FErrorData(StatusCode, ErrorCode, ErrorMessage);
+	GetAllVirtualItemsParams.Finish(false);
+}
+
+void UXsollaStoreSubsystem::CallGetVirtualItems()
+{
+	GetVirtualItems(
+		GetAllVirtualItemsParams.Locale,
+		GetAllVirtualItemsParams.Country,
+		GetAllVirtualItemsParams.AdditionalFields,
+		GetAllVirtualItemsParams.CurrentSuccessCallback,
+		GetAllVirtualItemsParams.CurrentErrorCallback,
+		GetAllVirtualItemsParams.Limit,
+		GetAllVirtualItemsParams.Offset,
+		GetAllVirtualItemsParams.AuthToken);
+}
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {

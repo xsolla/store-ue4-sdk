@@ -11,6 +11,27 @@ DECLARE_DELEGATE_TwoParams(FOnTokenUpdate, const FString&, bool);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 
 USTRUCT()
+struct FErrorData
+{
+	GENERATED_BODY()
+
+	int32 StatusCode = -1;
+	int32 ErrorCode = -1;
+	FString ErrorMessage;
+
+	FErrorData(int32 InStatusCode, int32 InErrorCode, const FString& InErrorMessage)
+		: StatusCode(InStatusCode)
+		, ErrorCode(InErrorCode)
+		, ErrorMessage(InErrorMessage)
+	{
+	}
+
+	FErrorData()
+	{
+	}
+};
+
+USTRUCT()
 struct FErrorHandlersWrapper
 {
 	GENERATED_BODY()

@@ -9,6 +9,8 @@
 #include "Subsystems/SubsystemCollection.h"
 #include "XsollaOrderCheckObject.h"
 #include "XsollaUtilsDataModel.h"
+#include "XsollaStoreDelegates.h"
+#include "XsollaStoreAuxiliaryDataModel.h"
 #include "XsollaStoreSubsystem.generated.h"
 
 
@@ -32,7 +34,6 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeR
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, FStoreListOfBundles, ListOfBundles);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
 DECLARE_DYNAMIC_DELEGATE(FOnPromocodeUpdate);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsListBySpecifiedGroup, FStoreItemsList, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsList, FStoreItemsList, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesList, GamesList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameUpdate, const FGameItem&, Game);
@@ -40,10 +41,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameKeyUpdate, const FGameKeyItem&, GameKey
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGameKeysList, GameKeysList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, GamesList);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrenciesUpdate, const FVirtualCurrencyData&, VirtualCurrencyData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreGamesUpdate, const FStoreGamesData&, GamesData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreItemsUpdate, const FStoreItemsData&, ItemsData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrencyPackagesUpdate, const FVirtualCurrencyPackagesData&, Data);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const TArray<FXsollaItemGroup>&, ItemGroups);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPublicPlansListUpdate, FSubscriptionPlansList, SubscriptionPlansList);
@@ -90,7 +88,25 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
 	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
-		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
+		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
+		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
+
+	// TEXTREVIEW
+	/** Returns total list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
+	 *
+	 * @param Locale Response language.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculated based on the user's IP address if not specified.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order` and `long_description`.
+	 * @param SuccessCallback Called after virtual items were successfully received.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetAllVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a full list of virtual item groups. The list includes groups for which display in the store is enabled in the settings
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
@@ -825,6 +841,14 @@ protected:
 	UFUNCTION()
 	void CheckPendingOrderSuccessCallback();
 
+	// virtual items
+	UFUNCTION()
+	void GetVirtualItemsCallback(const FStoreItemsData& InItemsData);
+
+	UFUNCTION()
+	void GetVirtualItemsError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);
+
+	void CallGetVirtualItems();
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
@@ -952,10 +976,15 @@ private:
 	UPROPERTY()
 	int32 PaymentPayStationVersionNumber;
 
+	UPROPERTY()
 	FOnPurchaseUpdate PaymentSuccessCallback;
 
+	UPROPERTY()
 	FOnError PaymentErrorCallback;
 
 	UPROPERTY()
 	FOnStoreBrowserClosed PaymentBrowserClosedCallback;
+
+	UPROPERTY(Transient)
+	FGetAllVirtualItemsParams GetAllVirtualItemsParams;
 };
