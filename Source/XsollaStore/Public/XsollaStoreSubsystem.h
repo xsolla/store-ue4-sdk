@@ -211,6 +211,24 @@ public:
 	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
+	//TEXTREVIEW
+	/** Returns a list of items for the specified group according to pagination settings. The list includes items for which display in the store is enabled in the settings. In the settings of the group, the display in the store must be enabled.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
+	 *
+	 * @param ExternalId Group external ID.
+	 * @param Locale Response language.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 * @param Country Country to calculate regional prices and restrictions to catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.
+	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
+	 * @param SuccessCallback Called after server response.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
+	void GetAllItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
+
 	/** Returns a full list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
@@ -901,6 +919,16 @@ protected:
 	void GetVirtualCurrencyPackagesError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);
 
 	void CallGetVirtualCurrencyPackages();
+
+	// items by specified group
+	UFUNCTION()
+	void GetAllItemsListBySpecifiedGroupCallback(FStoreItemsList InItemsList);
+
+	UFUNCTION()
+	void GetAllItemsListBySpecifiedGroupError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);
+
+	void CallGetAllItemsListBySpecifiedGroup();
+
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
@@ -1045,4 +1073,7 @@ private:
 
 	UPROPERTY(Transient)
 	FGetAllVirtualCurrencyPackagesParams GetAllVirtualCurrencyPackagesParams;
+
+	UPROPERTY(Transient)
+	FGetAllItemsListBySpecifiedGroupParams GetAllItemsListBySpecifiedGroupParams;
 };

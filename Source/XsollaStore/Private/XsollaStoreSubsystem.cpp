@@ -241,6 +241,16 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
+{
+	GetAllItemsListBySpecifiedGroupParams = FGetAllItemsListBySpecifiedGroupParams(ExternalId, Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
+
+	GetAllItemsListBySpecifiedGroupParams.CurrentSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupCallback);
+	GetAllItemsListBySpecifiedGroupParams.CurrentErrorCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupError);
+	CallGetAllItemsListBySpecifiedGroup();
+}
+
 void UXsollaStoreSubsystem::GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/all"))
@@ -1351,11 +1361,12 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-	FStoreItemsList Items;
+	FStoreItemsList ItemsList;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsList::StaticStruct(), &Items, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsList::StaticStruct(), &ItemsList, OutError))
 	{
-		SuccessCallback.ExecuteIfBound(Items);
+		UE_LOG(LogXsollaStore, Log, TEXT("GetItemsListBySpecifiedGroup request: JSON received. Items count: %d. has_more: %s"), ItemsList.Items.Num(), ItemsList.has_more ? TEXT("true") : TEXT("false"));
+		SuccessCallback.ExecuteIfBound(ItemsList);
 	}
 	else
 	{
@@ -2135,6 +2146,32 @@ void UXsollaStoreSubsystem::CallGetVirtualCurrencyPackages()
 		GetAllVirtualCurrencyPackagesParams.Offset,
 		GetAllVirtualCurrencyPackagesParams.AuthToken);
 }
+
+void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupCallback(FStoreItemsList InItemsList)
+{
+	GetAllItemsListBySpecifiedGroupParams.ProcessNextPartOfData(InItemsList, [this] { CallGetAllItemsListBySpecifiedGroup(); });
+}
+
+void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
+{
+	GetAllItemsListBySpecifiedGroupParams.ResultErrorData = FErrorData(StatusCode, ErrorCode, ErrorMessage);
+	GetAllItemsListBySpecifiedGroupParams.Finish(false);
+}
+
+void UXsollaStoreSubsystem::CallGetAllItemsListBySpecifiedGroup()
+{
+	GetItemsListBySpecifiedGroup(
+		GetAllItemsListBySpecifiedGroupParams.ExternalId,
+		GetAllItemsListBySpecifiedGroupParams.Locale,
+		GetAllItemsListBySpecifiedGroupParams.Country,
+		GetAllItemsListBySpecifiedGroupParams.AdditionalFields,
+		GetAllItemsListBySpecifiedGroupParams.CurrentSuccessCallback,
+		GetAllItemsListBySpecifiedGroupParams.CurrentErrorCallback,
+		GetAllItemsListBySpecifiedGroupParams.Limit,
+		GetAllItemsListBySpecifiedGroupParams.Offset,
+		GetAllItemsListBySpecifiedGroupParams.AuthToken);
+}
+
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {

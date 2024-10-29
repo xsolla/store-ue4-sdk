@@ -252,3 +252,92 @@ struct FGetAllVirtualCurrencyPackagesParams
 	{
 	}
 };
+
+USTRUCT()
+struct FGetAllItemsListBySpecifiedGroupParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString ExternalId;
+
+	UPROPERTY()
+	FString Locale;
+
+	UPROPERTY()
+	FString Country;
+
+	UPROPERTY()
+	TArray<FString> AdditionalFields;
+
+	UPROPERTY()
+	FOnGetItemsListBySpecifiedGroup ResultSuccessCallback;
+
+	UPROPERTY()
+	FOnError ResultErrorCallback;
+
+	UPROPERTY()
+	FStoreItemsList ResultData;
+
+	UPROPERTY()
+	FErrorData ResultErrorData;
+
+	UPROPERTY()
+	FOnGetItemsListBySpecifiedGroup CurrentSuccessCallback;
+
+	UPROPERTY()
+	FOnError CurrentErrorCallback;
+
+	UPROPERTY()
+	int32 Limit = 50;
+
+	UPROPERTY()
+	int32 Offset = 0;
+
+	UPROPERTY()
+	FString AuthToken;
+
+	void ProcessNextPartOfData(const FStoreItemsList& InData, const TFunction<void()>& NextCallFunc)
+	{
+		ResultData.Items.Append(InData.Items);
+
+		if (InData.has_more)
+		{
+			Offset += Limit;
+			NextCallFunc();
+		}
+		else
+		{
+			Finish(true);
+		}
+	}
+
+	void Finish(bool isSuccess)
+	{
+		CurrentSuccessCallback.Unbind();
+		CurrentErrorCallback.Unbind();
+		isSuccess ? ResultSuccessCallback.ExecuteIfBound(ResultData) : ResultErrorCallback.ExecuteIfBound(ResultErrorData.StatusCode, ResultErrorData.ErrorCode, ResultErrorData.ErrorMessage);
+	}
+
+	FGetAllItemsListBySpecifiedGroupParams()
+	{
+	}
+
+	FGetAllItemsListBySpecifiedGroupParams(
+		const FString& InExternalId,
+		const FString& InLocale,
+		const FString& InCountry,
+		const TArray<FString>& InAdditionalFields,
+		const FOnGetItemsListBySpecifiedGroup& InResultSuccessCallback,
+		const FOnError& InResultErrorCallback,
+		const FString& InAuthToken)
+		: ExternalId(InExternalId)
+		, Locale(InLocale)
+		, Country(InCountry)
+		, AdditionalFields(InAdditionalFields)
+		, ResultSuccessCallback(InResultSuccessCallback)
+		, ResultErrorCallback(InResultErrorCallback)
+		, AuthToken(InAuthToken)
+	{
+	}
+};
