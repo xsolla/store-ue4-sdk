@@ -89,3 +89,82 @@ struct FGetAllVirtualItemsParams
 	{
 	}
 };
+
+USTRUCT()
+struct FGetAllVirtualCurrenciesParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString Locale;
+
+	UPROPERTY()
+	FString Country;
+
+	UPROPERTY()
+	TArray<FString> AdditionalFields;
+
+	UPROPERTY()
+	FOnVirtualCurrenciesUpdate ResultSuccessCallback;
+
+	UPROPERTY()
+	FOnError ResultErrorCallback;
+
+	UPROPERTY()
+	FVirtualCurrencyData ResultData;
+
+	UPROPERTY()
+	FErrorData ResultErrorData;
+
+	UPROPERTY()
+	FOnVirtualCurrenciesUpdate CurrentSuccessCallback;
+
+	UPROPERTY()
+	FOnError CurrentErrorCallback;
+
+	UPROPERTY()
+	int32 Limit = 50;
+
+	UPROPERTY()
+	int32 Offset = 0;
+
+	void ProcessNextPartOfData(const FVirtualCurrencyData& InCurrenciesData, const TFunction<void()>& NextCallFunc)
+	{
+		ResultData.Items.Append(InCurrenciesData.Items);
+
+		if (InCurrenciesData.has_more)
+		{
+			Offset += Limit;
+			NextCallFunc();
+		}
+		else
+		{
+			Finish(true);
+		}
+	}
+
+	void Finish(bool isSuccess)
+	{
+		CurrentSuccessCallback.Unbind();
+		CurrentErrorCallback.Unbind();
+		isSuccess ? ResultSuccessCallback.ExecuteIfBound(ResultData) : ResultErrorCallback.ExecuteIfBound(ResultErrorData.StatusCode, ResultErrorData.ErrorCode, ResultErrorData.ErrorMessage);
+	}
+
+	FGetAllVirtualCurrenciesParams()
+	{
+	}
+
+	FGetAllVirtualCurrenciesParams(
+		const FString& InLocale,
+		const FString& InCountry,
+		const TArray<FString>& InAdditionalFields,
+		const FOnVirtualCurrenciesUpdate& InResultSuccessCallback,
+		const FOnError& InResultErrorCallback)
+		: Locale(InLocale)
+		, Country(InCountry)
+		, AdditionalFields(InAdditionalFields)
+		, ResultSuccessCallback(InResultSuccessCallback)
+		, ResultErrorCallback(InResultErrorCallback)
+	{
+	}
+};

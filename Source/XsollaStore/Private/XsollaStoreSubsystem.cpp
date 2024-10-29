@@ -170,8 +170,17 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country,
-	const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetAllVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	GetAllVirtualCurrenciesParams = FGetAllVirtualCurrenciesParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback);
+
+	GetAllVirtualCurrenciesParams.CurrentSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetVirtualCurrenciesCallback);
+	GetAllVirtualCurrenciesParams.CurrentErrorCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetVirtualCurrenciesError);
+	CallGetVirtualCurrencies();
+}
+
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
@@ -1301,6 +1310,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualCurrencies request: JSON received. Items count: %d. has_more: %s"), VirtualCurrencyData.Items.Num(), VirtualCurrencyData.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(VirtualCurrencyData);
 	}
 	else
@@ -2066,6 +2076,29 @@ void UXsollaStoreSubsystem::CallGetVirtualItems()
 		GetAllVirtualItemsParams.Limit,
 		GetAllVirtualItemsParams.Offset,
 		GetAllVirtualItemsParams.AuthToken);
+}
+
+void UXsollaStoreSubsystem::GetVirtualCurrenciesCallback(const FVirtualCurrencyData& InCurrenciesData)
+{
+	GetAllVirtualCurrenciesParams.ProcessNextPartOfData(InCurrenciesData, [this] { CallGetVirtualCurrencies(); });
+}
+
+void UXsollaStoreSubsystem::GetVirtualCurrenciesError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
+{
+	GetAllVirtualCurrenciesParams.ResultErrorData = FErrorData(StatusCode, ErrorCode, ErrorMessage);
+	GetAllVirtualCurrenciesParams.Finish(false);
+}
+
+void UXsollaStoreSubsystem::CallGetVirtualCurrencies()
+{
+	GetVirtualCurrencies(
+		GetAllVirtualCurrenciesParams.Locale,
+		GetAllVirtualCurrenciesParams.Country,
+		GetAllVirtualCurrenciesParams.AdditionalFields,
+		GetAllVirtualCurrenciesParams.CurrentSuccessCallback,
+		GetAllVirtualCurrenciesParams.CurrentErrorCallback,
+		GetAllVirtualCurrenciesParams.Limit,
+		GetAllVirtualCurrenciesParams.Offset);
 }
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
