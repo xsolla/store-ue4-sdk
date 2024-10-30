@@ -1583,14 +1583,7 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 			ItemsData.Items.Add(Bundle);
 		}
 
-		for (const auto& Bundle : ListOfBundles.items)
-		{
-			for (const auto& BundleGroup : Bundle.groups)
-			{
-				ItemsData.GroupIds.Add(BundleGroup.external_id);
-			}
-		}
-
+		UE_LOG(LogXsollaStore, Log, TEXT("GetBundles request: JSON received. Items count: %d. has_more: %s"), ListOfBundles.items.Num(), ListOfBundles.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(ListOfBundles);
 	}
 	else
