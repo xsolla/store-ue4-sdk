@@ -136,14 +136,12 @@ void UXsollaStoreSubsystem::GetAllVirtualItems(const FString& Locale, const FStr
 	CallGetVirtualItems();
 }
 
-void UXsollaStoreSubsystem::GetItemGroups(const FString& Locale,
-	const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
+void UXsollaStoreSubsystem::GetItemGroups(const FString& PromoCode,
+	const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/groups"))
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
-							.AddStringQueryParam(TEXT("locale"), Locale)
-							.AddNumberQueryParam(TEXT("limit"), Limit)
-							.AddNumberQueryParam(TEXT("offset"), Offset)
+							.AddStringQueryParam(TEXT("promo_code"), PromoCode)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
@@ -1285,16 +1283,6 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualItems request: JSON received. Items count: %d. has_more: %s"), ItemsData.Items.Num(), ItemsData.has_more ? TEXT("true") : TEXT("false"));
-
-		// Update categories
-		for (const auto& Item : ItemsData.Items)
-		{
-			for (const auto& ItemGroup : Item.groups)
-			{
-				ItemsData.GroupIds.Add(ItemGroup.external_id);
-			}
-		}
-
 		SuccessCallback.ExecuteIfBound(ItemsData);
 	}
 	else
@@ -1308,12 +1296,11 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	XsollaHttpRequestError OutError;
-	FStoreItemsData GroupsData;
+	FStoreItemGroupsData GroupsData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &GroupsData, OutError))
 	{
-		ItemsData.Groups = GroupsData.Groups;
-		SuccessCallback.ExecuteIfBound(GroupsData.Groups);
+		SuccessCallback.ExecuteIfBound(GroupsData);
 	}
 	else
 	{
@@ -2147,7 +2134,7 @@ void UXsollaStoreSubsystem::CallGetVirtualCurrencyPackages()
 		GetAllVirtualCurrencyPackagesParams.AuthToken);
 }
 
-void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupCallback(FStoreItemsList InItemsList)
+void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupCallback(const FStoreItemsList& InItemsList)
 {
 	GetAllItemsListBySpecifiedGroupParams.ProcessNextPartOfData(InItemsList, [this] { CallGetAllItemsListBySpecifiedGroup(); });
 }

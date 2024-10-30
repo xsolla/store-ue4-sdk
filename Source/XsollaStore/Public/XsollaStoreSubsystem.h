@@ -42,7 +42,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGameKeysListBySpecifiedGroup, FStoreGame
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDRMListUpdate, FStoreDRMList, DRMList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOwnedGamesListUpdate, FOwnedGamesList, GamesList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreGamesUpdate, const FStoreGamesData&, GamesData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const TArray<FXsollaItemGroup>&, ItemGroups);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnItemGroupsUpdate, const FStoreItemGroupsData&, ItemGroupsData);
 DECLARE_DYNAMIC_DELEGATE(FOnRedeemGameCodeSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPublicPlansListUpdate, FSubscriptionPlansList, SubscriptionPlansList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPlansListUpdate, FSubscriptionPlansList, SubscriptionPlansList);
@@ -111,17 +111,12 @@ public:
 	/** Returns a full list of virtual item groups. The list includes groups for which display in the store is enabled in the settings
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
-	 * @param Locale (optional) Response language (e.g. item name, item description).<br>
-	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
-	 * Leave empty to use the default value.
+	 * @param PromoCode Unique case sensitive code. Contains letters and numbers.
 	 * @param SuccessCallback Called after virtual item groups were successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param Limit Limit for the number of elements on the page.
-	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetItemGroups(const FString& Locale,
-		const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
+	void GetItemGroups(const FString& PromoCode, const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currencies according to pagination settings.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
@@ -922,7 +917,7 @@ protected:
 
 	// items by specified group
 	UFUNCTION()
-	void GetAllItemsListBySpecifiedGroupCallback(FStoreItemsList InItemsList);
+	void GetAllItemsListBySpecifiedGroupCallback(const FStoreItemsList& InItemsList);
 
 	UFUNCTION()
 	void GetAllItemsListBySpecifiedGroupError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage);

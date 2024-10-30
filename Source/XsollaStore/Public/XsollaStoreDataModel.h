@@ -255,16 +255,22 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
-	/** All category IDs used by items (calculated locally!). */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TSet<FString> GroupIds;
-
-	/** All available item groups infos. */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TArray<FXsollaItemGroup> Groups;
-
 public:
 	FStoreItemsData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemGroupsData
+{
+public:
+	GENERATED_BODY()
+
+	/** All available item groups infos. */
+	 UPROPERTY(BlueprintReadOnly, Category = "Item Groups Data")
+	 TArray<FXsollaItemGroup> groups;
+
+public:
+	FStoreItemGroupsData(){};
 };
 
 USTRUCT(BlueprintType)
