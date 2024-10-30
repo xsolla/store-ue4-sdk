@@ -72,7 +72,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	void Initialize(const FString& InProjectId);
 
-	/** Returns a list of virtual items according to pagination settings. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	/** Returns a list of virtual items according to pagination settings. The list includes items which are set to be available for purchase in the store. For each virtual item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -91,8 +91,7 @@ public:
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
 		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	//TEXTREVIEW
-	/** Returns total list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, complete data is returned.
+	/** Returns a full list of virtual items. The list includes items which are set to be available for purchase in the store. For each virtual item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -108,7 +107,7 @@ public:
 	void GetAllVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Returns a full list of virtual item groups. The list includes groups for which display in the store is enabled in the settings
+	/** Returns a full list of virtual item groups. The list includes groups which are set to be available for purchase in the store
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale (optional) Response language (e.g. item name, item description).<br>
@@ -140,8 +139,7 @@ public:
 	void GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	//TEXTREVIEW
-	/** Returns a list of virtual currencies according to pagination settings.
+	/** Returns a full of virtual currencies. The list includes currencies which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -156,7 +154,7 @@ public:
 	void GetAllVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -175,8 +173,8 @@ public:
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback,
 		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	//TEXTREVIEW
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages for which display in the store is enabled in the settings.
+
+	/** Returns a full list of virtual currency packages. The list includes packages which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -192,7 +190,7 @@ public:
 	void GetAllVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Returns a list of items for the specified group according to pagination settings. The list includes items for which display in the store is enabled in the settings. In the settings of the group, the display in the store must be enabled.
+	/** Returns a list of items for the specified group according to pagination settings. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param ExternalId Group external ID.
@@ -211,8 +209,7 @@ public:
 	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	//TEXTREVIEW
-	/** Returns a list of items for the specified group according to pagination settings. The list includes items for which display in the store is enabled in the settings. In the settings of the group, the display in the store must be enabled.
+	/** Returns a full list of items for the specified group. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param ExternalId Group external ID.
@@ -229,7 +226,7 @@ public:
 	void GetAllItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Returns a full list of virtual items. The list includes items for which display in the store is enabled in the settings. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
+	/** Returns a full list of virtual items. The list includes items which are set to be available for purchase in the store. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language.<br>
@@ -438,7 +435,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Returns a list of bundles according to pagination settings. The list includes bundles for which display in the store is enabled in the settings.
+	/** Returns a list of bundles according to pagination settings. The list includes bundles which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	 *
 	 * @param Locale Response language.<br>
@@ -471,7 +468,7 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages for which display in the store is enabled in the settings.
+	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
