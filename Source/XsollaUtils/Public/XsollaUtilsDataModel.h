@@ -458,7 +458,7 @@ struct FXsollaPaymentTokenRequestPayload
 	GENERATED_BODY()
 
 	/**
-	 * Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default).
+	 * Currency (optional) Desired payment currency (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) . Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
 	 * Leave empty to use the default value.
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
