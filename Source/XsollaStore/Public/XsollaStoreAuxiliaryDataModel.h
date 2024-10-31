@@ -341,3 +341,87 @@ struct FGetAllItemsListBySpecifiedGroupParams
 	{
 	}
 };
+
+USTRUCT()
+struct FGetAllBundlesParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString Locale;
+
+	UPROPERTY()
+	FString Country;
+
+	UPROPERTY()
+	TArray<FString> AdditionalFields;
+
+	UPROPERTY()
+	FOnGetListOfBundlesUpdate ResultSuccessCallback;
+
+	UPROPERTY()
+	FOnError ResultErrorCallback;
+
+	UPROPERTY()
+	FStoreListOfBundles ResultData;
+
+	UPROPERTY()
+	FErrorData ResultErrorData;
+
+	UPROPERTY()
+	FOnGetListOfBundlesUpdate CurrentSuccessCallback;
+
+	UPROPERTY()
+	FOnError CurrentErrorCallback;
+
+	UPROPERTY()
+	int32 Limit = 2;
+
+	UPROPERTY()
+	int32 Offset = 0;
+
+	UPROPERTY()
+	FString AuthToken;
+
+	void ProcessNextPartOfData(const FStoreListOfBundles& InData, const TFunction<void()>& NextCallFunc)
+	{
+		ResultData.items.Append(InData.items);
+
+		if (InData.has_more)
+		{
+			Offset += Limit;
+			NextCallFunc();
+		}
+		else
+		{
+			Finish(true);
+		}
+	}
+
+	void Finish(bool isSuccess)
+	{
+		CurrentSuccessCallback.Unbind();
+		CurrentErrorCallback.Unbind();
+		isSuccess ? ResultSuccessCallback.ExecuteIfBound(ResultData) : ResultErrorCallback.ExecuteIfBound(ResultErrorData.StatusCode, ResultErrorData.ErrorCode, ResultErrorData.ErrorMessage);
+	}
+
+	FGetAllBundlesParams()
+	{
+	}
+
+	FGetAllBundlesParams(
+		const FString& InLocale,
+		const FString& InCountry,
+		const TArray<FString>& InAdditionalFields,
+		const FOnGetListOfBundlesUpdate& InResultSuccessCallback,
+		const FOnError& InResultErrorCallback,
+		const FString& InAuthToken)
+		: Locale(InLocale)
+		, Country(InCountry)
+		, AdditionalFields(InAdditionalFields)
+		, ResultSuccessCallback(InResultSuccessCallback)
+		, ResultErrorCallback(InResultErrorCallback)
+		, AuthToken(InAuthToken)
+	{
+	}
+};

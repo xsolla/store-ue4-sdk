@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreItemsUpdate, const FStoreItemsData&, I
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrenciesUpdate, const FVirtualCurrencyData&, VirtualCurrencyData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnVirtualCurrencyPackagesUpdate, const FVirtualCurrencyPackagesData&, Data);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsListBySpecifiedGroup, const FStoreItemsList&, ItemsList);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetListOfBundlesUpdate, const FStoreListOfBundles&, ListOfBundles);
 
 UCLASS()
 class XSOLLASTORE_API UXsollaStoreDelegates : public UObject

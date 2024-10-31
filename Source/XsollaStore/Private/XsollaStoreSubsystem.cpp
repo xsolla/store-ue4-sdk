@@ -790,6 +790,15 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaStoreSubsystem::GetAllBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
+{
+	GetAllBundlesParams = FGetAllBundlesParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
+	GetAllBundlesParams.CurrentSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetBundlesCallback);
+	GetAllBundlesParams.CurrentErrorCallback.BindDynamic(this, &UXsollaStoreSubsystem::GetBundlesError);
+	CallGetBundles();
+}
+
 void UXsollaStoreSubsystem::GetVirtualCurrency(const FString& CurrencySKU,
 	const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback)
@@ -2150,6 +2159,30 @@ void UXsollaStoreSubsystem::CallGetAllItemsListBySpecifiedGroup()
 		GetAllItemsListBySpecifiedGroupParams.Limit,
 		GetAllItemsListBySpecifiedGroupParams.Offset,
 		GetAllItemsListBySpecifiedGroupParams.AuthToken);
+}
+
+void UXsollaStoreSubsystem::GetBundlesCallback(const FStoreListOfBundles& InBundlesData)
+{
+	GetAllBundlesParams.ProcessNextPartOfData(InBundlesData, [this] { CallGetBundles(); });
+}
+
+void UXsollaStoreSubsystem::GetBundlesError(int32 StatusCode, int32 ErrorCode, const FString& ErrorMessage)
+{
+	GetAllBundlesParams.ResultErrorData = FErrorData(StatusCode, ErrorCode, ErrorMessage);
+	GetAllBundlesParams.Finish(false);
+}
+
+void UXsollaStoreSubsystem::CallGetBundles()
+{
+	GetBundles(
+		GetAllBundlesParams.Locale,
+		GetAllBundlesParams.Country,
+		GetAllBundlesParams.AdditionalFields,
+		GetAllBundlesParams.CurrentSuccessCallback,
+		GetAllBundlesParams.CurrentErrorCallback,
+		GetAllBundlesParams.Limit,
+		GetAllBundlesParams.Offset,
+		GetAllBundlesParams.AuthToken);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
