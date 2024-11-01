@@ -375,7 +375,7 @@ struct FGetAllBundlesParams
 	FOnError CurrentErrorCallback;
 
 	UPROPERTY()
-	int32 Limit = 2;
+	int32 Limit = 50;
 
 	UPROPERTY()
 	int32 Offset = 0;
