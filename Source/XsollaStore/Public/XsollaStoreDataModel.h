@@ -255,16 +255,22 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
-	/** All category IDs used by items (calculated locally!). */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TSet<FString> GroupIds;
-
-	/** All available item groups infos. */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TArray<FXsollaItemGroup> Groups;
-
 public:
 	FStoreItemsData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemGroupsData
+{
+public:
+	GENERATED_BODY()
+
+	/** All available item groups infos. */
+	 UPROPERTY(BlueprintReadOnly, Category = "Item Groups Data")
+	 TArray<FXsollaItemGroup> groups;
+
+public:
+	FStoreItemGroupsData(){};
 };
 
 USTRUCT(BlueprintType)
@@ -652,6 +658,9 @@ struct XSOLLASTORE_API FStoreListOfBundles
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	TArray<FStoreBundle> items;
 };
@@ -923,7 +932,7 @@ struct XSOLLASTORE_API FOwnedGamesList
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
@@ -1046,7 +1055,7 @@ struct XSOLLASTORE_API FSubscriptionPlansList
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
 	TArray<FSubscriptionPlan> items;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 };
 
@@ -1121,7 +1130,7 @@ struct XSOLLASTORE_API FSubscriptionsList
 	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
 	TArray<FSubscription> items;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
+	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 };
 

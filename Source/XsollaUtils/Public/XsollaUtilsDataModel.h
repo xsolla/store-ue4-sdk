@@ -11,6 +11,27 @@ DECLARE_DELEGATE_TwoParams(FOnTokenUpdate, const FString&, bool);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
 
 USTRUCT()
+struct FErrorData
+{
+	GENERATED_BODY()
+
+	int32 StatusCode = -1;
+	int32 ErrorCode = -1;
+	FString ErrorMessage;
+
+	FErrorData(int32 InStatusCode, int32 InErrorCode, const FString& InErrorMessage)
+		: StatusCode(InStatusCode)
+		, ErrorCode(InErrorCode)
+		, ErrorMessage(InErrorMessage)
+	{
+	}
+
+	FErrorData()
+	{
+	}
+};
+
+USTRUCT()
 struct FErrorHandlersWrapper
 {
 	GENERATED_BODY()
@@ -437,7 +458,7 @@ struct FXsollaPaymentTokenRequestPayload
 	GENERATED_BODY()
 
 	/**
-	 * Currency (optional) Desired payment currency. Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (USD by default).
+	 * Currency (optional) Desired payment currency (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) . Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
 	 * Leave empty to use the default value.
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
