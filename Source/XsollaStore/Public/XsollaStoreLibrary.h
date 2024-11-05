@@ -27,6 +27,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Store")
 	static FString FormatPrice(float Amount, const FString& Currency = TEXT("USD"));
 
+	/** Convert FStoreBundle to FStoreItem */
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "To StoreItem (StoreBundle)", CompactNodeTitle = "->", ScriptMethod = "StoreItem", Keywords = "cast convert", BlueprintAutocast), Category = "Xsolla|Store|Conversions")
+	static FStoreItem Conv_StoreBundleToStoreItem(FStoreBundle InStoreBundle);
+
+	/** Convert FStoreItem to FStoreCartItem */
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "To StoreCartItem (StoreItem)", CompactNodeTitle = "->", ScriptMethod = "StoreCartItem", Keywords = "cast convert", BlueprintAutocast), Category = "Xsolla|Store|Conversions")
+	static FStoreCartItem Conv_StoreItemToStoreCartItem(FStoreItem InStoreItem);
+
 private:
 	/** Loaded currency library asset. */
 	static UDataTable* CurrencyLibrary;

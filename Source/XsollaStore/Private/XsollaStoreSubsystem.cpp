@@ -600,8 +600,7 @@ void UXsollaStoreSubsystem::UpdateCart(const FString& AuthToken, const FString& 
 	ProcessNextCartRequest();
 }
 
-void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FString& CartId,
-	const FString& ItemSKU, const int32 Quantity,
+void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FStoreCartItem& ItemToUpdate,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	CachedAuthToken = AuthToken;
@@ -609,7 +608,7 @@ void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FSt
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	RequestDataJson->SetNumberField(TEXT("quantity"), Quantity);
+	RequestDataJson->SetNumberField(TEXT("quantity"), ItemToUpdate.quantity);
 
 	const FString Endpoint = CartId.IsEmpty()
 								 ? TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/cart/item/{ItemSKU}")
@@ -618,7 +617,7 @@ void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FSt
 	const FString Url = XsollaUtilsUrlBuilder(Endpoint)
 							.SetPathParam(TEXT("ProjectID"), ProjectID)
 							.SetPathParam(TEXT("CartID"), Cart.cart_id)
-							.SetPathParam(TEXT("ItemSKU"), ItemSKU)
+							.SetPathParam(TEXT("ItemSKU"), ItemToUpdate.sku)
 							.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, AuthToken, SerializeJson(RequestDataJson));
@@ -628,45 +627,19 @@ void UXsollaStoreSubsystem::UpdateItemInCart(const FString& AuthToken, const FSt
 	CartRequestsQueue.Add(HttpRequest);
 	ProcessNextCartRequest();
 
-	// Try to update item quantity
-	auto CartItem = Cart.Items.FindByPredicate([ItemSKU](const FStoreCartItem& InItem) {
-		return InItem.sku == ItemSKU;
+	// Try to update item quantity	
+	auto CartItem = Cart.Items.FindByPredicate([ItemToUpdate](const FStoreCartItem& InItem)
+	{ 
+		return InItem.sku == ItemToUpdate.sku;
 	});
 
 	if (CartItem)
 	{
-		CartItem->quantity = FMath::Max(0, Quantity);
+		CartItem->quantity = FMath::Max(0, ItemToUpdate.quantity);
 	}
 	else
 	{
-		auto StoreItem = ItemsData.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
-			return InItem.sku == ItemSKU;
-		});
-
-		if (StoreItem)
-		{
-			FStoreCartItem Item(*StoreItem);
-			Item.quantity = FMath::Max(0, Quantity);
-			Cart.Items.Add(Item);
-		}
-		else
-		{
-			auto CurrencyPackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSKU](const FVirtualCurrencyPackage& InItem) {
-				return InItem.sku == ItemSKU;
-			});
-
-			if (CurrencyPackageItem)
-			{
-				FStoreCartItem Item(*CurrencyPackageItem);
-				Item.quantity = FMath::Max(0, Quantity);
-
-				Cart.Items.Add(Item);
-			}
-			else
-			{
-				UE_LOG(LogXsollaStore, Error, TEXT("%s: Can't find provided SKU in local cache: %s"), *VA_FUNC_LINE, *ItemSKU);
-			}
-		}
+		Cart.Items.Add(ItemToUpdate);
 	}
 
 	OnCartUpdate.Broadcast(Cart);
@@ -1288,6 +1261,7 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
+	FStoreItemsData ItemsData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
@@ -1307,7 +1281,7 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	XsollaHttpRequestError OutError;
 	FStoreItemGroupsData GroupsData;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &GroupsData, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemGroupsData::StaticStruct(), &GroupsData, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(GroupsData);
 	}
@@ -1340,6 +1314,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
+	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages, OutError))
 	{
@@ -1587,11 +1562,6 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreListOfBundles::StaticStruct(), &ListOfBundles, OutError))
 	{
-		for (const auto& Bundle : ListOfBundles.items)
-		{
-			ItemsData.Items.Add(Bundle);
-		}
-
 		UE_LOG(LogXsollaStore, Log, TEXT("GetBundles request: JSON received. Items count: %d. has_more: %s"), ListOfBundles.items.Num(), ListOfBundles.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(ListOfBundles);
 	}
@@ -2411,16 +2381,12 @@ FString UXsollaStoreSubsystem::GetBuildPlatform() const
 	return UGameplayStatics::GetPlatformName().ToLower();
 }
 
-TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup() const
+TArray<FStoreItem> UXsollaStoreSubsystem::GetVirtualItemsWithoutGroup(const FStoreItemsData& StoreItemsData)
 {
-	return ItemsData.Items.FilterByPredicate([](const FStoreItem& InStoreItem) {
+	return StoreItemsData.Items.FilterByPredicate([](const FStoreItem& InStoreItem)
+	{
 		return InStoreItem.groups.Num() == 0;
 	});
-}
-
-const FStoreItemsData& UXsollaStoreSubsystem::GetItemsData() const
-{
-	return ItemsData;
 }
 
 const FStoreCart& UXsollaStoreSubsystem::GetCart() const
@@ -2433,9 +2399,10 @@ const FString& UXsollaStoreSubsystem::GetPendingPaystationUrl() const
 	return PendingPaystationUrl;
 }
 
-FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const
+FString UXsollaStoreSubsystem::GetItemName(const FStoreItemsData& StoreItemsData, const FString& ItemSKU)
 {
-	auto StoreItem = ItemsData.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem) {
+	auto StoreItem = StoreItemsData.Items.FindByPredicate([ItemSKU](const FStoreItem& InItem)
+	{
 		return InItem.sku == ItemSKU;
 	});
 
@@ -2447,11 +2414,12 @@ FString UXsollaStoreSubsystem::GetItemName(const FString& ItemSKU) const
 	return TEXT("");
 }
 
-const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, bool& bHasFound) const
+const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FStoreItemsData& StoreItemsData, const FString& ItemSku, bool& bHasFound)
 {
 	bHasFound = false;
 
-	const auto StoreItem = ItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem) {
+	const auto StoreItem = StoreItemsData.Items.FindByPredicate([ItemSku](const FStoreItem& InItem)
+	{
 		return InItem.sku == ItemSku;
 	});
 
@@ -2465,11 +2433,13 @@ const FStoreItem& UXsollaStoreSubsystem::FindItemBySku(const FString& ItemSku, b
 	return DefaultItem;
 }
 
-const FVirtualCurrencyPackage& UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const
+const FVirtualCurrencyPackage& UXsollaStoreSubsystem::FindVirtualCurrencyPackageBySku(const FVirtualCurrencyPackagesData& VirtualCurrencyPackagesData,
+	const FString& ItemSku, bool& bHasFound)
 {
 	bHasFound = false;
 
-	const auto PackageItem = VirtualCurrencyPackages.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem) {
+	const auto PackageItem = VirtualCurrencyPackagesData.Items.FindByPredicate([ItemSku](const FVirtualCurrencyPackage& InItem)
+	{
 		return InItem.sku == ItemSku;
 	});
 

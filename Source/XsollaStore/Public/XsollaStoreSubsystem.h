@@ -364,13 +364,12 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
-	 * @param ItemSKU Desired item SKU.
-	 * @param Quantity Number of items to be added to the cart.
+	 * @param ItemToUpdate Updated cart item.
 	 * @param SuccessCallback Called after successfully adding a new item to the cart.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
+	void UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FStoreCartItem& ItemToUpdate,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes the item from the cart with the specified ID or from the cart of the current user.
@@ -949,13 +948,9 @@ private:
 	FString GetBuildPlatform() const;
 
 public:
-	/** Returns the list of cached virtual items without any Category provided. */
+	/** Returns the list of virtual items without any category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	TArray<FStoreItem> GetVirtualItemsWithoutGroup() const;
-
-	/** Returns cached items data. */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	const FStoreItemsData& GetItemsData() const;
+	static TArray<FStoreItem> GetVirtualItemsWithoutGroup(const FStoreItemsData& StoreItemsData);
 
 	/** Returns cached cart data */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
@@ -965,17 +960,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FString& GetPendingPaystationUrl() const;
 
-	/** Returns name of the cached item with the given SKU. */
+	/** Returns name of the item with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	FString GetItemName(const FString& ItemSKU) const;
+	static FString GetItemName(const FStoreItemsData& StoreItemsData, const FString& ItemSKU);
 
-	/** Returns item from the cache with the given SKU. */
+	/** Returns item with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	const FStoreItem& FindItemBySku(const FString& ItemSku, bool& bHasFound) const;
+	static const FStoreItem& FindItemBySku(const FStoreItemsData& StoreItemsData, const FString& ItemSku, bool& bHasFound);
 
-	/** Returns package from the cache with the given SKU. */
+	/** Returns package with the given SKU. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
-	const FVirtualCurrencyPackage& FindVirtualCurrencyPackageBySku(const FString& ItemSku, bool& bHasFound) const;
+	static const FVirtualCurrencyPackage& FindVirtualCurrencyPackageBySku(const FVirtualCurrencyPackagesData& VirtualCurrencyPackagesData,
+		const FString& ItemSku, bool& bHasFound);
 
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
@@ -990,14 +986,8 @@ protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectID;
 
-	/** Cached virtual items list */
-	FStoreItemsData ItemsData;
-
 	/** Current cart */
 	FStoreCart Cart;
-
-	/** Cached virtual currency packages */
-	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
 
 	/** Cached cart desired currency (used for silent cart update) */
 	FString CachedCartCurrency;
