@@ -2,9 +2,13 @@ include:
   - project: 'sysadm-docker/ubuntu-sshclient'
     ref:     'master'
     file:    'gitlab-ci-template.yml'
+  - project: 'security/security-tools'
+    ref: 'v2'
+    file: 'adapter/sdk/security-tools-store-ue4-sdk.yml'
 
 stages:
   - build
+  - security scan
   - deploy
   - linking
   - demo_win
