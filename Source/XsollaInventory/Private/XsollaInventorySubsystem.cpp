@@ -209,16 +209,25 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+bool UXsollaInventorySubsystem::IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU)
+{
+	auto FoundItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem)
+		{ return InItem.sku == ItemSKU; });
+
+	return FoundItem != nullptr;
+}
+
 void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	XsollaHttpRequestError OutError;
-	FInventoryItemsData NewInventory;
+	FInventoryItemsData Inventory;
 
-	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryItemsData::StaticStruct(), &NewInventory, OutError))
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryItemsData::StaticStruct(), &Inventory, OutError))
 	{
-		SuccessCallback.ExecuteIfBound(NewInventory);
+		UE_LOG(LogXsollaInventory, Log, TEXT("GetInventory request: JSON received. Items count: %d."), Inventory.Items.Num());
+		SuccessCallback.ExecuteIfBound(Inventory);
 	}
 	else
 	{
@@ -235,6 +244,7 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyBalanceData::StaticStruct(), &VirtualCurrencyBalance, OutError))
 	{
+		UE_LOG(LogXsollaInventory, Log, TEXT("GetVirtualCurrencyBalance request: JSON received. Items count: %d."), VirtualCurrencyBalance.Items.Num());
 		SuccessCallback.ExecuteIfBound(VirtualCurrencyBalance);
 	}
 	else

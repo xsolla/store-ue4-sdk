@@ -24,7 +24,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnStoreSuccessPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCancelPayment);
 DECLARE_DYNAMIC_DELEGATE(FOnStoreCartUpdate);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStoreBrowserClosed, bool, bIsManually);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCartUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnFetchTokenSuccess, const FString&, AccessToken, int32, OrderId);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnCheckOrder, int32, OrderId, EXsollaOrderStatus, OrderStatus, FXsollaOrderContent, OrderContent);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyUpdate, const FVirtualCurrency&, Currency);
@@ -32,7 +32,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCurrencyPackageUpdate, const FVirtualCurren
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPurchaseUpdate, int32, OrderId);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetPromocodeRewardsUpdate, FStorePromocodeRewardData, RewardsData);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSpecifiedBundleUpdate, FStoreBundle, Bundle);
-DECLARE_DYNAMIC_DELEGATE(FOnPromocodeUpdate);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPromocodeUpdate, const FStoreCart&, Cart);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetItemsList, FStoreItemsList, ItemsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetGamesListBySpecifiedGroup, FStoreGamesList, GamesList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGameUpdate, const FGameItem&, Game);
@@ -344,32 +344,33 @@ public:
 	void ClearCart(const FString& AuthToken, const FString& CartId,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
 	/** Returns a list of items from the cart with the specified ID or from the cart of the current user. For each item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
-	 * @param CartId (optional) Identifier of the cart to be updated. The current user cart will be updated if empty.
+	 * @param CartId (optional) Identifier of the cart to be updated. The current user cart will be returned if empty.
 	 * @param Currency The currency in which prices are displayed (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217). Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
-	 * @param SuccessCallback Called after local cache of cart items was successfully updated.
+	 * @param SuccessCallback Called after cart is successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateCart(const FString& AuthToken, const FString& CartId,
-		const FString& Currency, const FString& Locale,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
+	void GetCart(const FString& AuthToken, const FString& CartId, const FString& Currency, const FString& Locale,
+		const FOnCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Updates the quantity of a previously added item in the cart with the specified ID or in the current user cart. If there is no item with the specified SKU in the cart, it will be added.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of a cart to which item will be added. The current user cart will be modified if empty.
-	 * @param ItemToUpdate Updated cart item.
-	 * @param SuccessCallback Called after successfully adding a new item to the cart.
+	 * @param ItemSKU Desired item SKU.
+	 * @param Quantity Number of items to be added to the cart.
+	 * @param SuccessCallback Called after successfully updating item in the cart.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FStoreCartItem& ItemToUpdate,
+	void UpdateItemInCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU, const int32 Quantity,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes the item from the cart with the specified ID or from the cart of the current user.
@@ -385,18 +386,19 @@ public:
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
 	/** Fills the cart with the specified ID or the cart of the current user with items. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of cart which will be filled.
 	 * @param Items Item for filling the cart. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
-	 * @param SuccessCallback Called after cart is successfully filled.
+	 * @param SuccessCallback Called after cart is successfully filled. Returns updated cart.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void FillCartById(const FString& AuthToken, const FString& CartId, const TArray<FStoreCartItem>& Items,
-		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns information about the contents of the specified bundle. In the bundle settings, display in the store must be enabled.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
@@ -496,27 +498,30 @@ public:
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
 	/** Redeems a promo code. After activating the promo code, the user gets free items and/or the price of the cart is reduced.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param PromocodeCode Unique case sensitive code. Contains letters and numbers.
+	 * @param CartId Identifier of the cart.
 	 * @param SuccessCallback Called after successful promocode redemption.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode,
+	void RedeemPromocode(const FString& AuthToken, const FString& PromocodeCode, const FString& CartId,
 		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes a promo code from a cart. After the promo code is removed, the total price of all items in the cart will be recalculated without bonuses and discounts provided by a promo code
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId Identifier of the cart.
 	 * @param SuccessCallback Called after successful promocode redemption.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Promocode", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void RemovePromocodeFromCart(const FString& AuthToken,
+	void RemovePromocodeFromCart(const FString& AuthToken, const FString& CartId,
 		const FOnPromocodeUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns list of games for building a catalog.
@@ -768,18 +773,16 @@ protected:
 	void CreateOrderWithFreeCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
-	void CreateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
 	void ClearCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
-	void UpdateCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
-	void AddToCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
-	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
-		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FOnError ErrorCallback);
-	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void GetCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void UpdateItemInCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void RemoveFromCart_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+	void FillCartById_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void GetListOfBundles_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
@@ -850,12 +853,6 @@ protected:
 		const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 protected:
-	/** Load save game and extract data */
-	void LoadData();
-
-	/** Save cached data or reset one if necessary */
-	void SaveData();
-
 	/** Check whether sandbox is enabled */
 	bool IsSandboxEnabled() const;
 
@@ -924,9 +921,6 @@ private:
 	/** Serialize json object into string */
 	FString SerializeJson(const TSharedPtr<FJsonObject> DataJson) const;
 
-	/** Try to execute next request in queue */
-	void ProcessNextCartRequest();
-
 	/** Prepare payload for payment token request */
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload);
 
@@ -935,9 +929,6 @@ private:
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
-
-	/** Queue to store cart change requests */
-	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> CartRequestsQueue;
 
 	FString GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const;
 
@@ -951,10 +942,6 @@ public:
 	/** Returns the list of virtual items without any category provided. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static TArray<FStoreItem> GetVirtualItemsWithoutGroup(const FStoreItemsData& StoreItemsData);
-
-	/** Returns cached cart data */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
-	const FStoreCart& GetCart() const;
 
 	/** Returns the pending PayStation URL to be opened in browser. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
@@ -975,34 +962,17 @@ public:
 
 	/** Checks if the certain item is in the cart. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart")
-	bool IsItemInCart(const FString& ItemSKU) const;
-
-public:
-	/** Event occurred when the cart was changed or updated. */
-	UPROPERTY(BlueprintAssignable, Category = "Xsolla|Store|Cart")
-	FOnCartUpdate OnCartUpdate;
+	static bool IsItemInCart(const FStoreCart& Cart, const FString& ItemSKU);
 
 protected:
 	/** Cached Xsolla Store project id */
 	FString ProjectID;
-
-	/** Current cart */
-	FStoreCart Cart;
-
-	/** Cached cart desired currency (used for silent cart update) */
-	FString CachedCartCurrency;
 
 	/** Cached auth token */
 	FString CachedAuthToken;
 
 	/** Cached payload */
 	FXsollaPaymentTokenRequestPayload CachedPaymentTokenRequestPayload;
-
-	/** Cached cart identifier (used for silent cart update) */
-	FString CachedCartId;
-
-	/** Cached cart locale (used for silent cart update) */
-	FString CachedCartLocale;
 
 	/** Pending PayStation URL to be opened in browser */
 	FString PendingPaystationUrl;

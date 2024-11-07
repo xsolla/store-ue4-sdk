@@ -130,6 +130,10 @@ public:
 	void RedeemCoupon(const FString& AuthToken, const FString& CouponCode,
 		const FOnCouponRedeemUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	/** Checks if the certain item is in the inventory. */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
+	static bool IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU);
+
 protected:
 	void GetInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
