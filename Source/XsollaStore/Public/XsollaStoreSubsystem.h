@@ -344,13 +344,12 @@ public:
 	void ClearCart(const FString& AuthToken, const FString& CartId,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Returns a list of items from the cart with the specified ID or from the cart of the current user. For each item, complete data is returned.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart to be updated. The current user cart will be returned if empty.
-	 * @param Currency The currency in which prices are displayed (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217). Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
+	 * @param Currency Сurrency in which prices are displayed (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217). Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
 	 * @param SuccessCallback Called after cart is successfully received.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -386,13 +385,12 @@ public:
 	void RemoveFromCart(const FString& AuthToken, const FString& CartId, const FString& ItemSKU,
 		const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Fills the cart with the specified ID or the cart of the current user with items. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of cart which will be filled.
-	 * @param Items Item for filling the cart. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
+	 * @param Items Array of items for filling the cart. If there is already an item with the same SKU in the cart, the existing item position will be replaced by the passed value.
 	 * @param SuccessCallback Called after cart is successfully filled. Returns updated cart.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -427,7 +425,7 @@ public:
 	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
-	
+
 	/** Returns a full list of bundles. The list includes bundles which are set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	 *
@@ -498,8 +496,7 @@ public:
 	void GetPromocodeRewards(const FString& AuthToken, const FString& PromocodeCode,
 		const FOnGetPromocodeRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
-	/** Redeems a promo code. After activating the promo code, the user gets free items and/or the price of the cart is reduced.
+	/** Redeems a promo code. After redeeming the promo code, the user gets free items and/or the price of the cart is reduced.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/promo/promo-codes/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
