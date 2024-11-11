@@ -299,12 +299,6 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 #endif
 #else
 
-	if (FEngineVersion::Current().GetMajor() < 5)
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("Xsolla Login is not supported by this version of the engine. Please use version 5.0 and greater"));
-		return;
-	}
-
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
 							.AddStringQueryParam(TEXT("projectId"), LoginID)

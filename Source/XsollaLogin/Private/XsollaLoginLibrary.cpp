@@ -53,11 +53,7 @@ TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture
 	int Width = Texture->GetSizeX();
 	int Height = Texture->GetSizeY();
 
-#if ENGINE_MAJOR_VERSION > 4
 	FTexturePlatformData* PlatformData = Texture->GetPlatformData();
-#else
-	FTexturePlatformData* PlatformData = Texture->PlatformData;
-#endif
 
 	bool isBGRA = PlatformData->PixelFormat == PF_B8G8R8A8;
 
