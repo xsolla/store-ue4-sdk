@@ -209,12 +209,17 @@ void UXsollaInventorySubsystem::RedeemCoupon(const FString& AuthToken, const FSt
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-bool UXsollaInventorySubsystem::IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU)
+bool UXsollaInventorySubsystem::IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU, FInventoryItem& FoundItem)
 {
-	auto FoundItem = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem)
+	auto FoundItemPtr = Inventory.Items.FindByPredicate([ItemSKU](const FInventoryItem& InItem)
 		{ return InItem.sku == ItemSKU; });
 
-	return FoundItem != nullptr;
+	if (FoundItemPtr != nullptr)
+	{
+		FoundItem = *FoundItemPtr;
+	}
+	
+	return FoundItemPtr != nullptr;
 }
 
 void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(

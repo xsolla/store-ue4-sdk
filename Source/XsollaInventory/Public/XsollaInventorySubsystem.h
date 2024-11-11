@@ -132,7 +132,7 @@ public:
 
 	/** Checks if the certain item is in the inventory. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Inventory")
-	static bool IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU);
+	static bool IsItemInInventory(const FInventoryItemsData& Inventory, const FString& ItemSKU, FInventoryItem& FoundItem);
 
 protected:
 	void GetInventory_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
