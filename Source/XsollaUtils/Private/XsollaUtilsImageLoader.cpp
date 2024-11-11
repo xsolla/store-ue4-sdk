@@ -65,6 +65,17 @@ void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded
 	}
 }
 
+bool UXsollaUtilsImageLoader::IsImageLoaded(const FString& URL, FSlateBrush& ImageBrush)
+{
+	const FName ResourceId = GetCacheName(URL);
+	if (ImageBrushes.Contains(ResourceId.ToString()))
+	{
+		ImageBrush = *ImageBrushes[ResourceId.ToString()];
+		return true;
+	}
+	return false;
+}
+
 void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback)
 {

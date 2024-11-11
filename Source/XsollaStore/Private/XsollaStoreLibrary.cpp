@@ -49,3 +49,13 @@ FString UXsollaStoreLibrary::FormatPrice(float Amount, const FString& Currency /
 	UE_LOG(LogXsollaStore, Error, TEXT("%s: Failed to format price (%s %s)"), *VA_FUNC_LINE, *FString::SanitizeFloat(Amount), *Currency);
 	return FString();
 }
+
+FStoreItem UXsollaStoreLibrary::Conv_StoreBundleToStoreItem(FStoreBundle InStoreBundle)
+{
+	return FStoreItem(InStoreBundle);
+}
+
+FStoreCartItem UXsollaStoreLibrary::Conv_StoreItemToStoreCartItem(FStoreItem InStoreItem)
+{
+	return FStoreCartItem(InStoreItem);
+}

@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LoadImage(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
 
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	bool IsImageLoaded(const FString& URL, FSlateBrush& ImageBrush);
+
 protected:
 	/** */
 	void LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnImageLoaded SuccessCallback, FOnImageLoadFailed ErrorCallback);
