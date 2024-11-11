@@ -42,7 +42,7 @@
     <setString result="DeepLinkingHost" value="xpayment.$S(PackageName)"/>
     <loopElements tag="activity">
       <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
-      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity"/>
+      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity"/>
       <if condition="bGameActivity">
         <true>
           <setElement result="deepLinkingSchemeData" value="data"/>
