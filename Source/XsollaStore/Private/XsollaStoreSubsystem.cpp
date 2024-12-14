@@ -98,7 +98,7 @@ void UXsollaStoreSubsystem::Initialize(const FString& InProjectId)
 	ProjectID = InProjectId;
 }
 
-void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetPaginatedVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
 	const int Limit, const int Offset, const FString& AuthToken)
 {
@@ -124,7 +124,7 @@ void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetAllVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	GetAllVirtualItemsParams = FGetAllVirtualItemsParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
@@ -147,7 +147,7 @@ void UXsollaStoreSubsystem::GetItemGroups(const FString& PromoCode,
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetPaginatedVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectId}/items/virtual_currency"))
@@ -165,7 +165,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FS
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaStoreSubsystem::GetAllVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
 	GetAllVirtualCurrenciesParams = FGetAllVirtualCurrenciesParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback);
@@ -175,7 +175,7 @@ void UXsollaStoreSubsystem::GetAllVirtualCurrencies(const FString& Locale, const
 	CallGetVirtualCurrencies();
 }
 
-void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetPaginatedVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_currency/package"))
@@ -199,7 +199,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, co
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetAllVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	GetAllVirtualCurrencyPackagesParams = FGetAllVirtualCurrencyPackagesParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
@@ -209,7 +209,7 @@ void UXsollaStoreSubsystem::GetAllVirtualCurrencyPackages(const FString& Locale,
 	CallGetVirtualCurrencyPackages();
 }
 
-void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetPaginatedItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/virtual_items/group/{ExternalId}"))
@@ -234,7 +234,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& External
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	GetAllItemsListBySpecifiedGroupParams = FGetAllItemsListBySpecifiedGroupParams(ExternalId, Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
@@ -706,7 +706,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle(const FString& Sku,
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetPaginatedBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset, const FString& AuthToken)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://store.xsolla.com/api/v2/project/{ProjectID}/items/bundle"))
@@ -730,7 +730,7 @@ void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Cou
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetAllBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+void UXsollaStoreSubsystem::GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 	const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken)
 {
 	GetAllBundlesParams = FGetAllBundlesParams(Locale, Country, AdditionalFields, SuccessCallback, ErrorCallback, AuthToken);
@@ -1964,7 +1964,7 @@ void UXsollaStoreSubsystem::GetVirtualItemsError(int32 StatusCode, int32 ErrorCo
 
 void UXsollaStoreSubsystem::CallGetVirtualItems()
 {
-	GetVirtualItems(
+	GetPaginatedVirtualItems(
 		GetAllVirtualItemsParams.Locale,
 		GetAllVirtualItemsParams.Country,
 		GetAllVirtualItemsParams.AdditionalFields,
@@ -1988,7 +1988,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrenciesError(int32 StatusCode, int32 Er
 
 void UXsollaStoreSubsystem::CallGetVirtualCurrencies()
 {
-	GetVirtualCurrencies(
+	GetPaginatedVirtualCurrencies(
 		GetAllVirtualCurrenciesParams.Locale,
 		GetAllVirtualCurrenciesParams.Country,
 		GetAllVirtualCurrenciesParams.AdditionalFields,
@@ -2011,7 +2011,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackagesError(int32 StatusCode, in
 
 void UXsollaStoreSubsystem::CallGetVirtualCurrencyPackages()
 {
-	GetVirtualCurrencyPackages(
+	GetPaginatedVirtualCurrencyPackages(
 		GetAllVirtualCurrencyPackagesParams.Locale,
 		GetAllVirtualCurrencyPackagesParams.Country,
 		GetAllVirtualCurrencyPackagesParams.AdditionalFields,
@@ -2035,7 +2035,7 @@ void UXsollaStoreSubsystem::GetAllItemsListBySpecifiedGroupError(int32 StatusCod
 
 void UXsollaStoreSubsystem::CallGetAllItemsListBySpecifiedGroup()
 {
-	GetItemsListBySpecifiedGroup(
+	GetPaginatedItemsListBySpecifiedGroup(
 		GetAllItemsListBySpecifiedGroupParams.ExternalId,
 		GetAllItemsListBySpecifiedGroupParams.Locale,
 		GetAllItemsListBySpecifiedGroupParams.Country,
@@ -2060,7 +2060,7 @@ void UXsollaStoreSubsystem::GetBundlesError(int32 StatusCode, int32 ErrorCode, c
 
 void UXsollaStoreSubsystem::CallGetBundles()
 {
-	GetBundles(
+	GetPaginatedBundles(
 		GetAllBundlesParams.Locale,
 		GetAllBundlesParams.Country,
 		GetAllBundlesParams.AdditionalFields,

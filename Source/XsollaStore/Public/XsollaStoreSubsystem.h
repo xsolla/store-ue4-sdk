@@ -84,7 +84,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetPaginatedVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback,
 		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
@@ -99,7 +99,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetAllVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetVirtualItems(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnStoreItemsUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a full list of virtual item groups. The list includes groups which are set to be available for purchase in the store
@@ -124,7 +124,7 @@ public:
 	 * @param Offset Number of the element from which the list is generated (the count starts from 0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetPaginatedVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
 	/** Returns a full list of virtual currencies. The list includes currencies which are set to be available for purchase in the store.
@@ -137,7 +137,7 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetAllVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetVirtualCurrencies(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
@@ -153,7 +153,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetPaginatedVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback,
 		const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
@@ -169,7 +169,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualCurrency", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetAllVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetVirtualCurrencyPackages(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of items for the specified group according to pagination settings. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
@@ -186,7 +186,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetPaginatedItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
 	/** Returns a full list of items for the specified group. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
@@ -201,7 +201,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetAllItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetItemsListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetItemsListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a full list of virtual items. The list includes items which are set to be available for purchase in the store. For each virtual item, the SKU, name, description, and data about the groups it belongs to are returned.
@@ -422,7 +422,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetPaginatedBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const FString& AuthToken = TEXT(""));
 
 
@@ -437,7 +437,7 @@ public:
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)). Can be empty. If specified, the method returns items that match the personalization rules for the current user.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Bundle", meta = (AutoCreateRefTerm = "AdditionalFields, SuccessCallback, ErrorCallback"))
-	void GetAllBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
+	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns virtual currency with specified SKU.
