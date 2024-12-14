@@ -5,7 +5,6 @@
 #include "CentrifugoClient.h"
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
-#include "XsollaLoginSubsystem.h"
 #include "XsollaStoreDefines.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
@@ -16,8 +15,6 @@
 void UCentrifugoServiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 
-	LoginSubsystem = UGameInstance::GetSubsystem<UXsollaLoginSubsystem>(GetGameInstance());
-
 	UE_LOG(LogXsollaCentrifugo, Log, TEXT("%s: CentrifugoService subsystem initialized"), *VA_FUNC_LINE);
 }
 
@@ -27,7 +24,7 @@ void UCentrifugoServiceSubsystem::AddTracker(const UXsollaOrderCheckObject* Trac
 
 	if (CentrifugoClient == nullptr)
 	{
-		CreateCentrifugoClient();
+		CreateCentrifugoClient(Tracker->GetAccessToken());
 	}
 }
 
@@ -42,7 +39,7 @@ void UCentrifugoServiceSubsystem::RemoveTracker(const UXsollaOrderCheckObject* T
 	
 }
 
-void UCentrifugoServiceSubsystem::CreateCentrifugoClient()
+void UCentrifugoServiceSubsystem::CreateCentrifugoClient(const FString& AccessToken)
 {
 	CentrifugoClient = NewObject<UCentrifugoClient>();
 	CentrifugoClient->MessageReceived.BindUObject(this, &UCentrifugoServiceSubsystem::OnCentrifugoMessageReceived);
@@ -55,7 +52,7 @@ void UCentrifugoServiceSubsystem::CreateCentrifugoClient()
 	Id = FMath::Abs(Id);
 	int32 ProjectId = FCString::Atoi(*Settings->ProjectID);
 
-	FConnectionMessage ConnectionMessage = FConnectionMessage(LoginSubsystem->GetLoginData().AuthToken.JWT, ProjectId, Id);
+	FConnectionMessage ConnectionMessage = FConnectionMessage(AccessToken, ProjectId, Id);
 	TSharedRef<FJsonObject> ConnectionMessageJson = MakeShareable(new FJsonObject());
 	if (FJsonObjectConverter::UStructToJsonObject(FConnectionMessage::StaticStruct(), &ConnectionMessage, ConnectionMessageJson, 0, 0))
 	{

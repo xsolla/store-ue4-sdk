@@ -44,6 +44,11 @@ void UXsollaOrderCheckObject::Destroy()
 	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
 }
 
+const FString& UXsollaOrderCheckObject::GetAccessToken() const
+{
+	return AccessToken;
+}
+
 void UXsollaOrderCheckObject::OnConnectionError()
 {
 	ActivateShortPolling();
@@ -140,7 +145,7 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("ShortPollingCheckOrder"));
 	FOnOrderCheck CheckOrderSuccessCallback;
-	CheckOrderSuccessCallback.BindLambda([&](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
+	CheckOrderSuccessCallback.BindLambda([this](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
 	{
 		if (InOrderStatus == EXsollaOrderStatus::New || InOrderStatus == EXsollaOrderStatus::Paid)
 		{

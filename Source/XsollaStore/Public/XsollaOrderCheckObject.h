@@ -28,6 +28,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|OrderCheck")
 	void Destroy();
 
+	const FString& GetAccessToken() const;
+
 private:
 	FOnOrderCheckSuccess OnSuccess;
 
