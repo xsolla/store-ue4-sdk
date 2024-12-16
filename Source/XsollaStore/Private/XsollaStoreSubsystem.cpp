@@ -2103,7 +2103,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", PaymentTokenRequestPayload.CustomParameters);
 
-	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bShowCloseButton, PaymentTokenRequestPayload.CloseButtonIcon, PaymentTokenRequestPayload.bGpQuickPaymentButton);
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bDisableSdkParameter, PaymentTokenRequestPayload.bShowCloseButton, PaymentTokenRequestPayload.CloseButtonIcon, PaymentTokenRequestPayload.bGpQuickPaymentButton);
 
 	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
 		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
@@ -2121,7 +2121,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddAdditionalParameters, const bool bShowCloseButton, const FString& CloseButtonIcon, const bool bGpQuickPaymentButton)
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddAdditionalParameters, const bool bDisableSdkParameter, const bool bShowCloseButton, const FString& CloseButtonIcon, const bool bGpQuickPaymentButton)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
@@ -2139,7 +2139,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		PaymentUiSettingsHeaderJson->SetStringField("close_button_icon", CloseButtonIcon);
 		PaymentUiSettingsJson->SetBoolField("gp_quick_payment_button", bGpQuickPaymentButton);
 
-		if (bIsMobile || Settings->UsePlatformBrowser)
+		if ((bIsMobile || Settings->UsePlatformBrowser) && !bDisableSdkParameter)
 		{
 			TSharedPtr<FJsonObject> SdkTokenSettingsJson = MakeShareable(new FJsonObject);
 			if (bIsMobile)

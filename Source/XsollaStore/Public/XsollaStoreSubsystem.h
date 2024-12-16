@@ -922,7 +922,7 @@ private:
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload);
 
 	/** Prepare paystation settings */
-	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bAddAdditionalParameters = false, const bool bShowCloseButton = false, const FString& CloseButtonIcon = TEXT("cross"), const bool bGpQuickPaymentButton = false);
+	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bAddAdditionalParameters = false, const bool bDisableSdkParameter = false, const bool bShowCloseButton = false, const FString& CloseButtonIcon = TEXT("cross"), const bool bGpQuickPaymentButton = false);
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);

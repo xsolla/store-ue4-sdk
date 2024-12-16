@@ -514,6 +514,12 @@ struct FXsollaPaymentTokenRequestPayload
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	bool bGpQuickPaymentButton = false;
+
+	/**
+	 * Disables the `sdk` parameter in the `Payment` token. `false` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bDisableSdkParameter = false;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.
