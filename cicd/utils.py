@@ -37,6 +37,17 @@ def _remove_readonly(func, path, exc_info):
     func(path)
 
 
+def update_line_in_file(file_path, line_number, new_value):
+
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+        lines[line_number - 1] = new_value + '\n'
+
+        with open(file_path, 'w') as file:
+            file.writelines(lines)
+
+
 def update_ini_file(file_path, section, option, new_value):
     config = configparser.RawConfigParser(allow_no_value=True, strict=False)
     with open(file_path, 'r') as file:

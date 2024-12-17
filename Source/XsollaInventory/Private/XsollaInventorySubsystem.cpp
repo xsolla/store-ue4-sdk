@@ -14,6 +14,7 @@
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
 #include "XsollaLoginSubsystem.h"
+#include "Engine/GameInstance.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaInventoryModule"
 

@@ -127,6 +127,57 @@ demo_52_win_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 True
   artifacts:
     name: "demo-UE52-win-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_53_win_inapp_browser:
+  extends: .win_job_base
+  stage: demo_win
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Win64 False
+  artifacts:
+    name: "demo-UE53-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_53_win_system_browser:
+  extends: .win_job_base
+  stage: demo_win
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Win64 True
+  artifacts:
+    name: "demo-UE53-win-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_54_win_inapp_browser:
+  extends: .win_job_base
+  stage: demo_win
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Win64 False
+  artifacts:
+    name: "demo-UE54-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_54_win_system_browser:
+  extends: .win_job_base
+  stage: demo_win
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Win64 True
+  artifacts:
+    name: "demo-UE54-win-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_55_win_inapp_browser:
+  extends: .win_job_base
+  stage: demo_win
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.5" Win64 False
+  artifacts:
+    name: "demo-UE55-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_55_win_system_browser:
+  extends: .win_job_base
+  stage: demo_win
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.5" Win64 True
+  artifacts:
+    name: "demo-UE55-win-system_browser-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO ANDROID
@@ -134,6 +185,7 @@ demo_52_win_system_browser:
 demo_52_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
+  when: manual
   script:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android False
   artifacts:
@@ -147,6 +199,57 @@ demo_52_android_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android True
   artifacts:
     name: "demo-UE52-android-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_53_android_inapp_browser:
+  extends: .win_job_base
+  stage: demo_android
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Android False
+  artifacts:
+    name: "demo-UE53-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_53_android_system_browser:
+  extends: .win_job_base
+  stage: demo_android
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Android True
+  artifacts:
+    name: "demo-UE53-android-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_54_android_inapp_browser:
+  extends: .win_job_base
+  stage: demo_android
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Android False
+  artifacts:
+    name: "demo-UE54-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_54_android_system_browser:
+  extends: .win_job_base
+  stage: demo_android
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Android True
+  artifacts:
+    name: "demo-UE54-android-system_browser-%CI_COMMIT_REF_SLUG%"
+    
+demo_55_android_inapp_browser:
+  extends: .win_job_base
+  stage: demo_android
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.5" Android False
+  artifacts:
+    name: "demo-UE55-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_55_android_system_browser:
+  extends: .win_job_base
+  stage: demo_android
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.5" Android True
+  artifacts:
+    name: "demo-UE55-android-system_browser-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO IOS
