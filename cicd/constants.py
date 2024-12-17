@@ -21,6 +21,6 @@ sdk_api_level_by_engine_version = {'5.2': 'SDKAPILevel=android-31',
                                    '5.4': 'SDKAPILevel=android-34',
                                    '5.5': 'SDKAPILevel=android-34'}
 ndk_api_level_by_engine_version = {'5.2': 'NDKAPILevel=android-21',
-                                   '5.3': 'NDKAPILevel=android-29',
-                                   '5.4': 'NDKAPILevel=android-29',
-                                   '5.5': 'NDKAPILevel=android-29'}
+                                   '5.3': 'NDKAPILevel=android-28',
+                                   '5.4': 'NDKAPILevel=android-28',
+                                   '5.5': 'NDKAPILevel=android-28'}
