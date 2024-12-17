@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.0.0] - 2024-12-18
+
+### Changed 
+- Minimum supported Unreal Engine version updated to 5.0
+- Removed the `limit` and `offset` parameters from the following SDK methods:
+  - `GetVirtualItems` 
+  - `GetVirtualCurrencies` 
+  - `GetVirtualCurrencyPackages`
+  - `GetItemsListBySpecifiedGroup`
+  - `GetBundles`
+  
+### Added 
+- New methods for `XsollaStoreSubsystem`
+  - `GetPaginatedVirtualItems` 
+  - `GetPaginatedVirtualCurrencies` 
+  - `GetPaginatedVirtualCurrencyPackages`
+  - `GetPaginatedItemsListBySpecifiedGroup`
+  - `GetPaginatedBundles`
+  
+### Fixed 
+- Centrifuge launch for third-party login systems while order status tracking
+
 ## [3.0.1] - 2024-10-25
 
 ### Updated 
