@@ -10,7 +10,6 @@
 
 class UXsollaOrderCheckObject;
 class UCentrifugoClient;
-class UXsollaLoginSubsystem;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOrderStatusUpdated, const FOrderStatusData);
 
@@ -36,7 +35,7 @@ protected:
 	FString ProjectID;
 
 private:
-	void CreateCentrifugoClient();
+	void CreateCentrifugoClient(const FString& AccessToken);
 	void TerminateCentrifugoClient();
 
 	void OnCentrifugoMessageReceived(const FString& Message);
@@ -56,8 +55,5 @@ private:
 
 	UPROPERTY()
 	TArray<const UXsollaOrderCheckObject*> Trackers;
-
-	UPROPERTY()
-	UXsollaLoginSubsystem* LoginSubsystem;
 
 };
