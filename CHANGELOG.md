@@ -12,7 +12,7 @@
   - `GetBundles`
   
 ### Added 
-- New methods for `XsollaStoreSubsystem`
+- New methods for `XsollaStoreSubsystem` class:
   - `GetPaginatedVirtualItems` 
   - `GetPaginatedVirtualCurrencies` 
   - `GetPaginatedVirtualCurrencyPackages`
