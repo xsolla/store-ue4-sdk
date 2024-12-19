@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0] - 2024-12-18
+## [4.0.0] - 2024-12-19
 
 ### Changed 
 - Minimum supported Unreal Engine version updated to 5.0
