@@ -132,6 +132,106 @@
           },
           {
             "kind": "Function",
+            "name": "configureAnalytics",
+            "printedName": "configureAnalytics(gameEngine:gameEngineVersion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@XsollaSDKPaymentsKitObjectiveC@objc(cs)PaymentsKitObjectiveC(im)configureAnalyticsWithGameEngine:gameEngineVersion:",
+            "mangledName": "$s30XsollaSDKPaymentsKitObjectiveC08PaymentscD1CC18configureAnalytics10gameEngine0hI7VersionySo8NSStringC_AHtF",
+            "moduleName": "XsollaSDKPaymentsKitObjectiveC",
+            "objc_name": "configureAnalyticsWithGameEngine:gameEngineVersion:",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "setPaystationVersion",
+            "printedName": "setPaystationVersion(paystationVersion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@XsollaSDKPaymentsKitObjectiveC@objc(cs)PaymentsKitObjectiveC(im)setPaystationVersionWithPaystationVersion:",
+            "mangledName": "$s30XsollaSDKPaymentsKitObjectiveC08PaymentscD1CC20setPaystationVersion010paystationH0ySi_tF",
+            "moduleName": "XsollaSDKPaymentsKitObjectiveC",
+            "objc_name": "setPaystationVersionWithPaystationVersion:",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getPaymentUrl",
+            "printedName": "getPaymentUrl(isSandbox:paymentToken:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@XsollaSDKPaymentsKitObjectiveC@objc(cs)PaymentsKitObjectiveC(im)getPaymentUrlWithIsSandbox:paymentToken:",
+            "mangledName": "$s30XsollaSDKPaymentsKitObjectiveC08PaymentscD1CC13getPaymentUrl9isSandbox12paymentTokenSo8NSStringCSb_AHtF",
+            "moduleName": "XsollaSDKPaymentsKitObjectiveC",
+            "objc_name": "getPaymentUrlWithIsSandbox:paymentToken:",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "performPayment",
             "printedName": "performPayment(paymentToken:presenter:isSandbox:redirectUrl:completionHandler:)",
             "children": [
@@ -536,18 +636,53 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/PaymentsKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 258,
+      "length": 17,
+      "value": "\"cancelledByUser\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 143,
       "length": 1,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
       "kind": "StringLiteral",
       "offset": 512,
       "length": 22,
       "value": "\"localizedDescription\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "kind": "StringLiteral",
+      "offset": 649,
+      "length": 23,
+      "value": "\"XsollaSDK.PaymentsKit\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 703,
+      "length": 1,
+      "value": "3"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 787,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "StringLiteral",
+      "offset": 1197,
+      "length": 2,
+      "value": "\"\""
     }
   ]
 }

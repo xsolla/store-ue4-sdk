@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 package com.xsolla.login;
 
@@ -13,15 +13,11 @@ import com.xsolla.android.login.XLogin;
 import com.xsolla.android.login.callback.FinishSocialCallback;
 import com.xsolla.android.login.callback.StartSocialCallback;
 import com.xsolla.android.login.social.SocialNetwork;
-import com.xsolla.android.login.token.TokenUtils;
 
 public class XsollaNativeAuthActivity extends Activity {
     public static String ARG_SOCIAL_NETWORK = "social_network";
 	public static String REMEMBER_ME = "remember_me";
     public static String CALLBACK_ADDRESS = "callback_address";
-
-    private TokenUtils tokenUtils;
-
     public static native void onAuthSuccessCallback(long callback, String accessToken, String refreshToken, long expiresAt, boolean rememberMe);
     public static native void onAuthCancelCallback(long callback);
     public static native void onAuthErrorCallback(long callback, String errorMessage);
@@ -33,8 +29,6 @@ public class XsollaNativeAuthActivity extends Activity {
             finish();
             return;
         }
-
-        tokenUtils = new TokenUtils(this);
 
         SocialNetwork socialNetwork = SocialNetwork.valueOf(getIntent().getStringExtra(ARG_SOCIAL_NETWORK));
 
@@ -61,11 +55,11 @@ public class XsollaNativeAuthActivity extends Activity {
         XLogin.finishSocialAuth(this, socialNetwork, requestCode, resultCode, data, new FinishSocialCallback() {
             @Override
             public void onAuthSuccess() {
-                Log.d("XsollaAuthActivity", "onAuthSuccess");                
+                Log.d("XsollaAuthActivity", "onAuthSuccess");
                 onAuthSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0),
 					XLogin.getToken(),
-					tokenUtils.getOauthRefreshToken(),
-					tokenUtils.getOauthExpireTimeUnixSec(),
+                    XLogin.getRefreshToken(),
+                    XLogin.getTokenExpireTime(),
 					getIntent().getBooleanExtra(REMEMBER_ME, false));
                 finish();
             }

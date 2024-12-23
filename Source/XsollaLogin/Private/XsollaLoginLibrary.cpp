@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaLoginLibrary.h"
 
@@ -14,6 +14,8 @@
 #include "OnlineSubsystem.h"
 #include "XsollaSettings/Public/XsollaProjectSettings.h"
 #include "XsollaSettings/Public/XsollaSettingsModule.h"
+#include "TextureResource.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -46,14 +48,16 @@ void UXsollaLoginLibrary::LaunchPlatfromBrowser(const FString& URL)
 	FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(const UTexture2D* Texture)
+TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture)
 {
 	int Width = Texture->GetSizeX();
 	int Height = Texture->GetSizeY();
 
-	bool isBGRA = Texture->PlatformData->PixelFormat == PF_B8G8R8A8;
+	FTexturePlatformData* PlatformData = Texture->GetPlatformData();
 
-	const FColor* FormatedImageData = reinterpret_cast<const FColor*>(Texture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY));
+	bool isBGRA = PlatformData->PixelFormat == PF_B8G8R8A8;
+
+	const FColor* FormatedImageData = reinterpret_cast<const FColor*>(PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY));
 
 	TArray<FColor> colorArray;
 	colorArray.SetNumZeroed(Width * Height);
@@ -66,7 +70,7 @@ TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(const UTexture2D* T
 		}
 	}
 
-	Texture->PlatformData->Mips[0].BulkData.Unlock();
+	PlatformData->Mips[0].BulkData.Unlock();
 
 	EImageCompressionQuality LocalCompressionQuality = EImageCompressionQuality::Uncompressed;
 

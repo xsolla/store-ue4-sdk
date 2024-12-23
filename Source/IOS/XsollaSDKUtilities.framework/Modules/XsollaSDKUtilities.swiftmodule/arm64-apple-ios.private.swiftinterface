@@ -1,6 +1,6 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
-// swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKUtilities
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKUtilities
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Foundation
 import Swift
@@ -8,11 +8,12 @@ import UIKit
 import WebKit
 import _Concurrency
 import _StringProcessing
+import _SwiftConcurrencyShims
 extension WebKit.WKWebView {
   @_Concurrency.MainActor(unsafe) public static let defaultUserAgent: Swift.String
 }
 public protocol ResponseProcessor {
-  func process<ResponseModel>(response: Foundation.URLResponse?, data: Foundation.Data?, request: Foundation.URLRequest, error: Swift.Error?, errorHandler: XsollaSDKUtilities.APIErrorHandlerProtocol, decoder: Foundation.JSONDecoder?) -> Swift.Result<ResponseModel, Swift.Error> where ResponseModel : Swift.Decodable
+  func process<ResponseModel>(response: Foundation.URLResponse?, data: Foundation.Data?, request: Foundation.URLRequest, error: (any Swift.Error)?, errorHandler: any XsollaSDKUtilities.APIErrorHandlerProtocol, decoder: Foundation.JSONDecoder?) -> Swift.Result<ResponseModel, any Swift.Error> where ResponseModel : Swift.Decodable
 }
 extension XsollaSDKUtilities.LogLevel {
   public static let all: [XsollaSDKUtilities.LogLevel]
@@ -27,8 +28,8 @@ open class APIServerCode404ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorH
   @objc deinit
 }
 public protocol LoggerKitConfiguratorProtocol {
-  var configuration: XsollaSDKUtilities.LoggerKitConfigurationProtocol { get }
-  func createStore() -> XsollaSDKUtilities.LoggerStoreProtocol
+  var configuration: any XsollaSDKUtilities.LoggerKitConfigurationProtocol { get }
+  func createStore() -> any XsollaSDKUtilities.LoggerStoreProtocol
 }
 public protocol APIServerCodeErrorHandler {
   func error<ErrorModel>(data: Foundation.Data?, decoder: Foundation.JSONDecoder?) -> XsollaSDKUtilities.APIError<ErrorModel>? where ErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol
@@ -43,7 +44,7 @@ open class APIServerCode408ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorH
   @objc deinit
 }
 open class APIBaseRequest {
-  final public let apiConfiguration: XsollaSDKUtilities.APIConfigurationProtocol
+  final public let apiConfiguration: any XsollaSDKUtilities.APIConfigurationProtocol
   open var customJSONDecoder: Foundation.JSONDecoder? {
     get
   }
@@ -73,7 +74,7 @@ open class APIBaseRequest {
   }
   open func createRequest() -> Foundation.URLRequest
   open func createUrl() -> Foundation.URL
-  public typealias QueryParameters = [Swift.String : Swift.String]
+  public typealias QueryParameters = [Swift.String : (any Swift.CustomStringConvertible)?]
   open var specialQueryParameters: XsollaSDKUtilities.APIBaseRequest.QueryParameters {
     get
   }
@@ -83,7 +84,7 @@ open class APIBaseRequest {
   public var defaultParameters: XsollaSDKUtilities.APIBaseRequest.QueryParameters {
     get
   }
-  open var bodyParameters: Swift.Encodable? {
+  open var bodyParameters: (any Swift.Encodable)? {
     get
   }
   open var bodyData: Foundation.Data? {
@@ -121,7 +122,7 @@ open class APIBaseRequest {
   open var defaultCookies: XsollaSDKUtilities.APIBaseRequest.Cookies {
     get
   }
-  public init(apiConfiguration: XsollaSDKUtilities.APIConfigurationProtocol)
+  public init(apiConfiguration: any XsollaSDKUtilities.APIConfigurationProtocol)
   @objc deinit
 }
 @_hasMissingDesignatedInitializers public class MimeTypes {
@@ -139,17 +140,19 @@ public protocol APIRequestProtocol {
   associatedtype ErrorHandler : XsollaSDKUtilities.APIErrorHandlerProtocol
   associatedtype ErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol
   associatedtype Callback
-  var apiConfiguration: XsollaSDKUtilities.APIConfigurationProtocol { get }
+  var apiConfiguration: any XsollaSDKUtilities.APIConfigurationProtocol { get }
   var request: Foundation.URLRequest { get }
   var customJSONDecoder: Foundation.JSONDecoder? { get }
   var errorHandler: Self.ErrorHandler { get }
-  func perform(completionHandler: Self.Callback) -> XsollaSDKUtilities.NetworkTask
+  func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
+  func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
   func handleSuccess(model: Self.ResponseModel, completionHandler: Self.Callback)
-  func handleFailure(error: Self.ErrorType, completionHandler: Self.Callback)
+  func handleFailure(error: any Swift.Error, completionHandler: Self.Callback)
 }
 extension XsollaSDKUtilities.APIRequestProtocol {
   @discardableResult
-  public func perform(completionHandler: Self.Callback) -> XsollaSDKUtilities.NetworkTask
+  public func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
+  public func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
 }
 public struct LogCategory : XsollaSDKUtilities.LogCategoryProtocol {
   public let title: Swift.String
@@ -205,7 +208,7 @@ public enum HTTPHeaderKey {
 public enum HTTPCookieKey {
   public static let locale: Swift.String
 }
-public typealias URLSessionTaskCompletionHandler = (Foundation.Data?, Foundation.URLResponse?, Swift.Error?) -> Swift.Void
+public typealias URLSessionTaskCompletionHandler = (Foundation.Data?, Foundation.URLResponse?, (any Swift.Error)?) -> Swift.Void
 public protocol NetworkTask {
   var id: Foundation.UUID { get }
   var task: Foundation.URLSessionDataTask { get }
@@ -223,19 +226,19 @@ extension XsollaSDKUtilities.LogDomain {
 }
 public struct APIEmptyResponse : Swift.Codable, XsollaSDKUtilities.EmptyResponseDecodable {
   public init()
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
 }
 public struct LoggerKitConfiguration : XsollaSDKUtilities.LoggerKitConfigurationProtocol {
-  public var filter: XsollaSDKUtilities.LoggerKitFilterProtocol
+  public var filter: any XsollaSDKUtilities.LoggerKitFilterProtocol
   public var logContext: Swift.Bool
   public var logTimestamp: Swift.Bool
   public var timeFormatType: XsollaSDKUtilities.LoggerTimeFormat
   public var dispatchQueue: Dispatch.DispatchQueue?
-  public init(filter: XsollaSDKUtilities.LoggerKitFilterProtocol = LoggerKitBaseFilter(), dispatchQueue: Dispatch.DispatchQueue? = DispatchQueue(label: "logger.serial.queue"), logContext: Swift.Bool = false, logTimestamp: Swift.Bool = false, timeFormatType: XsollaSDKUtilities.LoggerTimeFormat = LoggerTimeFormat.timeMicros)
+  public init(filter: any XsollaSDKUtilities.LoggerKitFilterProtocol = LoggerKitBaseFilter(), dispatchQueue: Dispatch.DispatchQueue? = DispatchQueue(label: "logger.serial.queue"), logContext: Swift.Bool = false, logTimestamp: Swift.Bool = false, timeFormatType: XsollaSDKUtilities.LoggerTimeFormat = LoggerTimeFormat.timeMicros)
 }
 public protocol LoggerKitConfigurationProtocol {
-  var filter: XsollaSDKUtilities.LoggerKitFilterProtocol { get }
+  var filter: any XsollaSDKUtilities.LoggerKitFilterProtocol { get }
   var dispatchQueue: Dispatch.DispatchQueue? { get }
   var logContext: Swift.Bool { get }
   var logTimestamp: Swift.Bool { get }
@@ -252,16 +255,16 @@ open class APIServerCode422ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorH
 open class APIBaseErrorHandler : XsollaSDKUtilities.APIErrorHandlerProtocol {
   public init()
   open func setHandlers()
-  public func add(handler: XsollaSDKUtilities.APIServerCodeErrorHandler)
+  public func add(handler: any XsollaSDKUtilities.APIServerCodeErrorHandler)
   public func error<ErrorModel>(request: Foundation.URLRequest, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, decoder: Foundation.JSONDecoder?) -> XsollaSDKUtilities.APIError<ErrorModel>? where ErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol
   @objc deinit
 }
 public protocol LoggerStoreProtocol {
-  func createLogger(factory: XsollaSDKUtilities.LoggerFactoryProtocol)
-  func getLogger() -> XsollaSDKUtilities.LoggerProtocol?
+  func createLogger(factory: any XsollaSDKUtilities.LoggerFactoryProtocol)
+  func getLogger() -> (any XsollaSDKUtilities.LoggerProtocol)?
 }
 public protocol RequestPerformer {
-  func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> XsollaSDKUtilities.NetworkTask
+  func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> any XsollaSDKUtilities.NetworkTask
 }
 public protocol RequestParams {
 }
@@ -273,7 +276,7 @@ public class XSDKNetwork {
   @objc deinit
 }
 extension XsollaSDKUtilities.XSDKNetwork : XsollaSDKUtilities.RequestPerformer {
-  public func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> XsollaSDKUtilities.NetworkTask
+  public func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> any XsollaSDKUtilities.NetworkTask
 }
 extension XsollaSDKUtilities.XSDKNetwork {
   public static let defaultSessionConfiguration: Foundation.URLSessionConfiguration
@@ -296,7 +299,7 @@ public protocol LogDomainProtocol : Swift.CustomStringConvertible {
   var emojiSymbol: Swift.String { get }
 }
 @_hasMissingDesignatedInitializers public class XSDKNetworkSession {
-  weak public var delegate: Foundation.URLSessionDataDelegate? {
+  weak public var delegate: (any Foundation.URLSessionDataDelegate)? {
     get
     set
   }
@@ -308,7 +311,7 @@ public protocol LogDomainProtocol : Swift.CustomStringConvertible {
     get
     set
   }
-  public func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> XsollaSDKUtilities.NetworkTask
+  public func perform(request: Foundation.URLRequest, completionHandler: @escaping XsollaSDKUtilities.URLSessionTaskCompletionHandler) -> any XsollaSDKUtilities.NetworkTask
   public func invalidateAndCancel()
   @objc deinit
 }
@@ -326,14 +329,14 @@ open class APIServerCode429ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorH
   @objc deinit
 }
 public protocol APIConfigurationProtocol {
-  var requestPerformer: XsollaSDKUtilities.RequestPerformer { get }
-  var responseProcessor: XsollaSDKUtilities.ResponseProcessor { get }
+  var requestPerformer: any XsollaSDKUtilities.RequestPerformer { get }
+  var responseProcessor: any XsollaSDKUtilities.ResponseProcessor { get }
   var apiBasePath: Swift.String { get }
 }
 open class LoggerKitBaseFilter : XsollaSDKUtilities.LoggerKitFilterProtocol {
-  open func shouldLog(level: XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
-  open func shouldLog(category: XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
-  open func shouldLog(domain: XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
+  open func shouldLog(level: any XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
+  open func shouldLog(category: any XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
+  open func shouldLog(domain: any XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
   open func shouldLog(filePath: Swift.StaticString) -> Swift.Bool
   open func shouldLog(methodName: Swift.StaticString) -> Swift.Bool
   public init()
@@ -351,7 +354,7 @@ public struct URLRequestLogHelper : Swift.CustomStringConvertible {
   public var description: Swift.String {
     get
   }
-  public init?(request: Foundation.URLRequest?, data: Foundation.Data? = nil, response: Foundation.URLResponse? = nil, error: Swift.Error? = nil, mode: XsollaSDKUtilities.URLRequestLogHelper.Mode = .normal, includedKeywords: [Swift.String] = [], excludedKeywords: [Swift.String] = [], requestTime: CoreFoundation.CFAbsoluteTime? = nil)
+  public init?(request: Foundation.URLRequest?, data: Foundation.Data? = nil, response: Foundation.URLResponse? = nil, error: (any Swift.Error)? = nil, mode: XsollaSDKUtilities.URLRequestLogHelper.Mode = .normal, includedKeywords: [Swift.String] = [], excludedKeywords: [Swift.String] = [], requestTime: CoreFoundation.CFAbsoluteTime? = nil)
 }
 extension XsollaSDKUtilities.URLRequestLogHelper {
   public enum Mode : Swift.Int {
@@ -368,20 +371,20 @@ extension XsollaSDKUtilities.URLRequestLogHelper {
 public protocol LoggerKitFilterProtocol : AnyObject {
   func shouldLog(filePath: Swift.StaticString) -> Swift.Bool
   func shouldLog(methodName: Swift.StaticString) -> Swift.Bool
-  func shouldLog(level: XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
-  func shouldLog(category: XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
-  func shouldLog(domain: XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
+  func shouldLog(level: any XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
+  func shouldLog(category: any XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
+  func shouldLog(domain: any XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
 }
 extension XsollaSDKUtilities.LoggerKitFilterProtocol {
   public func shouldLog(filePath: Swift.StaticString) -> Swift.Bool
   public func shouldLog(methodName: Swift.StaticString) -> Swift.Bool
-  public func shouldLog(level: XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
-  public func shouldLog(category: XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
-  public func shouldLog(domain: XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
+  public func shouldLog(level: any XsollaSDKUtilities.LogLevelProtocol) -> Swift.Bool
+  public func shouldLog(category: any XsollaSDKUtilities.LogCategoryProtocol) -> Swift.Bool
+  public func shouldLog(domain: any XsollaSDKUtilities.LogDomainProtocol) -> Swift.Bool
 }
 public enum XSDKNetworkError : Swift.Error {
-  case cancelled(Swift.Error)
-  case networkingError(Swift.Error)
+  case cancelled(any Swift.Error)
+  case networkingError(any Swift.Error)
 }
 open class APIServerCode405ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorHandler {
   public var code: Swift.Int {
@@ -397,7 +400,7 @@ public protocol LogLevelProtocol : Swift.CustomStringConvertible {
   var level: Swift.Int { get }
 }
 public protocol LoggerProtocol {
-  func log(_ closure: @autoclosure @escaping () -> Any?, level: XsollaSDKUtilities.LogLevelProtocol, category: XsollaSDKUtilities.LogCategoryProtocol, domain: XsollaSDKUtilities.LogDomainProtocol, file: Swift.StaticString?, function: Swift.StaticString?, line: Swift.Int?)
+  func log(_ closure: @autoclosure @escaping () -> Any?, level: any XsollaSDKUtilities.LogLevelProtocol, category: any XsollaSDKUtilities.LogCategoryProtocol, domain: any XsollaSDKUtilities.LogDomainProtocol, file: Swift.StaticString?, function: Swift.StaticString?, line: Swift.Int?)
 }
 open class APIServerCode204ErrorHandler : XsollaSDKUtilities.APIServerCodeErrorHandler {
   public var code: Swift.Int {
@@ -429,12 +432,12 @@ public enum LoggerTimeFormat {
   }
 }
 open class LoggerKitConfigurator {
-  final public let configuration: XsollaSDKUtilities.LoggerKitConfigurationProtocol
-  public init(configuration: XsollaSDKUtilities.LoggerKitConfigurationProtocol)
+  final public let configuration: any XsollaSDKUtilities.LoggerKitConfigurationProtocol
+  public init(configuration: any XsollaSDKUtilities.LoggerKitConfigurationProtocol)
   @objc deinit
 }
 extension XsollaSDKUtilities.LoggerKitConfigurator : XsollaSDKUtilities.LoggerKitConfiguratorProtocol {
-  public func createStore() -> XsollaSDKUtilities.LoggerStoreProtocol
+  public func createStore() -> any XsollaSDKUtilities.LoggerStoreProtocol
 }
 public protocol APIErrorHandlerProtocol {
   func error<ErrorModel>(request: Foundation.URLRequest, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, decoder: Foundation.JSONDecoder?) -> XsollaSDKUtilities.APIError<ErrorModel>? where ErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol
@@ -448,7 +451,7 @@ public class DefaultLoggerKit {
   public func notice(_ category: XsollaSDKUtilities.LogCategory = .common, domain: XsollaSDKUtilities.LogDomain = .common, file: Swift.StaticString? = #file, function: Swift.StaticString? = #function, line: Swift.Int? = #line, closure: @escaping () -> Any?)
   public func warning(_ category: XsollaSDKUtilities.LogCategory = .common, domain: XsollaSDKUtilities.LogDomain = .common, file: Swift.StaticString? = #file, function: Swift.StaticString? = #function, line: Swift.Int? = #line, closure: @escaping () -> Any?)
   public func error(_ category: XsollaSDKUtilities.LogCategory = .common, domain: XsollaSDKUtilities.LogDomain = .common, file: Swift.StaticString? = #file, function: Swift.StaticString? = #function, line: Swift.Int? = #line, closure: @escaping () -> Any?)
-  public init(configurator: XsollaSDKUtilities.LoggerKitConfiguratorProtocol)
+  public init(configurator: any XsollaSDKUtilities.LoggerKitConfiguratorProtocol)
   @objc deinit
 }
 public struct LogLevel : XsollaSDKUtilities.LogLevelProtocol {
@@ -468,11 +471,11 @@ public struct LogLevel : XsollaSDKUtilities.LogLevelProtocol {
   public init(title: Swift.String, level: Swift.Int, emojiSymbol: Swift.String)
 }
 public protocol LoggerFactoryProtocol {
-  func createLogger() -> XsollaSDKUtilities.LoggerProtocol
+  func createLogger() -> any XsollaSDKUtilities.LoggerProtocol
 }
 public class LoggerKit {
-  public init(configurator: XsollaSDKUtilities.LoggerKitConfiguratorProtocol)
-  public func log(_ closure: @autoclosure @escaping () -> Any?, level: XsollaSDKUtilities.LogLevelProtocol, category: XsollaSDKUtilities.LogCategoryProtocol, domain: XsollaSDKUtilities.LogDomainProtocol, file: Swift.StaticString? = #file, function: Swift.StaticString? = #function, line: Swift.Int? = #line)
+  public init(configurator: any XsollaSDKUtilities.LoggerKitConfiguratorProtocol)
+  public func log(_ closure: @autoclosure @escaping () -> Any?, level: any XsollaSDKUtilities.LogLevelProtocol, category: any XsollaSDKUtilities.LogCategoryProtocol, domain: any XsollaSDKUtilities.LogDomainProtocol, file: Swift.StaticString? = #file, function: Swift.StaticString? = #function, line: Swift.Int? = #line)
   @objc deinit
 }
 public struct APIEmptyRequestParams : XsollaSDKUtilities.RequestParams {
@@ -480,11 +483,6 @@ public struct APIEmptyRequestParams : XsollaSDKUtilities.RequestParams {
 }
 extension XsollaSDKUtilities.APIBaseRequest {
   public func createMultipartBody(fileURL: Foundation.URL, fileDataPartParameterName: Swift.String, boundary: Swift.String) throws -> Foundation.Data
-}
-open class APIBaseProxy {
-  final public let apiConfiguration: XsollaSDKUtilities.APIConfigurationProtocol
-  public init(_ apiConfiguration: XsollaSDKUtilities.APIConfigurationProtocol)
-  @objc deinit
 }
 public enum APIError<ErrorModel> : Swift.Error where ErrorModel : XsollaSDKUtilities.APIDecodableErrorModelProtocol {
   case noContent
@@ -497,8 +495,8 @@ public enum APIError<ErrorModel> : Swift.Error where ErrorModel : XsollaSDKUtili
   case parameters(Swift.String, ErrorModel?)
   case tooManyRequests
   case emptyData
-  case decoding(Swift.Error?)
-  case unknown(Swift.Error?)
+  case decoding((any Swift.Error)?)
+  case unknown((any Swift.Error)?)
 }
 public enum APIErrorTemplateMessages {
   public static let descriptionUnprocessed: Swift.String

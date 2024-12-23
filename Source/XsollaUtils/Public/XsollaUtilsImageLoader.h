@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -23,6 +23,9 @@ public:
 	/** */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void LoadImage(const FString& URL, const FOnImageLoaded& SuccessCallback, const FOnImageLoadFailed& ErrorCallback);
+
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Utils")
+	bool IsImageLoaded(const FString& URL, FSlateBrush& ImageBrush);
 
 protected:
 	/** */

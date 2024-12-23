@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsImageLoader.h"
 
@@ -35,7 +35,8 @@ void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded
 	{
 		if (PendingRequests.Contains(ResourceId))
 		{
-			PendingRequests[ResourceId].AddLambda([=](bool IsCompleted) {
+			PendingRequests[ResourceId].AddLambda([this, SuccessCallback, ErrorCallback, ResourceId, URL](bool IsCompleted)
+				{
 				if (IsCompleted)
 				{
 					UE_LOG(LogXsollaUtils, VeryVerbose, TEXT("%s: Loaded from cache: %s"), *VA_FUNC_LINE, *ResourceId);
@@ -62,6 +63,17 @@ void UXsollaUtilsImageLoader::LoadImage(const FString& URL, const FOnImageLoaded
 			HttpRequest->ProcessRequest();
 		}
 	}
+}
+
+bool UXsollaUtilsImageLoader::IsImageLoaded(const FString& URL, FSlateBrush& ImageBrush)
+{
+	const FName ResourceId = GetCacheName(URL);
+	if (ImageBrushes.Contains(ResourceId.ToString()))
+	{
+		ImageBrush = *ImageBrushes[ResourceId.ToString()];
+		return true;
+	}
+	return false;
 }
 
 void UXsollaUtilsImageLoader::LoadImage_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,

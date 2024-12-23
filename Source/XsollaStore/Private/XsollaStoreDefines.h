@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -8,9 +8,10 @@
 #include "Logging/LogVerbosity.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogXsollaStore, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogXsollaCentrifugo, Warning, All);
 
 #define VA_FUNC (FString(__FUNCTION__))				 // Current Class Name + Function Name where this is called
 #define VA_LINE (FString::FromInt(__LINE__))		 // Current Line Number in the code where this is called
 #define VA_FUNC_LINE (VA_FUNC + "(" + VA_LINE + ")") // Current Class and Line Number where this is called!
 
-#define XSOLLA_STORE_VERSION TEXT("1.5.0")
+#define XSOLLA_STORE_VERSION TEXT("4.0.0")

@@ -1,9 +1,8 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
 #include "Components/CheckBox.h"
-#include "EngineMinimal.h"
 #include "Http.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "XsollaUtilsDataModel.h"

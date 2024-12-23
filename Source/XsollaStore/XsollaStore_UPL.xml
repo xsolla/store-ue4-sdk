@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 
-    Copyright 2023 Xsolla Inc. All Rights Reserved.
+    Copyright 2024 Xsolla Inc. All Rights Reserved.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
@@ -13,7 +13,7 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:payments:1.0.0'
+        implementation 'com.xsolla.android:payments:1.4.2'
       }
       repositories {
         maven { url 'https://maven.google.com' }
@@ -42,7 +42,7 @@
     <setString result="DeepLinkingHost" value="xpayment.$S(PackageName)"/>
     <loopElements tag="activity">
       <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
-      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity"/>
+      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity"/>
       <if condition="bGameActivity">
         <true>
           <setElement result="deepLinkingSchemeData" value="data"/>

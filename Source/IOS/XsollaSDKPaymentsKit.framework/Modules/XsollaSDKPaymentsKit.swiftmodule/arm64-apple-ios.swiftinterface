@@ -1,6 +1,6 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
-// swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKit
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKit
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Foundation
 import Swift
@@ -9,25 +9,45 @@ import WebKit
 import XsollaSDKUtilities
 import _Concurrency
 import _StringProcessing
+import _SwiftConcurrencyShims
 extension XsollaSDKUtilities.LogCategory {
   public static let all: [XsollaSDKUtilities.LogCategory]
   public static func all(excluding: [XsollaSDKUtilities.LogCategory]) -> [XsollaSDKUtilities.LogCategory]
+}
+@_hasMissingDesignatedInitializers public class PaymentsAnalyticsUtils {
+  public static var sdk: Swift.String
+  public static var sdkVersion: Swift.String
+  public static var gameEngine: Swift.String
+  public static var gameEngineVersion: Swift.String
+  @objc deinit
+}
+public enum PaymentStatus {
+  case success
+  case unknown
+  public static func == (a: XsollaSDKPaymentsKit.PaymentStatus, b: XsollaSDKPaymentsKit.PaymentStatus) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
 }
 public protocol PaystationWebViewDelegate : AnyObject {
   func paystationWebView(_ webView: XsollaSDKPaymentsKit.PaystationWebView, didFinishPaymentWithInvoice invoiceId: Swift.String?, forUser userId: Swift.String?)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class PaystationWebView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) weak public var delegate: XsollaSDKPaymentsKit.PaystationWebViewDelegate?
+  @_Concurrency.MainActor(unsafe) weak public var delegate: (any XsollaSDKPaymentsKit.PaystationWebViewDelegate)?
   @_Concurrency.MainActor(unsafe) public var customUserAgent: Swift.String {
     get
     set
   }
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @_Concurrency.MainActor(unsafe) public func loadPaystation(with configuration: XsollaSDKPaymentsKit.PaystationWebView.Configuration)
+  @_Concurrency.MainActor(unsafe) public func warmupWebView()
   @objc deinit
 }
 extension XsollaSDKPaymentsKit.PaystationWebView : WebKit.WKNavigationDelegate {
   @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
 }
 extension XsollaSDKPaymentsKit.PaystationWebView {
   public struct Configuration {
@@ -48,13 +68,26 @@ extension XsollaSDKUtilities.LogDomain {
   public static let all: [XsollaSDKUtilities.LogDomain]
   public static func all(excluding: [XsollaSDKUtilities.LogDomain]) -> [XsollaSDKUtilities.LogDomain]
 }
+public enum PaystationVersion {
+  case v3
+  case v4
+  public static func == (a: XsollaSDKPaymentsKit.PaystationVersion, b: XsollaSDKPaymentsKit.PaystationVersion) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 @_hasMissingDesignatedInitializers final public class PaymentsKit {
   public static let shared: XsollaSDKPaymentsKit.PaymentsKit
+  convenience public init(paystationVersion: XsollaSDKPaymentsKit.PaystationVersion = .v4)
+  final public func setPaystationVersion(paystationVersion: XsollaSDKPaymentsKit.PaystationVersion)
   @objc deinit
 }
 extension XsollaSDKPaymentsKit.PaymentsKit {
   final public func createPaymentUrl(paymentToken: Swift.String, isSandbox: Swift.Bool) -> Foundation.URL?
-  final public func performPayment(paymentToken: Swift.String, presenter: UIKit.UIViewController, isSandbox: Swift.Bool, redirectUrl: Swift.String, completionHandler: ((Swift.Result<Swift.Void, Swift.Error>) -> Swift.Void)?)
+  final public func getPaymentWarmupUrl() -> Foundation.URL?
+  final public func warmupPaymentView()
+  final public func presentPaymentView(presenter: UIKit.UIViewController, paymentToken: Swift.String, isSandbox: Swift.Bool, redirectUrl: Swift.String, completionHandler: ((XsollaSDKPaymentsKit.PaymentStatus) -> Swift.Void)?)
 }
 extension XsollaSDKUtilities.LogLevel {
   public static let all: [XsollaSDKUtilities.LogLevel]
@@ -64,6 +97,10 @@ extension XsollaSDKPaymentsKit.PaymentsKit {
   public static let version: Swift.String
 }
 public typealias PaymentsAPIError = Swift.Error
-public typealias PaymentsAPIResult<T> = Swift.Result<T, XsollaSDKPaymentsKit.PaymentsAPIError>
+public typealias PaymentsAPIResult<T> = Swift.Result<T, any Swift.Error>
+extension XsollaSDKPaymentsKit.PaymentStatus : Swift.Equatable {}
+extension XsollaSDKPaymentsKit.PaymentStatus : Swift.Hashable {}
 extension XsollaSDKPaymentsKit.PaymentsKitError : Swift.Equatable {}
 extension XsollaSDKPaymentsKit.PaymentsKitError : Swift.Hashable {}
+extension XsollaSDKPaymentsKit.PaystationVersion : Swift.Equatable {}
+extension XsollaSDKPaymentsKit.PaystationVersion : Swift.Hashable {}

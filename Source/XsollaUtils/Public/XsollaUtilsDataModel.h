@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -9,6 +9,27 @@
 
 DECLARE_DELEGATE_TwoParams(FOnTokenUpdate, const FString&, bool);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnError, int32, StatusCode, int32, ErrorCode, const FString&, ErrorMessage);
+
+USTRUCT()
+struct FErrorData
+{
+	GENERATED_BODY()
+
+	int32 StatusCode = -1;
+	int32 ErrorCode = -1;
+	FString ErrorMessage;
+
+	FErrorData(int32 InStatusCode, int32 InErrorCode, const FString& InErrorMessage)
+		: StatusCode(InStatusCode)
+		, ErrorCode(InErrorCode)
+		, ErrorMessage(InErrorMessage)
+	{
+	}
+
+	FErrorData()
+	{
+	}
+};
 
 USTRUCT()
 struct FErrorHandlersWrapper
@@ -423,25 +444,82 @@ struct FXsollaParameters
 	TMap<FString, FXsollaJsonVariant> Parameters;
 };
 
+/** Pay Station version. */
+UENUM(BlueprintType)
+enum class EXsollaPayStationVersion : uint8
+{
+	v3 UMETA(DisplayName = "V3"),
+	v4 UMETA(DisplayName = "V4")
+};
+
 USTRUCT(BlueprintType)
 struct FXsollaPaymentTokenRequestPayload
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Currency (optional) Desired payment currency (USD by default). Three-letter currency code per [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) . Check the documentation for detailed information about [currencies supported by Xsolla](https://developers.xsolla.com/doc/pay-station/references/supported-currencies/).
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString Currency;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
-	FString Country;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Locale (optional) Desired payment locale.<br>
+	 * The following languages are supported: Arabic (`ar`), Bulgarian (`bg`), Czech (`cs`), German (`de`), Spanish (`es`), French (`fr`), Hebrew (`he`), Italian (`it`), Japanese (`ja`), Korean (`ko`), Polish (`pl`), Portuguese (`pt`), Romanian (`ro`), Russian (`ru`), Thai (`th`), Turkish (`tr`), Vietnamese (`vi`), Chinese Simplified (`cn`), Chinese Traditional (`tw`), English (`en`, default).<br>
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString Locale;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * Quantity Item quantity.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	int32 Quantity = 1;
+
+	/**
+	 * CustomParameters (optional) Map of custom parameters.
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FXsollaParameters CustomParameters;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Xsolla Payment Token Request Payload")
+	/**
+	 * ExternalId (optional) Transaction external ID.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	FString ExternalId;
+
+	/**
+	 * bShowCloseButton Whether to show the ← icon in Pay Station so the user can close the payment UI at any stage of the purchase.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bShowCloseButton = false;
+
+	/**
+	 * CloseButtonIcon Defines the icon of the **Close** button in the payment UI. Can be `arrow` or `cross`. `cross` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	FString CloseButtonIcon = TEXT("cross");
+
+	/**
+	 * PayStationVersion Pay Station version. V4 by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4;
+
+	/**
+	 * bGpQuickPaymentButton Defines the way the Google Pay payment method is displayed. If true, the button for quick payment via Google Pay is displayed at the top of the payment UI. If `true`, Google Pay is displayed in the list of payment methods according to the PayRank algorithm. `false` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bGpQuickPaymentButton = false;
+
+	/**
+	 * Disables the `sdk` parameter in the `Payment` token. `false` by default.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	bool bDisableSdkParameter = false;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.

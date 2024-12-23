@@ -1,9 +1,9 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsDefines.h"
 #include "XsollaUtilsModule.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Dom/JsonObject.h"
 #include "Interfaces/IPluginManager.h"
 #include "XsollaUtilsUrlBuilder.h"

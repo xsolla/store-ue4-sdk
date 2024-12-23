@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -236,6 +236,9 @@ struct XSOLLASTORE_API FStoreItemsList
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadOnly, Category = "Items List", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Items List")
 	TArray<FStoreItem> Items;
 };
@@ -246,19 +249,28 @@ struct XSOLLASTORE_API FStoreItemsData
 public:
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadOnly, Category = "Items Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
 	TArray<FStoreItem> Items;
 
-	/** All category IDs used by items (calculated locally!). */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TSet<FString> GroupIds;
-
-	/** All available item groups infos. */
-	UPROPERTY(BlueprintReadOnly, Category = "Items Data")
-	TArray<FXsollaItemGroup> Groups;
-
 public:
 	FStoreItemsData(){};
+};
+
+USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FStoreItemGroupsData
+{
+public:
+	GENERATED_BODY()
+
+	/** All available item groups infos. */
+	 UPROPERTY(BlueprintReadOnly, Category = "Item Groups Data")
+	 TArray<FXsollaItemGroup> groups;
+
+public:
+	FStoreItemGroupsData(){};
 };
 
 USTRUCT(BlueprintType)
@@ -326,6 +338,9 @@ struct XSOLLASTORE_API FVirtualCurrencyData
 {
 public:
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Data")
 	TArray<FVirtualCurrency> Items;
@@ -434,6 +449,9 @@ struct XSOLLASTORE_API FVirtualCurrencyPackagesData
 {
 public:
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Packages Data", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Virtual Currency Packages Data")
 	TArray<FVirtualCurrencyPackage> Items;
@@ -640,6 +658,9 @@ struct XSOLLASTORE_API FStoreListOfBundles
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadOnly, Category = "Bundle", meta = (DisplayName = "bHasMore"))
+	bool has_more = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Bundle")
 	TArray<FStoreBundle> items;
 };
@@ -700,7 +721,7 @@ struct XSOLLASTORE_API FGameUnitItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	bool is_free = false;
-  
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Unit Item")
 	FXsollaPrice price;
 
@@ -733,7 +754,7 @@ struct XSOLLASTORE_API FGameKeyItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString type;
 
@@ -749,10 +770,10 @@ struct XSOLLASTORE_API FGameKeyItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FString image_url;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	bool is_free = false;
-  
+
 	UPROPERTY(BlueprintReadOnly, Category = "Game Key Item")
 	FXsollaPrice price;
 
@@ -824,7 +845,7 @@ struct XSOLLASTORE_API FStoreGamesData
 
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
 	TArray<FGameItem> Items;
-	
+
 	/** All category IDs used by games (calculated locally!). */
 	UPROPERTY(BlueprintReadOnly, Category = "Games Data")
 	TSet<FString> GroupIds;
@@ -853,7 +874,7 @@ struct XSOLLASTORE_API FDRMItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "DRM Item")
 	FString image;
 
@@ -883,13 +904,13 @@ struct XSOLLASTORE_API FOwnedGameItem
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString name;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString description;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	int32 project_id = 0;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Game Item")
 	FString game_sku;
 
@@ -911,7 +932,7 @@ struct XSOLLASTORE_API FOwnedGamesList
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
+	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Owned Games List")
@@ -934,7 +955,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPeriod
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
 	int32 value = 0;
 
@@ -946,7 +967,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionCharge
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	float amount = 0.f;
 
@@ -961,13 +982,13 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlanCharge
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	float amount = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	float setup_fee = false;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Charge")
 	FString currency;
 };
@@ -976,7 +997,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlanPromotion
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
 	float promotion_charge_amount = 0.f;
 
@@ -1030,11 +1051,11 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPlansList
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
 	TArray<FSubscriptionPlan> items;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List")
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plans List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 };
 
@@ -1042,7 +1063,7 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscription
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	int32 id = 0;
 
@@ -1069,7 +1090,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_external_id;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_name;
 
@@ -1078,7 +1099,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString status;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	bool is_in_trial = false;
 
@@ -1096,7 +1117,7 @@ struct XSOLLASTORE_API FSubscription
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FSubscriptionCharge charge;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FSubscriptionPeriod period;
 };
@@ -1105,11 +1126,11 @@ USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionsList
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
 	TArray<FSubscription> items;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List")
+	UPROPERTY(BlueprintReadOnly, Category = "Subscriptions List", meta = (DisplayName = "bHasMore"))
 	bool has_more = false;
 };
 

@@ -1,97 +1,97 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaOrderCheckObject.h"
 
 #include "Engine/EngineTypes.h"
 #include "Engine/World.h"
-#include "IWebSocket.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "TimerManager.h"
-#include "WebSocketsModule.h"
 #include "XsollaStoreDataModel.h"
 #include "XsollaUtilsUrlBuilder.h"
 #include "XsollaSettingsModule.h"
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsHttpRequestHelper.h"
 #include "XsollaStoreDefines.h"
+#include "CentrifugoServiceSubsystem.h"
+#include "Engine/GameInstance.h"
 
-void UXsollaOrderCheckObject::Init(const FString& InAuthToken, const int32 InOrderId, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InWebSocketLifeTime, int32 InShortPollingLifeTime)
+void UXsollaOrderCheckObject::Init(const FString& InAccessToken, const int32 InOrderId, bool bShouldStartWithCentrifugo, const FOnOrderCheckSuccess& InOnSuccess, const FOnOrderCheckError& InOnError, int32 InShortPollingLifeTime)
 {
-	AuthToken = InAuthToken;
+	AccessToken = InAccessToken;
 	OrderId = InOrderId;
-	WebSocketLifeTime = FMath::Clamp(InWebSocketLifeTime, 1, 3600);
 	ShortPollingLifeTime = FMath::Clamp(InShortPollingLifeTime, 1, 3600);
 
 	OnSuccess = InOnSuccess;
 	OnError = InOnError;
 
-	ActivateWebSocket();
+	if (bShouldStartWithCentrifugo)
+	{
+		StartCentrifugoTracking();
+	}
+	else
+	{
+		ActivateShortPolling();
+	}
 }
 
 void UXsollaOrderCheckObject::Destroy()
 {
-	DestroyWebSocket();
+	StopCentrifugoTracking();
 	bShortPollingExpired = true;
 	GetWorld()->GetTimerManager().ClearTimer(ShortPollingTimerHandle);
 
 	UE_LOG(LogXsollaStore, Log, TEXT("Destroy XsollaOrderCheckObject."));
 }
 
-void UXsollaOrderCheckObject::OnConnected()
+const FString& UXsollaOrderCheckObject::GetAccessToken() const
 {
-	UE_LOG(LogXsollaStore, Log, TEXT("Connected to the websocket server."));
+	return AccessToken;
 }
 
-void UXsollaOrderCheckObject::OnConnectionError(const FString& Error)
+void UXsollaOrderCheckObject::OnConnectionError()
 {
-	UE_LOG(LogXsollaStore, Log, TEXT("Failed to connect to a websocket server with an error: \"%s\"."), *Error);
 	ActivateShortPolling();
 }
 
-void UXsollaOrderCheckObject::OnMessage(const FString& Message)
+void UXsollaOrderCheckObject::OnOrderStatusUpdated(const FOrderStatusData Data)
 {
-	UE_LOG(LogXsollaStore, Log, TEXT("Received message from the websocket server: \"%s\"."), *Message);
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*Message);
-
-	FJsonSerializer::Deserialize(Reader, JsonObject);
-
-	if (!JsonObject.IsValid())
+	if (Data.status.IsEmpty())
 	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("Can't parse received message."));
 		return;
 	}
 
-	auto OrderStatusStr = JsonObject->GetStringField(TEXT("status"));
-	auto ReceivedOrderId = JsonObject->GetIntegerField(TEXT("order_id"));
+	if (Data.order_id != OrderId)
+	{
+		return;
+	}
 
 	EXsollaOrderStatus OrderStatus = EXsollaOrderStatus::Unknown;
 
-	if (OrderStatusStr == TEXT("new"))
+	if (Data.status == TEXT("new"))
 	{
 		OrderStatus = EXsollaOrderStatus::New;
 	}
-	else if (OrderStatusStr == TEXT("paid"))
+	else if (Data.status == TEXT("paid"))
 	{
 		OrderStatus = EXsollaOrderStatus::Paid;
 	}
-	else if (OrderStatusStr == TEXT("done"))
+	else if (Data.status == TEXT("done"))
 	{
 		OrderStatus = EXsollaOrderStatus::Done;
 	}
-	else if (OrderStatusStr == TEXT("canceled"))
+	else if (Data.status == TEXT("canceled"))
 	{
 		OrderStatus = EXsollaOrderStatus::Canceled;
 	}
 	else
 	{
-		UE_LOG(LogXsollaStore, Warning, TEXT("%s: WebsocketObject: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, ReceivedOrderId);
+		UE_LOG(LogXsollaStore, Warning, TEXT("%s: Centrifugo: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *Data.status, Data.order_id);
 	}
 
 	if (OrderStatus == EXsollaOrderStatus::Done)
 	{
-		OnSuccess.ExecuteIfBound(ReceivedOrderId);
+		OnSuccess.ExecuteIfBound(Data.order_id);
 	}
 	if (OrderStatus == EXsollaOrderStatus::Canceled)
 	{
@@ -99,18 +99,9 @@ void UXsollaOrderCheckObject::OnMessage(const FString& Message)
 	}
 }
 
-void UXsollaOrderCheckObject::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
+void UXsollaOrderCheckObject::OnClosed()
 {
-	UE_LOG(LogXsollaStore, Log, TEXT("Connection to the websocket server has been closed with the status code: \"%d\" and reason: \"%s\"."), StatusCode, *Reason);
 	ActivateShortPolling();
-}
-
-void UXsollaOrderCheckObject::OnWebSocketExpired()
-{
-	UE_LOG(LogXsollaStore, Log, TEXT("Websocket object expired."));
-
-	DestroyWebSocket();
-	ActivateWebSocket();
 }
 
 void UXsollaOrderCheckObject::OnShortPollingExpired()
@@ -119,42 +110,29 @@ void UXsollaOrderCheckObject::OnShortPollingExpired()
 	bShortPollingExpired = true;
 }
 
-void UXsollaOrderCheckObject::ActivateWebSocket()
+void UXsollaOrderCheckObject::StartCentrifugoTracking()
 {
-	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("wss://store-ws.xsolla.com/sub/order/status"))
-							.AddStringQueryParam(TEXT("order_id"), FString::FromInt(OrderId)) // FString casting to prevent parameters reorder.
-							.AddStringQueryParam(TEXT("project_id"), Settings->ProjectID)
-							.Build();
-
-	Websocket = FWebSocketsModule::Get().CreateWebSocket(Url, TEXT("wss"));
-	Websocket->OnConnected().AddUObject(this, &UXsollaOrderCheckObject::OnConnected);
-	Websocket->OnConnectionError().AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
-	Websocket->OnMessage().AddUObject(this, &UXsollaOrderCheckObject::OnMessage);
-	Websocket->OnClosed().AddUObject(this, &UXsollaOrderCheckObject::OnClosed);
-
-	Websocket->Connect();
-	GetWorld()->GetTimerManager().SetTimer(WebSocketTimerHandle, this, &UXsollaOrderCheckObject::OnWebSocketExpired, WebSocketLifeTime, false);
+	UE_LOG(LogXsollaStore, Log, TEXT("StartCentrifugoTracking"));
+	UCentrifugoServiceSubsystem* CentrifugoServiceSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCentrifugoServiceSubsystem>();
+	CentrifugoServiceSubsystem->AddTracker(this);
+	CentrifugoServiceSubsystem->OrderStatusUpdated.AddUObject(this, &UXsollaOrderCheckObject::OnOrderStatusUpdated);
+	CentrifugoServiceSubsystem->Error.AddUObject(this, &UXsollaOrderCheckObject::OnConnectionError);
+	CentrifugoServiceSubsystem->Close.AddUObject(this, &UXsollaOrderCheckObject::OnClosed);
 }
 
-void UXsollaOrderCheckObject::DestroyWebSocket()
+void UXsollaOrderCheckObject::StopCentrifugoTracking()
 {
-	GetWorld()->GetTimerManager().ClearTimer(WebSocketTimerHandle);
-
-	UE_LOG(LogXsollaStore, Log, TEXT("Destroy DestroyWebSocket."));
-	if (Websocket.IsValid())
-	{
-		Websocket->OnConnected().RemoveAll(this);
-		Websocket->OnConnectionError().RemoveAll(this);
-		Websocket->OnClosed().RemoveAll(this);
-		Websocket->Close();
-		Websocket = nullptr;
-	}
+	UE_LOG(LogXsollaStore, Log, TEXT("StopCentrifugoTracking"));
+	UCentrifugoServiceSubsystem* CentrifugoServiceSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCentrifugoServiceSubsystem>();
+	CentrifugoServiceSubsystem->RemoveTracker(this);
+	CentrifugoServiceSubsystem->OrderStatusUpdated.RemoveAll(this);
+	CentrifugoServiceSubsystem->Error.RemoveAll(this);
+	CentrifugoServiceSubsystem->Close.RemoveAll(this);
 }
 
 void UXsollaOrderCheckObject::ActivateShortPolling()
 {
+	StopCentrifugoTracking();
 	UE_LOG(LogXsollaStore, Log, TEXT("ActivateShortPolling"));
 	if (!GetWorld()->GetTimerManager().IsTimerActive(ShortPollingTimerHandle))
 	{
@@ -167,7 +145,7 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 {
 	UE_LOG(LogXsollaStore, Log, TEXT("ShortPollingCheckOrder"));
 	FOnOrderCheck CheckOrderSuccessCallback;
-	CheckOrderSuccessCallback.BindLambda([&](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
+	CheckOrderSuccessCallback.BindLambda([this](int32 InOrderId, EXsollaOrderStatus InOrderStatus, FXsollaOrderContent InOrderContent)
 	{
 		if (InOrderStatus == EXsollaOrderStatus::New || InOrderStatus == EXsollaOrderStatus::Paid)
 		{
@@ -202,7 +180,7 @@ void UXsollaOrderCheckObject::ShortPollingCheckOrder()
 							.SetPathParam(TEXT("OrderId"), OrderId)
 							.Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AuthToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, AccessToken, FString(), TEXT("STORE"), XSOLLA_STORE_VERSION);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaOrderCheckObject::CheckOrder_HttpRequestComplete, CheckOrderSuccessCallback, OnError);
 	HttpRequest->ProcessRequest();
 }

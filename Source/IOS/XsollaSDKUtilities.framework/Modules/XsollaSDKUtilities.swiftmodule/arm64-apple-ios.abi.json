@@ -1246,7 +1246,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Dictionary",
-                "printedName": "[Swift.String : Swift.String]",
+                "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                 "children": [
                   {
                     "kind": "TypeNominal",
@@ -1256,17 +1256,25 @@
                   },
                   {
                     "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
+                    "name": "Optional",
+                    "printedName": "Swift.CustomStringConvertible?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "CustomStringConvertible",
+                        "printedName": "Swift.CustomStringConvertible",
+                        "usr": "s:s23CustomStringConvertibleP"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "usr": "s:SD"
               }
             ],
             "declKind": "Var",
-            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDyS2SGvp",
-            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDyS2SGvp",
+            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDySSs23CustomStringConvertible_pSgGvp",
+            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDySSs23CustomStringConvertible_pSgGvp",
             "moduleName": "XsollaSDKUtilities",
             "isOpen": true,
             "declAttributes": [
@@ -1281,7 +1289,7 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Dictionary",
-                    "printedName": "[Swift.String : Swift.String]",
+                    "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                     "children": [
                       {
                         "kind": "TypeNominal",
@@ -1291,17 +1299,25 @@
                       },
                       {
                         "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
+                        "name": "Optional",
+                        "printedName": "Swift.CustomStringConvertible?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "CustomStringConvertible",
+                            "printedName": "Swift.CustomStringConvertible",
+                            "usr": "s:s23CustomStringConvertibleP"
+                          }
+                        ],
+                        "usr": "s:Sq"
                       }
                     ],
                     "usr": "s:SD"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDyS2SGvg",
-                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDyS2SGvg",
+                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDySSs23CustomStringConvertible_pSgGvg",
+                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC22specialQueryParametersSDySSs23CustomStringConvertible_pSgGvg",
                 "moduleName": "XsollaSDKUtilities",
                 "isOpen": true,
                 "accessorKind": "get"
@@ -1316,7 +1332,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Dictionary",
-                "printedName": "[Swift.String : Swift.String]",
+                "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                 "children": [
                   {
                     "kind": "TypeNominal",
@@ -1326,17 +1342,25 @@
                   },
                   {
                     "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
+                    "name": "Optional",
+                    "printedName": "Swift.CustomStringConvertible?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "CustomStringConvertible",
+                        "printedName": "Swift.CustomStringConvertible",
+                        "usr": "s:s23CustomStringConvertibleP"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "usr": "s:SD"
               }
             ],
             "declKind": "Var",
-            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDyS2SGvp",
-            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDyS2SGvp",
+            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvp",
+            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvp",
             "moduleName": "XsollaSDKUtilities",
             "isOpen": true,
             "declAttributes": [
@@ -1351,7 +1375,7 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Dictionary",
-                    "printedName": "[Swift.String : Swift.String]",
+                    "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                     "children": [
                       {
                         "kind": "TypeNominal",
@@ -1361,17 +1385,25 @@
                       },
                       {
                         "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
+                        "name": "Optional",
+                        "printedName": "Swift.CustomStringConvertible?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "CustomStringConvertible",
+                            "printedName": "Swift.CustomStringConvertible",
+                            "usr": "s:s23CustomStringConvertibleP"
+                          }
+                        ],
+                        "usr": "s:Sq"
                       }
                     ],
                     "usr": "s:SD"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDyS2SGvg",
-                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDyS2SGvg",
+                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvg",
+                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC15queryParametersSDySSs23CustomStringConvertible_pSgGvg",
                 "moduleName": "XsollaSDKUtilities",
                 "isOpen": true,
                 "accessorKind": "get"
@@ -1386,7 +1418,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Dictionary",
-                "printedName": "[Swift.String : Swift.String]",
+                "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                 "children": [
                   {
                     "kind": "TypeNominal",
@@ -1396,17 +1428,25 @@
                   },
                   {
                     "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
+                    "name": "Optional",
+                    "printedName": "Swift.CustomStringConvertible?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "CustomStringConvertible",
+                        "printedName": "Swift.CustomStringConvertible",
+                        "usr": "s:s23CustomStringConvertibleP"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "usr": "s:SD"
               }
             ],
             "declKind": "Var",
-            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDyS2SGvp",
-            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDyS2SGvp",
+            "usr": "s:18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDySSs23CustomStringConvertible_pSgGvp",
+            "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDySSs23CustomStringConvertible_pSgGvp",
             "moduleName": "XsollaSDKUtilities",
             "declAttributes": [
               "AccessControl"
@@ -1420,7 +1460,7 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Dictionary",
-                    "printedName": "[Swift.String : Swift.String]",
+                    "printedName": "[Swift.String : Swift.CustomStringConvertible?]",
                     "children": [
                       {
                         "kind": "TypeNominal",
@@ -1430,17 +1470,25 @@
                       },
                       {
                         "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
+                        "name": "Optional",
+                        "printedName": "Swift.CustomStringConvertible?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "CustomStringConvertible",
+                            "printedName": "Swift.CustomStringConvertible",
+                            "usr": "s:s23CustomStringConvertibleP"
+                          }
+                        ],
+                        "usr": "s:Sq"
                       }
                     ],
                     "usr": "s:SD"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDyS2SGvg",
-                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDyS2SGvg",
+                "usr": "s:18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDySSs23CustomStringConvertible_pSgGvg",
+                "mangledName": "$s18XsollaSDKUtilities14APIBaseRequestC17defaultParametersSDySSs23CustomStringConvertible_pSgGvg",
                 "moduleName": "XsollaSDKUtilities",
                 "accessorKind": "get"
               }
@@ -2732,7 +2780,7 @@
           {
             "kind": "Function",
             "name": "perform",
-            "printedName": "perform(completionHandler:)",
+            "printedName": "perform(_:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -2747,8 +2795,53 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolP7perform17completionHandlerAA11NetworkTask_p8CallbackQz_tF",
-            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolP7perform17completionHandlerAA11NetworkTask_p8CallbackQz_tF",
+            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolP7performyAA11NetworkTask_p8CallbackQzF",
+            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolP7performyAA11NetworkTask_p8CallbackQzF",
+            "moduleName": "XsollaSDKUtilities",
+            "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.APIRequestProtocol>",
+            "sugared_genericSig": "<Self where Self : XsollaSDKUtilities.APIRequestProtocol>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "handleSuccess",
+            "printedName": "handleSuccess(response:model:completionHandler:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLResponse?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URLResponse",
+                    "printedName": "Foundation.URLResponse",
+                    "usr": "c:objc(cs)NSURLResponse"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.ResponseModel"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Callback"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolP13handleSuccess8response5model17completionHandlerySo13NSURLResponseCSg_13ResponseModelQz8CallbackQztF",
+            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolP13handleSuccess8response5model17completionHandlerySo13NSURLResponseCSg_13ResponseModelQz8CallbackQztF",
             "moduleName": "XsollaSDKUtilities",
             "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.APIRequestProtocol>",
             "sugared_genericSig": "<Self where Self : XsollaSDKUtilities.APIRequestProtocol>",
@@ -2822,7 +2915,7 @@
           {
             "kind": "Function",
             "name": "perform",
-            "printedName": "perform(completionHandler:)",
+            "printedName": "perform(_:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -2837,14 +2930,61 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolPAAE7perform17completionHandlerAA11NetworkTask_p8CallbackQz_tF",
-            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolPAAE7perform17completionHandlerAA11NetworkTask_p8CallbackQz_tF",
+            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolPAAE7performyAA11NetworkTask_p8CallbackQzF",
+            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolPAAE7performyAA11NetworkTask_p8CallbackQzF",
             "moduleName": "XsollaSDKUtilities",
             "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.APIRequestProtocol>",
             "sugared_genericSig": "<Self where Self : XsollaSDKUtilities.APIRequestProtocol>",
             "declAttributes": [
               "AccessControl",
               "DiscardableResult"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "handleSuccess",
+            "printedName": "handleSuccess(response:model:completionHandler:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLResponse?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URLResponse",
+                    "printedName": "Foundation.URLResponse",
+                    "usr": "c:objc(cs)NSURLResponse"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.ResponseModel"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Callback"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18XsollaSDKUtilities18APIRequestProtocolPAAE13handleSuccess8response5model17completionHandlerySo13NSURLResponseCSg_13ResponseModelQz8CallbackQztF",
+            "mangledName": "$s18XsollaSDKUtilities18APIRequestProtocolPAAE13handleSuccess8response5model17completionHandlerySo13NSURLResponseCSg_13ResponseModelQz8CallbackQztF",
+            "moduleName": "XsollaSDKUtilities",
+            "genericSig": "<τ_0_0 where τ_0_0 : XsollaSDKUtilities.APIRequestProtocol>",
+            "sugared_genericSig": "<Self where Self : XsollaSDKUtilities.APIRequestProtocol>",
+            "declAttributes": [
+              "AccessControl"
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
@@ -4079,39 +4219,6 @@
             "moduleName": "XsollaSDKUtilities"
           },
           {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(rawValue:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "XsollaSDKUtilities.HTTPMethod?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "HTTPMethod",
-                    "printedName": "XsollaSDKUtilities.HTTPMethod",
-                    "usr": "s:18XsollaSDKUtilities10HTTPMethodO"
-                  }
-                ],
-                "usr": "s:Sq"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18XsollaSDKUtilities10HTTPMethodO8rawValueACSgSS_tcfc",
-            "mangledName": "$s18XsollaSDKUtilities10HTTPMethodO8rawValueACSgSS_tcfc",
-            "moduleName": "XsollaSDKUtilities",
-            "implicit": true,
-            "init_kind": "Designated"
-          },
-          {
             "kind": "Var",
             "name": "rawValue",
             "printedName": "rawValue",
@@ -4149,6 +4256,39 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(rawValue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "XsollaSDKUtilities.HTTPMethod?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "HTTPMethod",
+                    "printedName": "XsollaSDKUtilities.HTTPMethod",
+                    "usr": "s:18XsollaSDKUtilities10HTTPMethodO"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18XsollaSDKUtilities10HTTPMethodO8rawValueACSgSS_tcfc",
+            "mangledName": "$s18XsollaSDKUtilities10HTTPMethodO8rawValueACSgSS_tcfc",
+            "moduleName": "XsollaSDKUtilities",
+            "implicit": true,
+            "init_kind": "Designated"
           }
         ],
         "declKind": "Enum",
@@ -12729,106 +12869,6 @@
       },
       {
         "kind": "TypeDecl",
-        "name": "APIBaseProxy",
-        "printedName": "APIBaseProxy",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "apiConfiguration",
-            "printedName": "apiConfiguration",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "APIConfigurationProtocol",
-                "printedName": "XsollaSDKUtilities.APIConfigurationProtocol",
-                "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18XsollaSDKUtilities12APIBaseProxyC16apiConfigurationAA24APIConfigurationProtocol_pvp",
-            "mangledName": "$s18XsollaSDKUtilities12APIBaseProxyC16apiConfigurationAA24APIConfigurationProtocol_pvp",
-            "moduleName": "XsollaSDKUtilities",
-            "declAttributes": [
-              "Final",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "isLet": true,
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "APIConfigurationProtocol",
-                    "printedName": "XsollaSDKUtilities.APIConfigurationProtocol",
-                    "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18XsollaSDKUtilities12APIBaseProxyC16apiConfigurationAA24APIConfigurationProtocol_pvg",
-                "mangledName": "$s18XsollaSDKUtilities12APIBaseProxyC16apiConfigurationAA24APIConfigurationProtocol_pvg",
-                "moduleName": "XsollaSDKUtilities",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "APIBaseProxy",
-                "printedName": "XsollaSDKUtilities.APIBaseProxy",
-                "usr": "s:18XsollaSDKUtilities12APIBaseProxyC"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "APIConfigurationProtocol",
-                "printedName": "XsollaSDKUtilities.APIConfigurationProtocol",
-                "usr": "s:18XsollaSDKUtilities24APIConfigurationProtocolP"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18XsollaSDKUtilities12APIBaseProxyCyAcA24APIConfigurationProtocol_pcfc",
-            "mangledName": "$s18XsollaSDKUtilities12APIBaseProxyCyAcA24APIConfigurationProtocol_pcfc",
-            "moduleName": "XsollaSDKUtilities",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "init_kind": "Designated"
-          }
-        ],
-        "declKind": "Class",
-        "usr": "s:18XsollaSDKUtilities12APIBaseProxyC",
-        "mangledName": "$s18XsollaSDKUtilities12APIBaseProxyC",
-        "moduleName": "XsollaSDKUtilities",
-        "isOpen": true,
-        "declAttributes": [
-          "AccessControl"
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "XsollaSDKUtilities",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "TypeDecl",
         "name": "APIError",
         "printedName": "APIError",
         "children": [
@@ -14680,6 +14720,13 @@
           },
           {
             "kind": "Conformance",
+            "name": "UITraitChangeObservable",
+            "printedName": "UITraitChangeObservable",
+            "usr": "s:5UIKit23UITraitChangeObservableP",
+            "mangledName": "$s5UIKit23UITraitChangeObservableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "__DefaultCustomPlaygroundQuickLookable",
             "printedName": "__DefaultCustomPlaygroundQuickLookable",
             "usr": "s:s38__DefaultCustomPlaygroundQuickLookableP",
@@ -14692,560 +14739,1932 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/WKWebView+Extensions.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/WKWebView+Extensions.swift",
       "kind": "StringLiteral",
       "offset": 180,
       "length": 137,
       "value": "\"Mozilla\/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/14.0 Mobile\/15E148 Safari\/604.1\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypesList.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2289,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2294,
+      "length": 23,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2315,
+      "length": 1,
+      "value": "\" \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2357,
+      "length": 33,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2388,
+      "length": 5,
+      "value": "\" \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2393,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2437,
+      "length": 69,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2447,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2459,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2468,
+      "length": 1,
+      "value": "\" [\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2481,
+      "length": 1,
+      "value": "\"]: \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2495,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2505,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2939,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2964,
+      "length": 58,
+      "value": "\"(\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 2999,
+      "length": 1,
+      "value": "\" \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 3011,
+      "length": 1,
+      "value": "\":\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 3019,
+      "length": 1,
+      "value": "\") \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 3176,
+      "length": 3,
+      "value": "\"\/\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/Logger.swift",
+      "kind": "StringLiteral",
+      "offset": 3217,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypesList.swift",
       "kind": "StringLiteral",
       "offset": 114,
       "length": 24110,
       "value": "\"application\/andrew-inset ez\napplication\/applixware aw\napplication\/atom+xml atom\napplication\/atomcat+xml atomcat\napplication\/atomsvc+xml atomsvc\napplication\/ccxml+xml ccxml\napplication\/cdmi-capability cdmia\napplication\/cdmi-container cdmic\napplication\/cdmi-domain cdmid\napplication\/cdmi-object cdmio\napplication\/cdmi-queue cdmiq\napplication\/cu-seeme cu\napplication\/davmount+xml davmount\napplication\/docbook+xml dbk\napplication\/dssc+der dssc\napplication\/dssc+xml xdssc\napplication\/ecmascript ecma\napplication\/emma+xml emma\napplication\/epub+zip epub\napplication\/exi exi\napplication\/font-tdpfr pfr\napplication\/gml+xml gml\napplication\/gpx+xml gpx\napplication\/gxf gxf\napplication\/hyperstudio stk\napplication\/inkml+xml ink inkml\napplication\/ipfix ipfix\napplication\/java-archive jar\napplication\/java-serialized-object ser\napplication\/java-vm class\napplication\/javascript js\napplication\/json json\napplication\/jsonml+json jsonml\napplication\/lost+xml lostxml\napplication\/mac-binhex40 hqx\napplication\/mac-compactpro cpt\napplication\/mads+xml mads\napplication\/marc mrc\napplication\/marcxml+xml mrcx\napplication\/mathematica ma nb mb\napplication\/mathml+xml mathml\napplication\/mbox mbox\napplication\/mediaservercontrol+xml mscml\napplication\/metalink+xml metalink\napplication\/metalink4+xml meta4\napplication\/mets+xml mets\napplication\/mods+xml mods\napplication\/mp21 m21 mp21\napplication\/mp4 mp4s\napplication\/msword doc dot\napplication\/mxf mxf\napplication\/octet-stream bin dms lrf mar so dist distz pkg bpk dump elc deploy\napplication\/oda oda\napplication\/oebps-package+xml opf\napplication\/ogg ogx\napplication\/omdoc+xml omdoc\napplication\/onenote onetoc onetoc2 onetmp onepkg\napplication\/oxps oxps\napplication\/patch-ops-error+xml xer\napplication\/pdf pdf\napplication\/pgp-encrypted pgp\napplication\/pgp-signature asc sig\napplication\/pics-rules prf\napplication\/pkcs10 p10\napplication\/pkcs7-mime p7m p7c\napplication\/pkcs7-signature p7s\napplication\/pkcs8 p8\napplication\/pkix-attr-cert ac\napplication\/pkix-cert cer\napplication\/pkix-crl crl\napplication\/pkix-pkipath pkipath\napplication\/pkixcmp pki\napplication\/pls+xml pls\napplication\/postscript ai eps ps\napplication\/prs.cww cww\napplication\/pskc+xml pskcxml\napplication\/rdf+xml rdf\napplication\/reginfo+xml rif\napplication\/relax-ng-compact-syntax rnc\napplication\/resource-lists+xml rl\napplication\/resource-lists-diff+xml rld\napplication\/rls-services+xml rs\napplication\/rpki-ghostbusters gbr\napplication\/rpki-manifest mft\napplication\/rpki-roa roa\napplication\/rsd+xml rsd\napplication\/rss+xml rss\napplication\/rtf rtf\napplication\/sbml+xml sbml\napplication\/scvp-cv-request scq\napplication\/scvp-cv-response scs\napplication\/scvp-vp-request spq\napplication\/scvp-vp-response spp\napplication\/sdp sdp\napplication\/set-payment-initiation setpay\napplication\/set-registration-initiation setreg\napplication\/shf+xml shf\napplication\/smil+xml smi smil\napplication\/sparql-query rq\napplication\/sparql-results+xml srx\napplication\/srgs gram\napplication\/srgs+xml grxml\napplication\/sru+xml sru\napplication\/ssdl+xml ssdl\napplication\/ssml+xml ssml\napplication\/tei+xml tei teicorpus\napplication\/thraud+xml tfi\napplication\/timestamped-data tsd\napplication\/vnd.3gpp.pic-bw-large plb\napplication\/vnd.3gpp.pic-bw-small psb\napplication\/vnd.3gpp.pic-bw-var pvb\napplication\/vnd.3gpp2.tcap tcap\napplication\/vnd.3m.post-it-notes pwn\napplication\/vnd.accpac.simply.aso aso\napplication\/vnd.accpac.simply.imp imp\napplication\/vnd.acucobol acu\napplication\/vnd.acucorp atc acutc\napplication\/vnd.adobe.air-application-installer-package+zip air\napplication\/vnd.adobe.formscentral.fcdt fcdt\napplication\/vnd.adobe.fxp fxp fxpl\napplication\/vnd.adobe.xdp+xml xdp\napplication\/vnd.adobe.xfdf xfdf\napplication\/vnd.ahead.space ahead\napplication\/vnd.airzip.filesecure.azf azf\napplication\/vnd.airzip.filesecure.azs azs\napplication\/vnd.amazon.ebook azw\napplication\/vnd.americandynamics.acc acc\napplication\/vnd.amiga.ami ami\napplication\/vnd.android.package-archive apk\napplication\/vnd.anser-web-certificate-issue-initiation cii\napplication\/vnd.anser-web-funds-transfer-initiation fti\napplication\/vnd.antix.game-component atx\napplication\/vnd.apple.installer+xml mpkg\napplication\/vnd.apple.mpegurl m3u8\napplication\/vnd.aristanetworks.swi swi\napplication\/vnd.astraea-software.iota iota\napplication\/vnd.audiograph aep\napplication\/vnd.blueice.multipass mpm\napplication\/vnd.bmi bmi\napplication\/vnd.businessobjects rep\napplication\/vnd.chemdraw+xml cdxml\napplication\/vnd.chipnuts.karaoke-mmd mmd\napplication\/vnd.cinderella cdy\napplication\/vnd.claymore cla\napplication\/vnd.cloanto.rp9 rp9\napplication\/vnd.clonk.c4group c4g c4d c4f c4p c4u\napplication\/vnd.cluetrust.cartomobile-config c11amc\napplication\/vnd.cluetrust.cartomobile-config-pkg c11amz\napplication\/vnd.commonspace csp\napplication\/vnd.contact.cmsg cdbcmsg\napplication\/vnd.cosmocaller cmc\napplication\/vnd.crick.clicker clkx\napplication\/vnd.crick.clicker.keyboard clkk\napplication\/vnd.crick.clicker.palette clkp\napplication\/vnd.crick.clicker.template clkt\napplication\/vnd.crick.clicker.wordbank clkw\napplication\/vnd.criticaltools.wbs+xml wbs\napplication\/vnd.ctc-posml pml\napplication\/vnd.cups-ppd ppd\napplication\/vnd.curl.car car\napplication\/vnd.curl.pcurl pcurl\napplication\/vnd.dart dart\napplication\/vnd.data-vision.rdz rdz\napplication\/vnd.dece.data uvf uvvf uvd uvvd\napplication\/vnd.dece.ttml+xml uvt uvvt\napplication\/vnd.dece.unspecified uvx uvvx\napplication\/vnd.dece.zip uvz uvvz\napplication\/vnd.denovo.fcselayout-link fe_launch\napplication\/vnd.dna dna\napplication\/vnd.dolby.mlp mlp\napplication\/vnd.dpgraph dpg\napplication\/vnd.dreamfactory dfac\napplication\/vnd.ds-keypoint kpxx\napplication\/vnd.dvb.ait ait\napplication\/vnd.dvb.service svc\napplication\/vnd.dynageo geo\napplication\/vnd.ecowin.chart mag\napplication\/vnd.enliven nml\napplication\/vnd.epson.esf esf\napplication\/vnd.epson.msf msf\napplication\/vnd.epson.quickanime qam\napplication\/vnd.epson.salt slt\napplication\/vnd.epson.ssf ssf\napplication\/vnd.eszigno3+xml es3 et3\napplication\/vnd.ezpix-album ez2\napplication\/vnd.ezpix-package ez3\napplication\/vnd.fdf fdf\napplication\/vnd.fdsn.mseed mseed\napplication\/vnd.fdsn.seed seed dataless\napplication\/vnd.flographit gph\napplication\/vnd.fluxtime.clip ftc\napplication\/vnd.framemaker fm frame maker book\napplication\/vnd.frogans.fnc fnc\napplication\/vnd.frogans.ltf ltf\napplication\/vnd.fsc.weblaunch fsc\napplication\/vnd.fujitsu.oasys oas\napplication\/vnd.fujitsu.oasys2 oa2\napplication\/vnd.fujitsu.oasys3 oa3\napplication\/vnd.fujitsu.oasysgp fg5\napplication\/vnd.fujitsu.oasysprs bh2\napplication\/vnd.fujixerox.ddd ddd\napplication\/vnd.fujixerox.docuworks xdw\napplication\/vnd.fujixerox.docuworks.binder xbd\napplication\/vnd.fuzzysheet fzs\napplication\/vnd.genomatix.tuxedo txd\napplication\/vnd.geogebra.file ggb\napplication\/vnd.geogebra.tool ggt\napplication\/vnd.geometry-explorer gex gre\napplication\/vnd.geonext gxt\napplication\/vnd.geoplan g2w\napplication\/vnd.geospace g3w\napplication\/vnd.gmx gmx\napplication\/vnd.google-earth.kml+xml kml\napplication\/vnd.google-earth.kmz kmz\napplication\/vnd.grafeq gqf gqs\napplication\/vnd.groove-account gac\napplication\/vnd.groove-help ghf\napplication\/vnd.groove-identity-message gim\napplication\/vnd.groove-injector grv\napplication\/vnd.groove-tool-message gtm\napplication\/vnd.groove-tool-template tpl\napplication\/vnd.groove-vcard vcg\napplication\/vnd.hal+xml hal\napplication\/vnd.handheld-entertainment+xml zmm\napplication\/vnd.hbci hbci\napplication\/vnd.hhe.lesson-player les\napplication\/vnd.hp-hpgl hpgl\napplication\/vnd.hp-hpid hpid\napplication\/vnd.hp-hps hps\napplication\/vnd.hp-jlyt jlt\napplication\/vnd.hp-pcl pcl\napplication\/vnd.hp-pclxl pclxl\napplication\/vnd.hydrostatix.sof-data sfd-hdstx\napplication\/vnd.ibm.minipay mpy\napplication\/vnd.ibm.modcap afp listafp list3820\napplication\/vnd.ibm.rights-management irm\napplication\/vnd.ibm.secure-container sc\napplication\/vnd.iccprofile icc icm\napplication\/vnd.igloader igl\napplication\/vnd.immervision-ivp ivp\napplication\/vnd.immervision-ivu ivu\napplication\/vnd.insors.igm igm\napplication\/vnd.intercon.formnet xpw xpx\napplication\/vnd.intergeo i2g\napplication\/vnd.intu.qbo qbo\napplication\/vnd.intu.qfx qfx\napplication\/vnd.ipunplugged.rcprofile rcprofile\napplication\/vnd.irepository.package+xml irp\napplication\/vnd.is-xpr xpr\napplication\/vnd.isac.fcs fcs\napplication\/vnd.jam jam\napplication\/vnd.jcp.javame.midlet-rms rms\napplication\/vnd.jisp jisp\napplication\/vnd.joost.joda-archive joda\napplication\/vnd.kahootz ktz ktr\napplication\/vnd.kde.karbon karbon\napplication\/vnd.kde.kchart chrt\napplication\/vnd.kde.kformula kfo\napplication\/vnd.kde.kivio flw\napplication\/vnd.kde.kontour kon\napplication\/vnd.kde.kpresenter kpr kpt\napplication\/vnd.kde.kspread ksp\napplication\/vnd.kde.kword kwd kwt\napplication\/vnd.kenameaapp htke\napplication\/vnd.kidspiration kia\napplication\/vnd.kinar kne knp\napplication\/vnd.koan skp skd skt skm\napplication\/vnd.kodak-descriptor sse\napplication\/vnd.las.las+xml lasxml\napplication\/vnd.llamagraphics.life-balance.desktop lbd\napplication\/vnd.llamagraphics.life-balance.exchange+xml lbe\napplication\/vnd.lotus-1-2-3 123\napplication\/vnd.lotus-approach apr\napplication\/vnd.lotus-freelance pre\napplication\/vnd.lotus-notes nsf\napplication\/vnd.lotus-organizer org\napplication\/vnd.lotus-screencam scm\napplication\/vnd.lotus-wordpro lwp\napplication\/vnd.macports.portpkg portpkg\napplication\/vnd.mcd mcd\napplication\/vnd.medcalcdata mc1\napplication\/vnd.mediastation.cdkey cdkey\napplication\/vnd.mfer mwf\napplication\/vnd.mfmp mfm\napplication\/vnd.micrografx.flo flo\napplication\/vnd.micrografx.igx igx\napplication\/vnd.mif mif\napplication\/vnd.mobius.daf daf\napplication\/vnd.mobius.dis dis\napplication\/vnd.mobius.mbk mbk\napplication\/vnd.mobius.mqy mqy\napplication\/vnd.mobius.msl msl\napplication\/vnd.mobius.plc plc\napplication\/vnd.mobius.txf txf\napplication\/vnd.mophun.application mpn\napplication\/vnd.mophun.certificate mpc\napplication\/vnd.mozilla.xul+xml xul\napplication\/vnd.ms-artgalry cil\napplication\/vnd.ms-cab-compressed cab\napplication\/vnd.ms-excel xls xlm xla xlc xlt xlw\napplication\/vnd.ms-excel.addin.macroenabled.12 xlam\napplication\/vnd.ms-excel.sheet.binary.macroenabled.12 xlsb\napplication\/vnd.ms-excel.sheet.macroenabled.12 xlsm\napplication\/vnd.ms-excel.template.macroenabled.12 xltm\napplication\/vnd.ms-fontobject eot\napplication\/vnd.ms-htmlhelp chm\napplication\/vnd.ms-ims ims\napplication\/vnd.ms-lrm lrm\napplication\/vnd.ms-officetheme thmx\napplication\/vnd.ms-pki.seccat cat\napplication\/vnd.ms-pki.stl stl\napplication\/vnd.ms-powerpoint ppt pps pot\napplication\/vnd.ms-powerpoint.addin.macroenabled.12 ppam\napplication\/vnd.ms-powerpoint.presentation.macroenabled.12 pptm\napplication\/vnd.ms-powerpoint.slide.macroenabled.12 sldm\napplication\/vnd.ms-powerpoint.slideshow.macroenabled.12 ppsm\napplication\/vnd.ms-powerpoint.template.macroenabled.12 potm\napplication\/vnd.ms-project mpp mpt\napplication\/vnd.ms-word.document.macroenabled.12 docm\napplication\/vnd.ms-word.template.macroenabled.12 dotm\napplication\/vnd.ms-works wps wks wcm wdb\napplication\/vnd.ms-wpl wpl\napplication\/vnd.ms-xpsdocument xps\napplication\/vnd.mseq mseq\napplication\/vnd.musician mus\napplication\/vnd.muvee.style msty\napplication\/vnd.mynfc taglet\napplication\/vnd.neurolanguage.nlu nlu\napplication\/vnd.nitf ntf nitf\napplication\/vnd.noblenet-directory nnd\napplication\/vnd.noblenet-sealer nns\napplication\/vnd.noblenet-web nnw\napplication\/vnd.nokia.n-gage.data ngdat\napplication\/vnd.nokia.n-gage.symbian.install n-gage\napplication\/vnd.nokia.radio-preset rpst\napplication\/vnd.nokia.radio-presets rpss\napplication\/vnd.novadigm.edm edm\napplication\/vnd.novadigm.edx edx\napplication\/vnd.novadigm.ext ext\napplication\/vnd.oasis.opendocument.chart odc\napplication\/vnd.oasis.opendocument.chart-template otc\napplication\/vnd.oasis.opendocument.database odb\napplication\/vnd.oasis.opendocument.formula odf\napplication\/vnd.oasis.opendocument.formula-template odft\napplication\/vnd.oasis.opendocument.graphics odg\napplication\/vnd.oasis.opendocument.graphics-template otg\napplication\/vnd.oasis.opendocument.image odi\napplication\/vnd.oasis.opendocument.image-template oti\napplication\/vnd.oasis.opendocument.presentation odp\napplication\/vnd.oasis.opendocument.presentation-template otp\napplication\/vnd.oasis.opendocument.spreadsheet ods\napplication\/vnd.oasis.opendocument.spreadsheet-template ots\napplication\/vnd.oasis.opendocument.text odt\napplication\/vnd.oasis.opendocument.text-master odm\napplication\/vnd.oasis.opendocument.text-template ott\napplication\/vnd.oasis.opendocument.text-web oth\napplication\/vnd.olpc-sugar xo\napplication\/vnd.oma.dd2+xml dd2\napplication\/vnd.openofficeorg.extension oxt\napplication\/vnd.openxmlformats-officedocument.presentationml.presentation pptx\napplication\/vnd.openxmlformats-officedocument.presentationml.slide sldx\napplication\/vnd.openxmlformats-officedocument.presentationml.slideshow ppsx\napplication\/vnd.openxmlformats-officedocument.presentationml.template potx\napplication\/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx\napplication\/vnd.openxmlformats-officedocument.spreadsheetml.template xltx\napplication\/vnd.openxmlformats-officedocument.wordprocessingml.document docx\napplication\/vnd.openxmlformats-officedocument.wordprocessingml.template dotx\napplication\/vnd.osgeo.mapguide.package mgp\napplication\/vnd.osgi.dp dp\napplication\/vnd.osgi.subsystem esa\napplication\/vnd.palm pdb pqa oprc\napplication\/vnd.pawaafile paw\napplication\/vnd.pg.format str\napplication\/vnd.pg.osasli ei6\napplication\/vnd.picsel efif\napplication\/vnd.pmi.widget wg\napplication\/vnd.pocketlearn plf\napplication\/vnd.powerbuilder6 pbd\napplication\/vnd.previewsystems.box box\napplication\/vnd.proteus.magazine mgz\napplication\/vnd.publishare-delta-tree qps\napplication\/vnd.pvi.ptid1 ptid\napplication\/vnd.quark.quarkxpress qxd qxt qwd qwt qxl qxb\napplication\/vnd.realvnc.bed bed\napplication\/vnd.recordare.musicxml mxl\napplication\/vnd.recordare.musicxml+xml musicxml\napplication\/vnd.rig.cryptonote cryptonote\napplication\/vnd.rim.cod cod\napplication\/vnd.rn-realmedia rm\napplication\/vnd.rn-realmedia-vbr rmvb\napplication\/vnd.route66.link66+xml link66\napplication\/vnd.sailingtracker.track st\napplication\/vnd.seemail see\napplication\/vnd.sema sema\napplication\/vnd.semd semd\napplication\/vnd.semf semf\napplication\/vnd.shana.informed.formdata ifm\napplication\/vnd.shana.informed.formtemplate itp\napplication\/vnd.shana.informed.interchange iif\napplication\/vnd.shana.informed.package ipk\napplication\/vnd.simtech-mindmapper twd twds\napplication\/vnd.smaf mmf\napplication\/vnd.smart.teacher teacher\napplication\/vnd.solent.sdkm+xml sdkm sdkd\napplication\/vnd.spotfire.dxp dxp\napplication\/vnd.spotfire.sfs sfs\napplication\/vnd.stardivision.calc sdc\napplication\/vnd.stardivision.draw sda\napplication\/vnd.stardivision.impress sdd\napplication\/vnd.stardivision.math smf\napplication\/vnd.stardivision.writer sdw vor\napplication\/vnd.stardivision.writer-global sgl\napplication\/vnd.stepmania.package smzip\napplication\/vnd.stepmania.stepchart sm\napplication\/vnd.sun.xml.calc sxc\napplication\/vnd.sun.xml.calc.template stc\napplication\/vnd.sun.xml.draw sxd\napplication\/vnd.sun.xml.draw.template std\napplication\/vnd.sun.xml.impress sxi\napplication\/vnd.sun.xml.impress.template sti\napplication\/vnd.sun.xml.math sxm\napplication\/vnd.sun.xml.writer sxw\napplication\/vnd.sun.xml.writer.global sxg\napplication\/vnd.sun.xml.writer.template stw\napplication\/vnd.sus-calendar sus susp\napplication\/vnd.svd svd\napplication\/vnd.symbian.install sis sisx\napplication\/vnd.syncml+xml xsm\napplication\/vnd.syncml.dm+wbxml bdm\napplication\/vnd.syncml.dm+xml xdm\napplication\/vnd.tao.intent-module-archive tao\napplication\/vnd.tcpdump.pcap pcap cap dmp\napplication\/vnd.tmobile-livetv tmo\napplication\/vnd.trid.tpt tpt\napplication\/vnd.triscape.mxs mxs\napplication\/vnd.trueapp tra\napplication\/vnd.ufdl ufd ufdl\napplication\/vnd.uiq.theme utz\napplication\/vnd.umajin umj\napplication\/vnd.unity unityweb\napplication\/vnd.uoml+xml uoml\napplication\/vnd.vcx vcx\napplication\/vnd.visio vsd vst vss vsw\napplication\/vnd.visionary vis\napplication\/vnd.vsf vsf\napplication\/vnd.wap.wbxml wbxml\napplication\/vnd.wap.wmlc wmlc\napplication\/vnd.wap.wmlscriptc wmlsc\napplication\/vnd.webturbo wtb\napplication\/vnd.wolfram.player nbp\napplication\/vnd.wordperfect wpd\napplication\/vnd.wqd wqd\napplication\/vnd.wt.stf stf\napplication\/vnd.xara xar\napplication\/vnd.xfdl xfdl\napplication\/vnd.yamaha.hv-dic hvd\napplication\/vnd.yamaha.hv-script hvs\napplication\/vnd.yamaha.hv-voice hvp\napplication\/vnd.yamaha.openscoreformat osf\napplication\/vnd.yamaha.openscoreformat.osfpvg+xml osfpvg\napplication\/vnd.yamaha.smaf-audio saf\napplication\/vnd.yamaha.smaf-phrase spf\napplication\/vnd.yellowriver-custom-menu cmp\napplication\/vnd.zul zir zirz\napplication\/vnd.zzazz.deck+xml zaz\napplication\/voicexml+xml vxml\napplication\/widget wgt\napplication\/winhlp hlp\napplication\/wsdl+xml wsdl\napplication\/wspolicy+xml wspolicy\napplication\/x-7z-compressed 7z\napplication\/x-abiword abw\napplication\/x-ace-compressed ace\napplication\/x-apple-diskimage dmg\napplication\/x-authorware-bin aab x32 u32 vox\napplication\/x-authorware-map aam\napplication\/x-authorware-seg aas\napplication\/x-bcpio bcpio\napplication\/x-bittorrent torrent\napplication\/x-blorb blb blorb\napplication\/x-bzip bz\napplication\/x-bzip2 bz2 boz\napplication\/x-cbr cbr cba cbt cbz cb7\napplication\/x-cdlink vcd\napplication\/x-cfs-compressed cfs\napplication\/x-chat chat\napplication\/x-chess-pgn pgn\napplication\/x-conference nsc\napplication\/x-cpio cpio\napplication\/x-csh csh\napplication\/x-debian-package deb udeb\napplication\/x-dgc-compressed dgc\napplication\/x-director dir dcr dxr cst cct cxt w3d fgd swa\napplication\/x-doom wad\napplication\/x-dtbncx+xml ncx\napplication\/x-dtbook+xml dtb\napplication\/x-dtbresource+xml res\napplication\/x-dvi dvi\napplication\/x-envoy evy\napplication\/x-eva eva\napplication\/x-font-bdf bdf\napplication\/x-font-ghostscript gsf\napplication\/x-font-linux-psf psf\napplication\/x-font-pcf pcf\napplication\/x-font-snf snf\napplication\/x-font-type1 pfa pfb pfm afm\napplication\/x-freearc arc\napplication\/x-futuresplash spl\napplication\/x-gca-compressed gca\napplication\/x-glulx ulx\napplication\/x-gnumeric gnumeric\napplication\/x-gramps-xml gramps\napplication\/x-gtar gtar\napplication\/x-hdf hdf\napplication\/x-install-instructions install\napplication\/x-iso9660-image iso\napplication\/x-java-jnlp-file jnlp\napplication\/x-latex latex\napplication\/x-lzh-compressed lzh lha\napplication\/x-mie mie\napplication\/x-mobipocket-ebook prc mobi\napplication\/x-ms-application application\napplication\/x-ms-shortcut lnk\napplication\/x-ms-wmd wmd\napplication\/x-ms-wmz wmz\napplication\/x-ms-xbap xbap\napplication\/x-msaccess mdb\napplication\/x-msbinder obd\napplication\/x-mscardfile crd\napplication\/x-msclip clp\napplication\/x-msdownload exe dll com bat msi\napplication\/x-msmediaview mvb m13 m14\napplication\/x-msmetafile wmf wmz emf emz\napplication\/x-msmoney mny\napplication\/x-mspublisher pub\napplication\/x-msschedule scd\napplication\/x-msterminal trm\napplication\/x-mswrite wri\napplication\/x-netcdf nc cdf\napplication\/x-nzb nzb\napplication\/x-pkcs12 p12 pfx\napplication\/x-pkcs7-certificates p7b spc\napplication\/x-pkcs7-certreqresp p7r\napplication\/x-rar-compressed rar\napplication\/x-research-info-systems ris\napplication\/x-sh sh\napplication\/x-shar shar\napplication\/x-shockwave-flash swf\napplication\/x-silverlight-app xap\napplication\/x-sql sql\napplication\/x-stuffit sit\napplication\/x-stuffitx sitx\napplication\/x-subrip srt\napplication\/x-sv4cpio sv4cpio\napplication\/x-sv4crc sv4crc\napplication\/x-t3vm-image t3\napplication\/x-tads gam\napplication\/x-tar tar\napplication\/x-tcl tcl\napplication\/x-tex tex\napplication\/x-tex-tfm tfm\napplication\/x-texinfo texinfo texi\napplication\/x-tgif obj\napplication\/x-ustar ustar\napplication\/x-wais-source src\napplication\/x-x509-ca-cert der crt\napplication\/x-xfig fig\napplication\/x-xliff+xml xlf\napplication\/x-xpinstall xpi\napplication\/x-xz xz\napplication\/x-zmachine z1 z2 z3 z4 z5 z6 z7 z8\napplication\/xaml+xml xaml\napplication\/xcap-diff+xml xdf\napplication\/xenc+xml xenc\napplication\/xhtml+xml xhtml xht\napplication\/xml xml xsl\napplication\/xml-dtd dtd\napplication\/xop+xml xop\napplication\/xproc+xml xpl\napplication\/xslt+xml xslt\napplication\/xspf+xml xspf\napplication\/xv+xml mxml xhvml xvml xvm\napplication\/yang yang\napplication\/yin+xml yin\napplication\/zip zip\naudio\/adpcm adp\naudio\/basic au snd\naudio\/midi mid midi kar rmi\naudio\/mp4 m4a mp4a\naudio\/mpeg mpga mp2 mp2a mp3 m2a m3a\naudio\/ogg oga ogg spx\naudio\/s3m s3m\naudio\/silk sil\naudio\/vnd.dece.audio uva uvva\naudio\/vnd.digital-winds eol\naudio\/vnd.dra dra\naudio\/vnd.dts dts\naudio\/vnd.dts.hd dtshd\naudio\/vnd.lucent.voice lvp\naudio\/vnd.ms-playready.media.pya pya\naudio\/vnd.nuera.ecelp4800 ecelp4800\naudio\/vnd.nuera.ecelp7470 ecelp7470\naudio\/vnd.nuera.ecelp9600 ecelp9600\naudio\/vnd.rip rip\naudio\/webm weba\naudio\/x-aac aac\naudio\/x-aiff aif aiff aifc\naudio\/x-caf caf\naudio\/x-flac flac\naudio\/x-matroska mka\naudio\/x-mpegurl m3u\naudio\/x-ms-wax wax\naudio\/x-ms-wma wma\naudio\/x-pn-realaudio ram ra\naudio\/x-pn-realaudio-plugin rmp\naudio\/x-wav wav\naudio\/xm xm\nchemical\/x-cdx cdx\nchemical\/x-cif cif\nchemical\/x-cmdf cmdf\nchemical\/x-cml cml\nchemical\/x-csml csml\nchemical\/x-xyz xyz\nfont\/collection ttc\nfont\/otf otf\nfont\/ttf ttf\nfont\/woff woff\nfont\/woff2 woff2\nimage\/bmp bmp\nimage\/cgm cgm\nimage\/g3fax g3\nimage\/gif gif\nimage\/ief ief\nimage\/jpeg jpeg jpg jpe\nimage\/ktx ktx\nimage\/png png\nimage\/prs.btif btif\nimage\/sgi sgi\nimage\/svg+xml svg svgz\nimage\/tiff tiff tif\nimage\/vnd.adobe.photoshop psd\nimage\/vnd.dece.graphic uvi uvvi uvg uvvg\nimage\/vnd.djvu djvu djv\nimage\/vnd.dvb.subtitle sub\nimage\/vnd.dwg dwg\nimage\/vnd.dxf dxf\nimage\/vnd.fastbidsheet fbs\nimage\/vnd.fpx fpx\nimage\/vnd.fst fst\nimage\/vnd.fujixerox.edmics-mmr mmr\nimage\/vnd.fujixerox.edmics-rlc rlc\nimage\/vnd.ms-modi mdi\nimage\/vnd.ms-photo wdp\nimage\/vnd.net-fpx npx\nimage\/vnd.wap.wbmp wbmp\nimage\/vnd.xiff xif\nimage\/webp webp\nimage\/x-3ds 3ds\nimage\/x-cmu-raster ras\nimage\/x-cmx cmx\nimage\/x-freehand fh fhc fh4 fh5 fh7\nimage\/x-icon ico\nimage\/x-mrsid-image sid\nimage\/x-pcx pcx\nimage\/x-pict pic pct\nimage\/x-portable-anymap pnm\nimage\/x-portable-bitmap pbm\nimage\/x-portable-graymap pgm\nimage\/x-portable-pixmap ppm\nimage\/x-rgb rgb\nimage\/x-tga tga\nimage\/x-xbitmap xbm\nimage\/x-xpixmap xpm\nimage\/x-xwindowdump xwd\nmessage\/rfc822 eml mime\nmodel\/iges igs iges\nmodel\/mesh msh mesh silo\nmodel\/vnd.collada+xml dae\nmodel\/vnd.dwf dwf\nmodel\/vnd.gdl gdl\nmodel\/vnd.gtw gtw\nmodel\/vnd.mts mts\nmodel\/vnd.vtu vtu\nmodel\/vrml wrl vrml\nmodel\/x3d+binary x3db x3dbz\nmodel\/x3d+vrml x3dv x3dvz\nmodel\/x3d+xml x3d x3dz\ntext\/cache-manifest appcache\ntext\/calendar ics ifb\ntext\/css css\ntext\/csv csv\ntext\/html html htm\ntext\/n3 n3\ntext\/plain txt text conf def list log in\ntext\/prs.lines.tag dsc\ntext\/richtext rtx\ntext\/sgml sgml sgm\ntext\/tab-separated-values tsv\ntext\/troff t tr roff man me ms\ntext\/turtle ttl\ntext\/uri-list uri uris urls\ntext\/vcard vcard\ntext\/vnd.curl curl\ntext\/vnd.curl.dcurl dcurl\ntext\/vnd.curl.mcurl mcurl\ntext\/vnd.curl.scurl scurl\ntext\/vnd.dvb.subtitle sub\ntext\/vnd.fly fly\ntext\/vnd.fmi.flexstor flx\ntext\/vnd.graphviz gv\ntext\/vnd.in3d.3dml 3dml\ntext\/vnd.in3d.spot spot\ntext\/vnd.sun.j2me.app-descriptor jad\ntext\/vnd.wap.wml wml\ntext\/vnd.wap.wmlscript wmls\ntext\/x-asm s asm\ntext\/x-c c cc cxx cpp h hh dic\ntext\/x-fortran f for f77 f90\ntext\/x-java-source java\ntext\/x-nfo nfo\ntext\/x-opml opml\ntext\/x-pascal p pas\ntext\/x-setext etx\ntext\/x-sfv sfv\ntext\/x-uuencode uu\ntext\/x-vcalendar vcs\ntext\/x-vcard vcf\nvideo\/3gpp 3gp\nvideo\/3gpp2 3g2\nvideo\/h261 h261\nvideo\/h263 h263\nvideo\/h264 h264\nvideo\/jpeg jpgv\nvideo\/jpm jpm jpgm\nvideo\/mj2 mj2 mjp2\nvideo\/mp4 mp4 mp4v mpg4\nvideo\/mpeg mpeg mpg mpe m1v m2v\nvideo\/ogg ogv\nvideo\/quicktime qt mov\nvideo\/vnd.dece.hd uvh uvvh\nvideo\/vnd.dece.mobile uvm uvvm\nvideo\/vnd.dece.pd uvp uvvp\nvideo\/vnd.dece.sd uvs uvvs\nvideo\/vnd.dece.video uvv uvvv\nvideo\/vnd.dvb.file dvb\nvideo\/vnd.fvt fvt\nvideo\/vnd.mpegurl mxu m4u\nvideo\/vnd.ms-playready.media.pyv pyv\nvideo\/vnd.uvvu.mp4 uvu uvvu\nvideo\/vnd.vivo viv\nvideo\/webm webm\nvideo\/x-f4v f4v\nvideo\/x-fli fli\nvideo\/x-flv flv\nvideo\/x-m4v m4v\nvideo\/x-matroska mkv mk3d mks\nvideo\/x-mng mng\nvideo\/x-ms-asf asf asx\nvideo\/x-ms-vob vob\nvideo\/x-ms-wm wm\nvideo\/x-ms-wmv wmv\nvideo\/x-ms-wmx wmx\nvideo\/x-ms-wvx wvx\nvideo\/x-msvideo avi\nvideo\/x-sgi-movie movie\nvideo\/x-smv smv\nx-conference\/x-cooltalk ice\ntext\/markdown md markdown\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1200,
+      "length": 4,
+      "value": "1000"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 1503,
+      "length": 10,
+      "value": "\"%@.%06ld\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 1889,
+      "length": 21,
+      "value": "\"yyyy-MM-dd HH:mm:ss\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 1948,
+      "length": 25,
+      "value": "\"yyyy-MM-dd HH:mm:ss.SSS\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 2011,
+      "length": 21,
+      "value": "\"yyyy-MM-dd HH:mm:ss\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 2064,
+      "length": 10,
+      "value": "\"HH:mm:ss\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 2112,
+      "length": 14,
+      "value": "\"HH:mm:ss.SSS\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/PrecisionDateFormatter.swift",
+      "kind": "StringLiteral",
+      "offset": 2164,
+      "length": 10,
+      "value": "\"HH:mm:ss\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "404"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 416,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 424,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 474,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 674,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 682,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode404ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 734,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "408"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 428,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 436,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 486,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 698,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 706,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode408ErrorHandler .swift",
+      "kind": "StringLiteral",
+      "offset": 758,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 312,
+      "length": 54,
+      "value": "\"The field must be intentionally defined in successor\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 398,
+      "length": 28,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 410,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 425,
+      "length": 3,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 570,
+      "length": 54,
+      "value": "\"The field must be intentionally defined in successor\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "IntegerLiteral",
+      "offset": 673,
+      "length": 2,
+      "value": "30"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 1285,
+      "length": 23,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 1295,
+      "length": 1,
+      "value": "\"=\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 1307,
+      "length": 23,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 1329,
+      "length": 3,
+      "value": "\";\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 1770,
+      "length": 21,
+      "value": "\"Endpoint path error\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Array",
+      "offset": 1948,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 2085,
+      "length": 10,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 2092,
+      "length": 1,
+      "value": "\"[]\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 2393,
+      "length": 21,
+      "value": "\"Endpoint path error\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 2604,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 2862,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 3777,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 3828,
+      "length": 17,
+      "value": "\"Bearer \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 3844,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 3897,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 3995,
+      "length": 18,
+      "value": "\"application\/json\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 4054,
+      "length": 18,
+      "value": "\"application\/json\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "StringLiteral",
+      "offset": 4115,
+      "length": 7,
+      "value": "\"utf-8\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 4420,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseRequest.swift",
+      "kind": "Dictionary",
+      "offset": 4465,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "IntegerLiteral",
+      "offset": 778,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "StringLiteral",
+      "offset": 781,
+      "length": 44,
+      "value": "\"MIME type must have one or more extensions\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "StringLiteral",
+      "offset": 1922,
+      "length": 3,
+      "value": "\" \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1957,
+      "length": 1,
+      "value": "2"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2019,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2061,
+      "length": 1,
+      "value": "1"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/MimeTypes\/MimeTypes.swift",
+      "kind": "Array",
+      "offset": 2473,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 347,
       "length": 8,
       "value": "\"Common\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 418,
       "length": 6,
       "value": "\"Init\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 484,
       "length": 8,
       "value": "\"Deinit\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 546,
       "length": 12,
       "value": "\"Networking\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 612,
       "length": 12,
       "value": "\"Navigation\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 670,
       "length": 4,
       "value": "\"UI\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 723,
       "length": 7,
       "value": "\"Debug\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogCategory.swift",
       "kind": "StringLiteral",
       "offset": 790,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 190,
+      "length": 3,
+      "value": "403"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 416,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 424,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 474,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 676,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 684,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode403ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 736,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 110,
       "length": 5,
       "value": "\"GET\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 132,
       "length": 6,
       "value": "\"POST\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 155,
       "length": 5,
       "value": "\"PUT\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 179,
       "length": 7,
       "value": "\"PATCH\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 205,
       "length": 8,
       "value": "\"DELETE\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 110,
       "length": 5,
       "value": "\"GET\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 132,
       "length": 6,
       "value": "\"POST\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 155,
       "length": 5,
       "value": "\"PUT\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 179,
       "length": 7,
       "value": "\"PATCH\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 205,
       "length": 8,
       "value": "\"DELETE\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 283,
       "length": 15,
       "value": "\"Authorization\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 330,
       "length": 8,
       "value": "\"Accept\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 377,
       "length": 16,
       "value": "\"Accept-Charset\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 433,
       "length": 17,
       "value": "\"Accept-Language\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 487,
       "length": 14,
       "value": "\"Content-Type\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 533,
       "length": 8,
       "value": "\"Origin\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 573,
       "length": 8,
       "value": "\"Cookie\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 621,
       "length": 19,
       "value": "\"x-unauthorized-id\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 670,
       "length": 8,
       "value": "\"x-user\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/HTTPConstants.swift",
       "kind": "StringLiteral",
       "offset": 741,
       "length": 8,
       "value": "\"locale\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/DomainExtensions.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "Array",
+      "offset": 249,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "Array",
+      "offset": 282,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "StringLiteral",
+      "offset": 397,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "StringLiteral",
+      "offset": 434,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "StringLiteral",
+      "offset": 473,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitFilter_Gussent.swift",
+      "kind": "StringLiteral",
+      "offset": 512,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/DomainExtensions.swift",
       "kind": "StringLiteral",
       "offset": 193,
       "length": 10,
       "value": "\"Core API\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/DomainExtensions.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/DomainExtensions.swift",
       "kind": "StringLiteral",
       "offset": 252,
       "length": 9,
       "value": "\"Network\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
       "kind": "StringLiteral",
       "offset": 482,
       "length": 21,
       "value": "\"logger.serial.queue\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
       "kind": "BooleanLiteral",
       "offset": 541,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitConfiguration.swift",
       "kind": "BooleanLiteral",
       "offset": 585,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseErrorHandler.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "422"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 433,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 441,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 491,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 711,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 719,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode422ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 771,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseErrorHandler.swift",
       "kind": "Dictionary",
       "offset": 229,
       "length": 3,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIBaseErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 907,
+      "length": 3,
+      "value": "400"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "Array",
       "offset": 160,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "Array",
       "offset": 208,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "Array",
       "offset": 251,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "StringLiteral",
       "offset": 430,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "StringLiteral",
       "offset": 475,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "StringLiteral",
       "offset": 522,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
       "kind": "StringLiteral",
       "offset": 569,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/XSDKNetwork.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 703,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 944,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1185,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 1522,
+      "length": 3,
+      "value": "\",\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 1792,
+      "length": 3,
+      "value": "\",\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1908,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 2164,
+      "length": 3,
+      "value": "\",\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "StringLiteral",
+      "offset": 2440,
+      "length": 3,
+      "value": "\",\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2558,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Filters\/UtilitiesLoggerKitDefaultFilter.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2760,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Networking\/XSDKNetwork.swift",
       "kind": "BooleanLiteral",
       "offset": 1206,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/CategoryExtensions.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Logging\/Extensions\/CategoryExtensions.swift",
       "kind": "StringLiteral",
       "offset": 239,
       "length": 13,
       "value": "\"application\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode429ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "429"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitBaseFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 190,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitBaseFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 284,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitBaseFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 373,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitBaseFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 459,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Logger\/LoggerKitBaseFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 547,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "400"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 425,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 433,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 483,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 703,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 711,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode400ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 763,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "Array",
       "offset": 388,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "Array",
       "offset": 436,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "Array",
       "offset": 730,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "Array",
       "offset": 780,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1184,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 1556,
+      "length": 4,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 1756,
+      "length": 4,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 1888,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2177,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2266,
+      "length": 29,
+      "value": "\", duration: \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2293,
+      "length": 1,
+      "value": "\"s\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2396,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2486,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2507,
+      "length": 38,
+      "value": "\", data size: \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2544,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2663,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2684,
+      "length": 39,
+      "value": "\", status code: \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2722,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2934,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2966,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 2992,
+      "length": 66,
+      "value": "\"--- REQUEST --------------------------------------------------\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3082,
+      "length": 10,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3089,
+      "length": 1,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3385,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3406,
+      "length": 13,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3416,
+      "length": 1,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3688,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3720,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3746,
+      "length": 66,
+      "value": "\"--- RECEIVED DATA --------------------------------------------\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3836,
+      "length": 13,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 3846,
+      "length": 1,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4522,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4554,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4580,
+      "length": 66,
+      "value": "\"--- RESPONSE -------------------------------------------------\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4670,
+      "length": 27,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4694,
+      "length": 1,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4873,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4905,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 4931,
+      "length": 66,
+      "value": "\"--- ERROR ----------------------------------------------------\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 5021,
+      "length": 33,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "StringLiteral",
+      "offset": 5051,
+      "length": 1,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5332,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5485,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5638,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "IntegerLiteral",
+      "offset": 5786,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5790,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5798,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6235,
       "length": 6,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6255,
       "length": 7,
       "value": "2"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6235,
       "length": 6,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6255,
       "length": 7,
       "value": "2"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6235,
       "length": 6,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/URLRequestLogHelper.swift",
       "kind": "IntegerLiteral",
       "offset": 6255,
       "length": 7,
       "value": "2"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Protocols\/LoggerKitFilterProtocol.swift",
+      "kind": "BooleanLiteral",
+      "offset": 481,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Protocols\/LoggerKitFilterProtocol.swift",
+      "kind": "BooleanLiteral",
+      "offset": 551,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Protocols\/LoggerKitFilterProtocol.swift",
+      "kind": "BooleanLiteral",
+      "offset": 620,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Protocols\/LoggerKitFilterProtocol.swift",
+      "kind": "BooleanLiteral",
+      "offset": 695,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Protocols\/LoggerKitFilterProtocol.swift",
+      "kind": "BooleanLiteral",
+      "offset": 766,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "405"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 433,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 441,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 491,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 707,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 715,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode405ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 767,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode204ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "204"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "IntegerLiteral",
+      "offset": 191,
+      "length": 3,
+      "value": "401"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 427,
+      "length": 59,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 435,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 485,
+      "length": 9,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 707,
+      "length": 61,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 715,
+      "length": 1,
+      "value": "\": \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/ServerCode Handlers\/APIServerCode401ErrorHandler.swift",
+      "kind": "StringLiteral",
+      "offset": 767,
+      "length": 7,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 289,
       "length": 9,
       "value": "\"verbose\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 307,
       "length": 1,
       "value": "0"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 323,
       "length": 6,
       "value": "\"🟤\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 378,
       "length": 7,
       "value": "\"event\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 394,
       "length": 2,
       "value": "10"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 411,
       "length": 8,
       "value": "\"⚫️\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 468,
       "length": 7,
       "value": "\"debug\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 484,
       "length": 2,
       "value": "20"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 501,
       "length": 6,
       "value": "\"🔵\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 555,
       "length": 6,
       "value": "\"info\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 570,
       "length": 2,
       "value": "30"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 587,
       "length": 6,
       "value": "\"🟢\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 638,
       "length": 8,
       "value": "\"notice\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 655,
       "length": 2,
       "value": "40"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 672,
       "length": 8,
       "value": "\"⚪️\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 731,
       "length": 9,
       "value": "\"warning\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 749,
       "length": 2,
       "value": "50"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 766,
       "length": 6,
       "value": "\"🟡\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 821,
       "length": 7,
       "value": "\"error\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "IntegerLiteral",
       "offset": 837,
       "length": 3,
       "value": "100"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogLevel.swift",
       "kind": "StringLiteral",
       "offset": 855,
       "length": 6,
       "value": "\"🔴\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIError.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/LoggerKit.swift",
+      "kind": "StringLiteral",
+      "offset": 971,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/LoggerKit.swift",
+      "kind": "StringLiteral",
+      "offset": 1023,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 529,
+      "length": 6,
+      "value": "\"\r\n\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 605,
+      "length": 27,
+      "value": "\"--\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 619,
+      "length": 1,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 631,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 664,
+      "length": 97,
+      "value": "\"Content-Disposition: form-data; name=\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 732,
+      "length": 1,
+      "value": "\"\"; filename=\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 758,
+      "length": 1,
+      "value": "\"\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 834,
+      "length": 27,
+      "value": "\"Content-Type: \""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 860,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 1051,
+      "length": 29,
+      "value": "\"--\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 1065,
+      "length": 2,
+      "value": "\"--\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/Extensions\/APIBaseRequest+Extensions.swift",
+      "kind": "StringLiteral",
+      "offset": 1079,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIError.swift",
       "kind": "StringLiteral",
       "offset": 994,
       "length": 19,
       "value": "\"Unprocessed error\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIError.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/CoreAPI\/APIError.swift",
       "kind": "StringLiteral",
       "offset": 1059,
       "length": 18,
       "value": "\"Empty error data\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogDomain.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogDomain.swift",
       "kind": "StringLiteral",
       "offset": 335,
       "length": 8,
       "value": "\"Common\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogDomain.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/Utilities\/Utilities\/LoggerKit\/Types\/LogDomain.swift",
       "kind": "StringLiteral",
       "offset": 399,
       "length": 2,

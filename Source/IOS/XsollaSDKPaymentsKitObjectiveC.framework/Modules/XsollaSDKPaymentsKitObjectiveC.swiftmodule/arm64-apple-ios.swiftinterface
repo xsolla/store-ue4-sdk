@@ -1,6 +1,6 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
-// swift-module-flags: -target arm64-apple-ios11.4 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKitObjectiveC
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKPaymentsKitObjectiveC
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Foundation
 import Swift
@@ -8,6 +8,7 @@ import UIKit
 import XsollaSDKPaymentsKit
 import _Concurrency
 import _StringProcessing
+import _SwiftConcurrencyShims
 extension XsollaSDKPaymentsKit.PaymentsKitError : Foundation.LocalizedError {
   public var errorDescription: Swift.String? {
     get
@@ -18,6 +19,9 @@ extension Foundation.NSError {
 }
 @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc final public class PaymentsKitObjectiveC : ObjectiveC.NSObject {
   @objc public static let shared: XsollaSDKPaymentsKitObjectiveC.PaymentsKitObjectiveC
+  @objc final public func configureAnalytics(gameEngine: Foundation.NSString, gameEngineVersion: Foundation.NSString)
+  @objc final public func setPaystationVersion(paystationVersion: Swift.Int)
+  @objc final public func getPaymentUrl(isSandbox: Swift.Bool, paymentToken: Foundation.NSString) -> Foundation.NSString
   @objc final public func performPayment(paymentToken: Foundation.NSString, presenter: XsollaSDKPaymentsKitObjectiveC.ViewControllerPresenting, isSandbox: Swift.Bool, redirectUrl: Foundation.NSString, completionHandler: ((Foundation.NSError?) -> Swift.Void)?)
   @objc deinit
 }

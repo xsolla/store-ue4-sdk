@@ -88,6 +88,41 @@
           },
           {
             "kind": "Function",
+            "name": "configureAnalytics",
+            "printedName": "configureAnalytics(gameEngine:gameEngineVersion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)LoginKitObjectiveC(im)configureAnalyticsWithGameEngine:gameEngineVersion:",
+            "mangledName": "$s27XsollaSDKLoginKitObjectiveC05LogincD1CC18configureAnalytics10gameEngine0hI7VersionySo8NSStringC_AHtF",
+            "moduleName": "XsollaSDKLoginKitObjectiveC",
+            "objc_name": "configureAnalyticsWithGameEngine:gameEngineVersion:",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "authByUsernameAndPassword",
             "printedName": "authByUsernameAndPassword(username:password:oAuth2Params:jwtParams:completion:)",
             "children": [
@@ -565,6 +600,108 @@
             "usr": "c:@CM@XsollaSDKLoginKitObjectiveC@objc(cs)LoginKitObjectiveC(im)authBySocialNetwork:oAuth2Params:jwtParams:presentationContextProvider:completion:",
             "mangledName": "$s27XsollaSDKLoginKitObjectiveC05LogincD1CC19authBySocialNetwork_12oAuth2Params03jwtK027presentationContextProvider10completionySo8NSStringC_AA06OAuth2K0CAA013JWTGenerationK0CSo031ASWebAuthenticationPresentationN9Providing_pyAA15AccessTokenInfoCSg_So7NSErrorCSgtctF",
             "moduleName": "XsollaSDKLoginKitObjectiveC",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "authWithXsollaWidget",
+            "printedName": "authWithXsollaWidget(loginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "OAuth2Params",
+                "printedName": "XsollaSDKLoginKitObjectiveC.OAuth2Params",
+                "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)OAuth2Params"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "JWTGenerationParams",
+                "printedName": "XsollaSDKLoginKitObjectiveC.JWTGenerationParams",
+                "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)JWTGenerationParams"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NSString",
+                "printedName": "Foundation.NSString",
+                "usr": "c:objc(cs)NSString"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ASWebAuthenticationPresentationContextProviding",
+                "printedName": "AuthenticationServices.ASWebAuthenticationPresentationContextProviding",
+                "usr": "c:objc(pl)ASWebAuthenticationPresentationContextProviding"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(XsollaSDKLoginKitObjectiveC.AccessTokenInfo?, Foundation.NSError?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "XsollaSDKLoginKitObjectiveC.AccessTokenInfo?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AccessTokenInfo",
+                            "printedName": "XsollaSDKLoginKitObjectiveC.AccessTokenInfo",
+                            "usr": "c:@M@XsollaSDKLoginKitObjectiveC@objc(cs)AccessTokenInfo"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Foundation.NSError?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "NSError",
+                            "printedName": "Foundation.NSError",
+                            "usr": "c:objc(cs)NSError"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@XsollaSDKLoginKitObjectiveC@objc(cs)LoginKitObjectiveC(im)authWithXsollaWidgetWithLoginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:",
+            "mangledName": "$s27XsollaSDKLoginKitObjectiveC05LogincD1CC08authWithA6Widget7loginId12oAuth2Params03jwtL06locale27presentationContextProvider10completionySo8NSStringC_AA06OAuth2L0CAA013JWTGenerationL0CALSo031ASWebAuthenticationPresentationP9Providing_pyAA15AccessTokenInfoCSg_So7NSErrorCSgtctF",
+            "moduleName": "XsollaSDKLoginKitObjectiveC",
+            "objc_name": "authWithXsollaWidgetWithLoginId:oAuth2Params:jwtParams:locale:presentationContextProvider:completion:",
             "declAttributes": [
               "Final",
               "AccessControl",
@@ -3339,154 +3476,413 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/OAuth2Params.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2330,
+      "length": 2,
+      "value": "-1"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "StringLiteral",
+      "offset": 6252,
+      "length": 40,
+      "value": "\"Invalid url for social network linking\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "StringLiteral",
+      "offset": 6522,
+      "length": 22,
+      "value": "\"Invalid redirect url\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 6842,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 7818,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "StringLiteral",
+      "offset": 8845,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 11280,
+      "length": 2,
+      "value": "-1"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/LoginKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 13324,
+      "length": 2,
+      "value": "-1"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/OAuth2Params.swift",
+      "kind": "StringLiteral",
+      "offset": 2376,
+      "length": 6,
+      "value": "\"code\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/OAuth2Params.swift",
       "kind": "StringLiteral",
       "offset": 154,
       "length": 12,
       "value": "\"XsollaSDKLoginKitObjectiveC.OAuth2Params\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/JWTGenerationParams.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/JWTGenerationParams.swift",
       "kind": "StringLiteral",
       "offset": 210,
       "length": 19,
       "value": "\"XsollaSDKLoginKitObjectiveC.JWTGenerationParams\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 147,
       "length": 2,
       "value": "50"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 224,
       "length": 2,
       "value": "51"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 318,
       "length": 2,
       "value": "52"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 408,
       "length": 2,
       "value": "53"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 483,
       "length": 3,
       "value": "100"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 565,
       "length": 3,
       "value": "101"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 651,
       "length": 3,
       "value": "102"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 733,
       "length": 3,
       "value": "103"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 808,
       "length": 3,
       "value": "104"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 889,
       "length": 3,
       "value": "105"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
       "kind": "BooleanLiteral",
       "offset": 1196,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
       "kind": "BooleanLiteral",
       "offset": 1389,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1752,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1847,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1930,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1944,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2012,
+      "length": 2,
+      "value": "40"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2027,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2125,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "StringLiteral",
+      "offset": 2161,
+      "length": 5,
+      "value": "\"╳\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2468,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2546,
+      "length": 2,
+      "value": "40"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2561,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2647,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2735,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2819,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2975,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/UI\/WebFlowURLCallbackListenableVC.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3626,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 251,
+      "length": 21,
+      "value": "\"failedURLExtraction\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 348,
+      "length": 25,
+      "value": "\"authCodeExtractionError\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 444,
+      "length": 21,
+      "value": "\"networkLinkingError\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 506,
+      "length": 14,
+      "value": "\"invalidToken\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 584,
+      "length": 14,
+      "value": "\"unknownError\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 668,
+      "length": 20,
+      "value": "\"invalidRedirectUrl\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/LoginKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 717,
+      "length": 14,
+      "value": "\"unknownError\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorFactory.swift",
       "kind": "StringLiteral",
       "offset": 2033,
       "length": 22,
       "value": "\"localizedDescription\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/PresentationContextProviding.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "kind": "StringLiteral",
+      "offset": 2170,
+      "length": 20,
+      "value": "\"XsollaSDK.LoginKit\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/PresentationContextProviding.swift",
       "kind": "StringLiteral",
       "offset": 285,
       "length": 44,
       "value": "\"XsollaSDKLoginKitObjectiveC.WebAuthenticationPresentationContextProvider\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/WebAuthenticationSession.swift",
+      "kind": "StringLiteral",
+      "offset": 304,
+      "length": 42,
+      "value": "\"Unknown web authentication session error\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/WebAuthenticationSession.swift",
+      "kind": "StringLiteral",
+      "offset": 387,
+      "length": 16,
+      "value": "\"Canceled login\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/WebAuthenticationSession.swift",
+      "kind": "StringLiteral",
+      "offset": 461,
+      "length": 35,
+      "value": "\"Presentation context not provided\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Extensions\/WebAuthenticationSession.swift",
+      "kind": "StringLiteral",
+      "offset": 550,
+      "length": 30,
+      "value": "\"Presentation context invalid\""
+    },
+    {
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
       "kind": "IntegerLiteral",
       "offset": 417,
       "length": 12,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
       "kind": "IntegerLiteral",
       "offset": 498,
       "length": 17,
       "value": "2"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
       "kind": "IntegerLiteral",
       "offset": 417,
       "length": 12,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/TokenGrantType.swift",
       "kind": "IntegerLiteral",
       "offset": 498,
       "length": 17,
       "value": "2"
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/AccessTokenInfo.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Models\/AccessTokenInfo.swift",
       "kind": "StringLiteral",
       "offset": 103,
       "length": 15,
       "value": "\"XsollaSDKLoginKitObjectiveC.AccessTokenInfo\""
     },
     {
-      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Version.swift",
+      "filePath": "\/Users\/o.salina\/xCodeProjects\/xsolla-ios-sdk\/LoginKitObjectiveC\/LoginKitObjectiveC\/Version.swift",
       "kind": "StringLiteral",
       "offset": 124,
       "length": 7,

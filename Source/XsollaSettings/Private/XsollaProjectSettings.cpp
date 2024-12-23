@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaProjectSettings.h"
 
@@ -16,9 +16,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	EnableSandbox = true;
 	UsePlatformBrowser = false;
 	BuildForSteam = false;
-	PaymentInterfaceTheme = TEXT("default");
-	PaymentInterfaceSize = EXsollaPaymentUiSize::medium;
-	PaymentInterfaceVersion = EXsollaPaymentUiVersion::not_specified;
+	PaymentInterfaceThemeId = TEXT("63295aab2e47fab76f7708e3");
 	UseSettingsFromPublisherAccount = true;
 	ReturnUrl = TEXT("");
 	RedirectCondition = EXsollaPaymentRedirectCondition::none;

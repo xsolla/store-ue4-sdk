@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 package com.xsolla.login;
 
@@ -27,6 +27,14 @@ public class XsollaNativeAuth {
         intent.putExtra(XsollaNativeAuthActivity.ARG_SOCIAL_NETWORK, socialNetwork.name());
         intent.putExtra(XsollaNativeAuthActivity.REMEMBER_ME, rememberMe);
         intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
+        activity.startActivity(intent);
+    }
+	
+	public static void authViaXsollaWidget(Activity activity, String locale, boolean rememberMe, long callback) {
+        Intent intent = new Intent(activity, XsollaNativeXsollaWidgetAuthActivity.class);
+        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.LOCALE, locale);
+        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.REMEMBER_ME, rememberMe);
+        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.CALLBACK_ADDRESS, callback);
         activity.startActivity(intent);
     }
 

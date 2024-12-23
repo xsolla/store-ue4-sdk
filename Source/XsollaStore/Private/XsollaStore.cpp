@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #include "XsollaStore.h"
 
@@ -28,3 +28,4 @@ void FXsollaStoreModule::ShutdownModule()
 IMPLEMENT_MODULE(FXsollaStoreModule, XsollaStore)
 
 DEFINE_LOG_CATEGORY(LogXsollaStore);
+DEFINE_LOG_CATEGORY(LogXsollaCentrifugo);

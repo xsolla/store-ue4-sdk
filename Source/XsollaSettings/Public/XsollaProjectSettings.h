@@ -1,4 +1,4 @@
-// Copyright 2023 Xsolla Inc. All Rights Reserved.
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
 
 #pragma once
 
@@ -99,28 +99,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Android")
 	FString QQAppId;
 
-	/** Payment user interface theme. 
-	* To use default themes, enter "default" or "default_dark" values. Or enter the name of the custom theme you configured in Publisher Account to use it.
+	/** Payment user interface theme ID.
+	* To use default themes, enter "63295a9a2e47fab76f7708e1" (light) or "63295aab2e47fab76f7708e3" (dark) values. Or enter the ID of a custom theme you've configured in Publisher Account to use it.
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	FString PaymentInterfaceTheme;
-
-	/**
-	 * Payment user interface size (desktop only).
-	 * Small
-	 * Medium
-	 * Large
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	EXsollaPaymentUiSize PaymentInterfaceSize;
-
-	/**
-	 * Device type used to present payment interface.
-	 * The Pay Station UI depends on the device type.
-	 * If Not specified, the app automatically uses Pay Station UI supported by the device.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Paystation UI")
-	EXsollaPaymentUiVersion PaymentInterfaceVersion;
+	FString PaymentInterfaceThemeId;
 
 	/**
 	 * Use settings from Publisher Account.

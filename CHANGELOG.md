@@ -1,5 +1,92 @@
 # Changelog
 
+## [4.0.0] - 2024-12-19
+
+### Changed 
+- Minimum supported Unreal Engine version updated to 5.0
+- Removed the `limit` and `offset` parameters from the following SDK methods:
+  - `GetVirtualItems` 
+  - `GetVirtualCurrencies` 
+  - `GetVirtualCurrencyPackages`
+  - `GetItemsListBySpecifiedGroup`
+  - `GetBundles`
+  
+### Added 
+- New methods for `XsollaStoreSubsystem` class:
+  - `GetPaginatedVirtualItems` 
+  - `GetPaginatedVirtualCurrencies` 
+  - `GetPaginatedVirtualCurrencyPackages`
+  - `GetPaginatedItemsListBySpecifiedGroup`
+  - `GetPaginatedBundles`
+  
+### Fixed 
+- Centrifuge launch for third-party login systems while order status tracking
+
+## [3.0.1] - 2024-10-25
+
+### Updated 
+- SDK internal analytics
+
+## [3.0.0] - 2024-09-16
+
+### Added
+- `UnlinkSocialNetworkFromUserAccount` SDK method
+- Support for browser pop-ups for desktop (only built-in browser)
+
+### Changed
+- `AddToCart` SDK method. The method was renamed to `UpdateItemInCart`
+- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters that are used in purchase methods:
+    - `CloseButtonIcon`. Defines the icon of the `Close` button in the payment UI. Can be `arrow` or `cross`. `cross` by default
+    - `bGpQuickPaymentButton`. Defines the way the Google Pay payment method is displayed. If `true`, the button for quick payment via Google Pay is displayed at the top of the payment UI. If `true`, Google Pay is displayed in the list of payment methods according to the PayRank algorithm. `false` by default
+
+### Fixed
+- Redirects in Android WebView for specific cases
+- Compilation of the project in non-unity mode
+- Crash of demo project on Android devices while icons loading
+
+## [2.1.0] - 2024-06-14
+
+### Fixed
+- Subscriptions methods (`GetSubscriptionPurchaseUrl`, `GetSubscriptionManagementUrl`, `GetSubscriptionRenewalUrl`):
+    - Improved response structure for error handling
+    -`bShowCloseButton` parameter deleted from request
+
+## [2.0.0] - 2024-05-17
+
+### Added
+- Game engine analytics to API requests (for mobile and desktop builds)
+- Minor demo improvements 
+
+### Changed
+- `PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods. Added `AuthToken` parameter. Renamed `PaymentTokenRequestPayload` parameter to `PurchaseParams`
+- `FetchPaymentToken` and `FetchCartPaymentToken` SDK methods. Added `PurchaseParams` parameter. Parameters `Currency`, `Country`, `Locale`, `CustomParameters`, `Quantity` and `ExternalId` moved to the `PurchaseParams`
+- `GetSubscriptionPurchaseUrl`, `GetSubscriptionManagementUrl` and `GetSubscriptionRenewalUrl` SDK methods. Added `bShowCloseButton` optional parameter
+- `AuthWithXsollaWidget` SDK method. Added `Locale`, `State` and `ErrorCallback` parameters. This method uses OAuth2.0 authorization now
+- `LaunchPaymentConsole` SDK method. Added `PayStationVersion` optional parameter, uses `V4` by default
+- Methods for working with catalog (`UXsollaStoreSubsystem` class). The `has_more` parameter added in response
+- Default Pay Station version was changed to 4
+- Xsolla Pay Station UI settings. Removed `PaymentInterfaceSize` and `PaymentInterfaceVersion` parameters
+- Updated iOS and Android libraries
+- `FXsollaPaymentTokenRequestPayload` structure. Added the following parameters that are used in purchase methods:
+    - `bShowCloseButton`
+    - `PayStationVersion`
+
+### Fixed
+- Сleanup of the `SuccessTokenUpdate` local variable by garbage collector in  `UXsollaStoreSubsystem` and `UXsollaInventorySubsystem` classes methods 
+- `CheckPendingOrder` method uses only passed `AccessToken` parameter
+
+## [1.6.0] - 2023-09-13
+
+### Added
+- Centrifugo integration
+
+### Changed
+- `AuthWithXsollaWidget` SDK method. Supports opening the widget on mobile platforms
+- Project settings. `PaymentInterfaceTheme` renamed to `PaymentInterfaceThemeId`
+
+### Fixed
+- Negative ZOrder value for Xsolla Login widget in internal browser
+
 ## [1.5.0] - 2023-05-20
 
 ### Added
@@ -19,7 +106,7 @@
 - `AuthWithXsollaWidget` SDK method. Allows to open Login widget in the internal browser
 - SDK methods for single item purchase (`PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods)
 
-### Updated
+### Changed
 - Android libraries
 - `LaunchPaymentConsole` SDK method. Added `BrowserClosed` callback.
 - Project settings. Added:
@@ -49,7 +136,7 @@
 - Deep links for iOS
 - SDK methods for ordering free items (`CreateOrderWithSpecifiedFreeItem` and `CreateOrderWithFreeCart` SDK methods)
 
-### Updated
+### Changed
 - Separated demo and SDK
 - Refinement of the payment status check (launching of the payment UI closing check and limiting short polling time)
 
