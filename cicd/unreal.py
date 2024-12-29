@@ -60,6 +60,6 @@ def build_demo(test_project_dir, archive_dir, engine_version, platform):
 
 def _get_automation_tool_path(engine_version):
     if utils.is_macos():
-        return f"/Volumes/External_SSD_256/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh"
+        return f"/Users/SDK_Runner/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh" if (engine_version == "5.4" or engine_version == "5.5") else f"/Volumes/External_SSD_256/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh"
     else:
         return os.path.join(f"C:\\EpicGames\\UE_{engine_version}\\Engine\\Binaries\\DotNET\\AutomationTool\\AutomationTool.exe")

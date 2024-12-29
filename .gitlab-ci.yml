@@ -14,6 +14,7 @@ stages:
   - demo_win
   - demo_android
   - demo_ios
+  - demo_mac
 
 variables:
     BUILD_DEMO_SCRIPT: cicd/build_demo.py
@@ -107,6 +108,17 @@ stop doc:
   tags:
     - sdk_ci
     - mac
+
+.mac_2_job_base:
+  artifacts:
+    when: always
+    expire_in: 3 days
+    paths:
+      - Builds
+  dependencies: []
+  tags:
+    - sdk_ci_mac_2
+    - macos
 
 # =================================================================================================================
 # DEMO WINIDOWS
@@ -270,3 +282,127 @@ demo_52_ios_system_browser:
     - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" IOS True
   artifacts:
     name: "demo-UE52-ios-system_browser-$CI_COMMIT_REF_SLUG"
+
+demo_53_ios_inapp_browser:
+  extends: .mac_job_base
+  stage: demo_ios
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.3" IOS False
+  artifacts:
+    name: "demo-UE53-ios-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_53_ios_system_browser:
+  extends: .mac_job_base
+  stage: demo_ios
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.3" IOS True
+  artifacts:
+    name: "demo-UE53-ios-system_browser-$CI_COMMIT_REF_SLUG"
+
+demo_54_ios_inapp_browser:
+  extends: .mac_2_job_base
+  stage: demo_ios
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.4" IOS False
+  artifacts:
+    name: "demo-UE54-ios-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_54_ios_system_browser:
+  extends: .mac_2_job_base
+  stage: demo_ios
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.4" IOS True
+  artifacts:
+    name: "demo-UE54-ios-system_browser-$CI_COMMIT_REF_SLUG"
+
+
+
+demo_55_ios_inapp_browser:
+  extends: .mac_2_job_base
+  stage: demo_ios
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.5" IOS False
+  artifacts:
+    name: "demo-UE55-ios-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_55_ios_system_browser:
+  extends: .mac_2_job_base
+  stage: demo_ios
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.5" IOS True
+  artifacts:
+    name: "demo-UE55-ios-system_browser-$CI_COMMIT_REF_SLUG"
+
+# =================================================================================================================
+# DEMO MAC
+
+demo_52_mac_inapp_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" Mac False
+  artifacts:
+    name: "demo-UE52-mac-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_52_mac_system_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" Mac True
+  artifacts:
+    name: "demo-UE52-mac-system_browser-$CI_COMMIT_REF_SLUG"
+
+demo_53_mac_inapp_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.3" Mac False
+  artifacts:
+    name: "demo-UE53-mac-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_53_mac_system_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.3" Mac True
+  artifacts:
+    name: "demo-UE53-mac-system_browser-$CI_COMMIT_REF_SLUG"
+
+demo_54_mac_inapp_browser:
+  extends: .mac_2_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.4" Mac False
+  artifacts:
+    name: "demo-UE54-mac-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_54_mac_system_browser:
+  extends: .mac_2_job_base
+  stage: demo_mac
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.4" Mac True
+  artifacts:
+    name: "demo-UE54-mac-system_browser-$CI_COMMIT_REF_SLUG"
+
+demo_55_mac_inapp_browser:
+  extends: .mac_2_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.5" Mac False
+  artifacts:
+    name: "demo-UE55-mac-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_55_mac_system_browser:
+  extends: .mac_2_job_base
+  stage: demo_mac
+  when: manual
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.5" Mac True
+  artifacts:
+    name: "demo-UE55-mac-system_browser-$CI_COMMIT_REF_SLUG"
