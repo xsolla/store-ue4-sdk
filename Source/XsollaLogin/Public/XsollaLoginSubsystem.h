@@ -16,9 +16,11 @@
 
 class FJsonObject;
 class UXsollaLoginBrowserWrapper;
+class UXsollaSocialLinkingBrowserWrapper;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
+DECLARE_DYNAMIC_DELEGATE(FOnSocialLinkingSuccess);
 DECLARE_DELEGATE_ThreeParams(FOnLoginDataError, int32, int32, const FString&);
 DECLARE_DELEGATE_OneParam(FOnLoginDataUpdate, const FXsollaLoginData&);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
@@ -637,6 +639,7 @@ public:
 	void SearchUsersByNickname(const FString& AuthToken, const FString& Nickname,
 		const FOnUserSearchUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Offset = 0, const int Limit = 100);
 
+	//TEXTREVIEW
 	/** Links a social network that can be used for authentication to the current account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
 	 *
@@ -647,8 +650,23 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
+	void GetUrlToLinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback);
+
+	//TEXTREVIEW
+	/** Links a social network that can be used for authentication to the current account.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
+	 *
+	 * @param WorldContextObject The world context.
+	 * @param AuthToken User authorization token.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account.<br>
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `instagram`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paradox`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, `xbox`, `playstation`.
+	 * @param SuccessCallback Called after social provider was successfully linked.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkSocialProvider(UObject* WorldContextObject, const FString& AuthToken, const FString& ProviderName,
+		const FOnSocialLinkingSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Unlinks a social network from the user account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
@@ -660,7 +678,7 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UnlinkSocialNetworkFromUserAccount(const FString& AuthToken, const FString& ProviderName,
+	void UnlinkSocialProvider(const FString& AuthToken, const FString& ProviderName,
 		const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns the list of linked social networks.
@@ -818,12 +836,27 @@ protected:
 	UFUNCTION()
 	void SocialAuthUrlReceivedCallback(const FString& Url);
 
+	UFUNCTION()
+	void SocialLinkingUrlReceivedCallback(const FString& Url);
+
 private:
 	UPROPERTY()
 	TSubclassOf<UXsollaLoginBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
+	TSubclassOf<UXsollaSocialLinkingBrowserWrapper> DefaultSocialLinkingBrowserWidgetClass;
+
+	UPROPERTY()
 	FOnAuthUpdate NativeSuccessCallback;
+
+	UPROPERTY()
+	FOnSocialLinkingSuccess CachedSocialLinkingSuccessCallback;
+
+	UPROPERTY()
+	FOnError CachedSocialLinkingErrorCallback;
+
+	UPROPERTY()
+	UObject* CachedWorldContextObject;
 
 	UPROPERTY()
 	FOnAuthCancel NativeCancelCallback;

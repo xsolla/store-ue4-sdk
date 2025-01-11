@@ -23,6 +23,7 @@
 #include "XsollaProjectSettings.h"
 #include "XsollaUtilsDataModel.h"
 #include "XsollaLoginBrowserWrapper.h"
+#include "XsollaSocialLinkingBrowserWrapper.h"
 #include "Misc/EngineVersion.h"
 #include "Runtime/Launch/Resources/Version.h"
 
@@ -48,6 +49,10 @@ UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	static ConstructorHelpers::FClassFinder<UXsollaLoginBrowserWrapper> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
 		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
+
+	static ConstructorHelpers::FClassFinder<UXsollaSocialLinkingBrowserWrapper> SocialLinkingBrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowserLinking.W_LoginBrowserLinking_C"),
+		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
+	DefaultSocialLinkingBrowserWidgetClass = SocialLinkingBrowserWidgetFinder.Class;
 #endif
 }
 
@@ -1407,7 +1412,7 @@ void UXsollaLoginSubsystem::SearchUsersByNickname(const FString& AuthToken, cons
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
+void UXsollaLoginSubsystem::GetUrlToLinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 	const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Generate endpoint URL
@@ -1430,7 +1435,30 @@ void UXsollaLoginSubsystem::LinkSocialNetworkToUserAccount(const FString& AuthTo
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaLoginSubsystem::UnlinkSocialNetworkFromUserAccount(const FString& AuthToken, const FString& ProviderName,
+void UXsollaLoginSubsystem::LinkSocialProvider(UObject* WorldContextObject, const FString& AuthToken, const FString& ProviderName,
+	const FOnSocialLinkingSuccess& SuccessCallback, const FOnError& ErrorCallback)
+{
+	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+
+	if (Platform == TEXT("android") || Platform == TEXT("ios"))
+	{
+		//TEXTREVIEW
+		const FString errorMessage = TEXT("LinkSocialProvider: This functionality is not supported elswere except Windows and Mac build");
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s"), *errorMessage);
+		ErrorCallback.ExecuteIfBound(-1, -1, errorMessage);
+	}
+	else
+	{
+		CachedSocialLinkingSuccessCallback = SuccessCallback;
+		CachedSocialLinkingErrorCallback = ErrorCallback;
+		CachedWorldContextObject = WorldContextObject;
+		FOnSocialAccountLinkingHtmlReceived UrlReceivedCallback;
+		UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback);
+		GetUrlToLinkSocialNetworkToUserAccount(AuthToken, ProviderName, UrlReceivedCallback, ErrorCallback);
+	}
+}
+
+void UXsollaLoginSubsystem::UnlinkSocialProvider(const FString& AuthToken, const FString& ProviderName,
 	const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	// Generate endpoint URL
@@ -2315,6 +2343,26 @@ void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 			}
 		});
 	}
+}
+
+void UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback(const FString& Url)
+{
+	auto MyBrowser = CreateWidget<UXsollaSocialLinkingBrowserWrapper>(CachedWorldContextObject->GetWorld(), DefaultSocialLinkingBrowserWidgetClass);
+	MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually, const FString& Token, const FString& ErrorCode, const FString& ErrorDescription)
+	{
+		if (!Token.IsEmpty())
+		{
+			CachedSocialLinkingSuccessCallback.ExecuteIfBound();
+		}
+		else
+		{
+			const FString ErrorMessage = ErrorCode.IsEmpty() ? TEXT("Linking failed. Token is empty.") 
+				: FString::Printf(TEXT("Linking failed. ErrorCode: %s, ErrorDescription: %s"), *ErrorCode, *ErrorDescription);
+			CachedSocialLinkingErrorCallback.ExecuteIfBound(-1, -1, ErrorMessage);
+		}
+	});
+	MyBrowser->AddToViewport(INT_MAX - 100);
+	MyBrowser->LoadUrl(Url);
 }
 
 #if PLATFORM_ANDROID
