@@ -332,6 +332,19 @@ public:
 	void PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
+	//TEXTREVIEW
+	/** Initiate purchase by passing bundle
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Bundle Desired bundle.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
+	void PurchaseBundle(const FString& AuthToken, const FStoreBundle& Bundle, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Removes all items from the cart with the specified ID or from the cart of the current user.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/).
 	 *

@@ -538,6 +538,14 @@ void UXsollaStoreSubsystem::PurchaseCurrencyPackage(const FString& AuthToken, co
 		SuccessCallback, ErrorCallback);
 }
 
+void UXsollaStoreSubsystem::PurchaseBundle(const FString& AuthToken, const FStoreBundle& Bundle,
+	const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	InnerPurchase(AuthToken, Bundle.sku, Bundle.is_free == TEXT("true"), Bundle.virtual_prices, PurchaseParams,
+		SuccessCallback, ErrorCallback);
+}
+
 void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& CartId,
 	const FOnStoreCartUpdate& SuccessCallback, const FOnError& ErrorCallback)
 {
