@@ -23,9 +23,9 @@ def update_login_upl_for_sdk_plugin(plugin_dir, engine_version):
 
 def update_default_engine_ini_file(config_dir, engine_version):
     target_file_path = os.path.join(config_dir, f"DefaultEngine.ini")
-    utils.update_line_in_file(target_file_path, 157, constants.java_path_by_engine_version[engine_version])
-    utils.update_line_in_file(target_file_path, 158, constants.sdk_api_level_by_engine_version[engine_version])
-    utils.update_line_in_file(target_file_path, 159, constants.ndk_api_level_by_engine_version[engine_version])
+    utils.update_line_in_file(target_file_path, 161, constants.java_path_by_engine_version[engine_version])
+    utils.update_line_in_file(target_file_path, 162, constants.sdk_api_level_by_engine_version[engine_version])
+    utils.update_line_in_file(target_file_path, 163, constants.ndk_api_level_by_engine_version[engine_version])
 
 
 def change_engine_version_for_sdk_plugin(plugin_dir, engine_version):
@@ -60,6 +60,6 @@ def build_demo(test_project_dir, archive_dir, engine_version, platform):
 
 def _get_automation_tool_path(engine_version):
     if utils.is_macos():
-        return f"/Volumes/External_SSD_256/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh"
+        return f"/Users/SDK_Runner/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh" if (engine_version == "5.4" or engine_version == "5.5") else f"/Volumes/External_SSD_256/EpicGames/UE_{engine_version}/Engine/Build/BatchFiles/RunUAT.sh"
     else:
         return os.path.join(f"C:\\EpicGames\\UE_{engine_version}\\Engine\\Binaries\\DotNET\\AutomationTool\\AutomationTool.exe")
