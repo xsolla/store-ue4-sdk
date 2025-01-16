@@ -260,6 +260,20 @@ public:
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
 		const EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4);
 
+	//TEXTREVIEW
+	/** Initiates purchase by passing item sku
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param ItemSKU Desired item SKU.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback, BrowserClosedCallback"))
+	void PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+
 	/** Checks pending order status by its ID.
 	 *
 	 * @param AuthToken User authorization token.
@@ -877,6 +891,9 @@ protected:
 
 	UFUNCTION()
 	void CheckPendingOrderSuccessCallback();
+
+	UFUNCTION()
+	void BrowserClosedCallback(bool bIsManually);
 
 	// virtual items
 	UFUNCTION()

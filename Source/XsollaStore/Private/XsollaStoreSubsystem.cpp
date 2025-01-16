@@ -423,12 +423,25 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually)
 		{ 
 			PaymentBrowserClosedCallback.ExecuteIfBound(bIsManually);
+			PaymentBrowserClosedCallback.Unbind();
 		});
 		MyBrowser->AddToViewport(100000);
 #endif
 	}
 
 	CheckPendingOrder(AccessToken, OrderId, SuccessCallback, ErrorCallback, true);
+}
+
+void UXsollaStoreSubsystem::PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
+{
+	PaymentSuccessCallback = SuccessCallback;
+	PaymentErrorCallback = ErrorCallback;
+	PaymentBrowserClosedCallback = BrowserClosedCallback;
+
+	FOnFetchTokenSuccess FetchTokenSuccessCallback;
+	FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
+	FetchPaymentToken(AuthToken, ItemSKU, FetchTokenSuccessCallback, PaymentErrorCallback, PurchaseParams);
 }
 
 void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
@@ -1943,8 +1956,7 @@ void UXsollaStoreSubsystem::FetchTokenCallback(const FString& AccessToken, int32
 	PaymentOrderId = InOrderId;
 	FOnStoreSuccessPayment SuccessPaymentCallback;
 	SuccessPaymentCallback.BindDynamic(this, &UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback);
-	FOnStoreBrowserClosed BrowserClosedCallback;
-	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, BrowserClosedCallback, CachedPaymentTokenRequestPayload.PayStationVersion);
+	LaunchPaymentConsole(this, InOrderId, AccessToken, SuccessPaymentCallback, PaymentErrorCallback, PaymentBrowserClosedCallback, CachedPaymentTokenRequestPayload.PayStationVersion);
 }
 
 void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
@@ -1957,6 +1969,12 @@ void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
 void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
 {
 	PaymentSuccessCallback.ExecuteIfBound(PaymentOrderId);
+}
+
+void UXsollaStoreSubsystem::BrowserClosedCallback(bool bIsManually)
+{
+	PaymentBrowserClosedCallback.ExecuteIfBound(bIsManually);
+	PaymentBrowserClosedCallback.Unbind();
 }
 
 void UXsollaStoreSubsystem::GetVirtualItemsCallback(const FStoreItemsData& InItemsData)
