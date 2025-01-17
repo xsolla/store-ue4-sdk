@@ -87,13 +87,12 @@ To start with the SDK, you need to install this plug-in and set up a project in 
 * macOS 10.13.6 and later
 * XCode 11.1 and later (for macOS)
 * Visual Studio 2017 and later
-* Unreal Engine 4.27 and later
+* Unreal Engine 5.3 and later
 
 ### Target OS
 
 * iOS
 * Android
-* macOS
 * Windows 64-bit
 
 The SDK uses [Google Mobile Services](https://www.android.com/gms/) and doesn’t support builds for devices without Google Mobile Services, such as Huawei.
