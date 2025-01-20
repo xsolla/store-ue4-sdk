@@ -444,6 +444,29 @@ void UXsollaStoreSubsystem::PurchaseItemBySku(const FString& AuthToken, const FS
 	FetchPaymentToken(AuthToken, ItemSKU, FetchTokenSuccessCallback, PaymentErrorCallback, PurchaseParams);
 }
 
+void UXsollaStoreSubsystem::PurchaseCart(const FString& AuthToken, const FString& CartId, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
+{
+	PaymentSuccessCallback = SuccessCallback;
+	PaymentErrorCallback = ErrorCallback;
+	PaymentBrowserClosedCallback = BrowserClosedCallback;
+
+	FOnFetchTokenSuccess FetchTokenSuccessCallback;
+	FetchTokenSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::FetchTokenCallback);
+	FetchCartPaymentToken(AuthToken, CartId, FetchTokenSuccessCallback, PaymentErrorCallback, PurchaseParams);
+}
+
+void UXsollaStoreSubsystem::PurchaseFreeCart(const FString& AuthToken, const FString& CartId,
+	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback)
+{
+	PaymentSuccessCallback = SuccessCallback;
+	PaymentErrorCallback = ErrorCallback;
+
+	FOnPurchaseUpdate FreePurchaseSuccessCallback;
+	FreePurchaseSuccessCallback.BindDynamic(this, &UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback);
+	CreateOrderWithFreeCart(AuthToken, CartId, FreePurchaseSuccessCallback, ErrorCallback);
+}
+
 void UXsollaStoreSubsystem::CheckOrder(const FString& AuthToken, const int32 OrderId,
 	const FOnCheckOrder& SuccessCallback, const FOnError& ErrorCallback)
 {
@@ -1969,6 +1992,7 @@ void UXsollaStoreSubsystem::BuyVirtualOrFreeItemCallback(int32 InOrderId)
 void UXsollaStoreSubsystem::CheckPendingOrderSuccessCallback()
 {
 	PaymentSuccessCallback.ExecuteIfBound(PaymentOrderId);
+	PaymentSuccessCallback.Unbind();
 }
 
 void UXsollaStoreSubsystem::BrowserClosedCallback(bool bIsManually)

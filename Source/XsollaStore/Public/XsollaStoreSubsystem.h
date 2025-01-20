@@ -274,6 +274,32 @@ public:
 	void PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
 
+	// TEXTREVIEW
+	/** Initiates cart purchase by passing cart id
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback, BrowserClosedCallback"))
+	void PurchaseCart(const FString& AuthToken, const FString& CartId, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+
+	// TEXTREVIEW
+	/** Initiates free cart purchase by passing cart id
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void PurchaseFreeCart(const FString& AuthToken, const FString& CartId,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Checks pending order status by its ID.
 	 *
 	 * @param AuthToken User authorization token.
