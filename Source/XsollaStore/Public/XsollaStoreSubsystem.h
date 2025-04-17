@@ -72,6 +72,7 @@ public:
 	void Initialize(const FString& InProjectId);
 
 	/** Returns a list of virtual items according to pagination settings. The list includes items which are set to be available for purchase in the store. For each virtual item, complete data is returned.
+	 * <b>Attention:</b> The number of items returned in a single response is limited. <b>The default and maximum value is 50 items per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -113,6 +114,7 @@ public:
 	void GetItemGroups(const FString& PromoCode, const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currencies according to pagination settings.
+	 * <b>Attention:</b> The number of currencies returned in a single response is limited. <b>The default and maximum value is 50 currencies per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -141,6 +143,7 @@ public:
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
+   * <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -173,6 +176,7 @@ public:
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of items for the specified group according to pagination settings. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
+	 * <b>Attention:</b> The number of items returned in a single response is limited. <b>The default and maximum value is 50 items per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param ExternalId Group external ID.
@@ -463,6 +467,7 @@ public:
 	void GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of bundles according to pagination settings. The list includes bundles which are set to be available for purchase in the store.
+  	* <b>Attention:</b> The number of bundles returned in a single response is limited. <b>The default and maximum value is 50 bundles per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -507,7 +512,8 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages which are set to be available for purchase in the store.
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
+ 		* <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
