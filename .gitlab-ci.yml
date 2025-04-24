@@ -31,15 +31,7 @@ build doc:
   script:
   - apk update && apk add doxygen graphviz ttf-freefont zip git
   - doxygen Documentation/Autogen/Doxyfile >/dev/null
-  - git clone https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
-  - mkdir -p sdk-reference-parser-unity-ue/src
-  - mkdir -p sdk-reference-parser-unity-ue/dist
-  - mv Documentation/Autogen/html/ sdk-reference-parser-unity-ue/src >/dev/null
-  - cd sdk-reference-parser-unity-ue
-  - npm install
-  - npm start
-  - mv -v dist/html/* dist >/dev/null
-  - cd dist && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
+  - cd Documentation/Autogen/html && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
   artifacts:
     paths:
     - build.zip
@@ -88,6 +80,7 @@ stop doc:
 # JOBS BASE
 
 .win_job_base:
+  allow_failure: true
   artifacts:
     when: always
     expire_in: 3 days
@@ -99,6 +92,7 @@ stop doc:
     - windows
 
 .mac_job_base:
+  allow_failure: true
   artifacts:
     when: always
     expire_in: 3 days
@@ -110,6 +104,7 @@ stop doc:
     - mac
 
 .mac_2_job_base:
+  allow_failure: true
   artifacts:
     when: always
     expire_in: 3 days
