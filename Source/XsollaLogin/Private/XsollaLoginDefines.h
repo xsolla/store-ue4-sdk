@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "Logging/LogVerbosity.h"
 #include "Http.h"
+#include "XsollaUtils/Public/XsollaUtilsHttpRequestHelper.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogXsollaLogin, Log, All);
 
@@ -103,15 +104,21 @@ namespace XsollaLoginLogging
 
         // Log headers (excluding Authorization which may contain sensitive data)
         FString Headers;
-        for (const auto& Header : Request->GetAllHeaders())
+        TArray<FString> AllHeaders = Request->GetAllHeaders();
+        for (int32 i = 0; i < AllHeaders.Num(); ++i)
         {
-            if (!Header.Key.Contains(TEXT("Authorization")))
+            const FString& HeaderStr = AllHeaders[i];
+            FString Key, Value;
+            if (HeaderStr.Split(TEXT(": "), &Key, &Value))
             {
-                Headers += FString::Printf(TEXT("%s: %s; "), *Header.Key, *Header.Value);
-            }
-            else
-            {
-                Headers += FString::Printf(TEXT("%s: [HIDDEN]; "), *Header.Key);
+                if (!Key.Contains(TEXT("Authorization")))
+                {
+                    Headers += FString::Printf(TEXT("%s: %s; "), *Key, *Value);
+                }
+                else
+                {
+                    Headers += FString::Printf(TEXT("%s: [HIDDEN]; "), *Key);
+                }
             }
         }
 
