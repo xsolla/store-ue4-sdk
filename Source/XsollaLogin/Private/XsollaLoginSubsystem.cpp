@@ -7,6 +7,7 @@
 #include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsLoggingHelper.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
 #include "Async/Async.h"
@@ -1600,7 +1601,7 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 	FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaLoginLogging::LogHttpResponse(HttpRequest, HttpResponse);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1611,16 +1612,7 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 		if (JsonObject->HasTypedField<EJson::String>(SocialUrlFieldName))
 		{
 			const FString SocialUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
-
-			// Sanitize URL for logging (remove sensitive parts)
-			FString SanitizedUrl = SocialUrl;
-			int32 QueryPos = SocialUrl.Find(TEXT("?"));
-			if (QueryPos != INDEX_NONE)
-			{
-				SanitizedUrl = SocialUrl.Left(QueryPos + 1) + TEXT("[query_params_hidden]");
-			}
-
-			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received social authentication URL: %s"), *VA_FUNC_LINE, *SanitizedUrl);
+			XsollaUtilsLoggingHelper::LogUrl(SocialUrl, TEXT("Received social authentication URL"));
 			SuccessCallback.ExecuteIfBound(SocialUrl);
 			return;
 		}
@@ -1714,7 +1706,7 @@ void UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete(FHttpRequestPtr Htt
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Token refresh response received"), *VA_FUNC_LINE);
 
 	// Log HTTP response
-	XsollaLoginLogging::LogHttpResponse(HttpRequest, HttpResponse);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
 
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
 }
@@ -2215,7 +2207,7 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaLoginLogging::LogHttpResponse(HttpRequest, HttpResponse);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -2226,19 +2218,9 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
+
 			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
-
-			// Sanitize URL for logging (remove sensitive parts)
-			FString SanitizedUrl = LoginUrl;
-			int32 QueryPos = LoginUrl.Find(TEXT("?"));
-			if (QueryPos != INDEX_NONE)
-			{
-				SanitizedUrl = LoginUrl.Left(QueryPos + 1) + TEXT("[query_params_hidden]");
-			}
-
-			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received login URL with authentication code: %s"),
-				*VA_FUNC_LINE, *SanitizedUrl);
-
 			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
 			return;
 		}
@@ -2263,12 +2245,12 @@ void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError Error
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& Content, const FString& AuthToken)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Creating HTTP request - URL: %s, Verb: %s"),
-		*VA_FUNC_LINE, *Url, *XsollaLoginLogging::VerbToString(Verb));
+		*VA_FUNC_LINE, *Url, *XsollaUtilsLoggingHelper::VerbToString(Verb));
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
 
 	// Log request details
-	XsollaLoginLogging::LogHttpRequest(HttpRequest, Content);
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaLogin, Content);
 
 	return HttpRequest;
 }
@@ -2402,15 +2384,7 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 
 void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 {
-	// Sanitize URL for logging (remove sensitive parts)
-	FString SanitizedUrl = Url;
-	int32 QueryPos = Url.Find(TEXT("?"));
-	if (QueryPos != INDEX_NONE)
-	{
-		SanitizedUrl = Url.Left(QueryPos + 1) + TEXT("[query_params_hidden]");
-	}
-
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Social authentication URL received: %s"), *VA_FUNC_LINE, *SanitizedUrl);
+	XsollaUtilsLoggingHelper::LogUrl(Url, TEXT("Social authentication URL received"));
 
 	UUserWidget* BrowserWidget = nullptr;
 	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
@@ -2451,15 +2425,7 @@ void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 
 void UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback(const FString& Url)
 {
-	// Sanitize URL for logging (remove sensitive parts)
-	FString SanitizedUrl = Url;
-	int32 QueryPos = Url.Find(TEXT("?"));
-	if (QueryPos != INDEX_NONE)
-	{
-		SanitizedUrl = Url.Left(QueryPos + 1) + TEXT("[query_params_hidden]");
-	}
-
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Social linking URL received: %s"), *VA_FUNC_LINE, *SanitizedUrl);
+	XsollaUtilsLoggingHelper::LogUrl(Url, TEXT("Social linking URL received"));
 
 	auto MyBrowser = CreateWidget<UXsollaSocialLinkingBrowserWrapper>(CachedWorldContextObject->GetWorld(), DefaultSocialLinkingBrowserWidgetClass);
 	if (!MyBrowser)
