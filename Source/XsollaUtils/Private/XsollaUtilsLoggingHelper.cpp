@@ -6,12 +6,12 @@
 #include "XsollaUtilsDefines.h"
 
 // Initialize constants
-const bool XsollaUtilsLoggingHelper::bSanitizeAccessTokens = true;
-const bool XsollaUtilsLoggingHelper::bSanitizeRefreshTokens = true;
-const bool XsollaUtilsLoggingHelper::bSanitizePasswords = true;
-const bool XsollaUtilsLoggingHelper::bSanitizeAuthHeaders = true;
-const bool XsollaUtilsLoggingHelper::bSanitizeUrlsInResponses = true;
-const bool XsollaUtilsLoggingHelper::bSanitizeUrls = true;
+const bool XsollaUtilsLoggingHelper::bSanitizeAccessTokens = false;
+const bool XsollaUtilsLoggingHelper::bSanitizeRefreshTokens = false;
+const bool XsollaUtilsLoggingHelper::bSanitizePasswords = false;
+const bool XsollaUtilsLoggingHelper::bSanitizeAuthHeaders = false;
+const bool XsollaUtilsLoggingHelper::bSanitizeUrlsInResponses = false;
+const bool XsollaUtilsLoggingHelper::bSanitizeUrls = false;
 const int32 XsollaUtilsLoggingHelper::MaxContentLength = 1024;
 
 FString XsollaUtilsLoggingHelper::VerbToString(const EXsollaHttpRequestVerb Verb)
