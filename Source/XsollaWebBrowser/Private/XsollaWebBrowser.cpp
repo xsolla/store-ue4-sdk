@@ -10,6 +10,7 @@
 #include "WebBrowserModule.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
+#include "XsollaUtilsLoggingHelper.h"
 
 #define LOCTEXT_NAMESPACE "XsollaWebBrowser"
 
@@ -21,7 +22,8 @@ UXsollaWebBrowser::UXsollaWebBrowser(const FObjectInitializer& ObjectInitializer
 
 void UXsollaWebBrowser::LoadURL(FString NewURL)
 {
-	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Loading URL: %s"), *VA_FUNC_LINE, *NewURL);
+	FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(NewURL);
+	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Loading URL: %s"), *VA_FUNC_LINE, *SanitizedUrl);
 
 	if (WebBrowserWidget.IsValid())
 	{
@@ -35,7 +37,8 @@ void UXsollaWebBrowser::LoadURL(FString NewURL)
 
 void UXsollaWebBrowser::LoadHtml(FString Contents, FString DummyURL)
 {
-	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Loading HTML with dummy URL: %s"), *VA_FUNC_LINE, *DummyURL);
+	FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(DummyURL);
+	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Loading HTML with dummy URL: %s"), *VA_FUNC_LINE, *SanitizedUrl);
 
 	if (WebBrowserWidget.IsValid())
 	{
@@ -66,7 +69,8 @@ FString UXsollaWebBrowser::GetUrl() const
 	if (WebBrowserWidget.IsValid())
 	{
 		FString CurrentUrl = WebBrowserWidget->GetUrl();
-		UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Current URL: %s"), *VA_FUNC_LINE, *CurrentUrl);
+		FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(CurrentUrl);
+		UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Current URL: %s"), *VA_FUNC_LINE, *SanitizedUrl);
 		return CurrentUrl;
 	}
 
@@ -171,8 +175,9 @@ TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 	}
 	else
 	{
-		UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Creating web browser widget with initial URL: %s"),
-			*VA_FUNC_LINE, *InitialURL);
+	FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(InitialURL);
+	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Creating web browser widget with initial URL: %s"),
+		*VA_FUNC_LINE, *SanitizedUrl);
 
 		WebBrowserWidget = SNew(SWebBrowser)
 			.InitialURL(InitialURL)
@@ -189,7 +194,9 @@ TSharedRef<SWidget> UXsollaWebBrowser::RebuildWidget()
 
 void UXsollaWebBrowser::HandleOnUrlChanged(const FText& InText)
 {
-	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: URL changed to: %s"), *VA_FUNC_LINE, *InText.ToString());
+	FString Url = InText.ToString();
+	FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(Url);
+	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: URL changed to: %s"), *VA_FUNC_LINE, *SanitizedUrl);
 	OnUrlChanged.Broadcast(InText);
 }
 
@@ -201,8 +208,9 @@ void UXsollaWebBrowser::HandleOnPageLoaded()
 
 bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)
 {
+	FString SanitizedUrl = XsollaUtilsLoggingHelper::SanitizeUrlForLogging(URL);
 	UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: Before popup event - URL: %s, Frame: %s"),
-		*VA_FUNC_LINE, *URL, *Frame);
+		*VA_FUNC_LINE, *SanitizedUrl, *Frame);
 
 	if (OnBeforePopup.IsBound())
 	{
