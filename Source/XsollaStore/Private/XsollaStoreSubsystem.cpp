@@ -1308,7 +1308,7 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemGroupsData::StaticStruct(), &GroupsData, OutError))
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetItemGroups request: JSON received. Groups count: %d"),
-			*VA_FUNC_LINE, GroupsData.Groups.Num());
+			*VA_FUNC_LINE, GroupsData.groups.Num());
 		SuccessCallback.ExecuteIfBound(GroupsData);
 	}
 	else
