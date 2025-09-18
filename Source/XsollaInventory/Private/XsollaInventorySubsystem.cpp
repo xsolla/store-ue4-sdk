@@ -366,8 +366,8 @@ void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpReq
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryCouponRewardData::StaticStruct(), &couponRewards, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Log, TEXT("%s: GetCouponRewards request successful. Bonus items: %d, Bonus VC: %d"),
-			*VA_FUNC_LINE, couponRewards.bonus_items.Num(), couponRewards.bonus_virtual_currencies.Num());
+		UE_LOG(LogXsollaInventory, Log, TEXT("%s: GetCouponRewards request successful. Bonus items: %d"),
+			*VA_FUNC_LINE, couponRewards.bonus.Num());
 		SuccessCallback.ExecuteIfBound(couponRewards);
 	}
 	else
@@ -388,8 +388,8 @@ void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FInventoryRedeemedCouponData::StaticStruct(), &redeemedCouponData, OutError))
 	{
-		UE_LOG(LogXsollaInventory, Log, TEXT("%s: RedeemCoupon request successful. Items: %d, VC: %d"),
-			*VA_FUNC_LINE, redeemedCouponData.items.Num(), redeemedCouponData.virtual_currencies.Num());
+		UE_LOG(LogXsollaInventory, Log, TEXT("%s: RedeemCoupon request successful. Items: %d"),
+			*VA_FUNC_LINE, redeemedCouponData.items.Num());
 		SuccessCallback.ExecuteIfBound(redeemedCouponData);
 	}
 	else
