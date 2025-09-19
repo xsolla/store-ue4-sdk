@@ -1,0 +1,17 @@
+// Copyright 2024 Xsolla Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Logging/LogCategory.h"
+#include "Logging/LogMacros.h"
+#include "Logging/LogVerbosity.h"
+#include "XsollaUtils/Public/XsollaUtilsLoggingHelper.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogXsollaWebBrowser, Log, All);
+
+#define VA_FUNC (FString(__FUNCTION__))				 // Current Class Name + Function Name where this is called
+#define VA_LINE (FString::FromInt(__LINE__))		 // Current Line Number in the code where this is called
+#define VA_FUNC_LINE (VA_FUNC + "(" + VA_LINE + ")") // Current Class and Line Number where this is called!
+
+#define XSOLLA_WEBBROWSER_VERSION TEXT("4.0.0")
