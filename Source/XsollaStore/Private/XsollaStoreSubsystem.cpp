@@ -9,6 +9,7 @@
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
+#include "XsollaUtilsLoggingHelper.h"
 #include "Engine/GameInstance.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
@@ -71,7 +72,7 @@ void UXsollaStoreSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	FString EngineVersion = ENGINE_VERSION_STRING;
 
 #if PLATFORM_ANDROID
-	
+
 	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/store/XsollaNativePayments", "configureAnalytics",
 		"(Ljava/lang/String;Ljava/lang/String;)V",
 		XsollaJavaConvertor::GetJavaString(Engine),
@@ -351,6 +352,8 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
 	const EXsollaPayStationVersion PayStationVersion)
 {
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching payment console for order ID: %d"), *VA_FUNC_LINE, OrderId);
+
 	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
 	FString EngineVersion = ENGINE_VERSION_STRING;
 
@@ -364,6 +367,9 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 							.AddStringQueryParam(TEXT("browser_type"), GetBrowserType())
 							.AddStringQueryParam(TEXT("build_platform"), GetBuildPlatform())
 							.Build();
+
+	// Log the payment URL
+	XsollaUtilsLoggingHelper::LogUrl(PaystationUrl, TEXT("Payment console URL"));
 
 	PendingPaystationUrl = PaystationUrl;
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
@@ -421,7 +427,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Loading Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 		MyBrowser = CreateWidget<UXsollaStoreBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
 		MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually)
-		{ 
+		{
 			PaymentBrowserClosedCallback.ExecuteIfBound(bIsManually);
 			PaymentBrowserClosedCallback.Unbind();
 		});
@@ -528,7 +534,7 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem(const FString& Auth
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
-		HttpRequest->ProcessRequest(); 
+		HttpRequest->ProcessRequest();
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
@@ -552,7 +558,7 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart(const FString& AuthToken, co
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token);
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CreateOrderWithFreeCart_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
-		HttpRequest->ProcessRequest(); 
+		HttpRequest->ProcessRequest();
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
@@ -602,7 +608,7 @@ void UXsollaStoreSubsystem::ClearCart(const FString& AuthToken, const FString& C
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, Token);
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::ClearCart_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
-		HttpRequest->ProcessRequest(); 
+		HttpRequest->ProcessRequest();
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
@@ -622,7 +628,7 @@ void UXsollaStoreSubsystem::GetCart(const FString& AuthToken, const FString& Car
 							.AddStringQueryParam(TEXT("locale"), Locale)
 							.Build();
 
-	
+
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
@@ -1271,12 +1277,16 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreItemsData ItemsData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsData::StaticStruct(), &ItemsData, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualItems request: JSON received. Items count: %d. has_more: %s"), ItemsData.Items.Num(), ItemsData.has_more ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetVirtualItems request: JSON received. Items count: %d. has_more: %s"),
+			*VA_FUNC_LINE, ItemsData.Items.Num(), ItemsData.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(ItemsData);
 	}
 	else
@@ -1289,11 +1299,16 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreItemGroupsData GroupsData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemGroupsData::StaticStruct(), &GroupsData, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetItemGroups request: JSON received. Groups count: %d"),
+			*VA_FUNC_LINE, GroupsData.groups.Num());
 		SuccessCallback.ExecuteIfBound(GroupsData);
 	}
 	else
@@ -1306,12 +1321,16 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyData VirtualCurrencyData;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyData::StaticStruct(), &VirtualCurrencyData, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualCurrencies request: JSON received. Items count: %d. has_more: %s"), VirtualCurrencyData.Items.Num(), VirtualCurrencyData.has_more ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetVirtualCurrencies request: JSON received. Items count: %d. has_more: %s"),
+			*VA_FUNC_LINE, VirtualCurrencyData.Items.Num(), VirtualCurrencyData.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(VirtualCurrencyData);
 	}
 	else
@@ -1324,12 +1343,16 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackagesData::StaticStruct(), &VirtualCurrencyPackages, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetVirtualCurrencyPackages request: JSON received. Items count: %d. has_more: %s"), VirtualCurrencyPackages.Items.Num(), VirtualCurrencyPackages.has_more ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetVirtualCurrencyPackages request: JSON received. Items count: %d. has_more: %s"),
+			*VA_FUNC_LINE, VirtualCurrencyPackages.Items.Num(), VirtualCurrencyPackages.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(VirtualCurrencyPackages);
 	}
 	else
@@ -1342,12 +1365,16 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreItemsList ItemsList;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsList::StaticStruct(), &ItemsList, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetItemsListBySpecifiedGroup request: JSON received. Items count: %d. has_more: %s"), ItemsList.Items.Num(), ItemsList.has_more ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetItemsListBySpecifiedGroup request: JSON received. Items count: %d. has_more: %s"),
+			*VA_FUNC_LINE, ItemsList.Items.Num(), ItemsList.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(ItemsList);
 	}
 	else
@@ -1360,11 +1387,16 @@ void UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnGetItemsList SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreItemsList Items;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreItemsList::StaticStruct(), &Items, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetAllItemsList request: JSON received. Items count: %d"),
+			*VA_FUNC_LINE, Items.Items.Num());
 		SuccessCallback.ExecuteIfBound(Items);
 	}
 	else
@@ -1377,6 +1409,9 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
@@ -1385,6 +1420,8 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 		FString AccessToken = JsonObject->GetStringField(TEXT("token"));
 		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
 
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Payment token successfully fetched for order ID: %d"),
+			*VA_FUNC_LINE, OrderId);
 		SuccessCallback.ExecuteIfBound(AccessToken, OrderId);
 		return;
 	}
@@ -1396,6 +1433,9 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	FXsollaOrder Order;
 	XsollaHttpRequestError OutError;
 
@@ -1426,6 +1466,8 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Unknown order status: %s [%d]"), *VA_FUNC_LINE, *OrderStatusStr, Order.order_id);
 		}
 
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Order check complete - ID: %d, Status: %s"),
+			*VA_FUNC_LINE, Order.order_id, *OrderStatusStr);
 		SuccessCallback.ExecuteIfBound(Order.order_id, OrderStatus, Order.content);
 		return;
 	}
@@ -1437,6 +1479,9 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: Processing free item order request"), *VA_FUNC_LINE);
 	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
 
@@ -1444,6 +1489,9 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: Processing free cart order request"), *VA_FUNC_LINE);
 	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
 
@@ -1451,10 +1499,14 @@ void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Cart successfully cleared"), *VA_FUNC_LINE);
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1467,12 +1519,16 @@ void UXsollaStoreSubsystem::GetCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreCart Cart;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetCart request: JSON received. Cart id: %s. is_free: %s. Items count: %d"), *Cart.cart_id, Cart.is_free ? TEXT("true") : TEXT("false"), Cart.Items.Num());
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetCart request: JSON received. Cart id: %s. is_free: %s. Items count: %d"),
+			*VA_FUNC_LINE, *Cart.cart_id, Cart.is_free ? TEXT("true") : TEXT("false"), Cart.Items.Num());
 		SuccessCallback.ExecuteIfBound(Cart);
 	}
 	else
@@ -1485,11 +1541,14 @@ void UXsollaStoreSubsystem::UpdateItemInCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("UpdateItemInCart request: Item successfully updated."));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: UpdateItemInCart request: Item successfully updated"), *VA_FUNC_LINE);
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1502,11 +1561,14 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponse(HttpRequest, HttpResponse, bSucceeded, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("RemoveFromCart request: Item successfully removed."));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: RemoveFromCart request: Item successfully removed"), *VA_FUNC_LINE);
 		SuccessCallback.ExecuteIfBound();
 	}
 	else
@@ -1519,12 +1581,16 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreCart Cart;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreCart::StaticStruct(), &Cart, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("FillCartById request: JSON received. Cart id: %s. is_free: %s. Items count: %d"), *Cart.cart_id, Cart.is_free ? TEXT("true") : TEXT("false"), Cart.Items.Num());
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: FillCartById request: JSON received. Cart id: %s. is_free: %s. Items count: %d"),
+			*VA_FUNC_LINE, *Cart.cart_id, Cart.is_free ? TEXT("true") : TEXT("false"), Cart.Items.Num());
 		SuccessCallback.ExecuteIfBound(Cart);
 	}
 	else
@@ -1537,12 +1603,16 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreListOfBundles::StaticStruct(), &ListOfBundles, OutError))
 	{
-		UE_LOG(LogXsollaStore, Log, TEXT("GetBundles request: JSON received. Items count: %d. has_more: %s"), ListOfBundles.items.Num(), ListOfBundles.has_more ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetBundles request: JSON received. Items count: %d. has_more: %s"),
+			*VA_FUNC_LINE, ListOfBundles.items.Num(), ListOfBundles.has_more ? TEXT("true") : TEXT("false"));
 		SuccessCallback.ExecuteIfBound(ListOfBundles);
 	}
 	else
@@ -1554,11 +1624,16 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FStoreBundle::StaticStruct(), &Bundle, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetSpecifiedBundle request: Bundle '%s' successfully retrieved"),
+			*VA_FUNC_LINE, *Bundle.name);
 		SuccessCallback.ExecuteIfBound(Bundle);
 	}
 	else
@@ -1571,11 +1646,16 @@ void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FVirtualCurrency currency;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrency::StaticStruct(), &currency, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetVirtualCurrency request: Currency '%s' successfully retrieved"),
+			*VA_FUNC_LINE, *currency.name);
 		SuccessCallback.ExecuteIfBound(currency);
 	}
 	else
@@ -1588,11 +1668,16 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackage currencyPackage;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FVirtualCurrencyPackage::StaticStruct(), &currencyPackage, OutError))
 	{
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: GetVirtualCurrencyPackage request: Package '%s' successfully retrieved"),
+			*VA_FUNC_LINE, *currencyPackage.name);
 		SuccessCallback.ExecuteIfBound(currencyPackage);
 	}
 	else
@@ -1605,12 +1690,17 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
 		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Successfully purchased item with virtual currency. Order ID: %d"),
+			*VA_FUNC_LINE, OrderId);
 		SuccessCallback.ExecuteIfBound(OrderId);
 		return;
 	}
@@ -1905,7 +1995,7 @@ void UXsollaStoreSubsystem::CancelSubscription_HttpRequestComplete(FHttpRequestP
 void UXsollaStoreSubsystem::HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback)
 {
 	auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
-	UE_LOG(LogXsollaStore, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"),
+	UE_LOG(LogXsollaStore, Error, TEXT("%s: Request failed - Status code: %d, Error code: %d, Error message: %s"),
 		*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
 	ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
 }
@@ -1920,7 +2010,7 @@ void UXsollaStoreSubsystem::HandlePurchaseFreeItemsRequest(
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
 		int32 OrderId = JsonObject->GetNumberField(TEXT("order_id"));
-
+		UE_LOG(LogXsollaStore, Log, TEXT("%s: Free item purchase successful. Order ID: %d"), *VA_FUNC_LINE, OrderId);
 		SuccessCallback.ExecuteIfBound(OrderId);
 		return;
 	}
@@ -2124,7 +2214,15 @@ void UXsollaStoreSubsystem::CallGetBundles()
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb,
 	const FString& AuthToken, const FString& Content)
 {
-	return XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("STORE"), XSOLLA_STORE_VERSION);
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: Creating HTTP request - URL: %s, Verb: %s"),
+		*VA_FUNC_LINE, *Url, *XsollaUtilsLoggingHelper::VerbToString(Verb));
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("STORE"), XSOLLA_STORE_VERSION);
+
+	// Log request details
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaStore, Content);
+
+	return HttpRequest;
 }
 
 FString UXsollaStoreSubsystem::SerializeJson(const TSharedPtr<FJsonObject> DataJson) const

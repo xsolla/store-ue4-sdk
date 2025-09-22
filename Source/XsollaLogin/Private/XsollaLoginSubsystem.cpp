@@ -7,6 +7,7 @@
 #include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
 #include "XsollaUtilsLibrary.h"
+#include "XsollaUtilsLoggingHelper.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
 #include "Async/Async.h"
@@ -390,6 +391,8 @@ void UXsollaLoginSubsystem::ValidateToken(const FOnAuthUpdate& SuccessCallback, 
 void UXsollaLoginSubsystem::GetSocialAuthenticationUrl(const FString& ProviderName, const FString& State,
 	const FOnSocialUrlReceived& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Requesting social authentication URL for provider: %s"), *VA_FUNC_LINE, *ProviderName);
+
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Generate endpoint URL
@@ -423,6 +426,8 @@ void UXsollaLoginSubsystem::LaunchSocialAuthentication(UObject* WorldContextObje
 void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& ProviderName, const FOnAuthUpdate& SuccessCallback,
 	const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback, const bool bRememberMe, const FString& State)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Launching native social authentication for provider: %s"), *VA_FUNC_LINE, *ProviderName);
+
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	NativeSuccessCallback = SuccessCallback;
@@ -430,6 +435,8 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 	NativeCancelCallback = CancelCallback;
 
 #if PLATFORM_ANDROID
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using Android native social authentication"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* nativeCallback = NewObject<UXsollaNativeAuthCallback>();
 	nativeCallback->BindSuccessDelegate(SuccessCallback, this);
 	nativeCallback->BindCancelDelegate(CancelCallback);
@@ -445,7 +452,10 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 #endif
 
 #if PLATFORM_IOS
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using iOS native social authentication"), *VA_FUNC_LINE);
+
 	FString RedirectURI = FString::Printf(TEXT("app://xlogin.%s"), *UXsollaLoginLibrary::GetAppId());
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using redirect URI: %s"), *VA_FUNC_LINE, *RedirectURI);
 
 	OAuth2Params* OAuthParams = [[OAuth2Params alloc] initWithClientId:[ClientID.GetNSString() intValue]
 		state:State.GetNSString()
@@ -470,8 +480,14 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 		{
 			NSLog(@"Error code: %ld", error.code);
 
+			FString ErrorCodeStr = FString([@(error.code) stringValue]);
+			FString ErrorDescStr = FString(error.description);
+			UE_LOG(LogXsollaLogin, Error, TEXT("iOS native auth error: Code=%s, Description=%s"),
+				*ErrorCodeStr, *ErrorDescStr);
+
 			if (error.code == NSError.loginKitErrorCodeASCanceledLogin)
 			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("iOS native auth: User canceled login"));
 				AsyncTask(ENamedThreads::GameThread, [=]() {
 					NativeCancelCallback.ExecuteIfBound();
 				});
@@ -483,6 +499,9 @@ void UXsollaLoginSubsystem::LaunchNativeSocialAuthentication(const FString& Prov
 			});
 			return;
 		}
+
+		UE_LOG(LogXsollaLogin, Log, TEXT("iOS native auth: Successfully received token, expires in: %d seconds"),
+			tokenInfo.expiresIn);
 
 		LoginData.AuthToken.JWT = tokenInfo.accessToken;
 		LoginData.AuthToken.RefreshToken = tokenInfo.refreshToken;
@@ -499,7 +518,10 @@ void UXsollaLoginSubsystem::AuthenticateViaSocialNetwork(const FString& Provider
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthCancel& CancelCallback, const FOnAuthError& ErrorCallback,
 	const bool bRememberMe, const FString& State)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Starting social authentication via provider: %s"), *VA_FUNC_LINE, *ProviderName);
+
 	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Current platform: %s"), *VA_FUNC_LINE, *Platform);
 
 	LoginData.bRememberMe = bRememberMe;
 	NativeSuccessCallback = SuccessCallback;
@@ -508,15 +530,17 @@ void UXsollaLoginSubsystem::AuthenticateViaSocialNetwork(const FString& Provider
 
 	if (Platform == TEXT("android") || Platform == TEXT("ios"))
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using native social authentication for mobile platform"), *VA_FUNC_LINE);
 		LaunchNativeSocialAuthentication(ProviderName, SuccessCallback, CancelCallback, ErrorCallback, bRememberMe, State);
 	}
 	else
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using web-based social authentication"), *VA_FUNC_LINE);
 		FOnSocialUrlReceived UrlReceivedCallback;
 		UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback);
 		GetSocialAuthenticationUrl(ProviderName, State, UrlReceivedCallback, ErrorCallback);
 	}
-} 
+}
 
 void UXsollaLoginSubsystem::SetToken(const FString& Token)
 {
@@ -526,6 +550,8 @@ void UXsollaLoginSubsystem::SetToken(const FString& Token)
 
 void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Refreshing authentication token"), *VA_FUNC_LINE);
+
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Prepare request payload
@@ -551,6 +577,8 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Exchanging authentication code for token"), *VA_FUNC_LINE);
+
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Prepare request payload
@@ -1572,6 +1600,9 @@ void UXsollaLoginSubsystem::TokenVerify_HttpRequestComplete(FHttpRequestPtr Http
 void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
@@ -1580,12 +1611,14 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 		static const FString SocialUrlFieldName = TEXT("url");
 		if (JsonObject->HasTypedField<EJson::String>(SocialUrlFieldName))
 		{
-			const FString SocialnUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
-			SuccessCallback.ExecuteIfBound(SocialnUrl);
+			const FString SocialUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
+			XsollaUtilsLoggingHelper::LogUrl(SocialUrl, TEXT("Received social authentication URL"));
+			SuccessCallback.ExecuteIfBound(SocialUrl);
 			return;
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *SocialUrlFieldName);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Social URL field not found in response"), *VA_FUNC_LINE);
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
@@ -1670,6 +1703,11 @@ void UXsollaLoginSubsystem::DeviceId_HttpRequestComplete(FHttpRequestPtr HttpReq
 void UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Token refresh response received"), *VA_FUNC_LINE);
+
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
 }
 
@@ -2146,7 +2184,11 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		{
 			LoginData.AuthToken.JWT = JsonObject->GetStringField(AccessTokenFieldName);
 			LoginData.AuthToken.RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
-			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + JsonObject->GetNumberField(TEXT("expires_in"));
+			int32 ExpiresIn = JsonObject->GetNumberField(TEXT("expires_in"));
+			LoginData.AuthToken.ExpiresAt = FDateTime::UtcNow().ToUnixTimestamp() + ExpiresIn;
+
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: OAuth token received successfully, expires in %d seconds"),
+				*VA_FUNC_LINE, ExpiresIn);
 
 			SaveData();
 
@@ -2155,6 +2197,7 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: OAuth token response missing access_token field"), *VA_FUNC_LINE);
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
@@ -2163,6 +2206,9 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded,
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
+	// Log HTTP response
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
 
@@ -2172,13 +2218,15 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
+			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
 
+			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
 			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
 			return;
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *LoginUrlFieldName);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Login URL field not found in response"), *VA_FUNC_LINE);
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
@@ -2186,13 +2234,25 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 
 void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback)
 {
-	UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Error code: %s, Error message: %s"), *VA_FUNC_LINE, *ErrorData.code, *ErrorData.description);
+	FString errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
+
+	UE_LOG(LogXsollaLogin, Error, TEXT("%s: OAuth request failed - Status code: %d, Error code: %s, Error message: %s"),
+		*VA_FUNC_LINE, ErrorData.statusCode, *ErrorData.code, *errorMessage);
+
 	ErrorCallback.ExecuteIfBound(ErrorData.code, ErrorData.description);
 }
 
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& Content, const FString& AuthToken)
 {
-	return XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Creating HTTP request - URL: %s, Verb: %s"),
+		*VA_FUNC_LINE, *Url, *XsollaUtilsLoggingHelper::VerbToString(Verb));
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
+
+	// Log request details
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaLogin, Content);
+
+	return HttpRequest;
 }
 
 void UXsollaLoginSubsystem::SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const
@@ -2290,17 +2350,24 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 {
 	if (ErrorData.statusCode == 401 || ErrorData.statusCode == 403) // token time expired
 	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Authentication token expired or invalid (Status code: %d). Attempting to refresh token."),
+			*VA_FUNC_LINE, ErrorData.statusCode);
+
 		FOnLoginDataUpdate SuccessRefreshCallback;
 		SuccessRefreshCallback.BindLambda([ErrorHandlersWrapper](const FXsollaLoginData& InLoginData)
 		{
 			if (ErrorHandlersWrapper.bNeedRepeatRequest)
 			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("Token refresh successful. Repeating original request with new token."));
 				ErrorHandlersWrapper.TokenUpdateCallback.ExecuteIfBound(InLoginData.AuthToken.JWT, false);
 			}
 		});
+
 		FOnLoginDataError ErrorRefreshCallback;
 		ErrorRefreshCallback.BindLambda([ErrorHandlersWrapper](int32 StatusCode, int32 ErrorCode, const FString& Description)
 		{
+			UE_LOG(LogXsollaLogin, Error, TEXT("Token refresh failed - Status code: %d, Error code: %d, Description: %s"),
+				StatusCode, ErrorCode, *Description);
 			ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(StatusCode, ErrorCode, Description);
 		});
 
@@ -2309,13 +2376,16 @@ void UXsollaLoginSubsystem::HandleRequestError(const XsollaHttpRequestError& Err
 	else
 	{
 		auto errorMessage = ErrorData.errorMessage.IsEmpty() ? ErrorData.description : ErrorData.errorMessage;
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: request failed - Status code: %d, Error code: %d, Error message: %s"), *VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Request failed - Status code: %d, Error code: %d, Error message: %s"),
+			*VA_FUNC_LINE, ErrorData.statusCode, ErrorData.errorCode, *errorMessage);
 		ErrorHandlersWrapper.ErrorCallback.ExecuteIfBound(ErrorData.statusCode, ErrorData.errorCode, errorMessage);
 	}
 }
 
 void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 {
+	XsollaUtilsLoggingHelper::LogUrl(Url, TEXT("Social authentication URL received"));
+
 	UUserWidget* BrowserWidget = nullptr;
 	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
 
@@ -2323,44 +2393,73 @@ void UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback(const FString& Url)
 
 	if (BrowserWidgetWrapper != nullptr)
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading social authentication URL in browser widget"), *VA_FUNC_LINE);
 		BrowserWidgetWrapper->LoadUrl(Url);
 		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([&](bool bIsManually, const FString& AuthenticationCode)
 		{
 			if (!AuthenticationCode.IsEmpty())
 			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code, exchanging for token"), *VA_FUNC_LINE);
 				ExchangeAuthenticationCodeToToken(AuthenticationCode, NativeSuccessCallback, NativeErrorCallback);
 			}
 			else
 			{
 				if (bIsManually)
 				{
+					UE_LOG(LogXsollaLogin, Log, TEXT("%s: Social authentication canceled by user"), *VA_FUNC_LINE);
 					NativeCancelCallback.ExecuteIfBound();
 				}
 				else
 				{
+					UE_LOG(LogXsollaLogin, Error, TEXT("%s: Social authentication failed - Authentication code is empty"), *VA_FUNC_LINE);
 					NativeErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
 				}
 			}
 		});
 	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create browser widget for social authentication"), *VA_FUNC_LINE);
+	}
 }
 
 void UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback(const FString& Url)
 {
+	XsollaUtilsLoggingHelper::LogUrl(Url, TEXT("Social linking URL received"));
+
 	auto MyBrowser = CreateWidget<UXsollaSocialLinkingBrowserWrapper>(CachedWorldContextObject->GetWorld(), DefaultSocialLinkingBrowserWidgetClass);
+	if (!MyBrowser)
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create social linking browser widget"), *VA_FUNC_LINE);
+		return;
+	}
+
 	MyBrowser->OnBrowserClosed.BindLambda([&](bool bIsManually, const FString& Token, const FString& ErrorCode, const FString& ErrorDescription)
 	{
 		if (!Token.IsEmpty())
 		{
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Social linking successful"), *VA_FUNC_LINE);
 			CachedSocialLinkingSuccessCallback.ExecuteIfBound();
 		}
 		else
 		{
-			const FString ErrorMessage = ErrorCode.IsEmpty() ? TEXT("Linking failed. Token is empty.") 
+			if (bIsManually)
+			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Social linking canceled by user"), *VA_FUNC_LINE);
+			}
+			else
+			{
+				UE_LOG(LogXsollaLogin, Error, TEXT("%s: Social linking failed - ErrorCode: %s, ErrorDescription: %s"),
+					*VA_FUNC_LINE, *ErrorCode, *ErrorDescription);
+			}
+
+			const FString ErrorMessage = ErrorCode.IsEmpty() ? TEXT("Linking failed. Token is empty.")
 				: FString::Printf(TEXT("Linking failed. ErrorCode: %s, ErrorDescription: %s"), *ErrorCode, *ErrorDescription);
 			CachedSocialLinkingErrorCallback.ExecuteIfBound(-1, -1, ErrorMessage);
 		}
 	});
+
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading social linking URL in browser widget"), *VA_FUNC_LINE);
 	MyBrowser->AddToViewport(INT_MAX - 100);
 	MyBrowser->LoadUrl(Url);
 }
@@ -2370,6 +2469,8 @@ void UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback(const FString& Url)
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
 	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth success callback received"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
 
 	if (IsValid(callback))
@@ -2379,6 +2480,10 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCall
 		receivedData.AuthToken.RefreshToken = XsollaJavaConvertor::FromJavaString(refreshToken);
 		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
 		receivedData.bRememberMe = rememberMe;
+
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth successful, token expires in %lld seconds"),
+			*VA_FUNC_LINE, expiresAt - FDateTime::UtcNow().ToUnixTimestamp());
+
 		callback->ExecuteSuccess(receivedData);
 	}
 	else
@@ -2389,10 +2494,13 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCall
 
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth cancel callback received"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
 
 	if (IsValid(callback))
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth canceled by user"), *VA_FUNC_LINE);
 		callback->ExecuteCancel();
 	}
 	else
@@ -2403,11 +2511,15 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthCancelCallb
 
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth error callback received"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
 
 	if (IsValid(callback))
 	{
-		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+		FString errorMessage = XsollaJavaConvertor::FromJavaString(errorMsg);
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Android native auth error: %s"), *VA_FUNC_LINE, *errorMessage);
+		callback->ExecuteError(errorMessage);
 	}
 	else
 	{
@@ -2418,6 +2530,8 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallba
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
 	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth success callback received"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
 
 	if (IsValid(callback))
@@ -2427,6 +2541,10 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAut
 		receivedData.AuthToken.RefreshToken = XsollaJavaConvertor::FromJavaString(refreshToken);
 		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
 		receivedData.bRememberMe = rememberMe;
+
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth successful, token expires in %lld seconds"),
+			*VA_FUNC_LINE, expiresAt - FDateTime::UtcNow().ToUnixTimestamp());
+
 		callback->ExecuteSuccess(receivedData);
 	}
 	else
@@ -2437,10 +2555,13 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAut
 
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
 {
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth cancel callback received"), *VA_FUNC_LINE);
+
 	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
 
 	if (IsValid(callback))
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth canceled by user"), *VA_FUNC_LINE);
 		callback->ExecuteCancel();
 	}
 	else
