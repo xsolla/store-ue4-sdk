@@ -25,7 +25,6 @@ utils.clone_repo(constants.plugin_remote, plugin_dir, plugin_branch)
 # Update engine version in test project and SDK plugin
 unreal.change_engine_version_for_demo_project(project_dir, engine_version)
 unreal.update_target_files_for_demo_project(source_dir, engine_version)
-unreal.update_login_upl_for_sdk_plugin(plugin_dir, engine_version)
 unreal.update_default_engine_ini_file(user_engine_ini_path, engine_version)
 unreal.change_engine_version_for_sdk_plugin(plugin_dir, engine_version)
 

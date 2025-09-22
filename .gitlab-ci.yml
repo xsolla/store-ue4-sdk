@@ -79,7 +79,13 @@ stop doc:
 # JOBS BASE
 
 .win_job_base:
+  variables:
+    JAVA_HOME: "C:\\Program Files\\Java\\jdk-17"
   allow_failure: true
+  before_script:
+    - set PATH=%JAVA_HOME%\bin;%PATH%
+    - java -version
+    - echo "JAVA_HOME=%JAVA_HOME%"
   artifacts:
     when: always
     expire_in: 3 days
@@ -92,6 +98,7 @@ stop doc:
 
 .mac_job_base:
   allow_failure: true
+  when: manual
   artifacts:
     when: always
     expire_in: 3 days
@@ -102,38 +109,9 @@ stop doc:
     - sdk_ci
     - mac
 
-.mac_2_job_base:
-  allow_failure: true
-  artifacts:
-    when: always
-    expire_in: 3 days
-    paths:
-      - Builds
-  dependencies: []
-  tags:
-    - sdk_ci_mac_2
-    - macos
-
 # =================================================================================================================
 # DEMO WINIDOWS
-
-demo_52_win_inapp_browser:
-  extends: .win_job_base
-  stage: demo_win
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 False
-  artifacts:
-    name: "demo-UE52-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_52_win_system_browser:
-  extends: .win_job_base
-  stage: demo_win
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 True
-  artifacts:
-    name: "demo-UE52-win-system_browser-%CI_COMMIT_REF_SLUG%"
-
+    
 demo_53_win_inapp_browser:
   extends: .win_job_base
   stage: demo_win
@@ -150,7 +128,7 @@ demo_53_win_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Win64 True
   artifacts:
     name: "demo-UE53-win-system_browser-%CI_COMMIT_REF_SLUG%"
-
+    
 demo_54_win_inapp_browser:
   extends: .win_job_base
   stage: demo_win
@@ -167,7 +145,7 @@ demo_54_win_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Win64 True
   artifacts:
     name: "demo-UE54-win-system_browser-%CI_COMMIT_REF_SLUG%"
-
+    
 demo_55_win_inapp_browser:
   extends: .win_job_base
   stage: demo_win
@@ -188,24 +166,6 @@ demo_55_win_system_browser:
 # =================================================================================================================
 # DEMO ANDROID
 
-demo_52_android_inapp_browser:
-  extends: .win_job_base
-  stage: demo_android
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android False
-  artifacts:
-    name: "demo-UE52-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_52_android_system_browser:
-  extends: .win_job_base
-  stage: demo_android
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android True
-  artifacts:
-    name: "demo-UE52-android-system_browser-%CI_COMMIT_REF_SLUG%"
-
 demo_53_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
@@ -222,7 +182,7 @@ demo_53_android_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Android True
   artifacts:
     name: "demo-UE53-android-system_browser-%CI_COMMIT_REF_SLUG%"
-
+    
 demo_54_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
@@ -239,7 +199,7 @@ demo_54_android_system_browser:
     - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.4" Android True
   artifacts:
     name: "demo-UE54-android-system_browser-%CI_COMMIT_REF_SLUG%"
-
+    
 demo_55_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
@@ -271,7 +231,6 @@ demo_52_mac_inapp_browser:
 demo_52_mac_system_browser:
   extends: .mac_job_base
   stage: demo_mac
-  when: manual
   script:
     - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" Mac True
   artifacts:
