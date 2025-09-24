@@ -604,7 +604,8 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 
 void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& Code,
 	const FString& AppId, const FString& State,
-	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback,
+	const FString& Scope)
 {
 
 	if (ProviderName.ToLower() == TEXT("steam"))
@@ -619,19 +620,26 @@ void UXsollaLoginSubsystem::AuthenticateWithSessionTicket(const FString& Provide
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
-	// Generate endpoint URL
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
-							.SetPathParam(TEXT("ProviderName"), ProviderName)
-							.AddStringQueryParam(TEXT("client_id"), ClientID)
-							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
-							.AddStringQueryParam(TEXT("state"), State)
-							.AddStringQueryParam(TEXT("app_id"), AppId)
-							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
-							.AddStringQueryParam(TEXT("session_ticket"), SessionTicket)
-							.AddBoolQueryParam(TEXT("is_redirect"), false, false)
-							.AddStringQueryParam(TEXT("code"), Code)
-							.Build();
+	// Create URL builder
+	XsollaUtilsUrlBuilder UrlBuilder = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/cross_auth"))
+		.SetPathParam(TEXT("ProviderName"), ProviderName)
+		.AddStringQueryParam(TEXT("client_id"), ClientID)
+		.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+		.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
+		.AddStringQueryParam(TEXT("state"), State)
+		.AddStringQueryParam(TEXT("app_id"), AppId);
+
+	// Only add scope if it's not empty
+	if (!Scope.IsEmpty())
+	{
+		UrlBuilder.AddStringQueryParam(TEXT("scope"), Scope);
+	}
+
+	const FString Url = UrlBuilder
+		.AddStringQueryParam(TEXT("session_ticket"), SessionTicket)
+		.AddBoolQueryParam(TEXT("is_redirect"), false, false)
+		.AddStringQueryParam(TEXT("code"), Code)
+		.Build();
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::SessionTicket_HttpRequestComplete, SuccessCallback, ErrorCallback);

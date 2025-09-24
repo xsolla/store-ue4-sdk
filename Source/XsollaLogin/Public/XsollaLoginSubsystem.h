@@ -241,11 +241,12 @@ public:
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param SuccessCallback Called after successful user authentication with a platform session ticket. Authentication data including a JWT will be received.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param Scope Request scope (e.g. "basic_profile","offline", etc., empty by default).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& Code,
 		const FString& AppId, const FString& State,
-		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& Scope = TEXT(""));
 
 	/** Returns a list of particular user’s attributes with their values and descriptions. Returns only user-editable attributes.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-attributes/).
