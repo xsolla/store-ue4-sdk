@@ -12,7 +12,7 @@ UXsollaProjectSettings::UXsollaProjectSettings(const FObjectInitializer& ObjectI
 	SendPasswordlessAuthURL = false;
 	RedirectURI = TEXT("https://login.xsolla.com/api/blank");
 	PasswordlessAuthURL = TEXT("https://login-widget.xsolla.com/latest/confirm-status");
-	WebStoreURL = TEXT("https://sitebuilder.xsolla.com/game/sdk-web-store/");
+	WebStoreURL = TEXT("https://sdk-web-store.xsolla.site/");
 	EnableSandbox = true;
 	UsePlatformBrowser = false;
 	BuildForSteam = false;
