@@ -22,7 +22,8 @@ void UXsollaNativeAuthCallback::BindErrorDelegate(const FOnAuthError& OnError)
 
 void UXsollaNativeAuthCallback::ExecuteSuccess(const FXsollaLoginData& LoginData)
 {
-	AsyncTask(ENamedThreads::GameThread, [=]() { 
+	AsyncTask(ENamedThreads::GameThread, [this, LoginData]()
+		{ 
 		LoginSubsystem->SetLoginData(LoginData);
 		OnAuthSuccessDelegate.ExecuteIfBound(LoginData);
 	});
@@ -30,14 +31,14 @@ void UXsollaNativeAuthCallback::ExecuteSuccess(const FXsollaLoginData& LoginData
 
 void UXsollaNativeAuthCallback::ExecuteCancel()
 {
-	AsyncTask(ENamedThreads::GameThread, [=]() {
+	AsyncTask(ENamedThreads::GameThread, [this]() {
 		OnAuthCancelDelegate.ExecuteIfBound();
 	});
 }
 
 void UXsollaNativeAuthCallback::ExecuteError(const FString& ErrorMessage)
 {
-	AsyncTask(ENamedThreads::GameThread, [=]() {
+	AsyncTask(ENamedThreads::GameThread, [this, ErrorMessage]() {
 		OnAuthErrorDelegate.ExecuteIfBound(TEXT("0"), ErrorMessage);
 	});
 }

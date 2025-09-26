@@ -18,6 +18,7 @@ def update_target_files_for_demo_project(source_dir, engine_version):
 
 def update_default_engine_ini_file(config_dir, engine_version):
     target_file_path = os.path.join(config_dir, f"DefaultEngine.ini")
+    utils.update_line_in_file(target_file_path, 160, constants.ndk_path_by_engine_version[engine_version])
     utils.update_line_in_file(target_file_path, 161, constants.java_path_by_engine_version[engine_version])
     utils.update_line_in_file(target_file_path, 162, constants.sdk_api_level_by_engine_version[engine_version])
     utils.update_line_in_file(target_file_path, 163, constants.ndk_api_level_by_engine_version[engine_version])
