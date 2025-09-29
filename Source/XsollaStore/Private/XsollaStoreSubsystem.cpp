@@ -2256,6 +2256,9 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
 		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
 
+	if (PaymentTokenRequestPayload.payment_method >= 0)
+		PaystationSettingsJson->SetNumberField(TEXT("payment_method"), PaymentTokenRequestPayload.payment_method);
+
 	RequestDataJson->SetObjectField(TEXT("settings"), PaystationSettingsJson);
 
 	RequestDataJson->SetStringField(TEXT("return_url"), Settings->ReturnUrl);
