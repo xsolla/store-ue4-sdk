@@ -11,6 +11,6 @@ void UXsollaNativePaymentsCallback::BindBrowserClosedDelegate(const FOnStoreBrow
 
 void UXsollaNativePaymentsCallback::ExecuteBrowserClosed(bool bIsManually)
 {
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	AsyncTask(ENamedThreads::GameThread, [this, bIsManually]()
 		{ OnBrowserClosedDelegate.ExecuteIfBound(bIsManually); });
 }
