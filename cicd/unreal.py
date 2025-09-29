@@ -16,11 +16,6 @@ def update_target_files_for_demo_project(source_dir, engine_version):
     utils.update_line_in_file(editor_target_file_path, 11, constants.settings_by_engine_version[engine_version])
 
 
-def update_login_upl_for_sdk_plugin(plugin_dir, engine_version):
-    target_file_path = os.path.join(plugin_dir, "Source", "XsollaLogin", f"XsollaLogin_UPL.xml")
-    utils.update_line_in_file(target_file_path, 81, constants.google_play_services_dependency_by_engine_version[engine_version])
-
-
 def update_default_engine_ini_file(config_dir, engine_version):
     target_file_path = os.path.join(config_dir, f"DefaultEngine.ini")
     utils.update_line_in_file(target_file_path, 161, constants.java_path_by_engine_version[engine_version])

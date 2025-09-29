@@ -4,14 +4,10 @@ demo_project_name = 'StoreUeSdkTest'
 
 plugin_remote = 'git@gitlab.loc:sdk_group/store-ue4-sdk.git'
 plugin_name = 'Xsolla'
-settings_by_engine_version = {'5.2': 'DefaultBuildSettings = BuildSettingsVersion.V2; IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_2;',
-                              '5.3': 'DefaultBuildSettings = BuildSettingsVersion.V4; IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;',
-                              '5.4': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;',
-                              '5.5': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;'}
-google_play_services_dependency_by_engine_version = {'5.2': "implementation 'com.google.android.gms:play-services-games:18.0.0'",
-                                                     '5.3': "implementation 'com.google.android.gms:play-services-games:18.0.0'",
-                                                     '5.4': "implementation 'com.google.android.gms:play-services-games-v2:19.0.0'",
-                                                     '5.5': "implementation 'com.google.android.gms:play-services-games-v2:19.0.0'"}
+settings_by_engine_version = {'5.2': 'DefaultBuildSettings = BuildSettingsVersion.V2; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
+                              '5.3': 'DefaultBuildSettings = BuildSettingsVersion.V4; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
+                              '5.4': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
+                              '5.5': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;'}
 java_path_by_engine_version = {'5.2': 'JavaPath=(Path="C:/Program Files/Java/jdk1.8.0_181")',
                                '5.3': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
                                '5.4': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
