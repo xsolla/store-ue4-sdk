@@ -3,13 +3,13 @@
 ## [4.1.0] - 2025-09-30
 
 ### Added
-- Added Unreal Engine 5.6 support
-- Added an optional `payment_method` field to the `FXsollaPaymentTokenRequestPayload`
-- Added an optional `scope` parameter to the `AuthenticateWithSessionTicket` method for third-party login systems
+- Unreal Engine 5.6 support
+- Optional `payment_method` field in `FXsollaPaymentTokenRequestPayload`
+- Optional `scope` parameter in `AuthenticateWithSessionTicket` for third-party login systems
 
 ### Changed
-- Increased log coverage for API calls
-- Updated the web shop URL
+- Expanded logging coverage for API calls
+- Updated URL of the Web Shop demo
 
 ## [4.0.0] - 2024-12-19
 

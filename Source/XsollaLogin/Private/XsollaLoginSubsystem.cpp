@@ -1478,8 +1478,7 @@ void UXsollaLoginSubsystem::LinkSocialProvider(UObject* WorldContextObject, cons
 
 	if (Platform == TEXT("android") || Platform == TEXT("ios"))
 	{
-		//TEXTREVIEW
-		const FString errorMessage = TEXT("LinkSocialProvider: This functionality is not supported elswere except Windows and Mac build");
+		const FString errorMessage = TEXT("LinkSocialProvider: This functionality is only supported on Windows and Mac builds.");
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s"), *errorMessage);
 		ErrorCallback.ExecuteIfBound(-1, -1, errorMessage);
 	}
