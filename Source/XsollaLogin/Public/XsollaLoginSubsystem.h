@@ -16,9 +16,11 @@
 
 class FJsonObject;
 class UXsollaLoginBrowserWrapper;
+class UXsollaSocialLinkingBrowserWrapper;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
+DECLARE_DYNAMIC_DELEGATE(FOnSocialLinkingSuccess);
 DECLARE_DELEGATE_ThreeParams(FOnLoginDataError, int32, int32, const FString&);
 DECLARE_DELEGATE_OneParam(FOnLoginDataUpdate, const FXsollaLoginData&);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, const FXsollaLoginData&, LoginData);
@@ -239,11 +241,12 @@ public:
 	 * @param State Value used for additional user verification on backend. Must be at least 8 symbols long. `xsollatest` by default. Required for OAuth 2.0.
 	 * @param SuccessCallback Called after successful user authentication with a platform session ticket. Authentication data including a JWT will be received.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param Scope Request scope (e.g. "basic_profile","offline", etc., empty by default).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void AuthenticateWithSessionTicket(const FString& ProviderName, const FString& SessionTicket, const FString& Code,
 		const FString& AppId, const FString& State,
-		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, const FString& Scope = TEXT(""));
 
 	/** Returns a list of particular user’s attributes with their values and descriptions. Returns only user-editable attributes.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/user-attributes/).
@@ -647,8 +650,22 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void LinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
+	void GetUrlToLinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Links a social network that can be used for authentication to the current account.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
+	 *
+	 * @param WorldContextObject The world context.
+	 * @param AuthToken User authorization token.
+	 * @param ProviderName Name of a social network. Provider must be connected to Login in Publisher Account.<br>
+	 * Can be `amazon`, `apple`, `baidu`, `battlenet`, `discord`, `facebook`, `github`, `google`, `instagram`, `kakao`, `linkedin`, `mailru`, `microsoft`, `msn`, `naver`, `ok`, `paradox`, `paypal`, `psn`, `qq`, `reddit`, `steam`, `twitch`, `twitter`, `vimeo`, `vk`, `wechat`, `weibo`, `yahoo`, `yandex`, `youtube`, `xbox`, `playstation`.
+	 * @param SuccessCallback Called after social provider was successfully linked.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void LinkSocialProvider(UObject* WorldContextObject, const FString& AuthToken, const FString& ProviderName,
+		const FOnSocialLinkingSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Unlinks a social network from the user account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
@@ -660,7 +677,7 @@ public:
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void UnlinkSocialNetworkFromUserAccount(const FString& AuthToken, const FString& ProviderName,
+	void UnlinkSocialProvider(const FString& AuthToken, const FString& ProviderName,
 		const FOnRequestSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns the list of linked social networks.
@@ -818,12 +835,27 @@ protected:
 	UFUNCTION()
 	void SocialAuthUrlReceivedCallback(const FString& Url);
 
+	UFUNCTION()
+	void SocialLinkingUrlReceivedCallback(const FString& Url);
+
 private:
 	UPROPERTY()
 	TSubclassOf<UXsollaLoginBrowserWrapper> DefaultBrowserWidgetClass;
 
 	UPROPERTY()
+	TSubclassOf<UXsollaSocialLinkingBrowserWrapper> DefaultSocialLinkingBrowserWidgetClass;
+
+	UPROPERTY()
 	FOnAuthUpdate NativeSuccessCallback;
+
+	UPROPERTY()
+	FOnSocialLinkingSuccess CachedSocialLinkingSuccessCallback;
+
+	UPROPERTY()
+	FOnError CachedSocialLinkingErrorCallback;
+
+	UPROPERTY()
+	UObject* CachedWorldContextObject;
 
 	UPROPERTY()
 	FOnAuthCancel NativeCancelCallback;

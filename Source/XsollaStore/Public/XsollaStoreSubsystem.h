@@ -72,6 +72,7 @@ public:
 	void Initialize(const FString& InProjectId);
 
 	/** Returns a list of virtual items according to pagination settings. The list includes items which are set to be available for purchase in the store. For each virtual item, complete data is returned.
+	 * <b>Attention:</b> The number of items returned in a single response is limited. <b>The default and maximum value is 50 items per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -113,6 +114,7 @@ public:
 	void GetItemGroups(const FString& PromoCode, const FOnItemGroupsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currencies according to pagination settings.
+	 * <b>Attention:</b> The number of currencies returned in a single response is limited. <b>The default and maximum value is 50 currencies per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -141,6 +143,7 @@ public:
 		const FOnVirtualCurrenciesUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
+   * <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -173,6 +176,7 @@ public:
 		const FOnVirtualCurrencyPackagesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of items for the specified group according to pagination settings. The list includes items which are set to be available for purchase in the store. In the settings of the group, the display in the store must be enabled.
+	 * <b>Attention:</b> The number of items returned in a single response is limited. <b>The default and maximum value is 50 items per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param ExternalId Group external ID.
@@ -260,6 +264,44 @@ public:
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
 		const EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4);
 
+	/** Initiates purchase for specified item SKU.
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param ItemSKU Desired item SKU.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback, BrowserClosedCallback"))
+	void PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+
+
+	/** Initiates the purchase process for the cart with the specified ID or for the cart of the current user.
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of the cart to purchase. If not specified, the current user's cart will be used.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback, BrowserClosedCallback"))
+	void PurchaseCart(const FString& AuthToken, const FString& CartId, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
+
+	/** Initiates the purchase process for the free cart with the specified ID or for the free cart of the current user.
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param CartId (optional) Identifier of the cart to purchase. If not specified, the current user's cart will be used.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void PurchaseFreeCart(const FString& AuthToken, const FString& CartId,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Checks pending order status by its ID.
 	 *
 	 * @param AuthToken User authorization token.
@@ -308,7 +350,7 @@ public:
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiates purchase by passing store item
+	/** Initiates purchase process for ызусшашув store item.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
@@ -330,6 +372,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
 	void PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
+		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Initiate purchase process for specified bundle.
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Bundle Desired bundle.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param SuccessCallback Called after the payment was successfully completed.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "PurchaseParams, SuccessCallback, ErrorCallback"))
+	void PurchaseBundle(const FString& AuthToken, const FStoreBundle& Bundle, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Removes all items from the cart with the specified ID or from the cart of the current user.
@@ -410,6 +464,7 @@ public:
 	void GetSpecifiedBundle(const FString& Sku, const FOnGetSpecifiedBundleUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
 	/** Returns a list of bundles according to pagination settings. The list includes bundles which are set to be available for purchase in the store.
+  	* <b>Attention:</b> The number of bundles returned in a single response is limited. <b>The default and maximum value is 50 bundles per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/#unreal_engine_sdk_how_to_bundles).
 	 *
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -454,7 +509,8 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The maximum number of elements on a page is 50. The list includes packages which are set to be available for purchase in the store.
+	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
+ 		* <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
@@ -864,6 +920,9 @@ protected:
 
 	UFUNCTION()
 	void CheckPendingOrderSuccessCallback();
+
+	UFUNCTION()
+	void BrowserClosedCallback(bool bIsManually);
 
 	// virtual items
 	UFUNCTION()

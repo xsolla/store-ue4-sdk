@@ -36,11 +36,6 @@
       <tab type="globals" visible="no" title="" intro=""/>
     </tab>
     <tab type="examples" visible="yes" title="" intro=""/>
-    <tab type="usergroup" title="Download plugins">
-      <tab type="user" url="https://github.com/xsolla/store-ue4-sdk" title="Game Commerce"/>
-      <tab type="user" url="https://github.com/xsolla/login-ue4-sdk" title="Login & Account System"/>
-      <tab type="user" url="https://github.com/xsolla/inventory-ue4-sdk" title="Cross-Buy"/>
-    </tab>
     <tab type="user" url="https://developers.xsolla.com/sdk/unreal-engine/" title="Documentation"/>
 
 </tab>

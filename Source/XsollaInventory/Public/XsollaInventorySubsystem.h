@@ -45,6 +45,7 @@ public:
 	void Initialize(const FString& InProjectId);
 
 	/** Returns a list of virtual items from the user’s inventory according to pagination settings. For each virtual item, complete data is returned.
+	 * <b>Attention:</b> The number of items returned in a single response is limited. <b>The default and maximum value is 50 items per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields. 
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/player-inventory/display-inventory/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).

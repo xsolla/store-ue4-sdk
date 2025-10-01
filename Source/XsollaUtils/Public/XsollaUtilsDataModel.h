@@ -520,6 +520,13 @@ struct FXsollaPaymentTokenRequestPayload
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
 	bool bDisableSdkParameter = false;
+
+	/**
+	 * payment_method (optional) Payment method ID.
+	 * Leave empty to use the default value.
+	 */
+	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
+	int32 payment_method = -1;
 };
 
 /* Usual version EVariantTypes isn't using UENUM(). It causes the problem when calling EnumToString with "EVariantTypes" as the first argument.

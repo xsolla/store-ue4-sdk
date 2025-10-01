@@ -13,11 +13,15 @@ stages:
   - linking
   - demo_win
   - demo_android
-  - demo_ios
+  - demo_mac
 
 variables:
     BUILD_DEMO_SCRIPT: cicd/build_demo.py
-    BUILD_DEMO_SCRIPT2: 1
+    ANDROID_SDK_ROOT: "C:\\Users\\Runner\\AppData\\Local\\Android\\Sdk"
+    JAVA_PATH_8:  "C:\\Program Files\\Java\\jdk1.8.0_181"
+    JAVA_PATH_17: "C:\\Program Files\\Java\\jdk-17"
+    NDK_PATH_25: "C:\\Users\\Runner\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393"
+    NDK_PATH_27: "C:\\Users\\Runner\\AppData\\Local\\Android\\Sdk\\ndk\\27.2.12479018"
 
 # =================================================================================================================
 # DOCS
@@ -30,15 +34,7 @@ build doc:
   script:
   - apk update && apk add doxygen graphviz ttf-freefont zip git
   - doxygen Documentation/Autogen/Doxyfile >/dev/null
-  - git clone https://$GITHUB_ACCESS_TOKEN@github.com/xsolla/sdk-reference-parser-unity-ue.git
-  - mkdir -p sdk-reference-parser-unity-ue/src
-  - mkdir -p sdk-reference-parser-unity-ue/dist
-  - mv Documentation/Autogen/html/ sdk-reference-parser-unity-ue/src >/dev/null
-  - cd sdk-reference-parser-unity-ue
-  - npm install
-  - npm start
-  - mv -v dist/html/* dist >/dev/null
-  - cd dist && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
+  - cd Documentation/Autogen/html && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
   artifacts:
     paths:
     - build.zip
@@ -87,6 +83,23 @@ stop doc:
 # JOBS BASE
 
 .win_job_base:
+  variables:
+    JAVA_HOME: $JAVA_PATH_17
+    NDK_PATH: $NDK_PATH_25
+  allow_failure: true
+  before_script:
+    - set PATH=%JAVA_HOME%\bin;%PATH%
+    - set PATH=%ANDROID_SDK_ROOT%\platform-tools;%ANDROID_SDK_ROOT%\tools;%NDK_PATH%;%PATH%
+    - set NDK_ROOT=%NDK_PATH%
+    - set NDKROOT=%NDK_PATH%
+    - set ANDROID_NDK_ROOT=%NDK_PATH%
+    - java -version
+    - echo "JAVA_HOME=%JAVA_HOME%"
+    - echo "ANDROID_SDK_ROOT=%ANDROID_SDK_ROOT%"
+    - echo "NDK_PATH=%NDK_PATH%"
+    - echo "NDKROOT=%NDKROOT%"
+    - echo "NDK_ROOT=%NDK_ROOT%"
+    - echo "ANDROID_NDK_ROOT=%ANDROID_NDK_ROOT%"
   artifacts:
     when: always
     expire_in: 3 days
@@ -98,6 +111,8 @@ stop doc:
     - windows
 
 .mac_job_base:
+  allow_failure: true
+  when: manual
   artifacts:
     when: always
     expire_in: 3 days
@@ -110,40 +125,6 @@ stop doc:
 
 # =================================================================================================================
 # DEMO WINIDOWS
-
-demo_52_win_inapp_browser:
-  extends: .win_job_base
-  stage: demo_win
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 False
-  artifacts:
-    name: "demo-UE52-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_52_win_system_browser:
-  extends: .win_job_base
-  stage: demo_win
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Win64 True
-  artifacts:
-    name: "demo-UE52-win-system_browser-%CI_COMMIT_REF_SLUG%"
-    
-demo_53_win_inapp_browser:
-  extends: .win_job_base
-  stage: demo_win
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Win64 False
-  artifacts:
-    name: "demo-UE53-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_53_win_system_browser:
-  extends: .win_job_base
-  stage: demo_win
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Win64 True
-  artifacts:
-    name: "demo-UE53-win-system_browser-%CI_COMMIT_REF_SLUG%"
     
 demo_54_win_inapp_browser:
   extends: .win_job_base
@@ -179,44 +160,26 @@ demo_55_win_system_browser:
   artifacts:
     name: "demo-UE55-win-system_browser-%CI_COMMIT_REF_SLUG%"
 
+demo_56_win_inapp_browser:
+  extends: .win_job_base
+  stage: demo_win
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.6" Win64 False
+  artifacts:
+    name: "demo-UE56-win-inapp_browser-%CI_COMMIT_REF_SLUG%"
+
+demo_56_win_system_browser:
+  extends: .win_job_base
+  stage: demo_win
+  when: manual
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.6" Win64 True
+  artifacts:
+    name: "demo-UE56-win-system_browser-%CI_COMMIT_REF_SLUG%"
+
 # =================================================================================================================
 # DEMO ANDROID
 
-demo_52_android_inapp_browser:
-  extends: .win_job_base
-  stage: demo_android
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android False
-  artifacts:
-    name: "demo-UE52-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_52_android_system_browser:
-  extends: .win_job_base
-  stage: demo_android
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.2" Android True
-  artifacts:
-    name: "demo-UE52-android-system_browser-%CI_COMMIT_REF_SLUG%"
-    
-demo_53_android_inapp_browser:
-  extends: .win_job_base
-  stage: demo_android
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Android False
-  artifacts:
-    name: "demo-UE53-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
-
-demo_53_android_system_browser:
-  extends: .win_job_base
-  stage: demo_android
-  when: manual
-  script:
-    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.3" Android True
-  artifacts:
-    name: "demo-UE53-android-system_browser-%CI_COMMIT_REF_SLUG%"
-    
 demo_54_android_inapp_browser:
   extends: .win_job_base
   stage: demo_android
@@ -251,22 +214,42 @@ demo_55_android_system_browser:
   artifacts:
     name: "demo-UE55-android-system_browser-%CI_COMMIT_REF_SLUG%"
 
-# =================================================================================================================
-# DEMO IOS
-
-demo_52_ios_inapp_browser:
-  extends: .mac_job_base
-  stage: demo_ios
+demo_56_android_inapp_browser:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
   script:
-    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" IOS False
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.6" Android False
   artifacts:
-    name: "demo-UE52-ios-inapp_browser-$CI_COMMIT_REF_SLUG"
+    name: "demo-UE56-android-inapp_browser-%CI_COMMIT_REF_SLUG%"
 
-demo_52_ios_system_browser:
-  extends: .mac_job_base
-  stage: demo_ios
+demo_56_android_system_browser:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
   when: manual
   script:
-    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" IOS True
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.6" Android True
   artifacts:
-    name: "demo-UE52-ios-system_browser-$CI_COMMIT_REF_SLUG"
+    name: "demo-UE56-android-system_browser-%CI_COMMIT_REF_SLUG%"
+
+# =================================================================================================================
+# DEMO MAC
+
+demo_52_mac_inapp_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" Mac False
+  artifacts:
+    name: "demo-UE52-mac-inapp_browser-$CI_COMMIT_REF_SLUG"
+
+demo_52_mac_system_browser:
+  extends: .mac_job_base
+  stage: demo_mac
+  script:
+    - python3 $BUILD_DEMO_SCRIPT $CI_PROJECT_DIR $CI_COMMIT_REF_NAME "5.2" Mac True
+  artifacts:
+    name: "demo-UE52-mac-system_browser-$CI_COMMIT_REF_SLUG"
