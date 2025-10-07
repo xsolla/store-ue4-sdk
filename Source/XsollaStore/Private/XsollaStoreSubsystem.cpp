@@ -1278,7 +1278,7 @@ void UXsollaStoreSubsystem::GetVirtualItems_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreItemsData ItemsData;
@@ -1300,7 +1300,7 @@ void UXsollaStoreSubsystem::GetItemGroups_HttpRequestComplete(
 	const bool bSucceeded, FOnItemGroupsUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreItemGroupsData GroupsData;
@@ -1322,7 +1322,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencies_HttpRequestComplete(
 	const bool bSucceeded, FOnVirtualCurrenciesUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyData VirtualCurrencyData;
@@ -1344,7 +1344,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackages_HttpRequestComplete(
 	const bool bSucceeded, FOnVirtualCurrencyPackagesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackagesData VirtualCurrencyPackages;
@@ -1366,7 +1366,7 @@ void UXsollaStoreSubsystem::GetItemsListBySpecifiedGroup_HttpRequestComplete(
 	const bool bSucceeded, FOnGetItemsListBySpecifiedGroup SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreItemsList ItemsList;
@@ -1388,7 +1388,7 @@ void UXsollaStoreSubsystem::GetAllItemsList_HttpRequestComplete(
 	const bool bSucceeded, FOnGetItemsList SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreItemsList Items;
@@ -1410,7 +1410,7 @@ void UXsollaStoreSubsystem::FetchPaymentToken_HttpRequestComplete(
 	const bool bSucceeded, FOnFetchTokenSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1434,7 +1434,7 @@ void UXsollaStoreSubsystem::CheckOrder_HttpRequestComplete(
 	const bool bSucceeded, FOnCheckOrder SuccessCallback, FOnError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	FXsollaOrder Order;
 	XsollaHttpRequestError OutError;
@@ -1480,7 +1480,7 @@ void UXsollaStoreSubsystem::CreateOrderWithSpecifiedFreeItem_HttpRequestComplete
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: Processing free item order request"), *VA_FUNC_LINE);
 	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
@@ -1490,7 +1490,7 @@ void UXsollaStoreSubsystem::CreateOrderWithFreeCart_HttpRequestComplete(
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 	UE_LOG(LogXsollaStore, Log, TEXT("%s: Processing free cart order request"), *VA_FUNC_LINE);
 	HandlePurchaseFreeItemsRequest(HttpRequest, HttpResponse, bSucceeded, SuccessCallback, ErrorHandlersWrapper);
 }
@@ -1500,7 +1500,7 @@ void UXsollaStoreSubsystem::ClearCart_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 
@@ -1520,7 +1520,7 @@ void UXsollaStoreSubsystem::GetCart_HttpRequestComplete(
 	const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreCart Cart;
@@ -1542,7 +1542,7 @@ void UXsollaStoreSubsystem::UpdateItemInCart_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 
@@ -1562,7 +1562,7 @@ void UXsollaStoreSubsystem::RemoveFromCart_HttpRequestComplete(
 	const bool bSucceeded, FOnStoreCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 
@@ -1582,7 +1582,7 @@ void UXsollaStoreSubsystem::FillCartById_HttpRequestComplete(
 	const bool bSucceeded, FOnCartUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreCart Cart;
@@ -1604,7 +1604,7 @@ void UXsollaStoreSubsystem::GetListOfBundles_HttpRequestComplete(
 	const bool bSucceeded, FOnGetListOfBundlesUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreListOfBundles ListOfBundles;
@@ -1625,7 +1625,7 @@ void UXsollaStoreSubsystem::GetSpecifiedBundle_HttpRequestComplete(FHttpRequestP
 	const bool bSucceeded, FOnGetSpecifiedBundleUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FStoreBundle Bundle;
@@ -1647,7 +1647,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrency_HttpRequestComplete(
 	const bool bSucceeded, FOnCurrencyUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FVirtualCurrency currency;
@@ -1669,7 +1669,7 @@ void UXsollaStoreSubsystem::GetVirtualCurrencyPackage_HttpRequestComplete(
 	const bool bSucceeded, FOnCurrencyPackageUpdate SuccessCallback, FOnError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyPackage currencyPackage;
@@ -1691,7 +1691,7 @@ void UXsollaStoreSubsystem::BuyItemWithVirtualCurrency_HttpRequestComplete(
 	const bool bSucceeded, FOnPurchaseUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaStore);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -2220,7 +2220,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaStoreSubsystem::CreateHttpR
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("STORE"), XSOLLA_STORE_VERSION);
 
 	// Log request details
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaStore, Content);
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, Content);
 
 	return HttpRequest;
 }

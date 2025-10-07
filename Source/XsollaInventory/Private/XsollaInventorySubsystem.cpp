@@ -273,7 +273,7 @@ void UXsollaInventorySubsystem::GetInventory_HttpRequestComplete(
 	const bool bSucceeded, FOnInventoryUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FInventoryItemsData Inventory;
@@ -295,7 +295,7 @@ void UXsollaInventorySubsystem::GetVirtualCurrencyBalance_HttpRequestComplete(
 	const bool bSucceeded, FOnCurrencyBalanceUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FVirtualCurrencyBalanceData VirtualCurrencyBalance;
@@ -317,7 +317,7 @@ void UXsollaInventorySubsystem::GetTimeLimitedItems_HttpRequestComplete(
 	const bool bSucceeded, FOnTimeLimitedItemsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 	FTimeLimitedItemsData receivedTimeLimitedItems;
@@ -339,7 +339,7 @@ void UXsollaInventorySubsystem::ConsumeInventoryItem_HttpRequestComplete(
 	const bool bSucceeded, FOnInventoryRequestSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	XsollaHttpRequestError OutError;
 
@@ -359,7 +359,7 @@ void UXsollaInventorySubsystem::UpdateCouponRewards_HttpRequestComplete(FHttpReq
 	const bool bSucceeded, FOnCouponRewardsUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	FInventoryCouponRewardData couponRewards;
 	XsollaHttpRequestError OutError;
@@ -381,7 +381,7 @@ void UXsollaInventorySubsystem::RedeemCoupon_HttpRequestComplete(FHttpRequestPtr
 	const bool bSucceeded, FOnCouponRedeemUpdate SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaInventory);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	FInventoryRedeemedCouponData redeemedCouponData;
 	XsollaHttpRequestError OutError;
@@ -408,7 +408,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaInventorySubsystem::CreateH
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("INVENTORY"), XSOLLA_INVENTORY_VERSION);
 
 	// Log request details
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaInventory, Content);
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, Content);
 
 	return HttpRequest;
 }
