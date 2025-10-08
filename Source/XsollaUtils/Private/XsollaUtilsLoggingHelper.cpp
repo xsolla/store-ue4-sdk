@@ -124,7 +124,7 @@ void XsollaUtilsLoggingHelper::LogUrl(const FString& Url, const FString& Reason)
     UE_LOG(LogXsollaUtils, Log, TEXT("URL: %s, Reason: %s"), *SanitizedUrl, *Reason);
 }
 
-void XsollaUtilsLoggingHelper::LogHttpRequest(const FHttpRequestPtr& Request, const FLogCategoryBase& LogCat, const FString& Content)
+void XsollaUtilsLoggingHelper::LogHttpRequest(const FHttpRequestPtr& Request, const FString& Content)
 {
     if (!Request.IsValid())
     {
@@ -167,7 +167,7 @@ void XsollaUtilsLoggingHelper::LogHttpRequest(const FHttpRequestPtr& Request, co
     }
 }
 
-void XsollaUtilsLoggingHelper::LogHttpResponse(const FHttpRequestPtr& Request, const FHttpResponsePtr& Response, const FLogCategoryBase& LogCat)
+void XsollaUtilsLoggingHelper::LogHttpResponse(const FHttpRequestPtr& Request, const FHttpResponsePtr& Response)
 {
     if (!Request.IsValid() || !Response.IsValid())
     {
