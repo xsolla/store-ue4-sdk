@@ -21,7 +21,7 @@ java_path_by_engine_version = {'5.2': 'JavaPath=(Path="C:/Program Files/Java/jdk
                                '5.6': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")'}
 sdk_api_level_by_engine_version = {'5.2': 'SDKAPILevel=android-31',
                                    '5.3': 'SDKAPILevel=android-31',
-                                   '5.4': 'SDKAPILevel=android-34',
+                                   '5.4': 'SDKAPILevel=android-33',
                                    '5.5': 'SDKAPILevel=android-34',
                                    '5.6': 'SDKAPILevel=android-34'}
 ndk_api_level_by_engine_version = {'5.2': 'NDKAPILevel=android-21',
