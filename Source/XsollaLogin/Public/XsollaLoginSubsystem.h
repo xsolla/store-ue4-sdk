@@ -640,7 +640,6 @@ public:
 	void SearchUsersByNickname(const FString& AuthToken, const FString& Nickname,
 		const FOnUserSearchUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Offset = 0, const int Limit = 100);
 
-	//TEXTREVIEW
 	/** Links a social network that can be used for authentication to the current account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
 	 *
@@ -654,7 +653,6 @@ public:
 	void GetUrlToLinkSocialNetworkToUserAccount(const FString& AuthToken, const FString& ProviderName,
 		const FOnSocialAccountLinkingHtmlReceived& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
 	/** Links a social network that can be used for authentication to the current account.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/user-account-and-attributes/account-linking/#sdk_account_linking_additional_account).
 	 *

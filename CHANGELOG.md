@@ -1,30 +1,41 @@
 # Changelog
 
+## [4.1.0] - 2025-09-30
+
+### Added
+- Unreal Engine 5.6 support
+- Optional `payment_method` field in `FXsollaPaymentTokenRequestPayload`
+- Optional `scope` parameter in `AuthenticateWithSessionTicket` for third-party login systems
+
+### Changed
+- Expanded logging coverage for API calls
+- Updated URL of the Web Shop demo
+
 ## [4.0.0] - 2024-12-19
 
-### Changed 
+### Changed
 - Minimum supported Unreal Engine version updated to 5.0
 - Removed the `limit` and `offset` parameters from the following SDK methods:
-  - `GetVirtualItems` 
-  - `GetVirtualCurrencies` 
+  - `GetVirtualItems`
+  - `GetVirtualCurrencies`
   - `GetVirtualCurrencyPackages`
   - `GetItemsListBySpecifiedGroup`
   - `GetBundles`
-  
-### Added 
+
+### Added
 - New methods for `XsollaStoreSubsystem` class:
-  - `GetPaginatedVirtualItems` 
-  - `GetPaginatedVirtualCurrencies` 
+  - `GetPaginatedVirtualItems`
+  - `GetPaginatedVirtualCurrencies`
   - `GetPaginatedVirtualCurrencyPackages`
   - `GetPaginatedItemsListBySpecifiedGroup`
   - `GetPaginatedBundles`
-  
-### Fixed 
+
+### Fixed
 - Centrifuge launch for third-party login systems while order status tracking
 
 ## [3.0.1] - 2024-10-25
 
-### Updated 
+### Updated
 - SDK internal analytics
 
 ## [3.0.0] - 2024-09-16
@@ -55,7 +66,7 @@
 
 ### Added
 - Game engine analytics to API requests (for mobile and desktop builds)
-- Minor demo improvements 
+- Minor demo improvements
 
 ### Changed
 - `PurchaseStoreItem` and `PurchaseCurrencyPackage` SDK methods. Added `AuthToken` parameter. Renamed `PaymentTokenRequestPayload` parameter to `PurchaseParams`
@@ -72,7 +83,7 @@
     - `PayStationVersion`
 
 ### Fixed
-- Сleanup of the `SuccessTokenUpdate` local variable by garbage collector in  `UXsollaStoreSubsystem` and `UXsollaInventorySubsystem` classes methods 
+- Сleanup of the `SuccessTokenUpdate` local variable by garbage collector in  `UXsollaStoreSubsystem` and `UXsollaInventorySubsystem` classes methods
 - `CheckPendingOrder` method uses only passed `AccessToken` parameter
 
 ## [1.6.0] - 2023-09-13

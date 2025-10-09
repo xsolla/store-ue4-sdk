@@ -264,8 +264,7 @@ public:
 		const FOnStoreSuccessPayment& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback,
 		const EXsollaPayStationVersion PayStationVersion = EXsollaPayStationVersion::v4);
 
-	//TEXTREVIEW
-	/** Initiates purchase by passing item sku
+	/** Initiates purchase for specified item SKU.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
@@ -278,11 +277,11 @@ public:
 	void PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
 
-	// TEXTREVIEW
-	/** Initiates cart purchase by passing cart id
+
+	/** Initiates the purchase process for the cart with the specified ID or for the cart of the current user.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
-	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
+	 * @param CartId (optional) Identifier of the cart to purchase. If not specified, the current user's cart will be used.
 	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
@@ -292,11 +291,10 @@ public:
 	void PurchaseCart(const FString& AuthToken, const FString& CartId, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback);
 
-	// TEXTREVIEW
-	/** Initiates free cart purchase by passing cart id
+	/** Initiates the purchase process for the free cart with the specified ID or for the free cart of the current user.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
-	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
+	 * @param CartId (optional) Identifier of the cart to purchase. If not specified, the current user's cart will be used.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -352,7 +350,7 @@ public:
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiates purchase by passing store item
+	/** Initiates purchase process for ызусшашув store item.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
@@ -376,8 +374,7 @@ public:
 	void PurchaseCurrencyPackage(const FString& AuthToken, const FVirtualCurrencyPackage& CurrencyPackage, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	//TEXTREVIEW
-	/** Initiate purchase by passing bundle
+	/** Initiate purchase process for specified bundle.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param Bundle Desired bundle.
