@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.1] - 2025-10-10
+
+### Fixed
+- Fixed Windows shipping build for Unreal 5.5
+
 ## [4.1.0] - 2025-09-30
 
 ### Added
