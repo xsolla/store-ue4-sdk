@@ -1608,7 +1608,7 @@ void UXsollaLoginSubsystem::SocialAuthUrl_HttpRequestComplete(FHttpRequestPtr Ht
 	FOnSocialUrlReceived SuccessCallback, FOnAuthError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -1713,7 +1713,7 @@ void UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete(FHttpRequestPtr Htt
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Token refresh response received"), *VA_FUNC_LINE);
 
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	HandleOAuthTokenRequest(HttpRequest, HttpResponse, bSucceeded, ErrorCallback, SuccessCallback);
 }
@@ -2214,7 +2214,7 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	// Log HTTP response
-	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse, LogXsollaLogin);
+	XsollaUtilsLoggingHelper::LogHttpResponse(HttpRequest, HttpResponse);
 
 	TSharedPtr<FJsonObject> JsonObject;
 	XsollaHttpRequestError OutError;
@@ -2257,7 +2257,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpR
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
 
 	// Log request details
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, LogXsollaLogin, Content);
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, Content);
 
 	return HttpRequest;
 }

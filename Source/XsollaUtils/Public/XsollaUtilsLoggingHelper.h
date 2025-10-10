@@ -35,8 +35,8 @@ public:
     static void LogUrl(const FString& Url, const FString& Reason);
 
     /** Logs HTTP request details */
-    static void LogHttpRequest(const FHttpRequestPtr& Request, const FLogCategoryBase& LogCat, const FString& Content = TEXT(""));
+    static void LogHttpRequest(const FHttpRequestPtr& Request, const FString& Content = TEXT(""));
 
     /** Logs HTTP response details */
-    static void LogHttpResponse(const FHttpRequestPtr& Request, const FHttpResponsePtr& Response, const FLogCategoryBase& LogCat);
+    static void LogHttpResponse(const FHttpRequestPtr& Request, const FHttpResponsePtr& Response);
 };
