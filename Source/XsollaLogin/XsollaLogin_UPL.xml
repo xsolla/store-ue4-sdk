@@ -16,39 +16,6 @@
       android.enableJetifier=true
     </insert>
   </gradleProperties>
-
-  <!-- Replace supportlib imports with AndroidX in engine source files -->
-  <baseBuildGradleAdditions>
-    <insert>
-      allprojects {
-        def mappings = [
-          'android.arch.lifecycle.Lifecycle': 'androidx.lifecycle.Lifecycle',
-          'android.arch.lifecycle.LifecycleObserver': 'androidx.lifecycle.LifecycleObserver',
-          'android.arch.lifecycle.OnLifecycleEvent': 'androidx.lifecycle.OnLifecycleEvent',
-          'android.arch.lifecycle.ProcessLifecycleOwner': 'androidx.lifecycle.ProcessLifecycleOwner',
-          'android.arch.lifecycle': 'androidx.lifecycle',
-          'android.support.annotation': 'androidx.annotation',
-          'android.support.v13.app.FragmentCompat': 'androidx.legacy.app.FragmentCompat',
-          'android.support.v4.app.ActivityCompat': 'androidx.core.app.ActivityCompat',
-          'android.support.v4.app.NotificationCompat': 'androidx.core.app.NotificationCompat',
-          'android.support.v4.app.NotificationManagerCompat': 'androidx.core.app.NotificationManagerCompat',
-          'android.support.v4.content.ContextCompat': 'androidx.core.content.ContextCompat',
-          'android.support.v4.content.FileProvider': 'androidx.core.content.FileProvider',
-        ]
-
-        beforeEvaluate { project ->
-          project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) { f ->
-            mappings.each { entry ->
-              if (f.getText('UTF-8').contains(entry.key)) {
-                println "Updating ${entry.key} to ${entry.value} in file ${f}"
-                ant.replace(file: f, token: entry.key, value: entry.value)
-              }
-            }
-          }
-        }
-      }
-    </insert>
-  </baseBuildGradleAdditions>
   
   <!-- Replace package name in WeChat proxy activity script -->
   <baseBuildGradleAdditions>
@@ -77,18 +44,25 @@
         implementation 'com.xsolla.android:login-google:6.0.17'
         implementation 'com.xsolla.android:login-wechat:6.0.17'
         implementation 'com.xsolla.android:login-qq:6.0.17'
+
+        implementation 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.24'
+        implementation 'org.bouncycastle:bctls-jdk15to18:1.76'
+        implementation 'org.bouncycastle:bcprov-jdk15to18:1.76'
+        implementation 'org.conscrypt:conscrypt-android:2.5.2'
+        implementation 'org.openjsse:openjsse:1.1.14'
+        implementation 'com.squareup.okhttp3:okhttp:4.12.0'
       }
       repositories {
         maven { url 'https://maven.google.com' }
-        jcenter { url 'https://jcenter.bintray.com' }
+        mavenCentral()
       }
     </insert>
-    <!-- Enable older Java versions support -->
+    <!-- Enable Java 11 support -->
     <insert>
       android {
         compileOptions {
-          targetCompatibility JavaVersion.VERSION_1_8
-          sourceCompatibility JavaVersion.VERSION_1_8
+          targetCompatibility JavaVersion.VERSION_11
+          sourceCompatibility JavaVersion.VERSION_11
         }
       }
     </insert>
@@ -100,20 +74,36 @@
     <copyDir src="$S(PluginDir)/Private/Android/Java/WeChat" dst="$S(BuildDir)/src/$S(PackageNamePath)/wxapi" />
   </prebuildCopies>
 
-  <!-- Additions to proguard -->
+  <!-- Addition rules for proguard -->
   <proguardAdditions>
     <insert>
-      -dontwarn com.xsolla.**
+      <![CDATA[
+      # ========================
+      # General settings
+      # ========================
+      -keepattributes Signature
+      -keepattributes Exceptions
+      -keepattributes *Annotation*
+
+      # ========================
+      # Xsolla SDK
+      # ========================
       -keep class com.xsolla.** { *; }
       -keep interface com.xsolla.** { *; }
+      -keep class com.xsolla.android.store.StoreApi { *; }
+      -keep class com.xsolla.android.login.LoginApi { *; }
 
-      -dontwarn androidx.**
-      -keep class androidx.** { *; }
-      -keep interface androidx.** { *; }
-
-      -dontwarn com.google.android.gms.**
-      -keep class com.google.android.gms.** { *; }
-      -keep interface com.google.android.gms.** { *; }
+      # ========================
+      # Retrofit2
+      # ========================
+      -keep class retrofit2.** { *; }
+      -keep interface retrofit2.** { *; }
+      -keepclasseswithmembers class * {
+          @retrofit2.http.* <methods>;
+      }
+      -keep class * implements retrofit2.CallAdapter$Factory { *; }
+      -keep class * implements retrofit2.Converter$Factory { *; }
+      ]]>
     </insert>
   </proguardAdditions>
 
