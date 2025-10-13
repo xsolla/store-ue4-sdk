@@ -17,17 +17,17 @@
       }
       repositories {
         maven { url 'https://maven.google.com' }
-        jcenter { url 'https://jcenter.bintray.com' }
+        mavenCentral()
       }
     </insert>
   </buildGradleAdditions>
   
+  <!-- Add native implementation wrapper -->
   <prebuildCopies>
-    <!-- Add native implementation wrapper -->
     <copyDir src="$S(PluginDir)/Private/Android/Java" dst="$S(BuildDir)/src/com/xsolla/store" />
   </prebuildCopies>
 
-  <!-- Optional updates applied to AndroidManifest.xml -->
+  <!-- Add custom data to AndroidManifest.xml -->
   <androidManifestUpdates>
 
     <!-- Setup XsollaNativePaymentsActivity -->
