@@ -47,12 +47,17 @@ UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
 #if !UE_SERVER
+	FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName);
+	if (PluginName.IsEmpty())
+	{
+		PluginName = TEXT("store-ue4-sdk");
+	}
 	static ConstructorHelpers::FClassFinder<UXsollaLoginBrowserWrapper> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowser.W_LoginBrowser_C"),
-		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
+		*PluginName));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 
 	static ConstructorHelpers::FClassFinder<UXsollaSocialLinkingBrowserWrapper> SocialLinkingBrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_LoginBrowserLinking.W_LoginBrowserLinking_C"),
-		*UXsollaUtilsLibrary::GetPluginName(FXsollaLoginModule::ModuleName)));
+		*PluginName));
 	DefaultSocialLinkingBrowserWidgetClass = SocialLinkingBrowserWidgetFinder.Class;
 #endif
 }
