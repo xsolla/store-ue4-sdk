@@ -86,7 +86,6 @@ stop doc:
   variables:
     JAVA_HOME: $JAVA_PATH_17
     NDK_PATH: $NDK_PATH_25
-  allow_failure: false
   before_script:
     - set PATH=%JAVA_HOME%\bin;%PATH%
     - set PATH=%ANDROID_SDK_ROOT%\platform-tools;%ANDROID_SDK_ROOT%\tools;%NDK_PATH%;%PATH%
@@ -111,7 +110,6 @@ stop doc:
     - windows
 
 .mac_job_base:
-  allow_failure: false
   when: manual
   artifacts:
     when: always
