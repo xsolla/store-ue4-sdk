@@ -15,8 +15,13 @@ UDataTable* UXsollaStoreLibrary::CurrencyLibrary;
 UXsollaStoreLibrary::UXsollaStoreLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName);
+	if (PluginName.IsEmpty())
+	{
+		PluginName = TEXT("store-ue4-sdk");
+	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> CurrencyLibraryObj(*FString::Printf(TEXT("DataTable'/%s/Misc/currency-format.currency-format'"),
-		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
+		*PluginName));
 	CurrencyLibrary = CurrencyLibraryObj.Object;
 }
 
