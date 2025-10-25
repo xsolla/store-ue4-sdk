@@ -576,6 +576,7 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);//Additional logging for debugging
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -603,6 +604,7 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);//Additional logging for debugging
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -2336,6 +2338,7 @@ void UXsollaLoginSubsystem::SaveData()
 void UXsollaLoginSubsystem::InnerRefreshToken(const FString& RefreshToken, const FOnLoginDataUpdate& SuccessCallback, const FOnLoginDataError& ErrorCallback)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Inner refresh token"), *VA_FUNC_LINE);
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject());
