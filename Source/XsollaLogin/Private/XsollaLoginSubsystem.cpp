@@ -585,6 +585,15 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Exchanging authentication code for token"), *VA_FUNC_LINE);
 
+	// Verify that the authentication code is not empty
+	if (AuthenticationCode.IsEmpty())
+	{
+		const FString ErrorMessage = TEXT("Authentication code is empty. This might happen when trying to use an incomplete auth flow.");
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+		ErrorCallback.ExecuteIfBound(TEXT("EMPTY_CODE"), ErrorMessage);
+		return;
+	}
+
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
 	// Prepare request payload
@@ -2229,6 +2238,33 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
 		static const FString LoginUrlFieldName = TEXT("login_url");
+		static const FString AskFieldsFieldName = TEXT("ask_fields");
+
+		// Check if this is an "ask_fields" response
+		if (JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName) &&
+			JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
+		{
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received response with additional fields request"), *VA_FUNC_LINE);
+
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL requiring additional fields"));
+
+			const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+			if (Settings->UsePlatformBrowser)
+			{
+				// Cannot handle "ask_fields" with platform browser
+				const FString ErrorMessage = TEXT("Authentication requires additional fields (like email) but platform browser is enabled. Please disable platform browser in Xsolla Settings or modify login project settings in Publisher Account to disable additional field requests.");
+				UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+				ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+				return;
+			}
+
+			// Use the in-game browser to handle additional fields
+			HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
+			return;
+		}
+
+		// Standard flow with authentication code
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
@@ -2244,6 +2280,51 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Handling authentication with additional fields form"), *VA_FUNC_LINE);
+
+	UUserWidget* BrowserWidget = nullptr;
+	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
+
+	UXsollaLoginBrowserWrapper* BrowserWidgetWrapper = Cast<UXsollaLoginBrowserWrapper>(BrowserWidget);
+
+	if (BrowserWidgetWrapper != nullptr)
+	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading additional fields form in browser widget"), *VA_FUNC_LINE);
+		BrowserWidgetWrapper->LoadUrl(LoginUrl);
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([this, SuccessCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+		{
+			if (!AuthenticationCode.IsEmpty())
+			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code after fields submission"), *VA_FUNC_LINE);
+				ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+			}
+			else
+			{
+				if (bIsManually)
+				{
+					UE_LOG(LogXsollaLogin, Log, TEXT("%s: Additional fields form canceled by user"), *VA_FUNC_LINE);
+					const FString ErrorMessage = TEXT("Additional fields form submission was canceled by user");
+					ErrorCallback.ExecuteIfBound(TEXT(""), ErrorMessage);
+				}
+				else
+				{
+					UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields form submission failed"), *VA_FUNC_LINE);
+					const FString ErrorMessage = TEXT("Additional fields form submission failed - no authentication code received");
+					ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+				}
+			}
+		});
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create browser widget for additional fields form"), *VA_FUNC_LINE);
+		const FString ErrorMessage = TEXT("Failed to create browser widget for additional fields form");
+		ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+	}
 }
 
 void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback)

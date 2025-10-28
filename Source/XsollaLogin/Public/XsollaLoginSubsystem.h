@@ -782,6 +782,9 @@ protected:
 	/** Processes the request that returns URL with a code that can be exchanged to user token (OAuth 2.0). */
 	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
+	/** Handles the "ask_fields" response from the authentication flow */
+	void HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Returns true if the error occurs. */
 	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
