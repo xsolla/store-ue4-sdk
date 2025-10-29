@@ -573,10 +573,10 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, /*Content*/ FString(), /*AuthToken*/ FString(), /*skipLogging*/ true);//Create empty because we have different content type
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);//Additional logging for debugging
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -601,10 +601,10 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, /*Content*/ FString(), /*AuthToken*/ FString(), /*skipLogging*/ true);//Create empty because we have different content type
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);//Additional logging for debugging
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::RefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
@@ -2256,15 +2256,16 @@ void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError Error
 	ErrorCallback.ExecuteIfBound(ErrorData.code, ErrorData.description);
 }
 
-TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& Content, const FString& AuthToken)
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UXsollaLoginSubsystem::CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb, const FString& Content, const FString& AuthToken, const bool skipLogging)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Creating HTTP request - URL: %s, Verb: %s"),
 		*VA_FUNC_LINE, *Url, *XsollaUtilsLoggingHelper::VerbToString(Verb));
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = XsollaUtilsHttpRequestHelper::CreateHttpRequest(Url, Verb, AuthToken, Content, TEXT("LOGIN"), XSOLLA_LOGIN_VERSION);
-
-	// Log request details
-	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, Content);
+	if (!skipLogging)
+	{
+		XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, Content);
+	}
 
 	return HttpRequest;
 }
@@ -2354,9 +2355,10 @@ void UXsollaLoginSubsystem::InnerRefreshToken(const FString& RefreshToken, const
 	// Generate endpoint URL
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/token")).Build();
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, /*Content*/ FString(), /*AuthToken*/ FString(), /*skipLogging*/ true);//Create empty because we have different content type
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
 	HttpRequest->SetContentAsString(UXsollaUtilsLibrary::EncodeFormData(RequestDataJson));
+	XsollaUtilsLoggingHelper::LogHttpRequest(HttpRequest, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginSubsystem::InnerRefreshToken_HttpRequestComplete, SuccessCallback, ErrorCallback);
 	HttpRequest->ProcessRequest();
 }
