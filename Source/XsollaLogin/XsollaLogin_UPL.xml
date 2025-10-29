@@ -72,11 +72,11 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:login:6.0.11'
-        implementation 'com.xsolla.android:login-facebook:6.0.11'
-        implementation 'com.xsolla.android:login-google:6.0.11'
-        implementation 'com.xsolla.android:login-wechat:6.0.11'
-        implementation 'com.xsolla.android:login-qq:6.0.11'
+        implementation 'com.xsolla.android:login:6.0.17'
+        implementation 'com.xsolla.android:login-facebook:6.0.17'
+        implementation 'com.xsolla.android:login-google:6.0.17'
+        implementation 'com.xsolla.android:login-wechat:6.0.17'
+        implementation 'com.xsolla.android:login-qq:6.0.17'
       }
       repositories {
         maven { url 'https://maven.google.com' }
