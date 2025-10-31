@@ -2266,14 +2266,42 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 			return;
 		}
 
-		// Standard flow with authentication code
+		// Handle login_url with either code or token parameter
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
-
 			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
-			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
+			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
+
+			// Check if we have a code parameter (standard OAuth flow)
+			if (!Code.IsEmpty())
+			{
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
+				ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
+				return;
+			}
+
+			// Check if we have a token parameter (direct token flow)
+			if (!Token.IsEmpty())
+			{
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication token"));
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using token from login URL. Note: refresh token is not available in this flow"), *VA_FUNC_LINE);
+
+				// Set token data directly (without refresh token capability)
+				LoginData.AuthToken.JWT = Token;
+				LoginData.AuthToken.RefreshToken = FString(); // Empty since we don't have refresh capability
+				LoginData.AuthToken.ExpiresAt = 0; // Unknown expiration time
+
+				SaveData();
+
+				SuccessCallback.ExecuteIfBound(LoginData);
+				return;
+			}
+
+			// Neither code nor token found in URL
+			const FString ErrorMessage = FString::Printf(TEXT("Login URL does not contain 'code' or 'token' parameter. URL: %s"), *LoginUrl);
+			UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+			ErrorCallback.ExecuteIfBound(TEXT("MISSING_AUTH_PARAMETER"), ErrorMessage);
 			return;
 		}
 
