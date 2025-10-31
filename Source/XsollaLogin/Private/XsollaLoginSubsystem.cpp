@@ -42,6 +42,7 @@
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
+#define IGNORE_ASK_FIELDS_PROCESSING 1
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
@@ -2241,7 +2242,8 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		static const FString AskFieldsFieldName = TEXT("ask_fields");
 
 		// Check if this is an "ask_fields" response
-		if (JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName) &&
+		if (!IGNORE_ASK_FIELDS_PROCESSING &&
+			JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName) &&
 			JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received response with additional fields request"), *VA_FUNC_LINE);
