@@ -42,6 +42,7 @@
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
+#define IGNORE_ASK_FIELDS_PROCESSING 1
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
@@ -584,6 +585,15 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Exchanging authentication code for token"), *VA_FUNC_LINE);
+
+	// Verify that the authentication code is not empty
+	if (AuthenticationCode.IsEmpty())
+	{
+		const FString ErrorMessage = TEXT("Authentication code is empty. This might happen when trying to use an incomplete auth flow.");
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+		ErrorCallback.ExecuteIfBound(TEXT("EMPTY_CODE"), ErrorMessage);
+		return;
+	}
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 
@@ -2229,13 +2239,69 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 	{
 		static const FString LoginUrlFieldName = TEXT("login_url");
+		static const FString AskFieldsFieldName = TEXT("ask_fields");
+
+		// Check if this is an "ask_fields" response
+		if (!IGNORE_ASK_FIELDS_PROCESSING &&
+			JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName) &&
+			JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
+		{
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received response with additional fields request"), *VA_FUNC_LINE);
+
+			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL requiring additional fields"));
+
+			const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+			if (Settings->UsePlatformBrowser)
+			{
+				// Cannot handle "ask_fields" with platform browser
+				const FString ErrorMessage = TEXT("Authentication requires additional fields (like email) but platform browser is enabled. Please disable platform browser in Xsolla Settings or modify login project settings in Publisher Account to disable additional field requests.");
+				UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+				ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+				return;
+			}
+
+			// Use the in-game browser to handle additional fields
+			HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
+			return;
+		}
+
+		// Handle login_url with either code or token parameter
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
-
 			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
-			ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
+			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
+
+			// Check if we have a code parameter (standard OAuth flow)
+			if (!Code.IsEmpty())
+			{
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication code"));
+				ExchangeAuthenticationCodeToToken(Code, SuccessCallback, ErrorCallback);
+				return;
+			}
+
+			// Check if we have a token parameter (direct token flow)
+			if (!Token.IsEmpty())
+			{
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL with authentication token"));
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using token from login URL. Note: refresh token is not available in this flow"), *VA_FUNC_LINE);
+
+				// Set token data directly (without refresh token capability)
+				LoginData.AuthToken.JWT = Token;
+				LoginData.AuthToken.RefreshToken = FString(); // Empty since we don't have refresh capability
+				LoginData.AuthToken.ExpiresAt = 0; // Unknown expiration time
+
+				SaveData();
+
+				SuccessCallback.ExecuteIfBound(LoginData);
+				return;
+			}
+
+			// Neither code nor token found in URL
+			const FString ErrorMessage = FString::Printf(TEXT("Login URL does not contain 'code' or 'token' parameter. URL: %s"), *LoginUrl);
+			UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
+			ErrorCallback.ExecuteIfBound(TEXT("MISSING_AUTH_PARAMETER"), ErrorMessage);
 			return;
 		}
 
@@ -2244,6 +2310,51 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Handling authentication with additional fields form"), *VA_FUNC_LINE);
+
+	UUserWidget* BrowserWidget = nullptr;
+	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
+
+	UXsollaLoginBrowserWrapper* BrowserWidgetWrapper = Cast<UXsollaLoginBrowserWrapper>(BrowserWidget);
+
+	if (BrowserWidgetWrapper != nullptr)
+	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading additional fields form in browser widget"), *VA_FUNC_LINE);
+		BrowserWidgetWrapper->LoadUrl(LoginUrl);
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([this, SuccessCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+		{
+			if (!AuthenticationCode.IsEmpty())
+			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code after fields submission"), *VA_FUNC_LINE);
+				ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+			}
+			else
+			{
+				if (bIsManually)
+				{
+					UE_LOG(LogXsollaLogin, Log, TEXT("%s: Additional fields form canceled by user"), *VA_FUNC_LINE);
+					const FString ErrorMessage = TEXT("Additional fields form submission was canceled by user");
+					ErrorCallback.ExecuteIfBound(TEXT(""), ErrorMessage);
+				}
+				else
+				{
+					UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields form submission failed"), *VA_FUNC_LINE);
+					const FString ErrorMessage = TEXT("Additional fields form submission failed - no authentication code received");
+					ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+				}
+			}
+		});
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create browser widget for additional fields form"), *VA_FUNC_LINE);
+		const FString ErrorMessage = TEXT("Failed to create browser widget for additional fields form");
+		ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+	}
 }
 
 void UXsollaLoginSubsystem::HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback)
