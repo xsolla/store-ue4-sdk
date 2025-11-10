@@ -4,13 +4,15 @@ import constants
 import utils
 import unreal
 
-utils.validate_args_count(6)
+utils.validate_args_count(8)
 
 working_dir = sys.argv[1]
 plugin_branch = sys.argv[2]
 engine_version = sys.argv[3]
 build_platform = sys.argv[4]
 is_platform_browser = sys.argv[5]
+build_config = sys.argv[6]  # 'Development' or 'Shipping'
+for_distribution = sys.argv[7]  # 'True' or 'False'
 
 project_dir = os.path.join(working_dir, "_WORK_")
 source_dir = os.path.join(project_dir, 'Source')
@@ -18,7 +20,7 @@ plugin_dir = os.path.join(project_dir, 'Plugins', 'XsollaSdk')
 build_dir = os.path.join(working_dir, 'Builds')
 user_engine_ini_path = os.path.join(project_dir, 'Config')
 
-# Clone test project and SDK plugin 
+# Clone test project and SDK plugin
 utils.clone_repo(constants.demo_project_remote, project_dir, constants.demo_project_branch)
 utils.clone_repo(constants.plugin_remote, plugin_dir, plugin_branch)
 
@@ -32,4 +34,4 @@ unreal.change_engine_version_for_sdk_plugin(plugin_dir, engine_version)
 unreal.change_browser_settings(project_dir, is_platform_browser)
 
 # Build test project
-unreal.build_demo(project_dir, build_dir, engine_version, build_platform)
+unreal.build_demo(project_dir, build_dir, engine_version, build_platform, build_config, for_distribution)
