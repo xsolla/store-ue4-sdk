@@ -219,12 +219,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Initiates an item purchase session and fetches token for payment console.
+	/** Creates an order for the specified item and returns the payment token and order ID.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param SuccessCallback Called after payment token was successfully fetched.
+	 * @param SuccessCallback Called after the payment token was successfully fetched. Returns both the payment token and order ID.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 */
