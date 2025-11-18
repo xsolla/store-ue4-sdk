@@ -898,7 +898,7 @@ protected:
 	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
-	/** Return true if error is happened */
+	/** Handles HTTP request errors by logging them and executing the error callback. */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
 
 	void HandlePurchaseFreeItemsRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
