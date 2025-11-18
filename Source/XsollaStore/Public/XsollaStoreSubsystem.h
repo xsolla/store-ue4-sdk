@@ -509,8 +509,7 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
- 		* <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
+	/** Returns a virtual currency package with the specified SKU. The package must be set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
