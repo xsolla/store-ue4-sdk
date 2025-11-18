@@ -350,7 +350,7 @@ public:
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiates purchase process for ызусшашув store item.
+	/** Initiates purchase process for specified store item.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
@@ -362,7 +362,7 @@ public:
 	void PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiate purchase by passing virtual currency package
+	/** Initiate purchase process for specified currency package
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CurrencyPackage Desired currency package.
