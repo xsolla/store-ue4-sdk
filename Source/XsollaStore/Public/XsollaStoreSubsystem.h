@@ -219,12 +219,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|VirtualItems", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void GetAllItemsList(const FString& Locale, const FOnGetItemsList& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Initiates an item purchase session and fetches token for payment console.
+	/** Creates an order for the specified item and returns the payment token and order ID.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param SuccessCallback Called after payment token was successfully fetched.
+	 * @param SuccessCallback Called after the payment token was successfully fetched. Returns both the payment token and order ID.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
 	 */
@@ -350,7 +350,7 @@ public:
 	void CreateOrderWithFreeCart(const FString& AuthToken, const FString& CartId,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiates purchase process for ызусшашув store item.
+	/** Initiates purchase process for specified store item.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
@@ -362,7 +362,7 @@ public:
 	void PurchaseStoreItem(const FString& AuthToken, const FStoreItem& StoreItem, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 		const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Initiate purchase by passing virtual currency package
+	/** Initiate purchase process for specified currency package
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CurrencyPackage Desired currency package.
@@ -509,8 +509,7 @@ public:
 		const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnCurrencyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a list of virtual currency packages according to pagination settings. The list includes packages which are set to be available for purchase in the store.
- 		* <b>Attention:</b> The number of packages returned in a single response is limited. <b>The default and maximum value is 50 packages per response</b>. To get more data page by page, use <code>Limit</code> and <code>Offset</code> fields.
+	/** Returns a virtual currency package with the specified SKU. The package must be set to be available for purchase in the store.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param PackageSKU Desired currency package SKU.
@@ -899,7 +898,7 @@ protected:
 	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
-	/** Return true if error is happened */
+	/** Handles HTTP request errors by logging them and executing the error callback. */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
 
 	void HandlePurchaseFreeItemsRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
