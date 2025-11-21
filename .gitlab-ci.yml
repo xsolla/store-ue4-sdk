@@ -193,6 +193,29 @@ demo_56_win_system_browser:
   artifacts:
     name: "demo-UE56-win-system_browser-dev-%CI_COMMIT_REF_SLUG%"
 
+demo_57_win_inapp_browser:
+  extends: .win_job_base
+  stage: demo_windows
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Win64 False Development False
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+  artifacts:
+    name: "demo-UE57-win-inapp_browser-dev-%CI_COMMIT_REF_SLUG%"
+
+demo_57_win_system_browser:
+  extends: .win_job_base
+  stage: demo_windows
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Win64 True Development False
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-win-system_browser-dev-%CI_COMMIT_REF_SLUG%"
+
 # =================================================================================================================
 # DEMO WINDOWS SHIPPING BUILDS
 
@@ -274,6 +297,32 @@ demo_56_win_system_browser_shipping:
   artifacts:
     name: "demo-UE56-win-system_browser-shipping-%CI_COMMIT_REF_SLUG%"
 
+demo_57_win_inapp_browser_shipping:
+  extends: .win_job_base
+  stage: demo_windows
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Win64 False Shipping True
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-win-inapp_browser-shipping-%CI_COMMIT_REF_SLUG%"
+
+demo_57_win_system_browser_shipping:
+  extends: .win_job_base
+  stage: demo_windows
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Win64 True Shipping True
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-win-system_browser-shipping-%CI_COMMIT_REF_SLUG%"
+
 # =================================================================================================================
 # DEMO ANDROID DEVELOPMENT BUILDS
 
@@ -349,6 +398,33 @@ demo_56_android_system_browser:
       allow_failure: true
   artifacts:
     name: "demo-UE56-android-system_browser-dev-%CI_COMMIT_REF_SLUG%"
+
+demo_57_android_inapp_browser:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Android False Development False
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+  artifacts:
+    name: "demo-UE57-android-inapp_browser-dev-%CI_COMMIT_REF_SLUG%"
+
+demo_57_android_system_browser:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Android True Development False
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-android-system_browser-dev-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO ANDROID SHIPPING BUILDS
@@ -434,6 +510,36 @@ demo_56_android_system_browser_shipping:
       allow_failure: true
   artifacts:
     name: "demo-UE56-android-system_browser-shipping-%CI_COMMIT_REF_SLUG%"
+
+demo_57_android_inapp_browser_shipping:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Android False Shipping True
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-android-inapp_browser-shipping-%CI_COMMIT_REF_SLUG%"
+
+demo_57_android_system_browser_shipping:
+  extends: .win_job_base
+  stage: demo_android
+  variables:
+    NDK_PATH: $NDK_PATH_27
+  script:
+    - python %BUILD_DEMO_SCRIPT% %CI_PROJECT_DIR% %CI_COMMIT_REF_NAME% "5.7" Android True Shipping True
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  artifacts:
+    name: "demo-UE57-android-system_browser-shipping-%CI_COMMIT_REF_SLUG%"
 
 # =================================================================================================================
 # DEMO MAC DEVELOPMENT BUILDS
