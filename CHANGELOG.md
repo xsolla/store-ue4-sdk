@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.2] - 2025-11-27
+### Fixed
+- Error if additional fields request was configured in PA (e.g.: email after phone number login)
+- Warinig that 'Conv_FloatToText' method is deprecated
+- Description for several XsollaStore methods
+
 ## [4.1.1] - 2025-10-10
 
 ### Fixed
