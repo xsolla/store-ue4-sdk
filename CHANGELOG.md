@@ -2,9 +2,8 @@
 
 ## [4.1.2] - 2025-11-27
 ### Fixed
-- Error if additional fields request was configured in PA (e.g.: email after phone number login)
-- Warinig that 'Conv_FloatToText' method is deprecated
-- Description for several XsollaStore methods
+- Error that occurred when requesting additional fields (e.g., email or phone number) during user authorization. The error was triggered when the corresponding setting was enabled in Publisher Account
+- Packaging warning related to the deprecated `Conv_FloatToText` method
 
 ## [4.1.1] - 2025-10-10
 
