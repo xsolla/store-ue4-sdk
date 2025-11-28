@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.2] - 2025-11-27
+### Fixed
+- Error that occurred when requesting additional fields (e.g., email or phone number) during user authorization. The error was triggered when the corresponding setting was enabled in Publisher Account
+- Packaging warning related to the deprecated `Conv_FloatToText` method
+
 ## [4.1.1] - 2025-10-10
 
 ### Fixed

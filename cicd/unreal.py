@@ -32,21 +32,28 @@ def change_engine_version_for_sdk_plugin(plugin_dir, engine_version):
 def change_browser_settings(project_dir, is_platform_browser):
     config_path = os.path.join(project_dir, 'Config', 'DefaultEngine.ini')
     utils.update_ini_file(config_path, '/Script/XsollaSettings.XsollaProjectSettings', 'UsePlatformBrowser', is_platform_browser)
-    
 
-def build_demo(test_project_dir, archive_dir, engine_version, platform):
+
+def build_demo(test_project_dir, archive_dir, engine_version, platform, build_config='Development', for_distribution='False'):
     automation_tool_path = _get_automation_tool_path(engine_version)
     uproject_file_path = os.path.join(test_project_dir, f"{constants.demo_project_name}.uproject")
+
+    # Base build command
     build_command = [
-            automation_tool_path, 
-            "BuildCookRun", 
+            automation_tool_path,
+            "BuildCookRun",
             f"-platform={platform}",
             f"-project={uproject_file_path}",
-            f"-archivedirectory={archive_dir}", 
+            f"-archivedirectory={archive_dir}",
             "-cookflavor=Multi",
+            f"-clientconfig={build_config}",  # Added build configuration parameter
             "-nop4", "-cook", "-build", "-stage", "-prereqs", "-package", "-archive"
         ]
-    
+
+    # Add distribution flag if needed
+    if for_distribution.lower() == 'true':
+        build_command.append("-distribution")
+
     print(f"Build command: {' '.join(build_command)}")
 
     result = subprocess.run(build_command)

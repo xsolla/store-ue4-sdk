@@ -50,8 +50,13 @@ UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
 #if !UE_SERVER
+	FString PluginName = UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName);
+	if (PluginName.IsEmpty())
+	{
+		PluginName = TEXT("store-ue4-sdk");
+	}
 	static ConstructorHelpers::FClassFinder<UUserWidget> BrowserWidgetFinder(*FString::Printf(TEXT("/%s/Browser/Components/W_StoreBrowser.W_StoreBrowser_C"),
-		*UXsollaUtilsLibrary::GetPluginName(FXsollaStoreModule::ModuleName)));
+		*PluginName));
 	DefaultBrowserWidgetClass = BrowserWidgetFinder.Class;
 #endif
 }

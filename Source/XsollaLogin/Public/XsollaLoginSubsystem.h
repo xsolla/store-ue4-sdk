@@ -782,6 +782,9 @@ protected:
 	/** Processes the request that returns URL with a code that can be exchanged to user token (OAuth 2.0). */
 	void HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, const bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback);
 
+	/** Handles the "ask_fields" response from the authentication flow */
+	void HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+
 	/** Returns true if the error occurs. */
 	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
@@ -790,7 +793,7 @@ protected:
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateHttpRequest(const FString& Url, const EXsollaHttpRequestVerb Verb = EXsollaHttpRequestVerb::VERB_GET,
-		const FString& Content = FString(), const FString& AuthToken = FString());
+		const FString& Content = FString(), const FString& AuthToken = FString(), const bool skipLogging = false);
 
 	/** Sets a JSON string array field named FieldName and value of Array. */
 	void SetStringArrayField(TSharedPtr<FJsonObject> Object, const FString& FieldName, const TArray<FString>& Array) const;
