@@ -2,7 +2,9 @@
 
 #include "XsollaLoginSubsystem.h"
 
+#include "XsollaLoginHttpServer.h"
 #include "XsollaLogin.h"
+#include "HAL/PlatformProcess.h"
 #include "XsollaLoginDefines.h"
 #include "XsollaLoginLibrary.h"
 #include "XsollaLoginSave.h"
@@ -78,7 +80,11 @@ void UXsollaLoginSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UXsollaLoginSubsystem::Deinitialize()
 {
-	// Do nothing for now
+	if (HttpServer)
+	{
+		HttpServer->Stop();
+	}
+
 	Super::Deinitialize();
 }
 
@@ -541,10 +547,73 @@ void UXsollaLoginSubsystem::AuthenticateViaSocialNetwork(const FString& Provider
 	}
 	else
 	{
-		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using web-based social authentication"), *VA_FUNC_LINE);
-		FOnSocialUrlReceived UrlReceivedCallback;
-		UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback);
-		GetSocialAuthenticationUrl(ProviderName, State, UrlReceivedCallback, ErrorCallback);
+		const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+		if (Settings->UsePlatformBrowser)
+		{
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using system browser for social authentication"), *VA_FUNC_LINE);
+
+			if (!HttpServer.IsValid())
+			{
+				HttpServer = MakeShared<FXsollaLoginHttpServer>();
+			}
+
+			int32 Port = 65421;
+			if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
+			{
+				UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Failed to start HTTP server on port %d, trying random port"), *VA_FUNC_LINE, Port);
+				Port = 0;
+				if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
+				{
+					UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to start HTTP server"), *VA_FUNC_LINE);
+					NativeErrorCallback.ExecuteIfBound(TEXT("SERVER_ERROR"), TEXT("Failed to start local HTTP server"));
+					return;
+				}
+			}
+
+			Port = HttpServer->GetPort();
+			FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: HTTP server started on port %d"), *VA_FUNC_LINE, Port);
+
+			// Generate endpoint URL to get login URL
+			const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login.xsolla.com/api/oauth2/social/{ProviderName}/login_url"))
+									.SetPathParam(TEXT("ProviderName"), ProviderName)
+									.AddStringQueryParam(TEXT("client_id"), ClientID)
+									.AddStringQueryParam(TEXT("redirect_uri"), RedirectUri)
+									.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+									.AddStringQueryParam(TEXT("state"), State)
+									.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
+									.Build();
+
+			TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET);
+			HttpRequest->OnProcessRequestComplete().BindLambda([this, SuccessCallback, ErrorCallback](FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded)
+			{
+				TSharedPtr<FJsonObject> JsonObject;
+				XsollaHttpRequestError OutError;
+
+				if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+				{
+					static const FString SocialUrlFieldName = TEXT("url");
+					if (JsonObject->HasTypedField<EJson::String>(SocialUrlFieldName))
+					{
+						const FString SocialUrl = JsonObject.Get()->GetStringField(SocialUrlFieldName);
+						XsollaUtilsLoggingHelper::LogUrl(SocialUrl, TEXT("Received social authentication URL"));
+
+						FPlatformProcess::LaunchURL(*SocialUrl, nullptr, nullptr);
+						return;
+					}
+					OutError.description = FString::Printf(TEXT("No field '%s' found"), *SocialUrlFieldName);
+				}
+				HandleRequestOAuthError(OutError, ErrorCallback);
+			});
+			HttpRequest->ProcessRequest();
+		}
+		else
+		{
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using web-based social authentication"), *VA_FUNC_LINE);
+			FOnSocialUrlReceived UrlReceivedCallback;
+			UrlReceivedCallback.BindDynamic(this, &UXsollaLoginSubsystem::SocialAuthUrlReceivedCallback);
+			GetSocialAuthenticationUrl(ProviderName, State, UrlReceivedCallback, ErrorCallback);
+		}
 	}
 }
 
@@ -584,6 +653,12 @@ void UXsollaLoginSubsystem::RefreshToken(const FString& RefreshToken, const FOnA
 
 void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	ExchangeAuthenticationCodeToToken(AuthenticationCode, Settings->RedirectURI, SuccessCallback, ErrorCallback);
+}
+
+void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FString& RedirectUri, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Exchanging authentication code for token"), *VA_FUNC_LINE);
 
 	// Verify that the authentication code is not empty
@@ -602,7 +677,7 @@ void UXsollaLoginSubsystem::ExchangeAuthenticationCodeToToken(const FString& Aut
 	RequestDataJson->SetStringField(TEXT("client_id"), ClientID);
 	RequestDataJson->SetStringField(TEXT("grant_type"), TEXT("authorization_code"));
 	RequestDataJson->SetStringField(TEXT("code"), AuthenticationCode);
-	RequestDataJson->SetStringField(TEXT("redirect_uri"), Settings->RedirectURI);
+	RequestDataJson->SetStringField(TEXT("redirect_uri"), RedirectUri);
 
 	FString PostContent;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
@@ -2590,6 +2665,34 @@ void UXsollaLoginSubsystem::SocialLinkingUrlReceivedCallback(const FString& Url)
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading social linking URL in browser widget"), *VA_FUNC_LINE);
 	MyBrowser->AddToViewport(INT_MAX - 100);
 	MyBrowser->LoadUrl(Url);
+}
+
+void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& Params)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received params from HTTP server"), *VA_FUNC_LINE);
+
+	if (Params.Contains(TEXT("code")))
+	{
+		const FString Code = Params[TEXT("code")];
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code: %s"), *VA_FUNC_LINE, *Code);
+
+		int32 Port = HttpServer ? HttpServer->GetPort() : 65421;
+		FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
+
+		ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
+	}
+	else if (Params.Contains(TEXT("error")) || Params.Contains(TEXT("error_description")))
+	{
+		FString ErrorCode = Params.Contains(TEXT("error")) ? Params[TEXT("error")] : TEXT("Unknown error");
+		FString ErrorDesc = Params.Contains(TEXT("error_description")) ? Params[TEXT("error_description")] : TEXT("");
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Received error from HTTP server: %s - %s"), *VA_FUNC_LINE, *ErrorCode, *ErrorDesc);
+		NativeErrorCallback.ExecuteIfBound(ErrorCode, ErrorDesc);
+	}
+
+	if (HttpServer)
+	{
+		HttpServer->Stop();
+	}
 }
 
 #if PLATFORM_ANDROID

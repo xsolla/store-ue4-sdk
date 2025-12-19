@@ -17,6 +17,7 @@
 class FJsonObject;
 class UXsollaLoginBrowserWrapper;
 class UXsollaSocialLinkingBrowserWrapper;
+class FXsollaLoginHttpServer;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -865,4 +866,10 @@ private:
 
 	UPROPERTY()
 	FOnAuthError NativeErrorCallback;
+
+	TSharedPtr<FXsollaLoginHttpServer> HttpServer;
+
+	void OnAuthParamsReceived(const TMap<FString, FString>& Params);
+
+	void ExchangeAuthenticationCodeToToken(const FString& AuthenticationCode, const FString& RedirectUri, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 };
