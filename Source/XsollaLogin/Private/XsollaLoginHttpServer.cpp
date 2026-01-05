@@ -97,6 +97,8 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 	ReceivedData.Add(0); // Null terminator
 	FString RequestString = FString(UTF8_TO_TCHAR(reinterpret_cast<const char*>(ReceivedData.GetData())));
 
+	bool bHasError = false;
+
 	// Parse Request Line: GET /?code=... HTTP/1.1
 	FString RequestLine;
 	FString Leftover;
@@ -122,11 +124,24 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 					FString Key, Value;
 					if (Pair.Split(TEXT("="), &Key, &Value))
 					{
-						Params.Add(FGenericPlatformHttp::UrlDecode(Key), FGenericPlatformHttp::UrlDecode(Value));
+						FString DecodedKey = FGenericPlatformHttp::UrlDecode(Key);
+						FString DecodedValue = FGenericPlatformHttp::UrlDecode(Value);
+						Params.Add(DecodedKey, DecodedValue);
+
+						if (DecodedKey == TEXT("error") || DecodedKey == TEXT("error_code"))
+						{
+							bHasError = true;
+						}
 					}
 					else
 					{
-						Params.Add(FGenericPlatformHttp::UrlDecode(Pair), TEXT(""));
+						FString DecodedKey = FGenericPlatformHttp::UrlDecode(Pair);
+						Params.Add(DecodedKey, TEXT(""));
+
+						if (DecodedKey == TEXT("error") || DecodedKey == TEXT("error_code"))
+						{
+							bHasError = true;
+						}
 					}
 				}
 
@@ -146,8 +161,11 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 	FString CsvContent;
 	FString CsvPath = FPaths::ProjectContentDir() / TEXT("Resources/Login/XsollaLocalAuthLocalization.csv");
 
-	FString Title = TEXT("Successful login");
-	FString Message = TEXT("You can close this tab and return to the game");
+	FString TitleKey = bHasError ? TEXT("Unsuccessful login") : TEXT("Successful login");
+	FString MessageKey = bHasError ? TEXT("Close this tab and try to log in again") : TEXT("You can close this tab and return to the game");
+
+	FString Title = TitleKey;
+	FString Message = MessageKey;
 
 	if (FFileHelper::LoadFileToString(CsvContent, *CsvPath))
 	{
@@ -210,13 +228,13 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 			{
 				FString Key = Columns[0].TrimStartAndEnd();
 				// Use English text as key since the file structure changed
-				if (Key == TEXT("Successful login"))
+				if (Key == TitleKey)
 				{
 					Title = Columns[LangIndex].TrimStartAndEnd();
 					Title.RemoveFromStart(TEXT("\""));
 					Title.RemoveFromEnd(TEXT("\""));
 				}
-				else if (Key == TEXT("You can close this tab and return to the game"))
+				else if (Key == MessageKey)
 				{
 					Message = Columns[LangIndex].TrimStartAndEnd();
 					Message.RemoveFromStart(TEXT("\""));
