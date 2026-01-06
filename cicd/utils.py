@@ -5,6 +5,7 @@ import shutil
 import sys
 import git
 import stat
+import urllib.parse
 
 def finish_with_error(message):
     print(message)
@@ -19,6 +20,21 @@ def validate_args_count(expected_args_count):
 def is_macos():
     return sys.platform == 'darwin' 
 
+
+def build_gitlab_auth_url(url: str) -> str:
+    token = os.getenv("GITLAB_TOKEN")
+    if not token:
+        raise RuntimeError("GITLAB_TOKEN env var is not set")
+
+    p = urllib.parse.urlparse(url)
+    if p.scheme not in ("http", "https"):
+        raise ValueError(f"Expected http(s) url, got: {url}")
+
+    # GitLab: username = oauth2, password = token
+    netloc = f"oauth2:{urllib.parse.quote(token, safe='')}@{p.netloc}"
+    return urllib.parse.urlunparse((p.scheme, netloc, p.path, p.params, p.query, p.fragment))
+
+
 def clone_repo(url, path, branch):
     try:
         if os.path.exists(path):
@@ -27,7 +43,7 @@ def clone_repo(url, path, branch):
         finish_with_error(f'Failed to remove directory: {e}')
 
     try:
-        git.Repo.clone_from(url, path, branch=branch, depth=1)
+        git.Repo.clone_from(build_gitlab_auth_url(url), path, branch=branch, depth=1)
     except Exception as e:
         finish_with_error(f'Failed to clone repository: {e}')
 
