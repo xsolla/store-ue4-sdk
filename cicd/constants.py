@@ -1,8 +1,8 @@
-demo_project_remote = 'git@gitlab.loc:sdk_group/store-ue-sdk-test.git'
+demo_project_remote = 'https://gitlab.loc/sdk_group/store-ue-sdk-test.git'
 demo_project_branch = 'master'
 demo_project_name = 'StoreUeSdkTest'
 
-plugin_remote = 'git@gitlab.loc:sdk_group/store-ue4-sdk.git'
+plugin_remote = 'https://gitlab.loc/sdk_group/store-ue4-sdk.git'
 plugin_name = 'Xsolla'
 settings_by_engine_version = {'5.2': 'DefaultBuildSettings = BuildSettingsVersion.V2; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
                               '5.3': 'DefaultBuildSettings = BuildSettingsVersion.V4; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
