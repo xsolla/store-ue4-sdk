@@ -245,7 +245,7 @@ public:
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
 		const FOnFetchTokenSuccess& SuccessCallback, const FOnError& ErrorCallback, const FXsollaPaymentTokenRequestPayload& PurchaseParams);
 
-	/** Opens payment UI for the provided access token.
+	/** Opens payment UI for the provided payment token.
 	 * More about the use cases:
 	 * - [Cart purchase](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/cart-purchase/)
 	 * - [Purchase in one click](https://developers.xsolla.com/sdk/unreal-engine/item-purchase/one-click-purchase/)
@@ -495,7 +495,9 @@ public:
 	void GetBundles(const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetListOfBundlesUpdate& SuccessCallback, const FOnError& ErrorCallback, const FString& AuthToken = TEXT(""));
 
-	/** Returns virtual currency with specified SKU.
+
+	 /** Returns a full list of virtual currencies. The list includes currencies which are set to be available for purchase in the store.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/catalog/catalog-display/).
 	 *
 	 * @param CurrencySKU Desired currency SKU.
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -605,9 +607,12 @@ public:
 	void GetGamesListBySpecifiedGroup(const FString& ExternalId, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGetGamesListBySpecifiedGroup& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0);
 
-	/** Returns a game item with the specified SKU for the catalog.
+	/**
+	 * Returns a game key package from the catalog with the specified SKU.
 	 *
-	 * @param GameSKU Desired game SKU.
+	 * This method retrieves a catalog item that represents a game as a whole.
+	 *
+	 * @param GameSKU SKU of a game key package.
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address if the country is not specified.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
@@ -618,10 +623,30 @@ public:
 	void GetGameItem(const FString& GameSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Get Game Key Item
-	 * Returns a game key item with the specified SKU for the catalog.
+	/**
+	 * Returns a platform-specific game key package from the catalog with the specified SKU.
 	 *
-	 * @param ItemSKU Desired game item SKU.
+	 * This method retrieves a catalog item that represents a purchasable package
+	 * of game keys for a specific platform or DRM (for example, Steam or Epic Games Store).
+	 *
+	 * @param ItemSKU SKU of a game key package for a specific platform.
+	 *                Format: <GameKeyPackageSKU>_<PlatformSuffix> (e.g., "my_game_steam").
+	 *
+	 *                Supported platform suffixes:
+	 *                - Steam: `steam`
+	 *                - PlayStation: `playstation`
+	 *                - Xbox: `xbox`
+	 *                - Uplay: `uplay`
+	 *                - Origin: `origin`
+	 *                - DRM Free: `drmfree`
+	 *                - GOG: `gog`
+	 *                - Epic Games Store: `epicgames`
+	 *                - Nintendo Switch eShop: `nintendo_eshop`
+	 *                - Discord Game Store: `discord_game_store`
+	 *                - Oculus: `oculus`
+	 *                - Viveport: `viveport`
+	 *                - Google Stadia: `stadia`
+	 *                - MY.GAMES Store: `my_game`
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
 	 * @param Country Country for which to calculate regional prices and restrictions in a catalog. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Calculations are based on the user's IP address if the country is not specified.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param AdditionalFields The list of additional fields. These fields will be in a response if you send it in a request. Available fields `media_list`, `order`, and `long_description`.
@@ -632,7 +657,7 @@ public:
 	void GetGameKeyItem(const FString& ItemSKU, const FString& Locale, const FString& Country, const TArray<FString>& AdditionalFields,
 		const FOnGameKeyUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Returns a game key list from the specified group for building a catalog.
+	/** Returns a game key package list from the specified group for building a catalog.
 	 *
 	 * @param ExternalId Group external ID.
 	 * @param Locale Response language. [Two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/). Leave empty to use the default value.
@@ -670,10 +695,10 @@ public:
 	void GetOwnedGames(const FString& AuthToken, const TArray<FString>& AdditionalFields,
 		const FOnOwnedGamesListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit = 50, const int Offset = 0, const bool bIsSandbox = false);
 
-	/** Grants an entitlement by a provided game code.
+	/** Grants an entitlement by a provided game key.
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
-	 * @param Code Game code.
+	 * @param Code Game key.
 	 * @param SuccessCallback Called after successful redemption.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -898,7 +923,7 @@ protected:
 	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
-	/** Handles HTTP request errors by logging them and executing the error callback. */
+	/** Handles HTTP request errors by logging them and invoking the error callback. */
 	void HandleRequestError(XsollaHttpRequestError ErrorData, FOnError ErrorCallback);
 
 	void HandlePurchaseFreeItemsRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
@@ -994,11 +1019,16 @@ private:
 	FString GetBuildPlatform() const;
 
 public:
-	/** Returns the list of virtual items without any category provided. */
+	/** Returns a list of virtual items that are not assigned to any group. */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static TArray<FStoreItem> GetVirtualItemsWithoutGroup(const FStoreItemsData& StoreItemsData);
 
-	/** Returns the pending PayStation URL to be opened in browser. */
+	/**
+	 * Returns the Pay Station URL for the current pending payment.
+	 *
+	 * The URL should be opened in a web browser to continue the payment process.
+	 * If there is no pending payment, the returned string is empty.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	const FString& GetPendingPaystationUrl() const;
 
@@ -1006,11 +1036,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static FString GetItemName(const FStoreItemsData& StoreItemsData, const FString& ItemSKU);
 
-	/** Returns item with the given SKU. */
+	/**
+	 * Searches for an item in the store with the specified SKU.
+	 *
+	 * If an item with the specified SKU exists, the method returns a reference to it
+	 * and sets `bHasFound` to `true`. If no item is found, `bHasFound` is set to `false`.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static const FStoreItem& FindItemBySku(const FStoreItemsData& StoreItemsData, const FString& ItemSku, bool& bHasFound);
 
-	/** Returns package with the given SKU. */
+	/**
+	 * Searches for a virtual currency package with the specified SKU.
+	 *
+	 * If a virtual currency package with the specified SKU exists, the method returns
+	 * a reference to it and sets `bHasFound` to `true`. If no package is found,
+	 * `bHasFound` is set to `false`.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store")
 	static const FVirtualCurrencyPackage& FindVirtualCurrencyPackageBySku(const FVirtualCurrencyPackagesData& VirtualCurrencyPackagesData,
 		const FString& ItemSku, bool& bHasFound);
