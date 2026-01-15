@@ -226,7 +226,7 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 		}
 	}
 
-	HtmlContent = FString::Printf(TEXT("<html><head><title>%s</title><meta charset=\"utf-8\"></head><body><h1>%s</h1><p>%s</p><script>window.close();</script></body></html>"), *Title, *Title, *Message);
+	HtmlContent = FString::Printf(TEXT("<html><head><title>%s</title><meta charset=\"utf-8\"></head><body><h1>%s</h1><p>%s</p></body></html>"), *Title, *Title, *Message);
 	SendResponse(ClientSocket, HtmlContent);
 
 	ClientSocket->Close();
