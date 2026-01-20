@@ -317,40 +317,87 @@ void UXsollaLoginSubsystem::AuthWithXsollaWidget(UObject* WorldContextObject, UX
 #endif
 #else
 
-	// Generate endpoint URL
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
-							.AddStringQueryParam(TEXT("projectId"), LoginID)
-							.AddStringQueryParam(TEXT("locale"), Locale)
-							.AddStringQueryParam(TEXT("client_id"), ClientID)
-							.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
-							.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
-							.AddStringQueryParam(TEXT("state"), State)
-							.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
-							.Build();
+	NativeSuccessCallback = SuccessCallback;
+	NativeErrorCallback = ErrorCallback;
+	NativeCancelCallback = CancelCallback;
 
-	auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
-	MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+	// Check if we should use the system browser
+	if (Settings->UsePlatformBrowser)
 	{
-		if (!AuthenticationCode.IsEmpty())
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using system browser for Xsolla Widget authentication"), *VA_FUNC_LINE);
+
+		if (!HttpServer.IsValid())
 		{
-			ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+			HttpServer = MakeShared<FXsollaLoginHttpServer>();
 		}
-		else
+
+		int32 Port = 65421;
+		if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
 		{
-			if (bIsManually)
+			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Failed to start HTTP server on port %d, trying random port"), *VA_FUNC_LINE, Port);
+			Port = 0;
+			if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
 			{
-				CancelCallback.ExecuteIfBound();
+				UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to start HTTP server"), *VA_FUNC_LINE);
+				NativeErrorCallback.ExecuteIfBound(TEXT("SERVER_ERROR"), TEXT("Failed to start local HTTP server"));
+				return;
+			}
+		}
+
+		Port = HttpServer->GetPort();
+		FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: HTTP server started on port %d"), *VA_FUNC_LINE, Port);
+
+		// Generate endpoint URL
+		const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
+								.AddStringQueryParam(TEXT("projectId"), LoginID)
+								.AddStringQueryParam(TEXT("locale"), Locale)
+								.AddStringQueryParam(TEXT("client_id"), ClientID)
+								.AddStringQueryParam(TEXT("redirect_uri"), RedirectUri)
+								.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+								.AddStringQueryParam(TEXT("state"), State)
+								.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
+								.Build();
+
+		FPlatformProcess::LaunchURL(*Url, nullptr, nullptr);
+	}
+	else
+	{
+		// Generate endpoint URL
+		const FString Url = XsollaUtilsUrlBuilder(TEXT("https://login-widget.xsolla.com/latest/"))
+								.AddStringQueryParam(TEXT("projectId"), LoginID)
+								.AddStringQueryParam(TEXT("locale"), Locale)
+								.AddStringQueryParam(TEXT("client_id"), ClientID)
+								.AddStringQueryParam(TEXT("redirect_uri"), Settings->RedirectURI)
+								.AddStringQueryParam(TEXT("response_type"), TEXT("code"))
+								.AddStringQueryParam(TEXT("state"), State)
+								.AddStringQueryParam(TEXT("scope"), TEXT("offline"))
+								.Build();
+
+		auto MyBrowser = CreateWidget<UXsollaLoginBrowserWrapper>(WorldContextObject->GetWorld(), DefaultBrowserWidgetClass);
+		MyBrowser->OnBrowserClosed.BindLambda([&, SuccessCallback, CancelCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+		{
+			if (!AuthenticationCode.IsEmpty())
+			{
+				ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
 			}
 			else
 			{
-				ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+				if (bIsManually)
+				{
+					CancelCallback.ExecuteIfBound();
+				}
+				else
+				{
+					ErrorCallback.ExecuteIfBound(TEXT("Authentication failed"), TEXT("Authentication code is empty"));
+				}
 			}
-		}
-	});
-	MyBrowser->AddToViewport(INT_MAX - 100);
-	MyBrowser->LoadUrl(Url);
+		});
+		MyBrowser->AddToViewport(INT_MAX - 100);
+		MyBrowser->LoadUrl(Url);
 
-	BrowserWidget = MyBrowser;
+		BrowserWidget = MyBrowser;
+	}
 
 #endif
 
