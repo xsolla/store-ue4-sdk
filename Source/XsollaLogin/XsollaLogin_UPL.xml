@@ -39,11 +39,11 @@
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:login:6.0.11'
-        implementation 'com.xsolla.android:login-facebook:6.0.11'
-        implementation 'com.xsolla.android:login-google:6.0.11'
-        implementation 'com.xsolla.android:login-wechat:6.0.11'
-        implementation 'com.xsolla.android:login-qq:6.0.11'
+        implementation 'com.xsolla.android:login:6.0.16'
+        implementation 'com.xsolla.android:login-facebook:6.0.16'
+        implementation 'com.xsolla.android:login-google:6.0.16'
+        implementation 'com.xsolla.android:login-wechat:6.0.16'
+        implementation 'com.xsolla.android:login-qq:6.0.16'
 
         implementation 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.24'
         implementation 'org.bouncycastle:bctls-jdk15to18:1.76'
