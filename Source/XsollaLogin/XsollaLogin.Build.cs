@@ -30,7 +30,10 @@ public class XsollaLogin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "Sockets",
+                "Networking",
+                "Projects"
             }
             );
 
