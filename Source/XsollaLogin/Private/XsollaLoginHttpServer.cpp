@@ -9,6 +9,7 @@
 #include "HAL/PlatformProcess.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Interfaces/IPluginManager.h"
 #include "Internationalization/Internationalization.h"
 #include "Internationalization/Culture.h"
 #include "XsollaLoginDefines.h"
@@ -159,7 +160,8 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 
 	// Load localization
 	FString CsvContent;
-	FString CsvPath = FPaths::ProjectContentDir() / TEXT("Resources/Login/XsollaLocalAuthLocalization.csv");
+	FString PluginContentDir = IPluginManager::Get().FindPlugin(TEXT("Xsolla"))->GetContentDir();
+	FString CsvPath = PluginContentDir / TEXT("Resources/Login/XsollaLocalAuthLocalization.csv");
 
 	FString TitleKey = bHasError ? TEXT("Unsuccessful login") : TEXT("Successful login");
 	FString MessageKey = bHasError ? TEXT("Close this tab and try to log in again") : TEXT("You can close this tab and return to the game");
@@ -243,6 +245,10 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 			}
 		}
 	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to load localization file at path: %s"), *VA_FUNC_LINE, *CsvPath);
+	}
 
 	HtmlContent = FString::Printf(TEXT("<html><head><title>%s</title><meta charset=\"utf-8\"></head><body><h1>%s</h1><p>%s</p></body></html>"), *Title, *Title, *Message);
 	SendResponse(ClientSocket, HtmlContent);
@@ -253,7 +259,9 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 
 void FXsollaLoginHttpServer::SendResponse(FSocket* ClientSocket, const FString& Content)
 {
-	FString Header = FString::Printf(TEXT("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: %d\r\nConnection: close\r\n\r\n"), Content.Len());
+	// Calculate Content-Length using UTF-8 bytes length, not string length (which is number of TCHARs)
+	FTCHARToUTF8 Utf8Content(*Content);
+	FString Header = FString::Printf(TEXT("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: %d\r\nConnection: close\r\n\r\n"), Utf8Content.Length());
 
 	FString FullResponse = Header + Content;
 	FTCHARToUTF8 Utf8Response(*FullResponse);

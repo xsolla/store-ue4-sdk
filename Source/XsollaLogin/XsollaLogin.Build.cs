@@ -32,7 +32,8 @@ public class XsollaLogin : ModuleRules
                 "Slate",
                 "SlateCore",
                 "Sockets",
-                "Networking"
+                "Networking",
+                "Projects"
             }
             );
 
