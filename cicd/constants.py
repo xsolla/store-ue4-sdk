@@ -10,18 +10,18 @@ settings_by_engine_version = {'5.2': 'DefaultBuildSettings = BuildSettingsVersio
                               '5.5': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
                               '5.6': 'DefaultBuildSettings = BuildSettingsVersion.V5; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;',
                               '5.7': 'DefaultBuildSettings = BuildSettingsVersion.V6; IncludeOrderVersion = EngineIncludeOrderVersion.Latest;'}
-ndk_path_by_engine_version = {'5.2': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
-                              '5.3': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
-                              '5.4': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
-                              '5.5': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
-                              '5.6': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/27.2.12479018")',
-                              '5.7': 'NDKPath=(Path="C:/Users/Runner/AppData/Local/Android/Sdk/ndk/27.2.12479018")'}
-java_path_by_engine_version = {'5.2': 'JavaPath=(Path="C:/Program Files/Java/jdk1.8.0_181")',
-                               '5.3': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
-                               '5.4': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
-                               '5.5': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
-                               '5.6': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")',
-                               '5.7': 'JavaPath=(Path="C:/Program Files/Java/jdk-17")'}
+ndk_path_by_engine_version = {'5.2': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
+                              '5.3': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
+                              '5.4': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
+                              '5.5': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/25.1.8937393")',
+                              '5.6': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/27.2.12479018")',
+                              '5.7': 'NDKPath=(Path="C:/Users/runner/AppData/Local/Android/Sdk/ndk/27.2.12479018")'}
+java_path_by_engine_version = {'5.2': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-8.0.472.8-hotspot")',
+                               '5.3': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot")',
+                               '5.4': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot")',
+                               '5.5': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot")',
+                               '5.6': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot")',
+                               '5.7': 'JavaPath=(Path="C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot")'}
 sdk_api_level_by_engine_version = {'5.2': 'SDKAPILevel=android-31',
                                    '5.3': 'SDKAPILevel=android-31',
                                    '5.4': 'SDKAPILevel=android-33',
