@@ -2738,7 +2738,15 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 
 	if (HttpServer)
 	{
-		HttpServer->Stop();
+		// Defer stopping the server to the next frame to avoid race conditions with the server thread
+		// attempting to execute this delegate while we are destroying the listener.
+		AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+			if (HttpServer)
+			{
+				HttpServer->Stop();
+			}
+		});
 	}
 }
 

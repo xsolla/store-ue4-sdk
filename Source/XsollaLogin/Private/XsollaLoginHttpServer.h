@@ -28,6 +28,17 @@ private:
 	FTcpListener* Listener;
 	FOnAuthParamsReceived OnAuthParamsReceivedDelegate;
 	int32 Port;
+
+	// Cached culture names to avoid thread-safety issues
+	FString CachedCultureName;
+	FString CachedTwoLetterCode;
+	FString CachedSystemLocale;
+
+	// Cached response strings
+	FString CachedSuccessTitle;
+	FString CachedSuccessMessage;
+	FString CachedErrorTitle;
+	FString CachedErrorMessage;
 };
 
 
