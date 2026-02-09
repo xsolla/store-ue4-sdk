@@ -32,6 +32,135 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 	OnAuthParamsReceivedDelegate = InOnAuthParamsReceived;
 	Port = InPort;
 
+	// Cache culture info on the game thread (Start is called from GameThread)
+	CachedCultureName = FInternationalization::Get().GetCurrentCulture().Get().GetName();
+	CachedTwoLetterCode = FInternationalization::Get().GetCurrentCulture().Get().GetTwoLetterISOLanguageName();
+	CachedSystemLocale = FPlatformMisc::GetDefaultLocale();
+	
+	// Load localization and cache strings on Start (Game Thread)
+	// This avoids doing file I/O and unsafe FInternationalization calls on the listener thread
+	FString CsvContent;
+	FString PluginContentDir = IPluginManager::Get().FindPlugin(TEXT("Xsolla"))->GetContentDir();
+	FString CsvPath = PluginContentDir / TEXT("Resources/Login/XsollaLocalAuthLocalization.csv");
+	
+	// Default English keys
+	FString SuccessTitleKey = TEXT("Successful login");
+	FString SuccessMessageKey = TEXT("You can close this tab and return to the game");
+	FString ErrorTitleKey = TEXT("Unsuccessful login");
+	FString ErrorMessageKey = TEXT("Close this tab and try to log in again");
+
+	// Default to English
+	CachedSuccessTitle = SuccessTitleKey;
+	CachedSuccessMessage = SuccessMessageKey;
+	CachedErrorTitle = ErrorTitleKey;
+	CachedErrorMessage = ErrorMessageKey;
+
+	if (FFileHelper::LoadFileToString(CsvContent, *CsvPath))
+	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loaded localization file from path: %s"), *VA_FUNC_LINE, *CsvPath);
+		
+		TArray<FString> Lines;
+		CsvContent.ParseIntoArray(Lines, TEXT("\n"), true);
+		
+		int32 LangIndex = 0;
+		if (Lines.Num() > 0)
+		{
+			TArray<FString> Headers;
+			Lines[0].ParseIntoArray(Headers, TEXT(","), true);
+
+			// Prioritize System Locale
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using cached System Locale: %s"), *VA_FUNC_LINE, *CachedSystemLocale);
+
+			// 1. Try exact match with cached System Locale
+			for (int32 i = 0; i < Headers.Num(); i++)
+			{
+				if (Headers[i].TrimStartAndEnd() == CachedSystemLocale)
+				{
+					LangIndex = i;
+					break;
+				}
+			}
+			
+			// 2. Try 2-letter match with cached System Locale
+			if (LangIndex == 0)
+			{
+				FString SystemTwoLetter = CachedSystemLocale.Left(2);
+				for (int32 i = 0; i < Headers.Num(); i++)
+				{
+					if (Headers[i].TrimStartAndEnd() == SystemTwoLetter)
+					{
+						LangIndex = i;
+						break;
+					}
+				}
+			}
+
+			// 3. Fallback to Engine Culture (exact match)
+			if (LangIndex == 0)
+			{
+				for (int32 i = 0; i < Headers.Num(); i++)
+				{
+					if (Headers[i].TrimStartAndEnd() == CachedCultureName)
+					{
+						LangIndex = i;
+						break;
+					}
+				}
+			}
+
+			// 4. Fallback to Engine Culture (2-letter)
+			if (LangIndex == 0)
+			{
+				for (int32 i = 0; i < Headers.Num(); i++)
+				{
+					if (Headers[i].TrimStartAndEnd() == CachedTwoLetterCode)
+					{
+						LangIndex = i;
+						break;
+					}
+				}
+			}
+			
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Selected LangIndex: %d"), *VA_FUNC_LINE, LangIndex);
+		}
+
+		for (int32 i = 1; i < Lines.Num(); i++)
+		{
+			TArray<FString> Columns;
+			Lines[i].ParseIntoArray(Columns, TEXT(","), false);
+
+			if (Columns.Num() > LangIndex)
+			{
+				FString Key = Columns[0].TrimStartAndEnd();
+				
+				FString LocalizedValue = Columns[LangIndex].TrimStartAndEnd();
+				LocalizedValue.RemoveFromStart(TEXT("\""));
+				LocalizedValue.RemoveFromEnd(TEXT("\""));
+
+				if (Key == SuccessTitleKey)
+				{
+					CachedSuccessTitle = LocalizedValue;
+				}
+				else if (Key == SuccessMessageKey)
+				{
+					CachedSuccessMessage = LocalizedValue;
+				}
+				else if (Key == ErrorTitleKey)
+				{
+					CachedErrorTitle = LocalizedValue;
+				}
+				else if (Key == ErrorMessageKey)
+				{
+					CachedErrorMessage = LocalizedValue;
+				}
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to load localization file at path: %s"), *VA_FUNC_LINE, *CsvPath);
+	}
+
 	FIPv4Endpoint Endpoint(FIPv4Address::InternalLoopback, Port);
 	Listener = new FTcpListener(Endpoint);
 
@@ -158,97 +287,9 @@ bool FXsollaLoginHttpServer::HandleConnectionAccepted(FSocket* ClientSocket, con
 	// Send Response
 	FString HtmlContent;
 
-	// Load localization
-	FString CsvContent;
-	FString PluginContentDir = IPluginManager::Get().FindPlugin(TEXT("Xsolla"))->GetContentDir();
-	FString CsvPath = PluginContentDir / TEXT("Resources/Login/XsollaLocalAuthLocalization.csv");
-
-	FString TitleKey = bHasError ? TEXT("Unsuccessful login") : TEXT("Successful login");
-	FString MessageKey = bHasError ? TEXT("Close this tab and try to log in again") : TEXT("You can close this tab and return to the game");
-
-	FString Title = TitleKey;
-	FString Message = MessageKey;
-
-	if (FFileHelper::LoadFileToString(CsvContent, *CsvPath))
-	{
-		// Simple CSV parser
-		TArray<FString> Lines;
-		CsvContent.ParseIntoArray(Lines, TEXT("\n"), true);
-
-		// Find language index
-		int32 LangIndex = 0;
-		if (Lines.Num() > 0)
-		{
-			TArray<FString> Headers;
-			Lines[0].ParseIntoArray(Headers, TEXT(","), true);
-
-			FString CultureName = FInternationalization::Get().GetCurrentCulture().Get().GetName();
-
-			// Try exact match
-			for (int32 i = 0; i < Headers.Num(); i++)
-			{
-				if (Headers[i].TrimStartAndEnd() == CultureName)
-				{
-					LangIndex = i;
-					break;
-				}
-			}
-
-			// Try 2-letter match if exact match failed
-			if (LangIndex == 0)
-			{
-				FString TwoLetterCode = FInternationalization::Get().GetCurrentCulture().Get().GetTwoLetterISOLanguageName();
-				for (int32 i = 0; i < Headers.Num(); i++)
-				{
-					if (Headers[i].TrimStartAndEnd() == TwoLetterCode)
-					{
-						LangIndex = i;
-						break;
-					}
-				}
-			}
-		}
-
-		for (int32 i = 1; i < Lines.Num(); i++)
-		{
-			// Manual parsing to handle quoted strings (basic implementation)
-			// For this specific file structure we can just split by comma,
-			// assuming no commas in unquoted strings or simple structure
-			// But for safety let's use standard ParseIntoArray which handles basic CSV
-
-			// Note: The CSV file provided has "Successful login" as the first column (key) implicitly
-			// The header row is: en,ar,bg...
-			// The data rows are: Successful login,translation1,translation2...
-
-			TArray<FString> Columns;
-			Lines[i].ParseIntoArray(Columns, TEXT(","), false); // Keep empty strings to maintain index
-
-			// If split results in fewer columns than header, we might have issues, but let's try
-			// Column 0 is English/Key
-
-			if (Columns.Num() > LangIndex)
-			{
-				FString Key = Columns[0].TrimStartAndEnd();
-				// Use English text as key since the file structure changed
-				if (Key == TitleKey)
-				{
-					Title = Columns[LangIndex].TrimStartAndEnd();
-					Title.RemoveFromStart(TEXT("\""));
-					Title.RemoveFromEnd(TEXT("\""));
-				}
-				else if (Key == MessageKey)
-				{
-					Message = Columns[LangIndex].TrimStartAndEnd();
-					Message.RemoveFromStart(TEXT("\""));
-					Message.RemoveFromEnd(TEXT("\""));
-				}
-			}
-		}
-	}
-	else
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to load localization file at path: %s"), *VA_FUNC_LINE, *CsvPath);
-	}
+	// Use cached localized strings
+	FString Title = bHasError ? CachedErrorTitle : CachedSuccessTitle;
+	FString Message = bHasError ? CachedErrorMessage : CachedSuccessMessage;
 
 	HtmlContent = FString::Printf(TEXT("<html><head><title>%s</title><meta charset=\"utf-8\"></head><body><h1>%s</h1><p>%s</p></body></html>"), *Title, *Title, *Message);
 	SendResponse(ClientSocket, HtmlContent);
