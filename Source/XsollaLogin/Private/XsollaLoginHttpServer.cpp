@@ -82,8 +82,15 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 
 	// Cache culture info on the game thread (Start is called from GameThread)
 	CachedCultureName = FInternationalization::Get().GetCurrentCulture().Get().GetName();
+	CachedCultureName.ReplaceInline(TEXT("-"), TEXT("_"));
+	CachedCultureName = CachedCultureName.ToLower();
+
 	CachedTwoLetterCode = FInternationalization::Get().GetCurrentCulture().Get().GetTwoLetterISOLanguageName();
+	CachedTwoLetterCode = CachedTwoLetterCode.ToLower();
+
 	CachedSystemLocale = FPlatformMisc::GetDefaultLocale();
+	CachedSystemLocale.ReplaceInline(TEXT("-"), TEXT("_"));
+	CachedSystemLocale = CachedSystemLocale.ToLower();
 	
 	// Load localization and cache strings on Start (Game Thread)
 	// This avoids doing file I/O and unsafe FInternationalization calls on the listener thread
@@ -114,7 +121,14 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 		if (Lines.Num() > 0)
 		{
 			TArray<FString> Headers;
-			Lines[0].ParseIntoArray(Headers, TEXT(","), true);
+			ParseCsvLine(Lines[0], Headers);
+			for (FString& H : Headers)
+			{
+				H.ReplaceInline(TEXT("\uFEFF"), TEXT("")); // BOM
+				H.ReplaceInline(TEXT("\r"), TEXT(""));
+				H.TrimStartAndEndInline();
+				H = H.ToLower();
+			}
 
 			// Prioritize System Locale
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Using cached System Locale: %s"), *VA_FUNC_LINE, *CachedSystemLocale);
@@ -122,7 +136,7 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 			// 1. Try exact match with cached System Locale
 			for (int32 i = 0; i < Headers.Num(); i++)
 			{
-				if (Headers[i].TrimStartAndEnd() == CachedSystemLocale)
+				if (Headers[i] == CachedSystemLocale)
 				{
 					LangIndex = i;
 					break;
@@ -135,7 +149,21 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 				FString SystemTwoLetter = CachedSystemLocale.Left(2);
 				for (int32 i = 0; i < Headers.Num(); i++)
 				{
-					if (Headers[i].TrimStartAndEnd() == SystemTwoLetter)
+					if (Headers[i] == SystemTwoLetter)
+					{
+						LangIndex = i;
+						break;
+					}
+				}
+			}
+
+			// 2.5. Try matching language by 2-letter prefix (e.g. "es" -> "es_es")
+			if (LangIndex == 0)
+			{
+				FString SystemTwoLetter = CachedSystemLocale.Left(2);
+				for (int32 i = 0; i < Headers.Num(); i++)
+				{
+					if (Headers[i].StartsWith(SystemTwoLetter + TEXT("_")))
 					{
 						LangIndex = i;
 						break;
@@ -148,7 +176,7 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 			{
 				for (int32 i = 0; i < Headers.Num(); i++)
 				{
-					if (Headers[i].TrimStartAndEnd() == CachedCultureName)
+					if (Headers[i] == CachedCultureName)
 					{
 						LangIndex = i;
 						break;
@@ -161,7 +189,7 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 			{
 				for (int32 i = 0; i < Headers.Num(); i++)
 				{
-					if (Headers[i].TrimStartAndEnd() == CachedTwoLetterCode)
+					if (Headers[i] == CachedTwoLetterCode)
 					{
 						LangIndex = i;
 						break;
@@ -179,7 +207,10 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 
 			if (Columns.Num() > LangIndex)
 			{
-				FString Key = Columns[0].TrimStartAndEnd();
+				FString Key = Columns[0];
+				Key.ReplaceInline(TEXT("\uFEFF"), TEXT(""));
+				Key.ReplaceInline(TEXT("\r"), TEXT(""));
+				Key.TrimStartAndEndInline();
 				FString LocalizedValue = Columns[LangIndex];
 
 				if (Key == SuccessTitleKey)
