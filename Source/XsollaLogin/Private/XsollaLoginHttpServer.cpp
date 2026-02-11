@@ -25,6 +25,54 @@ FXsollaLoginHttpServer::~FXsollaLoginHttpServer()
 	Stop();
 }
 
+static void ParseCsvLine(const FString& Line, TArray<FString>& OutCells)
+{
+	OutCells.Reset();
+
+	FString Cell;
+	bool bInQuotes = false;
+
+	for (int32 i = 0; i < Line.Len(); ++i)
+	{
+		const TCHAR C = Line[i];
+
+		if (C == '\"')
+		{
+			if (bInQuotes && i + 1 < Line.Len() && Line[i + 1] == '\"')
+			{
+				Cell.AppendChar('\"');
+				++i;
+			}
+			else
+			{
+				bInQuotes = !bInQuotes;
+			}
+		}
+		else if (C == ',' && !bInQuotes)
+		{
+			OutCells.Add(Cell);
+			Cell.Reset();
+		}
+		else
+		{
+			Cell.AppendChar(C);
+		}
+	}
+
+	OutCells.Add(Cell);
+
+	for (FString& S : OutCells)
+	{
+		S.TrimStartAndEndInline();
+		S.ReplaceInline(TEXT("\r"), TEXT(""));
+
+		if (S.Len() >= 2 && S.StartsWith(TEXT("\"")) && S.EndsWith(TEXT("\"")))
+		{
+			S = S.Mid(1, S.Len() - 2);
+		}
+	}
+}
+
 bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& InOnAuthParamsReceived)
 {
 	Stop();
@@ -127,15 +175,12 @@ bool FXsollaLoginHttpServer::Start(int32 InPort, const FOnAuthParamsReceived& In
 		for (int32 i = 1; i < Lines.Num(); i++)
 		{
 			TArray<FString> Columns;
-			Lines[i].ParseIntoArray(Columns, TEXT(","), false);
+			ParseCsvLine(Lines[i], Columns);
 
 			if (Columns.Num() > LangIndex)
 			{
 				FString Key = Columns[0].TrimStartAndEnd();
-				
-				FString LocalizedValue = Columns[LangIndex].TrimStartAndEnd();
-				LocalizedValue.RemoveFromStart(TEXT("\""));
-				LocalizedValue.RemoveFromEnd(TEXT("\""));
+				FString LocalizedValue = Columns[LangIndex];
 
 				if (Key == SuccessTitleKey)
 				{
