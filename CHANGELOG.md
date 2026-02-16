@@ -1,4 +1,14 @@
 # Changelog
+## [4.2.0] - 2026-02-16
+### Added
+- Unreal Engine 5.7 support
+- Authentication via social networks using the system browser
+
+### Changed
+- Updated Android libraries to improve compatibility and stability
+
+### Fixed
+- Android shipping build configuration
 
 ## [4.1.2] - 2025-11-27
 ### Fixed
