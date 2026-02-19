@@ -30,7 +30,10 @@ public class XsollaLogin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "Sockets",
+                "Networking",
+                "Projects"
             }
             );
 
@@ -71,5 +74,8 @@ public class XsollaLogin : ModuleRules
         }
 
         PublicDefinitions.Add("WITH_XSOLLA_LOGIN=1");
+
+        string PluginContentDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "../../Content"));
+        RuntimeDependencies.Add(Path.Combine(PluginContentDir, "Resources/Login/XsollaLocalAuthLocalization.csv"));
     }
 }
