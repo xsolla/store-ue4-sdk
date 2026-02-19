@@ -1,4 +1,14 @@
 # Changelog
+## [4.2.0] - 2026-02-16
+### Added
+- Unreal Engine 5.7 support
+- Support for social network authentication via the system's external browser
+
+### Changed
+- Updated Android libraries to improve compatibility and stability
+
+### Fixed
+- Android shipping build configuration for Unreal Engine 5.4 and higher
 
 ## [4.1.2] - 2025-11-27
 ### Fixed
@@ -8,7 +18,7 @@
 ## [4.1.1] - 2025-10-10
 
 ### Fixed
-- Fixed Windows shipping build for Unreal 5.5
+- Fixed Windows shipping build for Unreal Engine 5.5
 
 ## [4.1.0] - 2025-09-30
 
