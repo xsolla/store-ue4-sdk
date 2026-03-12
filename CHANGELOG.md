@@ -1,4 +1,8 @@
 # Changelog
+## [4.2.1] - 2026-03-12
+### Fixed
+- Token parser to support UTF-8 characters in nicknames
+
 ## [4.2.0] - 2026-02-16
 ### Added
 - Unreal Engine 5.7 support
