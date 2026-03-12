@@ -23,11 +23,19 @@ bool UXsollaUtilsTokenParser::ParseTokenPayload(const FString& Token, TSharedPtr
 		return false;
 	}
 
-	FString PayloadStr;
-	if (!FBase64::Decode(TokenParts[1], PayloadStr))
+	const FStringView TokenPart{TokenParts[1]};
+	const uint32 ExpectedLength = FBase64::GetDecodedDataSize(TokenPart.GetData(), TokenPart.Len());
+	TArray<uint8> Dest;
+	Dest.AddZeroed(ExpectedLength + 1);
+
+	// JWT uses Base64URL encoding (RFC 4648) - must use UrlSafe mode for payloads with Unicode (e.g. nicknames)
+	if (!FBase64::Decode(TokenPart.GetData(), TokenPart.Len(), Dest.GetData(), EBase64Mode::UrlSafe))
 	{
 		return false;
 	}
+
+	// Payload is UTF-8 encoded JSON
+	const FString PayloadStr = UTF8_TO_TCHAR(Dest.GetData());
 
 	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadStr);
 	if (!FJsonSerializer::Deserialize(Reader, PayloadJsonObject))
