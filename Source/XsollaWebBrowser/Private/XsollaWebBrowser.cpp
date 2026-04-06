@@ -4,6 +4,7 @@
 
 #include "XsollaWebBrowserDefines.h"
 #include "Async/TaskGraphInterfaces.h"
+#include "Blueprint/UserWidget.h"
 #include "IWebBrowserCookieManager.h"
 #include "IWebBrowserSingleton.h"
 #include "SWebBrowser.h"
@@ -90,6 +91,35 @@ namespace
 	bool IsExternalPaystationPopupFrame(const FString& FrameName)
 	{
 		return FrameName.StartsWith(TEXT("PayStationExternalPayment"), ESearchCase::IgnoreCase);
+	}
+
+	void NotifyAndCloseOwningUserWidget(UXsollaWebBrowser* WebBrowser)
+	{
+		if (!IsValid(WebBrowser))
+		{
+			return;
+		}
+
+		if (UUserWidget* OwnerUserWidget = WebBrowser->GetTypedOuter<UUserWidget>())
+		{
+			static const FName ExecuteBrowserClosedName(TEXT("ExecuteBrowserClosed"));
+			if (UFunction* ExecuteBrowserClosedFunction = OwnerUserWidget->FindFunction(ExecuteBrowserClosedName))
+			{
+				// Store browser wrapper uses ExecuteBrowserClosed(bool). Other wrappers may have different signatures.
+				if (ExecuteBrowserClosedFunction->NumParms == 1)
+				{
+					struct FExecuteBrowserClosedParams
+					{
+						bool bIsManually;
+					};
+
+					FExecuteBrowserClosedParams Params{ false };
+					OwnerUserWidget->ProcessEvent(ExecuteBrowserClosedFunction, &Params);
+				}
+			}
+
+			OwnerUserWidget->RemoveFromParent();
+		}
 	}
 }
 
@@ -311,6 +341,8 @@ bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)
 				if (IsInGameThread())
 				{
 					OnBeforePopup.Broadcast(FallbackUrl, Frame);
+					NotifyAndCloseOwningUserWidget(this);
+					UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: XS_POPUP_TRACE embedded_browser_closed_after_external_fallback"), *VA_FUNC_LINE);
 				}
 				else
 				{
@@ -320,6 +352,8 @@ bool UXsollaWebBrowser::HandleOnBeforePopup(FString URL, FString Frame)
 						if (WeakThis.IsValid() && WeakThis->OnBeforePopup.IsBound())
 						{
 							WeakThis->OnBeforePopup.Broadcast(FallbackUrl, Frame);
+							NotifyAndCloseOwningUserWidget(WeakThis.Get());
+							UE_LOG(LogXsollaWebBrowser, Log, TEXT("%s: XS_POPUP_TRACE embedded_browser_closed_after_external_fallback"), *VA_FUNC_LINE);
 						}
 					}, TStatId(), nullptr, ENamedThreads::GameThread);
 				}
