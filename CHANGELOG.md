@@ -1,4 +1,8 @@
 # Changelog
+## [4.2.2] - 2026-04-13
+### Fixed
+- Google Pay, PayPal, and similar payment methods now correctly redirect to the system's external browser to complete the payment
+
 ## [4.2.1] - 2026-03-12
 ### Fixed
 - Token parser to support UTF-8 characters in nicknames
