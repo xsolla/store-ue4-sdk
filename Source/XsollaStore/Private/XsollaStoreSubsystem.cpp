@@ -2287,6 +2287,16 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 
 	FString Platform = UGameplayStatics::GetPlatformName().ToLower();
 	bool bIsMobile = Platform == TEXT("android") || Platform == TEXT("ios");
+	bool bIndependentWindowsEnabled = false;
+	bool bSdkSettingsAdded = false;
+	FString SdkBrowserType = TEXT("none");
+
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: XS_POPUP_TRACE_SETTINGS init UsePlatformBrowser=%s bIsMobile=%s bAddAdditionalParameters=%s bDisableSdkParameter=%s"),
+		*VA_FUNC_LINE,
+		Settings->UsePlatformBrowser ? TEXT("true") : TEXT("false"),
+		bIsMobile ? TEXT("true") : TEXT("false"),
+		bAddAdditionalParameters ? TEXT("true") : TEXT("false"),
+		bDisableSdkParameter ? TEXT("true") : TEXT("false"));
 
 	if (bAddAdditionalParameters)
 	{
@@ -2298,6 +2308,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		if ((bIsMobile || Settings->UsePlatformBrowser) && !bDisableSdkParameter)
 		{
 			TSharedPtr<FJsonObject> SdkTokenSettingsJson = MakeShareable(new FJsonObject);
+			bSdkSettingsAdded = true;
 			if (bIsMobile)
 			{
 				SdkTokenSettingsJson->SetStringField("platform", Platform);
@@ -2305,6 +2316,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 			if (Settings->UsePlatformBrowser)
 			{
 				SdkTokenSettingsJson->SetStringField("browser_type", TEXT("system"));
+				SdkBrowserType = TEXT("system");
 			}
 			PaymentSettingsJson->SetObjectField(TEXT("sdk"), SdkTokenSettingsJson);
 		}
@@ -2325,9 +2337,16 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 	if (!Settings->UsePlatformBrowser && !bIsMobile)
 	{
 		PaymentUiSettingsJson->SetBoolField(TEXT("is_independent_windows"), true);
+		bIndependentWindowsEnabled = true;
 	}
 
 	PaymentSettingsJson->SetObjectField(TEXT("ui"), PaymentUiSettingsJson);
+
+	UE_LOG(LogXsollaStore, Log, TEXT("%s: XS_POPUP_TRACE_SETTINGS result is_independent_windows=%s sdk_added=%s sdk_browser_type=%s"),
+		*VA_FUNC_LINE,
+		bIndependentWindowsEnabled ? TEXT("true") : TEXT("false"),
+		bSdkSettingsAdded ? TEXT("true") : TEXT("false"),
+		*SdkBrowserType);
 
 	if (!Settings->UseSettingsFromPublisherAccount)
 	{
