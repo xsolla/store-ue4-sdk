@@ -1,4 +1,8 @@
 # Changelog
+## [Unreleased]
+### Added
+- Optional `bUseSteamOverlayForDesktop` field in `FXsollaPaymentTokenRequestPayload` to open Pay Station in Steam overlay for desktop Steam builds during purchase flow
+
 ## [4.2.2] - 2026-04-13
 ### Fixed
 - Google Pay, PayPal, and similar payment methods now correctly redirect to the system's external browser to complete the payment

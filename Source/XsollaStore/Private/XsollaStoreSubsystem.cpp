@@ -16,6 +16,7 @@
 #include "JsonObjectConverter.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemNames.h"
+#include "Interfaces/OnlineExternalUIInterface.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "UObject/ConstructorHelpers.h"
@@ -362,6 +363,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	FString Engine = FString::Printf(TEXT("ue%d"), FEngineVersion::Current().GetMajor());
 	FString EngineVersion = ENGINE_VERSION_STRING;
 
+	const bool bUseSteamOverlayForDesktop = CachedPaymentTokenRequestPayload.bUseSteamOverlayForDesktop;
 	const FString PaystationUrl = XsollaUtilsUrlBuilder(IsSandboxEnabled() ? TEXT("https://sandbox-secure.xsolla.com/{PayStationVersion}") : TEXT("https://secure.xsolla.com/{PayStationVersion}"))
 							.SetPathParam(TEXT("PayStationVersion"), GetPayStationVersionPath(PayStationVersion))
 							.AddStringQueryParam(GetTokenQueryParameterName(PayStationVersion), AccessToken)
@@ -369,7 +371,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 							.AddStringQueryParam(TEXT("engine_v"), EngineVersion)
 							.AddStringQueryParam(TEXT("sdk"), TEXT("STORE"))
 							.AddStringQueryParam(TEXT("sdk_v"), XSOLLA_STORE_VERSION)
-							.AddStringQueryParam(TEXT("browser_type"), GetBrowserType())
+							.AddStringQueryParam(TEXT("browser_type"), GetBrowserType(bUseSteamOverlayForDesktop))
 							.AddStringQueryParam(TEXT("build_platform"), GetBuildPlatform())
 							.Build();
 
@@ -380,12 +382,28 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
 
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	bool bOpenedInSteamOverlay = false;
+	if (bUseSteamOverlayForDesktop)
+	{
+		FString OverlayError;
+		bOpenedInSteamOverlay = TryOpenUrlInSteamOverlay(PaystationUrl, OverlayError);
+		if (bOpenedInSteamOverlay)
+		{
+			UE_LOG(LogXsollaStore, Log, TEXT("%s: Pay Station opened in Steam overlay"), *VA_FUNC_LINE);
+		}
+		else
+		{
+			UE_LOG(LogXsollaStore, Warning, TEXT("%s: Steam overlay is unavailable, using default payment UI path. Reason: %s"),
+				*VA_FUNC_LINE, *OverlayError);
+		}
+	}
 
-	if (Settings->UsePlatformBrowser)
+	if (!bOpenedInSteamOverlay && Settings->UsePlatformBrowser)
 	{
 		UE_LOG(LogXsollaStore, Log, TEXT("%s: Launching Paystation: %s"), *VA_FUNC_LINE, *PaystationUrl);
 		FPlatformProcess::LaunchURL(*PaystationUrl, nullptr, nullptr);
-	} else
+	}
+	else if (!bOpenedInSteamOverlay)
 	{
 #if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
@@ -446,6 +464,7 @@ void UXsollaStoreSubsystem::LaunchPaymentConsole(UObject* WorldContextObject, co
 void UXsollaStoreSubsystem::PurchaseItemBySku(const FString& AuthToken, const FString& ItemSKU, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
 {
+	CachedPaymentTokenRequestPayload = PurchaseParams;
 	PaymentSuccessCallback = SuccessCallback;
 	PaymentErrorCallback = ErrorCallback;
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
@@ -458,6 +477,7 @@ void UXsollaStoreSubsystem::PurchaseItemBySku(const FString& AuthToken, const FS
 void UXsollaStoreSubsystem::PurchaseCart(const FString& AuthToken, const FString& CartId, const FXsollaPaymentTokenRequestPayload& PurchaseParams,
 	const FOnPurchaseUpdate& SuccessCallback, const FOnError& ErrorCallback, const FOnStoreBrowserClosed& BrowserClosedCallback)
 {
+	CachedPaymentTokenRequestPayload = PurchaseParams;
 	PaymentSuccessCallback = SuccessCallback;
 	PaymentErrorCallback = ErrorCallback;
 	PaymentBrowserClosedCallback = BrowserClosedCallback;
@@ -2256,7 +2276,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	// Custom parameters
 	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, "custom_parameters", PaymentTokenRequestPayload.CustomParameters);
 
-	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bDisableSdkParameter, PaymentTokenRequestPayload.bShowCloseButton, PaymentTokenRequestPayload.CloseButtonIcon, PaymentTokenRequestPayload.bGpQuickPaymentButton);
+	TSharedPtr<FJsonObject> PaystationSettingsJson = PreparePaystationSettings(true, PaymentTokenRequestPayload.bDisableSdkParameter, PaymentTokenRequestPayload.bShowCloseButton, PaymentTokenRequestPayload.CloseButtonIcon, PaymentTokenRequestPayload.bGpQuickPaymentButton, PaymentTokenRequestPayload.bUseSteamOverlayForDesktop);
 
 	if (!PaymentTokenRequestPayload.ExternalId.IsEmpty())
 		PaystationSettingsJson->SetStringField(TEXT("external_id"), PaymentTokenRequestPayload.ExternalId);
@@ -2277,7 +2297,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaymentTokenRequestPayload
 	return RequestDataJson;
 }
 
-TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddAdditionalParameters, const bool bDisableSdkParameter, const bool bShowCloseButton, const FString& CloseButtonIcon, const bool bGpQuickPaymentButton)
+TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const bool bAddAdditionalParameters, const bool bDisableSdkParameter, const bool bShowCloseButton, const FString& CloseButtonIcon, const bool bGpQuickPaymentButton, const bool bUseSteamOverlayForDesktop)
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
 	TSharedPtr<FJsonObject> PaymentSettingsJson = MakeShareable(new FJsonObject);
@@ -2305,7 +2325,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 		PaymentUiSettingsHeaderJson->SetStringField("close_button_icon", CloseButtonIcon);
 		PaymentUiSettingsJson->SetBoolField("gp_quick_payment_button", bGpQuickPaymentButton);
 
-		if ((bIsMobile || Settings->UsePlatformBrowser) && !bDisableSdkParameter)
+		if ((bIsMobile || Settings->UsePlatformBrowser || bUseSteamOverlayForDesktop) && !bDisableSdkParameter)
 		{
 			TSharedPtr<FJsonObject> SdkTokenSettingsJson = MakeShareable(new FJsonObject);
 			bSdkSettingsAdded = true;
@@ -2313,7 +2333,7 @@ TSharedPtr<FJsonObject> UXsollaStoreSubsystem::PreparePaystationSettings(const b
 			{
 				SdkTokenSettingsJson->SetStringField("platform", Platform);
 			}
-			if (Settings->UsePlatformBrowser)
+			if (Settings->UsePlatformBrowser || bUseSteamOverlayForDesktop)
 			{
 				SdkTokenSettingsJson->SetStringField("browser_type", TEXT("system"));
 				SdkBrowserType = TEXT("system");
@@ -2430,10 +2450,54 @@ FString UXsollaStoreSubsystem::GetTokenQueryParameterName(const EXsollaPayStatio
 	return TEXT("");
 }
 
-FString UXsollaStoreSubsystem::GetBrowserType() const
+bool UXsollaStoreSubsystem::TryOpenUrlInSteamOverlay(const FString& Url, FString& OutError) const
+{
+#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
+	if (Url.IsEmpty())
+	{
+		OutError = TEXT("Pay Station URL is empty");
+		return false;
+	}
+
+	FString SteamValidationError;
+	if (!UXsollaLoginLibrary::IsSteamBuildValid(SteamValidationError))
+	{
+		OutError = SteamValidationError;
+		return false;
+	}
+
+	IOnlineSubsystem* SteamSubsystem = IOnlineSubsystem::Get(STEAM_SUBSYSTEM);
+	if (!SteamSubsystem)
+	{
+		OutError = TEXT("Steam online subsystem is unavailable");
+		return false;
+	}
+
+	const IOnlineExternalUIPtr ExternalUI = SteamSubsystem->GetExternalUIInterface();
+	if (!ExternalUI.IsValid())
+	{
+		OutError = TEXT("Steam external UI interface is unavailable");
+		return false;
+	}
+
+	FShowWebUrlParams ShowParams;
+	if (!ExternalUI->ShowWebURL(Url, ShowParams, FOnShowWebUrlClosedDelegate()))
+	{
+		OutError = TEXT("Failed to open URL in Steam external UI");
+		return false;
+	}
+
+	return true;
+#else
+	OutError = TEXT("Steam overlay is supported only on desktop platforms");
+	return false;
+#endif
+}
+
+FString UXsollaStoreSubsystem::GetBrowserType(bool bUseSteamOverlayForDesktop) const
 {
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-	return Settings->UsePlatformBrowser ? FString("system") : FString("inapp");
+	return (Settings->UsePlatformBrowser || bUseSteamOverlayForDesktop) ? FString("system") : FString("inapp");
 }
 
 FString UXsollaStoreSubsystem::GetBuildPlatform() const
