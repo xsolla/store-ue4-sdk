@@ -226,7 +226,7 @@ public:
 	 * @param ItemSKU Desired item SKU.
 	 * @param SuccessCallback Called after the payment token was successfully fetched. Returns both the payment token and order ID.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback, PurchaseParams"))
 	void FetchPaymentToken(const FString& AuthToken, const FString& ItemSKU,
@@ -239,7 +239,7 @@ public:
 	 * @param CartId (optional) Identifier of the cart for the purchase. The current user cart will be purchased if empty.
 	 * @param SuccessCallback Called after the payment token was successfully fetched.
 	 * @param ErrorCallback Called after the request resulted with an error.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Cart", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback, PurchaseParams"))
 	void FetchCartPaymentToken(const FString& AuthToken, const FString& CartId,
@@ -268,7 +268,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param ItemSKU Desired item SKU.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
@@ -282,7 +282,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CartId (optional) Identifier of the cart to purchase. If not specified, the current user's cart will be used.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 * @param BrowserClosedCallback Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.
@@ -354,7 +354,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param StoreItem Desired store item.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -366,7 +366,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param CurrencyPackage Desired currency package.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -378,7 +378,7 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param Bundle Desired bundle.
-	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, etc.
+	 * @param PurchaseParams (optional) Purchase and payment UI parameters, such as `locale`, `currency`, and `bUseSteamOverlayForDesktop`.
 	 * @param SuccessCallback Called after the payment was successfully completed.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
@@ -1005,16 +1005,19 @@ private:
 	TSharedPtr<FJsonObject> PreparePaymentTokenRequestPayload(const FXsollaPaymentTokenRequestPayload& PaymentTokenRequestPayload);
 
 	/** Prepare paystation settings */
-	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bAddAdditionalParameters = false, const bool bDisableSdkParameter = false, const bool bShowCloseButton = false, const FString& CloseButtonIcon = TEXT("cross"), const bool bGpQuickPaymentButton = false);
+	TSharedPtr<FJsonObject> PreparePaystationSettings(const bool bAddAdditionalParameters = false, const bool bDisableSdkParameter = false, const bool bShowCloseButton = false, const FString& CloseButtonIcon = TEXT("cross"), const bool bGpQuickPaymentButton = false, const bool bUseSteamOverlayForDesktop = false);
 
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
+
+	/** Try opening URL in Steam overlay. Returns false when unavailable and should fallback. */
+	bool TryOpenUrlInSteamOverlay(const FString& Url, FString& OutError) const;
 
 	FString GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const;
 
 	FString GetTokenQueryParameterName(const EXsollaPayStationVersion PayStationVersion) const;
 
-	FString GetBrowserType() const;
+	FString GetBrowserType(bool bUseSteamOverlayForDesktop = false) const;
 
 	FString GetBuildPlatform() const;
 
