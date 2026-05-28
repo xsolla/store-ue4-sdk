@@ -2367,6 +2367,15 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+
+			if (bHasAskFields || IsAdditionalInfoAskUrl(LoginUrl))
+			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received login URL requiring additional fields continuation"), *VA_FUNC_LINE);
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received additional-info login URL"));
+				HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
+				return;
+			}
+
 			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
 			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
 
@@ -2392,14 +2401,6 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 				SaveData();
 
 				SuccessCallback.ExecuteIfBound(LoginData);
-				return;
-			}
-
-			if (bHasAskFields || IsAdditionalInfoAskUrl(LoginUrl))
-			{
-				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received login URL requiring additional fields continuation"), *VA_FUNC_LINE);
-				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received additional-info login URL"));
-				HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
 				return;
 			}
 
@@ -2454,8 +2455,42 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 		}
 
 		const int32 ActivePort = HttpServer->GetPort();
+		const FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), ActivePort);
+		const FString EncodedRedirectUri = FGenericPlatformHttp::UrlEncode(RedirectUri);
+
+		FString BrowserUrl = LoginUrl;
+		FString BaseUrl;
+		FString QueryString;
+		if (BrowserUrl.Split(TEXT("?"), &BaseUrl, &QueryString))
+		{
+			TArray<FString> QueryParams;
+			QueryString.ParseIntoArray(QueryParams, TEXT("&"), true);
+
+			bool bRedirectUriUpdated = false;
+			for (FString& QueryParam : QueryParams)
+			{
+				if (QueryParam.StartsWith(TEXT("redirect_uri="), ESearchCase::IgnoreCase))
+				{
+					QueryParam = FString::Printf(TEXT("redirect_uri=%s"), *EncodedRedirectUri);
+					bRedirectUriUpdated = true;
+					break;
+				}
+			}
+
+			if (!bRedirectUriUpdated)
+			{
+				QueryParams.Add(FString::Printf(TEXT("redirect_uri=%s"), *EncodedRedirectUri));
+			}
+
+			BrowserUrl = BaseUrl + TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+		}
+		else
+		{
+			BrowserUrl += FString::Printf(TEXT("?redirect_uri=%s"), *EncodedRedirectUri);
+		}
+
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: HTTP server started on port %d for additional fields flow"), *VA_FUNC_LINE, ActivePort);
-		FPlatformProcess::LaunchURL(*LoginUrl, nullptr, nullptr);
+		FPlatformProcess::LaunchURL(*BrowserUrl, nullptr, nullptr);
 		return;
 	}
 
