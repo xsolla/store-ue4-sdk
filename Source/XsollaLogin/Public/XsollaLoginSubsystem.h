@@ -786,6 +786,9 @@ protected:
 	/** Handles the "ask_fields" response from the authentication flow */
 	void HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Returns true if URL points to additional-info ask widget. */
+	bool IsAdditionalInfoAskUrl(const FString& LoginUrl) const;
+
 	/** Returns true if the error occurs. */
 	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
