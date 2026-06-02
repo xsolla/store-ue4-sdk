@@ -34,6 +34,7 @@
 #include "Android/XsollaJavaConvertor.h"
 #include "Android/XsollaMethodCallUtils.h"
 #include "Android/XsollaNativeAuthCallback.h"
+#include "Android/XsollaNativeAdditionalInfoAuthCallback.h"
 #endif
 
 #if PLATFORM_IOS
@@ -2426,10 +2427,56 @@ bool UXsollaLoginSubsystem::IsAdditionalInfoAskUrl(const FString& LoginUrl) cons
 	return NormalizedUrl.StartsWith(TEXT("https://login-widget.xsolla.com/latest/ask"));
 }
 
+void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
+	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
+	if (!AuthenticationToken.IsEmpty())
+	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with direct token"), *VA_FUNC_LINE);
+		LoginData.AuthToken.JWT = AuthenticationToken;
+		LoginData.AuthToken.RefreshToken = FString();
+		LoginData.AuthToken.ExpiresAt = 0;
+		SaveData();
+		SuccessCallback.ExecuteIfBound(LoginData);
+		return;
+	}
+
+	if (!AuthenticationCode.IsEmpty())
+	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with code exchange"), *VA_FUNC_LINE);
+		ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+		return;
+	}
+
+	UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields auth completed without code or token"), *VA_FUNC_LINE);
+	ErrorCallback.ExecuteIfBound(TEXT("MISSING_AUTH_PARAMETER"), TEXT("Additional fields flow completed without code or token"));
+}
+
 void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Handling authentication with additional fields form"), *VA_FUNC_LINE);
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+#if PLATFORM_ANDROID
+	UXsollaNativeAdditionalInfoAuthCallback* NativeCallback = NewObject<UXsollaNativeAdditionalInfoAuthCallback>();
+	if (!IsValid(NativeCallback))
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create additional-info native callback"), *VA_FUNC_LINE);
+		ErrorCallback.ExecuteIfBound(TEXT("010-017"), TEXT("Failed to create Android additional-info auth callback"));
+		return;
+	}
+
+	NativeCallback->BindSuccessDelegate(SuccessCallback, this);
+	NativeCallback->BindErrorDelegate(ErrorCallback);
+
+	XsollaMethodCallUtils::CallStaticVoidMethod("com/xsolla/login/XsollaNativeAuth", "authAdditionalInfo",
+		"(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;J)V",
+		FJavaWrapper::GameActivityThis,
+		XsollaJavaConvertor::GetJavaString(LoginUrl),
+		XsollaJavaConvertor::GetJavaString(Settings->RedirectURI),
+		(jlong)NativeCallback);
+	return;
+#endif
 
 	if (Settings->UsePlatformBrowser)
 	{
@@ -2819,6 +2866,55 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 }
 
 #if PLATFORM_ANDROID
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
+	jstring authCode, jstring authToken)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android additional-info auth success callback received"), *VA_FUNC_LINE);
+
+	UXsollaNativeAdditionalInfoAuthCallback* callback = reinterpret_cast<UXsollaNativeAdditionalInfoAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteSuccess(XsollaJavaConvertor::FromJavaString(authCode), XsollaJavaConvertor::FromJavaString(authToken));
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid additional-info callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android additional-info auth cancel callback received"), *VA_FUNC_LINE);
+
+	UXsollaNativeAdditionalInfoAuthCallback* callback = reinterpret_cast<UXsollaNativeAdditionalInfoAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteCancel();
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid additional-info callback"), *VA_FUNC_LINE);
+	}
+}
+
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onAuthErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
+{
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android additional-info auth error callback received"), *VA_FUNC_LINE);
+
+	UXsollaNativeAdditionalInfoAuthCallback* callback = reinterpret_cast<UXsollaNativeAdditionalInfoAuthCallback*>(objAddr);
+
+	if (IsValid(callback))
+	{
+		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+	}
+	else
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid additional-info callback"), *VA_FUNC_LINE);
+	}
+}
 
 JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
 	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
