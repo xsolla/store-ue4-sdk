@@ -2876,7 +2876,9 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onA
 
 	if (IsValid(callback))
 	{
-		callback->ExecuteSuccess(XsollaJavaConvertor::FromJavaString(authCode), XsollaJavaConvertor::FromJavaString(authToken));
+		const FString AuthCode = authCode != nullptr ? XsollaJavaConvertor::FromJavaString(authCode) : FString();
+		const FString AuthToken = authToken != nullptr ? XsollaJavaConvertor::FromJavaString(authToken) : FString();
+		callback->ExecuteSuccess(AuthCode, AuthToken);
 	}
 	else
 	{
@@ -2908,7 +2910,8 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onA
 
 	if (IsValid(callback))
 	{
-		callback->ExecuteError(XsollaJavaConvertor::FromJavaString(errorMsg));
+		const FString ErrorMessage = errorMsg != nullptr ? XsollaJavaConvertor::FromJavaString(errorMsg) : FString();
+		callback->ExecuteError(ErrorMessage);
 	}
 	else
 	{

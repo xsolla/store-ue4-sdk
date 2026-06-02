@@ -139,7 +139,18 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
     }
 
     private static boolean isRedirectMatch(String currentUrl, String redirectUrl) {
-        return currentUrl.startsWith(redirectUrl);
+        if (TextUtils.isEmpty(currentUrl) || TextUtils.isEmpty(redirectUrl)) {
+            return false;
+        }
+
+        Uri currentUri = Uri.parse(currentUrl);
+        Uri redirectUri = Uri.parse(redirectUrl);
+        String currentPath = currentUri.getPath() != null ? currentUri.getPath() : "";
+        String redirectPath = redirectUri.getPath() != null ? redirectUri.getPath() : "";
+
+        return TextUtils.equals(currentUri.getScheme(), redirectUri.getScheme())
+                && TextUtils.equals(currentUri.getAuthority(), redirectUri.getAuthority())
+                && TextUtils.equals(currentPath, redirectPath);
     }
 
     private static String ensureRedirectUri(String loginUrl, String redirectUrl) {

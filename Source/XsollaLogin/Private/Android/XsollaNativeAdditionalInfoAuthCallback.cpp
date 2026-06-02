@@ -8,6 +8,7 @@ void UXsollaNativeAdditionalInfoAuthCallback::BindSuccessDelegate(const FOnAuthU
 {
 	OnAuthSuccessDelegate = OnSuccess;
 	LoginSubsystem = InLoginSubsystem;
+	AddToRoot();
 }
 
 void UXsollaNativeAdditionalInfoAuthCallback::BindErrorDelegate(const FOnAuthError& OnError)
@@ -27,6 +28,11 @@ void UXsollaNativeAdditionalInfoAuthCallback::ExecuteSuccess(const FString& Auth
 		{
 			OnAuthErrorDelegate.ExecuteIfBound(TEXT("0"), TEXT("Login subsystem is not valid"));
 		}
+
+		if (IsRooted())
+		{
+			RemoveFromRoot();
+		}
 	});
 }
 
@@ -35,6 +41,11 @@ void UXsollaNativeAdditionalInfoAuthCallback::ExecuteCancel()
 	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
 		OnAuthErrorDelegate.ExecuteIfBound(TEXT(""), TEXT("Additional fields form submission was canceled by user"));
+
+		if (IsRooted())
+		{
+			RemoveFromRoot();
+		}
 	});
 }
 
@@ -44,5 +55,10 @@ void UXsollaNativeAdditionalInfoAuthCallback::ExecuteError(const FString& ErrorM
 	{
 		const FString NormalizedErrorMessage = ErrorMessage.IsEmpty() ? TEXT("Additional fields form submission failed") : ErrorMessage;
 		OnAuthErrorDelegate.ExecuteIfBound(TEXT("010-017"), NormalizedErrorMessage);
+
+		if (IsRooted())
+		{
+			RemoveFromRoot();
+		}
 	});
 }
