@@ -44,7 +44,6 @@
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
-#define IGNORE_ASK_FIELDS_PROCESSING 1
 
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
@@ -2362,36 +2361,21 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	{
 		static const FString LoginUrlFieldName = TEXT("login_url");
 		static const FString AskFieldsFieldName = TEXT("ask_fields");
-
-		// Check if this is an "ask_fields" response
-		if (!IGNORE_ASK_FIELDS_PROCESSING &&
-			JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName) &&
-			JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
-		{
-			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received response with additional fields request"), *VA_FUNC_LINE);
-
-			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received login URL requiring additional fields"));
-
-			const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
-			if (Settings->UsePlatformBrowser)
-			{
-				// Cannot handle "ask_fields" with platform browser
-				const FString ErrorMessage = TEXT("Authentication requires additional fields (like email) but platform browser is enabled. Please disable platform browser in Xsolla Settings or modify login project settings in Publisher Account to disable additional field requests.");
-				UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
-				ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
-				return;
-			}
-
-			// Use the in-game browser to handle additional fields
-			HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
-			return;
-		}
+		const bool bHasAskFields = JsonObject->HasTypedField<EJson::Array>(AskFieldsFieldName);
 
 		// Handle login_url with either code or token parameter
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			const FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+
+			if (bHasAskFields || IsAdditionalInfoAskUrl(LoginUrl))
+			{
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received login URL requiring additional fields continuation"), *VA_FUNC_LINE);
+				XsollaUtilsLoggingHelper::LogUrl(LoginUrl, TEXT("Received additional-info login URL"));
+				HandleAskFieldsAuthentication(LoginUrl, SuccessCallback, ErrorCallback);
+				return;
+			}
+
 			const FString Code = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("code"));
 			const FString Token = UXsollaUtilsLibrary::GetUrlParameter(LoginUrl, TEXT("token"));
 
@@ -2434,9 +2418,81 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 	HandleRequestOAuthError(OutError, ErrorCallback);
 }
 
+bool UXsollaLoginSubsystem::IsAdditionalInfoAskUrl(const FString& LoginUrl) const
+{
+	FString UrlWithoutQuery = LoginUrl;
+	LoginUrl.Split(TEXT("?"), &UrlWithoutQuery, nullptr);
+	const FString NormalizedUrl = UrlWithoutQuery.ToLower();
+	return NormalizedUrl.StartsWith(TEXT("https://login-widget.xsolla.com/latest/ask"));
+}
+
 void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Handling authentication with additional fields form"), *VA_FUNC_LINE);
+	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+
+	if (Settings->UsePlatformBrowser)
+	{
+		NativeSuccessCallback = SuccessCallback;
+		NativeErrorCallback = ErrorCallback;
+
+		if (!HttpServer.IsValid())
+		{
+			HttpServer = MakeShared<FXsollaLoginHttpServer>();
+		}
+
+		int32 Port = 65421;
+		if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
+		{
+			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Failed to start HTTP server on port %d, trying random port"), *VA_FUNC_LINE, Port);
+			Port = 0;
+			if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
+			{
+				UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to start HTTP server for additional fields"), *VA_FUNC_LINE);
+				ErrorCallback.ExecuteIfBound(TEXT("SERVER_ERROR"), TEXT("Failed to start local HTTP server"));
+				return;
+			}
+		}
+
+		const int32 ActivePort = HttpServer->GetPort();
+		const FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), ActivePort);
+		const FString EncodedRedirectUri = FGenericPlatformHttp::UrlEncode(RedirectUri);
+
+		FString BrowserUrl = LoginUrl;
+		FString BaseUrl;
+		FString QueryString;
+		if (BrowserUrl.Split(TEXT("?"), &BaseUrl, &QueryString))
+		{
+			TArray<FString> QueryParams;
+			QueryString.ParseIntoArray(QueryParams, TEXT("&"), true);
+
+			bool bRedirectUriUpdated = false;
+			for (FString& QueryParam : QueryParams)
+			{
+				if (QueryParam.StartsWith(TEXT("redirect_uri="), ESearchCase::IgnoreCase))
+				{
+					QueryParam = FString::Printf(TEXT("redirect_uri=%s"), *EncodedRedirectUri);
+					bRedirectUriUpdated = true;
+					break;
+				}
+			}
+
+			if (!bRedirectUriUpdated)
+			{
+				QueryParams.Add(FString::Printf(TEXT("redirect_uri=%s"), *EncodedRedirectUri));
+			}
+
+			BrowserUrl = BaseUrl + TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+		}
+		else
+		{
+			BrowserUrl += FString::Printf(TEXT("?redirect_uri=%s"), *EncodedRedirectUri);
+		}
+
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: HTTP server started on port %d for additional fields flow"), *VA_FUNC_LINE, ActivePort);
+		FPlatformProcess::LaunchURL(*BrowserUrl, nullptr, nullptr);
+		return;
+	}
 
 	UUserWidget* BrowserWidget = nullptr;
 	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
@@ -2727,6 +2783,18 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 		FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
 
 		ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
+	}
+	else if (Params.Contains(TEXT("token")))
+	{
+		const FString Token = Params[TEXT("token")];
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication token via HTTP server callback"), *VA_FUNC_LINE);
+
+		LoginData.AuthToken.JWT = Token;
+		LoginData.AuthToken.RefreshToken = FString();
+		LoginData.AuthToken.ExpiresAt = 0;
+
+		SaveData();
+		NativeSuccessCallback.ExecuteIfBound(LoginData);
 	}
 	else if (Params.Contains(TEXT("error")) || Params.Contains(TEXT("error_description")))
 	{
