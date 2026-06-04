@@ -3,11 +3,13 @@
 #include "XsollaNativeAdditionalInfoAuthCallback.h"
 
 #include "Async/Async.h"
+#include "XsollaLoginDefines.h"
 
 void UXsollaNativeAdditionalInfoAuthCallback::BindSuccessDelegate(const FOnAuthUpdate& OnSuccess, UXsollaLoginSubsystem* InLoginSubsystem)
 {
 	OnAuthSuccessDelegate = OnSuccess;
 	LoginSubsystem = InLoginSubsystem;
+	bTerminalDispatched.store(false);
 	AddToRoot();
 }
 
@@ -18,6 +20,12 @@ void UXsollaNativeAdditionalInfoAuthCallback::BindErrorDelegate(const FOnAuthErr
 
 void UXsollaNativeAdditionalInfoAuthCallback::ExecuteSuccess(const FString& AuthenticationCode, const FString& AuthenticationToken)
 {
+	if (bTerminalDispatched.exchange(true))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Duplicate additional-info success callback ignored"), *VA_FUNC_LINE);
+		return;
+	}
+
 	AsyncTask(ENamedThreads::GameThread, [this, AuthenticationCode, AuthenticationToken]()
 	{
 		if (IsValid(LoginSubsystem))
@@ -38,9 +46,22 @@ void UXsollaNativeAdditionalInfoAuthCallback::ExecuteSuccess(const FString& Auth
 
 void UXsollaNativeAdditionalInfoAuthCallback::ExecuteCancel()
 {
+	if (bTerminalDispatched.exchange(true))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Duplicate additional-info cancel callback ignored"), *VA_FUNC_LINE);
+		return;
+	}
+
 	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
-		OnAuthErrorDelegate.ExecuteIfBound(TEXT(""), TEXT("Additional fields form submission was canceled by user"));
+		if (IsValid(LoginSubsystem))
+		{
+			LoginSubsystem->HandleAdditionalInfoAuthCancel(OnAuthErrorDelegate);
+		}
+		else
+		{
+			OnAuthErrorDelegate.ExecuteIfBound(TEXT(""), TEXT("Additional fields form submission was canceled by user"));
+		}
 
 		if (IsRooted())
 		{
@@ -49,12 +70,25 @@ void UXsollaNativeAdditionalInfoAuthCallback::ExecuteCancel()
 	});
 }
 
-void UXsollaNativeAdditionalInfoAuthCallback::ExecuteError(const FString& ErrorMessage)
+void UXsollaNativeAdditionalInfoAuthCallback::ExecuteError(const FString& ErrorCode, const FString& ErrorMessage)
 {
-	AsyncTask(ENamedThreads::GameThread, [this, ErrorMessage]()
+	if (bTerminalDispatched.exchange(true))
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Duplicate additional-info error callback ignored"), *VA_FUNC_LINE);
+		return;
+	}
+
+	AsyncTask(ENamedThreads::GameThread, [this, ErrorCode, ErrorMessage]()
 	{
 		const FString NormalizedErrorMessage = ErrorMessage.IsEmpty() ? TEXT("Additional fields form submission failed") : ErrorMessage;
-		OnAuthErrorDelegate.ExecuteIfBound(TEXT("010-017"), NormalizedErrorMessage);
+		if (IsValid(LoginSubsystem))
+		{
+			LoginSubsystem->HandleAdditionalInfoAuthError(ErrorCode, NormalizedErrorMessage, OnAuthErrorDelegate);
+		}
+		else
+		{
+			OnAuthErrorDelegate.ExecuteIfBound(ErrorCode, NormalizedErrorMessage);
+		}
 
 		if (IsRooted())
 		{

@@ -32,8 +32,10 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("XsollaNativeAdditionalInfoAuthActivity", "onCreate");
 
         if (savedInstanceState != null) {
+            isCompleted = true;
             onAuthCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
             finish();
             return;
@@ -70,6 +72,7 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
         });
 
         String browserUrl = ensureRedirectUri(loginUrl, redirectUrl);
+        Log.d("XsollaNativeAdditionalInfoAuthActivity", "Loading additional-info URL in WebView");
         authWebView.loadUrl(browserUrl);
     }
 
@@ -84,6 +87,12 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (!isCompleted) {
+            isCompleted = true;
+            Log.d("XsollaNativeAdditionalInfoAuthActivity", "onDestroy before terminal callback, reporting cancel");
+            onAuthCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
+        }
+
         if (authWebView != null) {
             authWebView.stopLoading();
             authWebView.destroy();
@@ -109,6 +118,7 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
 
         if (!TextUtils.isEmpty(token) || !TextUtils.isEmpty(code)) {
             isCompleted = true;
+            Log.d("XsollaNativeAdditionalInfoAuthActivity", "Terminal success URL received");
             onAuthSuccessCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0), code, token);
             finish();
             return true;

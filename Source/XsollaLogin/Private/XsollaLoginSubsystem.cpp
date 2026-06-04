@@ -46,6 +46,15 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
+namespace
+{
+	const FString AdditionalInfoCancelCode = TEXT("");
+	const FString AdditionalInfoCancelMessage = TEXT("Additional fields form submission was canceled by user");
+	const FString AdditionalInfoMissingAuthCode = TEXT("MISSING_AUTH_PARAMETER");
+	const FString AdditionalInfoMissingAuthMessage = TEXT("Additional fields flow completed without code or token");
+	const FString AdditionalInfoFailedCode = TEXT("ADDITIONAL_INFO_AUTH_FAILED");
+}
+
 UXsollaLoginSubsystem::UXsollaLoginSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -2406,9 +2415,9 @@ void UXsollaLoginSubsystem::HandleUrlWithCodeRequest(FHttpRequestPtr HttpRequest
 			}
 
 			// Neither code nor token found in URL
-			const FString ErrorMessage = FString::Printf(TEXT("Login URL does not contain 'code' or 'token' parameter. URL: %s"), *LoginUrl);
+			const FString ErrorMessage = TEXT("Login URL does not contain 'code' or 'token' parameter");
 			UE_LOG(LogXsollaLogin, Error, TEXT("%s: %s"), *VA_FUNC_LINE, *ErrorMessage);
-			ErrorCallback.ExecuteIfBound(TEXT("MISSING_AUTH_PARAMETER"), ErrorMessage);
+			ErrorCallback.ExecuteIfBound(AdditionalInfoMissingAuthCode, ErrorMessage);
 			return;
 		}
 
@@ -2427,9 +2436,77 @@ bool UXsollaLoginSubsystem::IsAdditionalInfoAskUrl(const FString& LoginUrl) cons
 	return NormalizedUrl.StartsWith(TEXT("https://login-widget.xsolla.com/latest/ask"));
 }
 
+void UXsollaLoginSubsystem::BeginAdditionalInfoFlow()
+{
+	if (bAdditionalInfoFlowActive)
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Restarting additional-info flow while previous flow still active"), *VA_FUNC_LINE);
+	}
+
+	bAdditionalInfoFlowActive = true;
+	bAdditionalInfoTerminalDispatched = false;
+}
+
+void UXsollaLoginSubsystem::FinishAdditionalInfoFlow()
+{
+	bAdditionalInfoFlowActive = false;
+	bAdditionalInfoTerminalDispatched = false;
+	NativeSuccessCallback.Unbind();
+	NativeErrorCallback.Unbind();
+}
+
+bool UXsollaLoginSubsystem::TryMarkAdditionalInfoTerminal(const FString& Outcome)
+{
+	if (!bAdditionalInfoFlowActive)
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Ignoring additional-info terminal outcome '%s' because flow is not active"), *VA_FUNC_LINE, *Outcome);
+		return false;
+	}
+
+	if (bAdditionalInfoTerminalDispatched)
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Ignoring duplicate additional-info terminal outcome '%s'"), *VA_FUNC_LINE, *Outcome);
+		return false;
+	}
+
+	bAdditionalInfoTerminalDispatched = true;
+	return true;
+}
+
+void UXsollaLoginSubsystem::HandleAdditionalInfoAuthError(const FString& ErrorCode, const FString& ErrorDescription, const FOnAuthError& ErrorCallback)
+{
+	if (!TryMarkAdditionalInfoTerminal(TEXT("error")))
+	{
+		return;
+	}
+
+	const FString NormalizedCode = ErrorCode.IsEmpty() ? AdditionalInfoFailedCode : ErrorCode;
+	const FString NormalizedDescription = ErrorDescription.IsEmpty() ? TEXT("Additional fields form submission failed") : ErrorDescription;
+	UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional-info flow failed. Code: %s, Description: %s"), *VA_FUNC_LINE, *NormalizedCode, *NormalizedDescription);
+	ErrorCallback.ExecuteIfBound(NormalizedCode, NormalizedDescription);
+	FinishAdditionalInfoFlow();
+}
+
+void UXsollaLoginSubsystem::HandleAdditionalInfoAuthCancel(const FOnAuthError& ErrorCallback)
+{
+	if (!TryMarkAdditionalInfoTerminal(TEXT("cancel")))
+	{
+		return;
+	}
+
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Additional-info flow canceled by user"), *VA_FUNC_LINE);
+	ErrorCallback.ExecuteIfBound(AdditionalInfoCancelCode, AdditionalInfoCancelMessage);
+	FinishAdditionalInfoFlow();
+}
+
 void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
 	const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	if (!TryMarkAdditionalInfoTerminal(TEXT("success")))
+	{
+		return;
+	}
+
 	if (!AuthenticationToken.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with direct token"), *VA_FUNC_LINE);
@@ -2438,6 +2515,7 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& Authen
 		LoginData.AuthToken.ExpiresAt = 0;
 		SaveData();
 		SuccessCallback.ExecuteIfBound(LoginData);
+		FinishAdditionalInfoFlow();
 		return;
 	}
 
@@ -2445,24 +2523,28 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& Authen
 	{
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with code exchange"), *VA_FUNC_LINE);
 		ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+		FinishAdditionalInfoFlow();
 		return;
 	}
 
 	UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields auth completed without code or token"), *VA_FUNC_LINE);
-	ErrorCallback.ExecuteIfBound(TEXT("MISSING_AUTH_PARAMETER"), TEXT("Additional fields flow completed without code or token"));
+	ErrorCallback.ExecuteIfBound(AdditionalInfoMissingAuthCode, AdditionalInfoMissingAuthMessage);
+	FinishAdditionalInfoFlow();
 }
 
 void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Handling authentication with additional fields form"), *VA_FUNC_LINE);
 	const UXsollaProjectSettings* Settings = FXsollaSettingsModule::Get().GetSettings();
+	BeginAdditionalInfoFlow();
 
 #if PLATFORM_ANDROID
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Starting Android native additional-info continuation"), *VA_FUNC_LINE);
 	UXsollaNativeAdditionalInfoAuthCallback* NativeCallback = NewObject<UXsollaNativeAdditionalInfoAuthCallback>();
 	if (!IsValid(NativeCallback))
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create additional-info native callback"), *VA_FUNC_LINE);
-		ErrorCallback.ExecuteIfBound(TEXT("010-017"), TEXT("Failed to create Android additional-info auth callback"));
+		HandleAdditionalInfoAuthError(TEXT("010-017"), TEXT("Failed to create Android additional-info auth callback"), ErrorCallback);
 		return;
 	}
 
@@ -2480,6 +2562,7 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 
 	if (Settings->UsePlatformBrowser)
 	{
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Starting platform-browser additional-info continuation"), *VA_FUNC_LINE);
 		NativeSuccessCallback = SuccessCallback;
 		NativeErrorCallback = ErrorCallback;
 
@@ -2496,7 +2579,7 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 			if (!HttpServer->Start(Port, FOnAuthParamsReceived::CreateUObject(this, &UXsollaLoginSubsystem::OnAuthParamsReceived)))
 			{
 				UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to start HTTP server for additional fields"), *VA_FUNC_LINE);
-				ErrorCallback.ExecuteIfBound(TEXT("SERVER_ERROR"), TEXT("Failed to start local HTTP server"));
+				HandleAdditionalInfoAuthError(TEXT("SERVER_ERROR"), TEXT("Failed to start local HTTP server"), ErrorCallback);
 				return;
 			}
 		}
@@ -2541,6 +2624,7 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 		return;
 	}
 
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Starting in-app browser additional-info continuation"), *VA_FUNC_LINE);
 	UUserWidget* BrowserWidget = nullptr;
 	LaunchSocialAuthentication(this, BrowserWidget, LoginData.bRememberMe);
 
@@ -2550,26 +2634,28 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 	{
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Loading additional fields form in browser widget"), *VA_FUNC_LINE);
 		BrowserWidgetWrapper->LoadUrl(LoginUrl);
-		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([this, SuccessCallback, ErrorCallback](bool bIsManually, const FString& AuthenticationCode)
+		BrowserWidgetWrapper->OnBrowserClosed.BindLambda([this, SuccessCallback, ErrorCallback, BrowserWidgetWrapper](bool bIsManually, const FString& AuthenticationCode)
 		{
+			if (IsValid(BrowserWidgetWrapper))
+			{
+				BrowserWidgetWrapper->OnBrowserClosed.Unbind();
+				BrowserWidgetWrapper->RemoveFromParent();
+			}
+
 			if (!AuthenticationCode.IsEmpty())
 			{
-				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code after fields submission"), *VA_FUNC_LINE);
-				ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received additional-info terminal authentication code"), *VA_FUNC_LINE);
+				HandleAdditionalInfoAuthResult(AuthenticationCode, FString(), SuccessCallback, ErrorCallback);
 			}
 			else
 			{
 				if (bIsManually)
 				{
-					UE_LOG(LogXsollaLogin, Log, TEXT("%s: Additional fields form canceled by user"), *VA_FUNC_LINE);
-					const FString ErrorMessage = TEXT("Additional fields form submission was canceled by user");
-					ErrorCallback.ExecuteIfBound(TEXT(""), ErrorMessage);
+					HandleAdditionalInfoAuthCancel(ErrorCallback);
 				}
 				else
 				{
-					UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields form submission failed"), *VA_FUNC_LINE);
-					const FString ErrorMessage = TEXT("Additional fields form submission failed - no authentication code received");
-					ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+					HandleAdditionalInfoAuthError(AdditionalInfoMissingAuthCode, AdditionalInfoMissingAuthMessage, ErrorCallback);
 				}
 			}
 		});
@@ -2578,7 +2664,7 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 	{
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Failed to create browser widget for additional fields form"), *VA_FUNC_LINE);
 		const FString ErrorMessage = TEXT("Failed to create browser widget for additional fields form");
-		ErrorCallback.ExecuteIfBound(TEXT("010-017"), ErrorMessage);
+		HandleAdditionalInfoAuthError(TEXT("010-017"), ErrorMessage, ErrorCallback);
 	}
 }
 
@@ -2824,31 +2910,58 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 	if (Params.Contains(TEXT("code")))
 	{
 		const FString Code = Params[TEXT("code")];
-		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code: %s"), *VA_FUNC_LINE, *Code);
+		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication code via HTTP callback"), *VA_FUNC_LINE);
 
-		int32 Port = HttpServer ? HttpServer->GetPort() : 65421;
-		FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
+		const bool bCanHandleCode = !bAdditionalInfoFlowActive || TryMarkAdditionalInfoTerminal(TEXT("platform_code"));
 
-		ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
+		if (bCanHandleCode)
+		{
+			int32 Port = HttpServer ? HttpServer->GetPort() : 65421;
+			FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
+
+			ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
+			if (bAdditionalInfoFlowActive)
+			{
+				FinishAdditionalInfoFlow();
+			}
+		}
 	}
 	else if (Params.Contains(TEXT("token")))
 	{
 		const FString Token = Params[TEXT("token")];
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received authentication token via HTTP server callback"), *VA_FUNC_LINE);
+		if (bAdditionalInfoFlowActive)
+		{
+			HandleAdditionalInfoAuthResult(FString(), Token, NativeSuccessCallback, NativeErrorCallback);
+		}
+		else
+		{
+			LoginData.AuthToken.JWT = Token;
+			LoginData.AuthToken.RefreshToken = FString();
+			LoginData.AuthToken.ExpiresAt = 0;
 
-		LoginData.AuthToken.JWT = Token;
-		LoginData.AuthToken.RefreshToken = FString();
-		LoginData.AuthToken.ExpiresAt = 0;
-
-		SaveData();
-		NativeSuccessCallback.ExecuteIfBound(LoginData);
+			SaveData();
+			NativeSuccessCallback.ExecuteIfBound(LoginData);
+		}
 	}
 	else if (Params.Contains(TEXT("error")) || Params.Contains(TEXT("error_description")))
 	{
 		FString ErrorCode = Params.Contains(TEXT("error")) ? Params[TEXT("error")] : TEXT("Unknown error");
 		FString ErrorDesc = Params.Contains(TEXT("error_description")) ? Params[TEXT("error_description")] : TEXT("");
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Received error from HTTP server: %s - %s"), *VA_FUNC_LINE, *ErrorCode, *ErrorDesc);
-		NativeErrorCallback.ExecuteIfBound(ErrorCode, ErrorDesc);
+		if (bAdditionalInfoFlowActive)
+		{
+			HandleAdditionalInfoAuthError(ErrorCode, ErrorDesc, NativeErrorCallback);
+		}
+		else
+		{
+			NativeErrorCallback.ExecuteIfBound(ErrorCode, ErrorDesc);
+		}
+	}
+	else if (bAdditionalInfoFlowActive)
+	{
+		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional-info callback params do not contain terminal fields"), *VA_FUNC_LINE);
+		HandleAdditionalInfoAuthError(AdditionalInfoMissingAuthCode, AdditionalInfoMissingAuthMessage, NativeErrorCallback);
 	}
 
 	if (HttpServer)
@@ -2911,7 +3024,7 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onA
 	if (IsValid(callback))
 	{
 		const FString ErrorMessage = errorMsg != nullptr ? XsollaJavaConvertor::FromJavaString(errorMsg) : FString();
-		callback->ExecuteError(ErrorMessage);
+		callback->ExecuteError(AdditionalInfoFailedCode, ErrorMessage);
 	}
 	else
 	{
