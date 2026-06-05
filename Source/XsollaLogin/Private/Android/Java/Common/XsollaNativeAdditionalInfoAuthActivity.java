@@ -35,8 +35,7 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
         Log.d("XsollaNativeAdditionalInfoAuthActivity", "onCreate");
 
         if (savedInstanceState != null) {
-            isCompleted = true;
-            onAuthCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));
+            Log.d("XsollaNativeAdditionalInfoAuthActivity", "Restored instance detected, closing without terminal callback");
             finish();
             return;
         }
@@ -87,7 +86,7 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (!isCompleted) {
+        if (!isCompleted && (isFinishing() || !isChangingConfigurations())) {
             isCompleted = true;
             Log.d("XsollaNativeAdditionalInfoAuthActivity", "onDestroy before terminal callback, reporting cancel");
             onAuthCancelCallback(getIntent().getLongExtra(CALLBACK_ADDRESS, 0));

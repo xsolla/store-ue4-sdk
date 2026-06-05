@@ -2483,8 +2483,9 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthError(const FString& ErrorCo
 	const FString NormalizedCode = ErrorCode.IsEmpty() ? AdditionalInfoFailedCode : ErrorCode;
 	const FString NormalizedDescription = ErrorDescription.IsEmpty() ? TEXT("Additional fields form submission failed") : ErrorDescription;
 	UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional-info flow failed. Code: %s, Description: %s"), *VA_FUNC_LINE, *NormalizedCode, *NormalizedDescription);
-	ErrorCallback.ExecuteIfBound(NormalizedCode, NormalizedDescription);
+	const FOnAuthError Callback = ErrorCallback;
 	FinishAdditionalInfoFlow();
+	Callback.ExecuteIfBound(NormalizedCode, NormalizedDescription);
 }
 
 void UXsollaLoginSubsystem::HandleAdditionalInfoAuthCancel(const FOnAuthError& ErrorCallback)
@@ -2495,8 +2496,9 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthCancel(const FOnAuthError& E
 	}
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Additional-info flow canceled by user"), *VA_FUNC_LINE);
-	ErrorCallback.ExecuteIfBound(AdditionalInfoCancelCode, AdditionalInfoCancelMessage);
+	const FOnAuthError Callback = ErrorCallback;
 	FinishAdditionalInfoFlow();
+	Callback.ExecuteIfBound(AdditionalInfoCancelCode, AdditionalInfoCancelMessage);
 }
 
 void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
@@ -2514,22 +2516,43 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& Authen
 		LoginData.AuthToken.RefreshToken = FString();
 		LoginData.AuthToken.ExpiresAt = 0;
 		SaveData();
-		SuccessCallback.ExecuteIfBound(LoginData);
+		const FOnAuthUpdate Callback = SuccessCallback;
+		const FXsollaLoginData LocalLoginData = LoginData;
 		FinishAdditionalInfoFlow();
+		Callback.ExecuteIfBound(LocalLoginData);
 		return;
 	}
 
 	if (!AuthenticationCode.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with code exchange"), *VA_FUNC_LINE);
-		ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
-		FinishAdditionalInfoFlow();
+		const FOnAuthUpdate OriginalSuccessCallback = SuccessCallback;
+		const FOnAuthError OriginalErrorCallback = ErrorCallback;
+
+		FOnAuthUpdate WrappedSuccessCallback;
+		WrappedSuccessCallback.BindLambda([this, OriginalSuccessCallback](const FXsollaLoginData& AuthData)
+		{
+			const FOnAuthUpdate Callback = OriginalSuccessCallback;
+			FinishAdditionalInfoFlow();
+			Callback.ExecuteIfBound(AuthData);
+		});
+
+		FOnAuthError WrappedErrorCallback;
+		WrappedErrorCallback.BindLambda([this, OriginalErrorCallback](const FString& ErrorCode, const FString& ErrorMessage)
+		{
+			const FOnAuthError Callback = OriginalErrorCallback;
+			FinishAdditionalInfoFlow();
+			Callback.ExecuteIfBound(ErrorCode, ErrorMessage);
+		});
+
+		ExchangeAuthenticationCodeToToken(AuthenticationCode, WrappedSuccessCallback, WrappedErrorCallback);
 		return;
 	}
 
 	UE_LOG(LogXsollaLogin, Error, TEXT("%s: Additional fields auth completed without code or token"), *VA_FUNC_LINE);
-	ErrorCallback.ExecuteIfBound(AdditionalInfoMissingAuthCode, AdditionalInfoMissingAuthMessage);
+	const FOnAuthError Callback = ErrorCallback;
 	FinishAdditionalInfoFlow();
+	Callback.ExecuteIfBound(AdditionalInfoMissingAuthCode, AdditionalInfoMissingAuthMessage);
 }
 
 void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
@@ -2918,11 +2941,32 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 		{
 			int32 Port = HttpServer ? HttpServer->GetPort() : 65421;
 			FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
-
-			ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
 			if (bAdditionalInfoFlowActive)
 			{
-				FinishAdditionalInfoFlow();
+				const FOnAuthUpdate OriginalSuccessCallback = NativeSuccessCallback;
+				const FOnAuthError OriginalErrorCallback = NativeErrorCallback;
+
+				FOnAuthUpdate WrappedSuccessCallback;
+				WrappedSuccessCallback.BindLambda([this, OriginalSuccessCallback](const FXsollaLoginData& AuthData)
+				{
+					const FOnAuthUpdate Callback = OriginalSuccessCallback;
+					FinishAdditionalInfoFlow();
+					Callback.ExecuteIfBound(AuthData);
+				});
+
+				FOnAuthError WrappedErrorCallback;
+				WrappedErrorCallback.BindLambda([this, OriginalErrorCallback](const FString& ErrorCode, const FString& ErrorMessage)
+				{
+					const FOnAuthError Callback = OriginalErrorCallback;
+					FinishAdditionalInfoFlow();
+					Callback.ExecuteIfBound(ErrorCode, ErrorMessage);
+				});
+
+				ExchangeAuthenticationCodeToToken(Code, RedirectUri, WrappedSuccessCallback, WrappedErrorCallback);
+			}
+			else
+			{
+				ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
 			}
 		}
 	}
