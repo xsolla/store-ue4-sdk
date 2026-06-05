@@ -884,6 +884,7 @@ private:
 	TSharedPtr<FXsollaLoginHttpServer> HttpServer;
 	bool bAdditionalInfoFlowActive = false;
 	bool bAdditionalInfoTerminalDispatched = false;
+	bool bFinishAdditionalInfoFlowOnOAuthResponse = false;
 
 	void OnAuthParamsReceived(const TMap<FString, FString>& Params);
 

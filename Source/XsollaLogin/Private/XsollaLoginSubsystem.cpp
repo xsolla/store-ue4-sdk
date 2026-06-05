@@ -2347,12 +2347,40 @@ void UXsollaLoginSubsystem::HandleOAuthTokenRequest(FHttpRequestPtr HttpRequest,
 
 			SaveData();
 
-			SuccessCallback.ExecuteIfBound(LoginData);
+			const bool bFinishAdditionalInfoFlow = bFinishAdditionalInfoFlowOnOAuthResponse;
+			bFinishAdditionalInfoFlowOnOAuthResponse = false;
+			if (bFinishAdditionalInfoFlow)
+			{
+				const FOnAuthUpdate Callback = SuccessCallback;
+				const FXsollaLoginData LocalLoginData = LoginData;
+				if (bAdditionalInfoFlowActive)
+				{
+					FinishAdditionalInfoFlow();
+				}
+				Callback.ExecuteIfBound(LocalLoginData);
+			}
+			else
+			{
+				SuccessCallback.ExecuteIfBound(LoginData);
+			}
 			return;
 		}
 
 		OutError.description = FString::Printf(TEXT("No field '%s' found"), *AccessTokenFieldName);
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: OAuth token response missing access_token field"), *VA_FUNC_LINE);
+	}
+
+	const bool bFinishAdditionalInfoFlow = bFinishAdditionalInfoFlowOnOAuthResponse;
+	bFinishAdditionalInfoFlowOnOAuthResponse = false;
+	if (bFinishAdditionalInfoFlow)
+	{
+		const FOnAuthError Callback = ErrorCallback;
+		if (bAdditionalInfoFlowActive)
+		{
+			FinishAdditionalInfoFlow();
+		}
+		HandleRequestOAuthError(OutError, Callback);
+		return;
 	}
 
 	HandleRequestOAuthError(OutError, ErrorCallback);
@@ -2451,6 +2479,7 @@ void UXsollaLoginSubsystem::FinishAdditionalInfoFlow()
 {
 	bAdditionalInfoFlowActive = false;
 	bAdditionalInfoTerminalDispatched = false;
+	bFinishAdditionalInfoFlowOnOAuthResponse = false;
 	NativeSuccessCallback.Unbind();
 	NativeErrorCallback.Unbind();
 }
@@ -2526,26 +2555,8 @@ void UXsollaLoginSubsystem::HandleAdditionalInfoAuthResult(const FString& Authen
 	if (!AuthenticationCode.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Completing additional fields auth with code exchange"), *VA_FUNC_LINE);
-		const FOnAuthUpdate OriginalSuccessCallback = SuccessCallback;
-		const FOnAuthError OriginalErrorCallback = ErrorCallback;
-
-		FOnAuthUpdate WrappedSuccessCallback;
-		WrappedSuccessCallback.BindLambda([this, OriginalSuccessCallback](const FXsollaLoginData& AuthData)
-		{
-			const FOnAuthUpdate Callback = OriginalSuccessCallback;
-			FinishAdditionalInfoFlow();
-			Callback.ExecuteIfBound(AuthData);
-		});
-
-		FOnAuthError WrappedErrorCallback;
-		WrappedErrorCallback.BindLambda([this, OriginalErrorCallback](const FString& ErrorCode, const FString& ErrorMessage)
-		{
-			const FOnAuthError Callback = OriginalErrorCallback;
-			FinishAdditionalInfoFlow();
-			Callback.ExecuteIfBound(ErrorCode, ErrorMessage);
-		});
-
-		ExchangeAuthenticationCodeToToken(AuthenticationCode, WrappedSuccessCallback, WrappedErrorCallback);
+		bFinishAdditionalInfoFlowOnOAuthResponse = true;
+		ExchangeAuthenticationCodeToToken(AuthenticationCode, SuccessCallback, ErrorCallback);
 		return;
 	}
 
@@ -2943,26 +2954,8 @@ void UXsollaLoginSubsystem::OnAuthParamsReceived(const TMap<FString, FString>& P
 			FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), Port);
 			if (bAdditionalInfoFlowActive)
 			{
-				const FOnAuthUpdate OriginalSuccessCallback = NativeSuccessCallback;
-				const FOnAuthError OriginalErrorCallback = NativeErrorCallback;
-
-				FOnAuthUpdate WrappedSuccessCallback;
-				WrappedSuccessCallback.BindLambda([this, OriginalSuccessCallback](const FXsollaLoginData& AuthData)
-				{
-					const FOnAuthUpdate Callback = OriginalSuccessCallback;
-					FinishAdditionalInfoFlow();
-					Callback.ExecuteIfBound(AuthData);
-				});
-
-				FOnAuthError WrappedErrorCallback;
-				WrappedErrorCallback.BindLambda([this, OriginalErrorCallback](const FString& ErrorCode, const FString& ErrorMessage)
-				{
-					const FOnAuthError Callback = OriginalErrorCallback;
-					FinishAdditionalInfoFlow();
-					Callback.ExecuteIfBound(ErrorCode, ErrorMessage);
-				});
-
-				ExchangeAuthenticationCodeToToken(Code, RedirectUri, WrappedSuccessCallback, WrappedErrorCallback);
+				bFinishAdditionalInfoFlowOnOAuthResponse = true;
+				ExchangeAuthenticationCodeToToken(Code, RedirectUri, NativeSuccessCallback, NativeErrorCallback);
 			}
 			else
 			{
