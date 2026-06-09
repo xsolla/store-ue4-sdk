@@ -3,6 +3,7 @@
 #pragma once
 
 #include "XsollaLoginSubsystem.h"
+#include <atomic>
 
 #include "XsollaNativeAdditionalInfoAuthCallback.generated.h"
 
@@ -19,7 +20,7 @@ public:
 
 	void ExecuteSuccess(const FString& AuthenticationCode, const FString& AuthenticationToken);
 	void ExecuteCancel();
-	void ExecuteError(const FString& ErrorMessage);
+	void ExecuteError(const FString& ErrorCode, const FString& ErrorMessage);
 
 private:
 	UPROPERTY()
@@ -28,4 +29,5 @@ private:
 	FOnAuthError OnAuthErrorDelegate;
 	UPROPERTY()
 	UXsollaLoginSubsystem* LoginSubsystem;
+	std::atomic<bool> bTerminalDispatched{false};
 };

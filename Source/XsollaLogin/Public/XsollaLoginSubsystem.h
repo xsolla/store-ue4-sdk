@@ -794,6 +794,11 @@ protected:
 	/** Completes additional-info auth callback with code or token. */
 	void HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void HandleAdditionalInfoAuthError(const FString& ErrorCode, const FString& ErrorDescription, const FOnAuthError& ErrorCallback);
+	void HandleAdditionalInfoAuthCancel(const FOnAuthError& ErrorCallback);
+	bool TryMarkAdditionalInfoTerminal(const FString& Outcome);
+	void BeginAdditionalInfoFlow();
+	void FinishAdditionalInfoFlow();
 
 	/** Returns true if the error occurs. */
 	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
@@ -877,6 +882,9 @@ private:
 	FOnAuthError NativeErrorCallback;
 
 	TSharedPtr<FXsollaLoginHttpServer> HttpServer;
+	bool bAdditionalInfoFlowActive = false;
+	bool bAdditionalInfoTerminalDispatched = false;
+	bool bFinishAdditionalInfoFlowOnOAuthResponse = false;
 
 	void OnAuthParamsReceived(const TMap<FString, FString>& Params);
 

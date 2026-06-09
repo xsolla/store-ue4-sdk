@@ -2,6 +2,10 @@
 ## [Unreleased]
 ### Added
 - Optional `bUseSteamOverlayForDesktop` field in `FXsollaPaymentTokenRequestPayload` to open Pay Station in Steam overlay for desktop Steam builds during purchase flow
+- Additional-info continuation for auth responses with ask URL (`/latest/ask`) in `XsollaLoginSubsystem` across Desktop and Android flows
+
+### Fixed
+- Additional-info auth hardening: unified terminal handling for cancel/malformed callback payloads, single-shot callback dispatch safeguards, and improved callback diagnostics without logging sensitive auth values
 
 ## [4.2.2] - 2026-04-13
 ### Fixed
