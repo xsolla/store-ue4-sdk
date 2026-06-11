@@ -2622,7 +2622,9 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 		const FString RedirectUri = FString::Printf(TEXT("http://localhost:%d"), ActivePort);
 		const FString EncodedRedirectUri = FGenericPlatformHttp::UrlEncode(RedirectUri);
 
-		FString BrowserUrl = LoginUrl;
+		FString BrowserUrl;
+		FString Fragment;
+		const bool bHasFragment = LoginUrl.Split(TEXT("#"), &BrowserUrl, &Fragment);
 		FString BaseUrl;
 		FString QueryString;
 		if (BrowserUrl.Split(TEXT("?"), &BaseUrl, &QueryString))
@@ -2651,6 +2653,11 @@ void UXsollaLoginSubsystem::HandleAskFieldsAuthentication(const FString& LoginUr
 		else
 		{
 			BrowserUrl += FString::Printf(TEXT("?redirect_uri=%s"), *EncodedRedirectUri);
+		}
+
+		if (bHasFragment)
+		{
+			BrowserUrl += TEXT("#") + Fragment;
 		}
 
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: HTTP server started on port %d for additional fields flow"), *VA_FUNC_LINE, ActivePort);

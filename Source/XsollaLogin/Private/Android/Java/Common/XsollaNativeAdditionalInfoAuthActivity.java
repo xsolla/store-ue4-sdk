@@ -35,6 +35,7 @@ public class XsollaNativeAdditionalInfoAuthActivity extends Activity {
         Log.d("XsollaNativeAdditionalInfoAuthActivity", "onCreate");
 
         if (savedInstanceState != null) {
+            isCompleted = true;
             Log.d("XsollaNativeAdditionalInfoAuthActivity", "Restored instance detected, closing without terminal callback");
             finish();
             return;
