@@ -18,6 +18,7 @@ class FJsonObject;
 class UXsollaLoginBrowserWrapper;
 class UXsollaSocialLinkingBrowserWrapper;
 class FXsollaLoginHttpServer;
+class UXsollaNativeAdditionalInfoAuthCallback;
 
 /** Common callback for operations without any user-friendly messages from the server in case of success. */
 DECLARE_DYNAMIC_DELEGATE(FOnRequestSuccess);
@@ -51,6 +52,7 @@ UCLASS()
 class XSOLLALOGIN_API UXsollaLoginSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
+	friend class UXsollaNativeAdditionalInfoAuthCallback;
 
 public:
 	UXsollaLoginSubsystem();
@@ -786,6 +788,18 @@ protected:
 	/** Handles the "ask_fields" response from the authentication flow */
 	void HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
+	/** Returns true if URL points to additional-info ask widget. */
+	bool IsAdditionalInfoAskUrl(const FString& LoginUrl) const;
+
+	/** Completes additional-info auth callback with code or token. */
+	void HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
+		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
+	void HandleAdditionalInfoAuthError(const FString& ErrorCode, const FString& ErrorDescription, const FOnAuthError& ErrorCallback);
+	void HandleAdditionalInfoAuthCancel(const FOnAuthError& ErrorCallback);
+	bool TryMarkAdditionalInfoTerminal(const FString& Outcome);
+	void BeginAdditionalInfoFlow();
+	void FinishAdditionalInfoFlow();
+
 	/** Returns true if the error occurs. */
 	void HandleRequestOAuthError(XsollaHttpRequestError ErrorData, FOnAuthError ErrorCallback);
 
@@ -868,6 +882,9 @@ private:
 	FOnAuthError NativeErrorCallback;
 
 	TSharedPtr<FXsollaLoginHttpServer> HttpServer;
+	bool bAdditionalInfoFlowActive = false;
+	bool bAdditionalInfoTerminalDispatched = false;
+	bool bFinishAdditionalInfoFlowOnOAuthResponse = false;
 
 	void OnAuthParamsReceived(const TMap<FString, FString>& Params);
 

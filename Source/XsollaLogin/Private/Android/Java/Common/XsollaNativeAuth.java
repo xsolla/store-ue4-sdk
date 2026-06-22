@@ -38,6 +38,14 @@ public class XsollaNativeAuth {
         activity.startActivity(intent);
     }
 
+    public static void authAdditionalInfo(Activity activity, String loginUrl, String redirectUrl, long callback) {
+        Intent intent = new Intent(activity, XsollaNativeAdditionalInfoAuthActivity.class);
+        intent.putExtra(XsollaNativeAdditionalInfoAuthActivity.LOGIN_URL, loginUrl);
+        intent.putExtra(XsollaNativeAdditionalInfoAuthActivity.REDIRECT_URL, redirectUrl);
+        intent.putExtra(XsollaNativeAdditionalInfoAuthActivity.CALLBACK_ADDRESS, callback);
+        activity.startActivity(intent);
+    }
+
     private static int tryParseInt(String value, int defaultVal) {
         try {
             return Integer.parseInt(value);
