@@ -1,0 +1,157 @@
+# store-ue4-sdk
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](./LICENSE.txt)
+[![Latest Release](https://img.shields.io/github/v/release/xsolla/store-ue4-sdk)](https://github.com/xsolla/store-ue4-sdk/releases)
+[![Unreal Engine 5.3+](https://img.shields.io/badge/Unreal%20Engine-5.3%2B-black.svg?logo=unrealengine)](https://www.unrealengine.com/)
+
+The SDK makes it easier to integrate Xsolla products into your Unreal Engine project by providing out-of-the-box data structures and methods for working with Xsolla API.
+
+After integration, you can use:
+
+* [Login](https://developers.xsolla.com/doc/login/) to authenticate users and manage the friend system and user account
+* [In-Game Store](https://developers.xsolla.com/doc/in-game-store/) for managing in-game purchases and player inventory in your application.
+* [Pay Station](https://developers.xsolla.com/doc/pay-station/) for setting up payments.
+* [Subscriptions](https://developers.xsolla.com/doc/subscriptions/) to provide users with access to a package of services under specified conditions (subscription cost and duration).
+
+[Learn more about supported features →](#features)
+
+To start with the SDK, you need to install this plug-in and set up a project in [Xsolla Publisher Account](https://publisher.xsolla.com/signup?store_type=sdk).
+
+[Go to the integration guide →](https://developers.xsolla.com/sdk/unreal-engine/integrate-complete-solution/)
+
+
+## Features
+
+### Authentication
+
+* [OAuth 2.0](https://oauth.net/2/) protocol-based authentication.
+* Classic login (username/email and password).
+* Social login.
+* Social login on the user's device via a social network client.
+* Login via a launcher (Steam or [Xsolla Launcher](https://developers.xsolla.com/doc/launcher/)).
+* Login via a device ID.
+* Passwordless login via a one-time code or a link sent via SMS or email.
+* Xsolla Login widget that currently supports classic, social, and passwordless login. The widget opens in the built-in browser and can't be used for native social login.
+
+
+### User management
+
+* User attributes to manage additional information.
+* Cross-platform account linking.
+* Secure Xsolla storage for user data. Alternatively, you can connect PlayFab, Firebase, or your custom storage.
+
+**INFO:** You can also manage user accounts and access rights via Xsolla Publisher Account.
+
+### Catalog
+
+* Virtual currency
+    * Sell virtual currency in any amount or in packages (for real money or other virtual currency).
+    * Sell hard currency (for real money only).
+* Virtual items:
+    * Set up a catalog of in-game items.
+    * Sell virtual items for real and virtual currency.
+* Bundles:
+    * Sell bundles for real or virtual currency.
+* Promotional campaigns:
+    * Reward users with virtual currency packages, game keys, or virtual items for coupons.
+    * Give users bonuses or apply a discount on items in the cart with promo codes.
+
+**INFO:** You can add items in the catalog or manage campaigns with discounts, coupons, and promo codes via Xsolla Publisher Account.
+
+### Subscriptions
+
+* Selling subscriptions.
+* Subscription renewal and cancelation.
+* Subscription management from a user's dashboard.
+
+**INFO:** You can add and manage subscription plans via Xsolla Publisher Account.
+
+### Item purchase
+
+- Sell items in one click or via the shopping cart.
+- Provide users with a convenient payment UI. The main features are:
+	- 700+ payment methods in 200+ countries, including bank cards, digital wallets, mobile payments, cash kiosks, gift cards, and special offers.
+	- 130+ currencies.
+	- UI localized into 20+ languages.
+	- Desktop and mobile versions.
+
+**INFO:** Xsolla Publisher Account provides you with purchase analytics, transaction history, and other statistics.
+
+### Player inventory
+
+* Get and verify an inventory.
+* Consume items according to the game logic.
+* Consume virtual currency according to the in-game logics (for example, when opening a location or purchasing level for some currency).
+* Synchronize all purchases and premium rewards of the user across all platforms.
+
+
+## Requirements
+
+### System requirements
+
+* 64-bit OS
+* Windows 7 and later
+* macOS 13.6.6 and later
+* XCode 15.2 and later (for macOS)
+* Visual Studio 2019 and later
+* Unreal Engine 5.3 and later
+
+### Target OS
+
+* iOS
+* Android
+* Windows 64-bit
+
+The SDK uses [Google Mobile Services](https://www.android.com/gms/) and doesn't support builds for devices without Google Mobile Services, such as Huawei.
+
+**NOTE:** To modify the SDK for your application specifics, follow the [SDK modification instruction](https://developers.xsolla.com/sdk/unreal-engine/usage/how-to-modify-sdk/).
+
+
+## Install
+
+1. Clone this repository into your project's `Plugins/` directory:
+
+```bash
+git clone https://github.com/xsolla/store-ue4-sdk.git Plugins/Xsolla
+```
+
+2. Regenerate project files (right-click your `.uproject` → **Generate Visual Studio project files**).
+3. Build and open your project in Unreal Engine.
+4. Follow the [integration guide](https://developers.xsolla.com/sdk/unreal-engine/integrate-complete-solution/).
+
+
+## Usage
+
+To send requests to Xsolla servers and receive responses, the SDK provides the `XsollaStoreSubsystem`, `XsollaLoginSubsystem`, and `XsollaInventorySubsystem` classes. If you want to implement your own logic for buying items or inventory management, and don't want to write boilerplate code for API calls, these classes are a good place to start.
+
+Follow the [step-by-step tutorials](https://developers.xsolla.com/sdk/unreal-engine/integrate-complete-solution/integrate-on-app-side/) to get started with basic SDK features.
+
+Explore [code reference documentation](https://developers.xsolla.com/sdk-code-references/unreal-store/) to learn more about SDK methods.
+
+
+## Pricing
+
+Xsolla offers the necessary tools to help you build and grow your gaming business, including personalized support at every stage. The terms of payment are determined by the contract that you can sign via Publisher Account.
+
+The cost of using all Xsolla products is 5% of the amount you receive for the sale of the game and in-game goods via Xsolla Pay Station. If you don't use Xsolla Pay Station in your application, but use other products, contact your Account Manager to clarify the terms and conditions.
+
+Explore [legal information](https://xsolla.com/pricing) that helps you work with Xsolla.
+
+
+## Documentation
+
+Full SDK documentation: [developers.xsolla.com/sdk/unreal-engine/](https://developers.xsolla.com/sdk/unreal-engine/)
+
+Code reference documentation: [developers.xsolla.com/sdk-code-references/unreal-store/](https://developers.xsolla.com/sdk-code-references/unreal-store/)
+
+
+## Support
+
+* [GitHub Issues](https://github.com/xsolla/store-ue4-sdk/issues)
+* [Support team and feedback](https://xsolla.com/partner-support)
+* [Integration team](mailto:integration@xsolla.com)
+
+
+## License
+
+Apache 2.0. See [LICENSE](./LICENSE.txt).
