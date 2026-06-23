@@ -1,3 +1,6 @@
+> [!WARNING]
+> **Xsolla SDK 3 for Unreal Engine is coming.** This SDK will be deprecated once Xsolla SDK 3 for Unreal Engine is released. SDK 3 will provide up-to-date auth, catalog, store, and payment integrations with active development, bug fixes, new features, and security updates. This SDK remains supported for existing integrations in the meantime. Stay tuned for the SDK 3 Unreal Engine release announcement.
+
 # store-ue4-sdk
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](./LICENSE.txt)
@@ -70,7 +73,7 @@ To start with the SDK, you need to install this plug-in and set up a project in 
 
 - Sell items in one click or via the shopping cart.
 - Provide users with a convenient payment UI. The main features are:
-	- 700+ payment methods in 200+ countries, including bank cards, digital wallets, mobile payments, cash kiosks, gift cards, and special offers.
+	- 1000+ payment methods in 200+ countries, including bank cards, digital wallets, mobile payments, cash kiosks, gift cards, and special offers.
 	- 130+ currencies.
 	- UI localized into 20+ languages.
 	- Desktop and mobile versions.
