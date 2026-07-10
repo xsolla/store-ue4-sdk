@@ -522,7 +522,7 @@ struct FXsollaPaymentTokenRequestPayload
 	bool bDisableSdkParameter = false;
 
 	/**
-	 * If `true`, opens Pay Station in Steam overlay for desktop Steam builds.
+	 * Whether to open Pay Station inside the Steam overlay for desktop Steam builds.
 	 * `false` by default.
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Xsolla Payment Token Request Payload")
