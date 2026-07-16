@@ -1,11 +1,11 @@
 # Changelog
-## [Unreleased]
+## [4.2.3] - 2026-07-09
 ### Added
-- Optional `bUseSteamOverlayForDesktop` field in `FXsollaPaymentTokenRequestPayload` to open Pay Station in Steam overlay for desktop Steam builds during purchase flow
-- Additional-info continuation for auth responses with ask URL (`/latest/ask`) in `XsollaLoginSubsystem` across Desktop and Android flows
+- Support for rendering the payment UI (Pay Station) inside the Steam overlay, controlled via the optional `bUseSteamOverlayForDesktop` field in `FXsollaPaymentTokenRequestPayload`.
+- Multi-platform support for additional user information collection. Continuation flow for authentication responses returning an explanation URL (`/latest/ask`) inside `XsollaLoginSubsystem` across Desktop and Android platforms.
 
 ### Fixed
-- Additional-info auth hardening: unified terminal handling for cancel/malformed callback payloads, single-shot callback dispatch safeguards, and improved callback diagnostics without logging sensitive auth values
+- Excessive "Can not find username in token" error log messages in `UXsollaUtilsTokenParser`. Excessive error state downgraded to a standard log level since missing optional claims are handled by caller subsystems
 
 ## [4.2.2] - 2026-04-13
 ### Fixed

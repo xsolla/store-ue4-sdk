@@ -1010,7 +1010,7 @@ private:
 	/** Extract Steam user ID from auth token */
 	bool GetSteamUserId(const FString& AuthToken, FString& SteamId, FString& OutError);
 
-	/** Try opening URL in Steam overlay. Returns false when unavailable and should fallback. */
+	/** Attempts to open the specified URL inside Steam overlay. Returns `false` if the overlay is unavailable and a fallback method should be used. */
 	bool TryOpenUrlInSteamOverlay(const FString& Url, FString& OutError) const;
 
 	FString GetPayStationVersionPath(const EXsollaPayStationVersion PayStationVersion) const;

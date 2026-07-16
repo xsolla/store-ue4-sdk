@@ -788,10 +788,10 @@ protected:
 	/** Handles the "ask_fields" response from the authentication flow */
 	void HandleAskFieldsAuthentication(const FString& LoginUrl, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
-	/** Returns true if URL points to additional-info ask widget. */
+	/** Returns true if the provided URL redirects to the additional-info validation flow. */
 	bool IsAdditionalInfoAskUrl(const FString& LoginUrl) const;
 
-	/** Completes additional-info auth callback with code or token. */
+	/** Finalizes the additional-info authentication process using the received code or token and triggers the appropriate callback. */
 	void HandleAdditionalInfoAuthResult(const FString& AuthenticationCode, const FString& AuthenticationToken,
 		const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 	void HandleAdditionalInfoAuthError(const FString& ErrorCode, const FString& ErrorDescription, const FOnAuthError& ErrorCallback);
