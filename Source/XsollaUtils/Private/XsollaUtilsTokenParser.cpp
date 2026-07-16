@@ -57,7 +57,7 @@ bool UXsollaUtilsTokenParser::GetStringTokenParam(const FString& Token, const FS
 
 	if (!PayloadJsonObject->TryGetStringField(ParamName, ParamValue))
 	{
-		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
+		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
 
@@ -76,7 +76,7 @@ bool UXsollaUtilsTokenParser::GetBoolTokenParam(const FString& Token, const FStr
 
 	if (!PayloadJsonObject->TryGetBoolField(ParamName, ParamValue))
 	{
-		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
+		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
 
@@ -95,7 +95,7 @@ bool UXsollaUtilsTokenParser::GetInt64TokenParam(const FString& Token, const FSt
 
 	if (!PayloadJsonObject->TryGetNumberField(ParamName, ParamValue))
 	{
-		UE_LOG(LogXsollaUtils, Error, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
+		UE_LOG(LogXsollaUtils, Log, TEXT("%s: Can't find %s in token payload"), *VA_FUNC_LINE, *ParamName);
 		return false;
 	}
 
