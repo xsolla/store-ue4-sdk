@@ -5,9 +5,11 @@ package com.xsolla.login;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.xsolla.android.login.XLogin;
-import com.xsolla.android.login.LoginConfig;
-import com.xsolla.android.login.social.SocialNetwork;
+import com.xsolla.android.bridge.login.LoginConfig;
+import com.xsolla.android.bridge.login.XLogin;
+import com.xsolla.android.bridge.login.social.SocialAuthBridgeActivity;
+import com.xsolla.android.bridge.login.social.SocialNetwork;
+import com.xsolla.android.bridge.login.social.XsollaWidgetBridgeActivity;
 
 public class XsollaNativeAuth {
 
@@ -23,19 +25,11 @@ public class XsollaNativeAuth {
 
     public static void xAuthSocial(Activity activity, String provider, boolean rememberMe, long callback) {
         SocialNetwork socialNetwork = SocialNetwork.valueOf(provider.toUpperCase());
-        Intent intent = new Intent(activity, XsollaNativeAuthActivity.class);
-        intent.putExtra(XsollaNativeAuthActivity.ARG_SOCIAL_NETWORK, socialNetwork.name());
-        intent.putExtra(XsollaNativeAuthActivity.REMEMBER_ME, rememberMe);
-        intent.putExtra(XsollaNativeAuthActivity.CALLBACK_ADDRESS, callback);
-        activity.startActivity(intent);
+        SocialAuthBridgeActivity.perform(activity, socialNetwork, new XsollaNativeAuthCallback(callback, rememberMe));
     }
-	
-	public static void authViaXsollaWidget(Activity activity, String locale, boolean rememberMe, long callback) {
-        Intent intent = new Intent(activity, XsollaNativeXsollaWidgetAuthActivity.class);
-        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.LOCALE, locale);
-        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.REMEMBER_ME, rememberMe);
-        intent.putExtra(XsollaNativeXsollaWidgetAuthActivity.CALLBACK_ADDRESS, callback);
-        activity.startActivity(intent);
+
+    public static void authViaXsollaWidget(Activity activity, String locale, boolean rememberMe, long callback) {
+        XsollaWidgetBridgeActivity.perform(activity, new XsollaNativeAuthCallback(callback, rememberMe), locale);
     }
 
     public static void authAdditionalInfo(Activity activity, String loginUrl, String redirectUrl, long callback) {
