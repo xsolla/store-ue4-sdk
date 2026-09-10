@@ -48,6 +48,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPlansListUpdate, FSubscriptionP
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionsListUpdate, FSubscriptionsList, SubscriptionsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionDetailsSuccess, const FSubscriptionDetails&, SubscriptionDetails);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionPayStationLinkSuccess, const FString&, LinkToPaystation);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionUserAccountUrlSuccess, const FString&, UserAccountUrl);
 DECLARE_DYNAMIC_DELEGATE(FOnCancelSubscriptionSuccess);
 
 UCLASS()
@@ -807,6 +808,19 @@ public:
 	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
+	/** Returns URL of the user account interface for subscription management.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
+	 * Can be enforced by using [two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/).
+	 * @param SuccessCallback Called after the URL has been successfully recieved.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void GetSubscriptionUserAccountUrl(const FString& AuthToken, const FString& Locale,
+		const FOnGetSubscriptionUserAccountUrlSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
 	/** Changes a regular subscription status to `non_renewing` (subscription is automatically canceled after expiration).
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	 *
@@ -919,6 +933,9 @@ protected:
 
 	void GetSubscriptionPaystationLink_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetSubscriptionPayStationLinkSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void GetSubscriptionUserAccountUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetSubscriptionUserAccountUrlSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
