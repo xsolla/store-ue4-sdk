@@ -952,6 +952,15 @@ struct XSOLLASTORE_API FSubscriptionPaystationLink
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionUserAccountLink
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription User Account Link")
+	FString redirect_url;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPeriod
 {
 	GENERATED_BODY()

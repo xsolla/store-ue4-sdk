@@ -1268,6 +1268,26 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
+void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl(const FString& AuthToken, const FString& Locale,
+	const FOnGetSubscriptionUserAccountUrlSuccess& SuccessCallback, const FOnError& ErrorCallback)
+{
+	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/user_account"))
+								.SetPathParam(TEXT("ProjectID"), ProjectID)
+								.AddStringQueryParam(TEXT("locale"), Locale)
+								.Build();
+
+	const TSharedRef<FOnTokenUpdate, ESPMode::ThreadSafe> SuccessTokenUpdate = MakeShared<FOnTokenUpdate, ESPMode::ThreadSafe>();
+	SuccessTokenUpdate->BindLambda([this, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, *SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate->ExecuteIfBound(AuthToken, true);
+}
+
 void UXsollaStoreSubsystem::CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
 	const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
@@ -1995,6 +2015,22 @@ void UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete(FH
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPaystationLink::StaticStruct(), &SubscriptionPaystationLink, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(SubscriptionPaystationLink.link_to_ps);
+	}
+	else
+	{
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	}
+}
+
+void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGetSubscriptionUserAccountUrlSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	XsollaHttpRequestError OutError;
+	FSubscriptionUserAccountLink SubscriptionUserAccountLink;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionUserAccountLink::StaticStruct(), &SubscriptionUserAccountLink, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(SubscriptionUserAccountLink.redirect_url);
 	}
 	else
 	{
