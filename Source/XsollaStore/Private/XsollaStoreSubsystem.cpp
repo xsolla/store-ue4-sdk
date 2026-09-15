@@ -1241,7 +1241,7 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
+void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId, const FXsollaParameters& CustomParameters, const FString& SteamUserId,
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/renew"))
@@ -1254,7 +1254,20 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 	// PaymentSettings settings
 	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
 	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
+	if (!SteamUserId.IsEmpty())
+	{
+		PaymentSettingsJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
+	}
 	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+
+	//Custom parameters
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);//Empty check is inside that function
+
+	//Steam user id (top level field)
+	if (!SteamUserId.IsEmpty())
+	{
+		RequestDataJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
+	}
 
 	FOnTokenUpdate SuccessTokenUpdate;
 	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)

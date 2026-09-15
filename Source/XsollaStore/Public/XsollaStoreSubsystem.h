@@ -801,11 +801,13 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param SubscriptionId Subscription ID.
+	 * @param CustomParameters (optional) Map of custom parameters.
+	 * @param SteamUserId (optional) Steam user ID.
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "CustomParameters, SteamUserId, SuccessCallback, ErrorCallback"))
+	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId, const FXsollaParameters& CustomParameters, const FString& SteamUserId,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns URL of the user account interface for subscription management.
