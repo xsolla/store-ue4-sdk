@@ -1185,7 +1185,7 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, con
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
+void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& Country,
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
@@ -1196,6 +1196,20 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 
 	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
+	if (ProductId > 0)
+	{
+		RequestDataJson->SetNumberField(TEXT("product_id"), ProductId);
+	}
+	if (AvailablePlans.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> AvailablePlansJsonArray;
+		for (const auto& AvailablePlan : AvailablePlans)
+		{
+			AvailablePlansJsonArray.Push(MakeShareable(new FJsonValueString(AvailablePlan)));
+		}
+		RequestDataJson->SetArrayField(TEXT("available_plans"), AvailablePlansJsonArray);
+	}
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);
 
 	// PaymentSettings settings
 	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);

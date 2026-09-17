@@ -776,12 +776,15 @@ public:
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param PlanExternalId Subscription plan external ID (32 characters). Plan external ID can be found in Publisher Account in the **Subscriptions > Subscription plans** section next to the plan name.
+	 * @param ProductId (optional) ID of the product associated with the subscription plan.
+	 * @param AvailablePlans (optional) Subscription plan external IDs to show in payment UI.
+	 * @param CustomParameters (optional) Map of custom parameters.
 	 * @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "AvailablePlans, CustomParameters, SuccessCallback, ErrorCallback"))
+	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& Country,
 		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Returns the URL of the management interface for the selected subscription.
