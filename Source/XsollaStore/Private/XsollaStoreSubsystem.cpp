@@ -1185,8 +1185,9 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, con
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
