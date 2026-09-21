@@ -1230,7 +1230,8 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& SteamUserId)
 {
 	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/manage"))
 								.SetPathParam(TEXT("ProjectID"), ProjectID)
@@ -1238,6 +1239,24 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 								.Build();
 
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	if (ProductId > 0)
+	{
+		RequestDataJson->SetNumberField(TEXT("product_id"), ProductId);
+	}
+	if (AvailablePlans.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> AvailablePlansJsonArray;
+		for (const auto& AvailablePlan : AvailablePlans)
+		{
+			AvailablePlansJsonArray.Push(MakeShareable(new FJsonValueString(AvailablePlan)));
+		}
+		RequestDataJson->SetArrayField(TEXT("available_plans"), AvailablePlansJsonArray);
+	}
+	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);
+	if (!SteamUserId.IsEmpty())
+	{
+		RequestDataJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
+	}
 
 	// PaymentSettings settings
 	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);

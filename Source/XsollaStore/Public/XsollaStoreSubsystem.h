@@ -802,10 +802,22 @@ public:
 	 * @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param ProductId (optional) ID of the product associated with the subscription plan.
+	 * @param AvailablePlans (optional) Subscription plan external IDs to show in payment UI.
+	 * @param CustomParameters (optional) Map of custom parameters.
+	 * @param SteamUserId (optional) Steam user ID.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "AvailablePlans, CustomParameters, SteamUserId, SuccessCallback, ErrorCallback"))
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+		const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& SteamUserId);
+
+	/** Backward-compatible C++ overload without optional payload fields. */
+	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	{
+		GetSubscriptionManagementUrl(AuthToken, Country, SuccessCallback, ErrorCallback, 0, TArray<FString>(), FXsollaParameters(), FString());
+	}
 
 	/** Returns the URL of the renewal interface for the selected subscription
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
