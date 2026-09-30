@@ -47,6 +47,132 @@
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
 
+namespace
+{
+	bool HasNonNullField(const TSharedPtr<FJsonObject>& JsonObject, const FString& FieldName)
+	{
+		if (!JsonObject.IsValid() || !JsonObject->HasField(FieldName))
+		{
+			return false;
+		}
+
+		const TSharedPtr<FJsonValue>* FieldValue = JsonObject->Values.Find(FieldName);
+		return FieldValue && FieldValue->IsValid() && (*FieldValue)->Type != EJson::Null;
+	}
+
+	void UpdateNullablePeriodFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPeriod& Period)
+	{
+		Period.has_value = HasNonNullField(JsonObject, TEXT("value"));
+	}
+
+	void UpdateNullableChargeFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionCharge& Charge)
+	{
+		Charge.has_amount_with_promotion = HasNonNullField(JsonObject, TEXT("amount_with_promotion"));
+	}
+
+	void UpdateNullablePlanPromotionFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlanPromotion& Promotion)
+	{
+		Promotion.has_promotion_charge_amount = HasNonNullField(JsonObject, TEXT("promotion_charge_amount"));
+		Promotion.has_promotion_remaining_charges = HasNonNullField(JsonObject, TEXT("promotion_remaining_charges"));
+	}
+
+	void UpdateNullableSubscriptionPlanFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlan& SubscriptionPlan)
+	{
+		SubscriptionPlan.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
+		SubscriptionPlan.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
+		SubscriptionPlan.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
+		{
+			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), SubscriptionPlan.period);
+		}
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("promotion")))
+		{
+			UpdateNullablePlanPromotionFields(JsonObject->GetObjectField(TEXT("promotion")), SubscriptionPlan.promotion);
+		}
+	}
+
+	void UpdateNullableSubscriptionFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscription& Subscription)
+	{
+		Subscription.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
+		Subscription.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
+		Subscription.has_product_id = HasNonNullField(JsonObject, TEXT("product_id"));
+		Subscription.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
+		Subscription.has_date_next_charge = HasNonNullField(JsonObject, TEXT("date_next_charge"));
+		Subscription.has_date_last_charge = HasNonNullField(JsonObject, TEXT("date_last_charge"));
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("charge")))
+		{
+			UpdateNullableChargeFields(JsonObject->GetObjectField(TEXT("charge")), Subscription.charge);
+		}
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
+		{
+			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), Subscription.period);
+		}
+	}
+
+	void UpdateNullableSubscriptionDetailsFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionDetails& SubscriptionDetails)
+	{
+		SubscriptionDetails.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
+		SubscriptionDetails.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
+		SubscriptionDetails.has_product_id = HasNonNullField(JsonObject, TEXT("product_id"));
+		SubscriptionDetails.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
+		SubscriptionDetails.has_date_next_charge = HasNonNullField(JsonObject, TEXT("date_next_charge"));
+		SubscriptionDetails.has_date_last_charge = HasNonNullField(JsonObject, TEXT("date_last_charge"));
+		SubscriptionDetails.has_date_end = HasNonNullField(JsonObject, TEXT("date_end"));
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("charge")))
+		{
+			UpdateNullableChargeFields(JsonObject->GetObjectField(TEXT("charge")), SubscriptionDetails.charge);
+		}
+
+		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
+		{
+			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), SubscriptionDetails.period);
+		}
+	}
+
+	void UpdateNullableSubscriptionPlansListFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlansList& SubscriptionPlansList)
+	{
+		if (!JsonObject.IsValid() || !JsonObject->HasTypedField<EJson::Array>(TEXT("items")))
+		{
+			return;
+		}
+
+		const TArray<TSharedPtr<FJsonValue>> Items = JsonObject->GetArrayField(TEXT("items"));
+		const int32 PlansCount = FMath::Min(Items.Num(), SubscriptionPlansList.items.Num());
+
+		for (int32 i = 0; i < PlansCount; ++i)
+		{
+			if (Items[i].IsValid() && Items[i]->Type == EJson::Object)
+			{
+				UpdateNullableSubscriptionPlanFields(Items[i]->AsObject(), SubscriptionPlansList.items[i]);
+			}
+		}
+	}
+
+	void UpdateNullableSubscriptionsListFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionsList& SubscriptionsList)
+	{
+		if (!JsonObject.IsValid() || !JsonObject->HasTypedField<EJson::Array>(TEXT("items")))
+		{
+			return;
+		}
+
+		const TArray<TSharedPtr<FJsonValue>> Items = JsonObject->GetArrayField(TEXT("items"));
+		const int32 SubscriptionsCount = FMath::Min(Items.Num(), SubscriptionsList.items.Num());
+
+		for (int32 i = 0; i < SubscriptionsCount; ++i)
+		{
+			if (Items[i].IsValid() && Items[i]->Type == EJson::Object)
+			{
+				UpdateNullableSubscriptionFields(Items[i]->AsObject(), SubscriptionsList.items[i]);
+			}
+		}
+	}
+}
+
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
 {
@@ -1997,6 +2123,12 @@ void UXsollaStoreSubsystem::GetSubscriptionPublicPlans_HttpRequestComplete(FHttp
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPlansList::StaticStruct(), &SubscriptionPlansList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			UpdateNullableSubscriptionPlansListFields(JsonObject, SubscriptionPlansList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
 	}
 	else
@@ -2013,6 +2145,12 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans_HttpRequestComplete(FHttpReques
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPlansList::StaticStruct(), &SubscriptionPlansList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			UpdateNullableSubscriptionPlansListFields(JsonObject, SubscriptionPlansList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
 	}
 	else
@@ -2029,6 +2167,12 @@ void UXsollaStoreSubsystem::GetSubscriptions_HttpRequestComplete(FHttpRequestPtr
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionsList::StaticStruct(), &SubscriptionsList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			UpdateNullableSubscriptionsListFields(JsonObject, SubscriptionsList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionsList);
 	}
 	else
@@ -2045,6 +2189,12 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails_HttpRequestComplete(FHttpRequ
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionDetails::StaticStruct(), &SubscriptionDetails, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			UpdateNullableSubscriptionDetailsFields(JsonObject, SubscriptionDetails);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionDetails);
 	}
 	else
