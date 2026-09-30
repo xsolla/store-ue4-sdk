@@ -984,6 +984,9 @@ struct XSOLLASTORE_API FSubscriptionCharge
 	float amount_with_promotion = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
+	float setup_fee = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	FString currency;
 };
 
