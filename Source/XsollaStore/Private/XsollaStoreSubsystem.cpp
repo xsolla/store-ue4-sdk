@@ -6,6 +6,7 @@
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreSave.h"
+#include "XsollaSubscriptionsContractHelper.h"
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
@@ -46,132 +47,6 @@
 #endif
 
 #define LOCTEXT_NAMESPACE "FXsollaStoreModule"
-
-namespace
-{
-	bool HasNonNullField(const TSharedPtr<FJsonObject>& JsonObject, const FString& FieldName)
-	{
-		if (!JsonObject.IsValid() || !JsonObject->HasField(FieldName))
-		{
-			return false;
-		}
-
-		const TSharedPtr<FJsonValue>* FieldValue = JsonObject->Values.Find(FieldName);
-		return FieldValue && FieldValue->IsValid() && (*FieldValue)->Type != EJson::Null;
-	}
-
-	void UpdateNullablePeriodFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPeriod& Period)
-	{
-		Period.has_value = HasNonNullField(JsonObject, TEXT("value"));
-	}
-
-	void UpdateNullableChargeFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionCharge& Charge)
-	{
-		Charge.has_amount_with_promotion = HasNonNullField(JsonObject, TEXT("amount_with_promotion"));
-	}
-
-	void UpdateNullablePlanPromotionFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlanPromotion& Promotion)
-	{
-		Promotion.has_promotion_charge_amount = HasNonNullField(JsonObject, TEXT("promotion_charge_amount"));
-		Promotion.has_promotion_remaining_charges = HasNonNullField(JsonObject, TEXT("promotion_remaining_charges"));
-	}
-
-	void UpdateNullableSubscriptionPlanFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlan& SubscriptionPlan)
-	{
-		SubscriptionPlan.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
-		SubscriptionPlan.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
-		SubscriptionPlan.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
-		{
-			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), SubscriptionPlan.period);
-		}
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("promotion")))
-		{
-			UpdateNullablePlanPromotionFields(JsonObject->GetObjectField(TEXT("promotion")), SubscriptionPlan.promotion);
-		}
-	}
-
-	void UpdateNullableSubscriptionFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscription& Subscription)
-	{
-		Subscription.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
-		Subscription.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
-		Subscription.has_product_id = HasNonNullField(JsonObject, TEXT("product_id"));
-		Subscription.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
-		Subscription.has_date_next_charge = HasNonNullField(JsonObject, TEXT("date_next_charge"));
-		Subscription.has_date_last_charge = HasNonNullField(JsonObject, TEXT("date_last_charge"));
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("charge")))
-		{
-			UpdateNullableChargeFields(JsonObject->GetObjectField(TEXT("charge")), Subscription.charge);
-		}
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
-		{
-			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), Subscription.period);
-		}
-	}
-
-	void UpdateNullableSubscriptionDetailsFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionDetails& SubscriptionDetails)
-	{
-		SubscriptionDetails.has_plan_start_date = HasNonNullField(JsonObject, TEXT("plan_start_date"));
-		SubscriptionDetails.has_plan_end_date = HasNonNullField(JsonObject, TEXT("plan_end_date"));
-		SubscriptionDetails.has_product_id = HasNonNullField(JsonObject, TEXT("product_id"));
-		SubscriptionDetails.has_trial_period = HasNonNullField(JsonObject, TEXT("trial_period"));
-		SubscriptionDetails.has_date_next_charge = HasNonNullField(JsonObject, TEXT("date_next_charge"));
-		SubscriptionDetails.has_date_last_charge = HasNonNullField(JsonObject, TEXT("date_last_charge"));
-		SubscriptionDetails.has_date_end = HasNonNullField(JsonObject, TEXT("date_end"));
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("charge")))
-		{
-			UpdateNullableChargeFields(JsonObject->GetObjectField(TEXT("charge")), SubscriptionDetails.charge);
-		}
-
-		if (JsonObject.IsValid() && JsonObject->HasTypedField<EJson::Object>(TEXT("period")))
-		{
-			UpdateNullablePeriodFields(JsonObject->GetObjectField(TEXT("period")), SubscriptionDetails.period);
-		}
-	}
-
-	void UpdateNullableSubscriptionPlansListFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionPlansList& SubscriptionPlansList)
-	{
-		if (!JsonObject.IsValid() || !JsonObject->HasTypedField<EJson::Array>(TEXT("items")))
-		{
-			return;
-		}
-
-		const TArray<TSharedPtr<FJsonValue>> Items = JsonObject->GetArrayField(TEXT("items"));
-		const int32 PlansCount = FMath::Min(Items.Num(), SubscriptionPlansList.items.Num());
-
-		for (int32 i = 0; i < PlansCount; ++i)
-		{
-			if (Items[i].IsValid() && Items[i]->Type == EJson::Object)
-			{
-				UpdateNullableSubscriptionPlanFields(Items[i]->AsObject(), SubscriptionPlansList.items[i]);
-			}
-		}
-	}
-
-	void UpdateNullableSubscriptionsListFields(const TSharedPtr<FJsonObject>& JsonObject, FSubscriptionsList& SubscriptionsList)
-	{
-		if (!JsonObject.IsValid() || !JsonObject->HasTypedField<EJson::Array>(TEXT("items")))
-		{
-			return;
-		}
-
-		const TArray<TSharedPtr<FJsonValue>> Items = JsonObject->GetArrayField(TEXT("items"));
-		const int32 SubscriptionsCount = FMath::Min(Items.Num(), SubscriptionsList.items.Num());
-
-		for (int32 i = 0; i < SubscriptionsCount; ++i)
-		{
-			if (Items[i].IsValid() && Items[i]->Type == EJson::Object)
-			{
-				UpdateNullableSubscriptionFields(Items[i]->AsObject(), SubscriptionsList.items[i]);
-			}
-		}
-	}
-}
 
 UXsollaStoreSubsystem::UXsollaStoreSubsystem()
 	: UGameInstanceSubsystem()
@@ -1271,18 +1146,13 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans(const FString& AuthToken, const
 void UXsollaStoreSubsystem::GetSubscriptions(const FString& AuthToken, const FString& Locale,
 	const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("locale"), Locale)
-								.AddNumberQueryParam(TEXT("limit"), Limit)
-								.AddNumberQueryParam(TEXT("offset"), Offset)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildGetSubscriptionsRequest(ProjectID, Locale, Limit, Offset);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptions_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1293,17 +1163,13 @@ void UXsollaStoreSubsystem::GetSubscriptions(const FString& AuthToken, const FSt
 void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
 	const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.AddStringQueryParam(TEXT("locale"), Locale)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildGetSubscriptionDetailsRequest(ProjectID, SubscriptionId, Locale);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionDetails_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1315,39 +1181,22 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
 	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("country"), Country)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-
-	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
-	if (ProductId > 0)
-	{
-		RequestDataJson->SetNumberField(TEXT("product_id"), ProductId);
-	}
-	if (AvailablePlans.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> AvailablePlansJsonArray;
-		for (const auto& AvailablePlan : AvailablePlans)
-		{
-			AvailablePlansJsonArray.Push(MakeShareable(new FJsonValueString(AvailablePlan)));
-		}
-		RequestDataJson->SetArrayField(TEXT("available_plans"), AvailablePlansJsonArray);
-	}
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionPurchaseRequest(
+		ProjectID,
+		PlanExternalId,
+		Country,
+		ProductId,
+		AvailablePlans,
+		CustomParameters,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1359,41 +1208,22 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
 	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& SteamUserId)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/manage"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("country"), Country)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-	if (ProductId > 0)
-	{
-		RequestDataJson->SetNumberField(TEXT("product_id"), ProductId);
-	}
-	if (AvailablePlans.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> AvailablePlansJsonArray;
-		for (const auto& AvailablePlan : AvailablePlans)
-		{
-			AvailablePlansJsonArray.Push(MakeShareable(new FJsonValueString(AvailablePlan)));
-		}
-		RequestDataJson->SetArrayField(TEXT("available_plans"), AvailablePlansJsonArray);
-	}
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);
-	if (!SteamUserId.IsEmpty())
-	{
-		RequestDataJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
-	}
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionManagementRequest(
+		ProjectID,
+		Country,
+		ProductId,
+		AvailablePlans,
+		CustomParameters,
+		SteamUserId,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1404,36 +1234,20 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId, const FXsollaParameters& CustomParameters, const FString& SteamUserId,
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/renew"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	if (!SteamUserId.IsEmpty())
-	{
-		PaymentSettingsJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
-	}
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
-
-	//Custom parameters
-	UXsollaUtilsLibrary::AddParametersToJsonObjectByFieldName(RequestDataJson, TEXT("custom_parameters"), CustomParameters);//Empty check is inside that function
-
-	//Steam user id (top level field)
-	if (!SteamUserId.IsEmpty())
-	{
-		RequestDataJson->SetStringField(TEXT("steam_user_id"), SteamUserId);
-	}
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionRenewalRequest(
+		ProjectID,
+		SubscriptionId,
+		CustomParameters,
+		SteamUserId,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1444,16 +1258,13 @@ void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, 
 void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl(const FString& AuthToken, const FString& Locale,
 	const FOnGetSubscriptionUserAccountUrlSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/user_account"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("locale"), Locale)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionUserAccountRequest(ProjectID, Locale);
 
 	const TSharedRef<FOnTokenUpdate, ESPMode::ThreadSafe> SuccessTokenUpdate = MakeShared<FOnTokenUpdate, ESPMode::ThreadSafe>();
-	SuccessTokenUpdate->BindLambda([this, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate->BindLambda([this, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, *SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1464,16 +1275,13 @@ void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl(const FString& AuthTok
 void UXsollaStoreSubsystem::CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
 	const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/cancel"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildCancelSubscriptionRequest(ProjectID, SubscriptionId);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CancelSubscription_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -2126,7 +1934,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPublicPlans_HttpRequestComplete(FHttp
 		TSharedPtr<FJsonObject> JsonObject;
 		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 		{
-			UpdateNullableSubscriptionPlansListFields(JsonObject, SubscriptionPlansList);
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionPlansList(JsonObject, SubscriptionPlansList);
 		}
 
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
@@ -2148,7 +1956,7 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans_HttpRequestComplete(FHttpReques
 		TSharedPtr<FJsonObject> JsonObject;
 		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 		{
-			UpdateNullableSubscriptionPlansListFields(JsonObject, SubscriptionPlansList);
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionPlansList(JsonObject, SubscriptionPlansList);
 		}
 
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
@@ -2170,7 +1978,7 @@ void UXsollaStoreSubsystem::GetSubscriptions_HttpRequestComplete(FHttpRequestPtr
 		TSharedPtr<FJsonObject> JsonObject;
 		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 		{
-			UpdateNullableSubscriptionsListFields(JsonObject, SubscriptionsList);
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionsList(JsonObject, SubscriptionsList);
 		}
 
 		SuccessCallback.ExecuteIfBound(SubscriptionsList);
@@ -2192,7 +2000,7 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails_HttpRequestComplete(FHttpRequ
 		TSharedPtr<FJsonObject> JsonObject;
 		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
 		{
-			UpdateNullableSubscriptionDetailsFields(JsonObject, SubscriptionDetails);
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionDetails(JsonObject, SubscriptionDetails);
 		}
 
 		SuccessCallback.ExecuteIfBound(SubscriptionDetails);
