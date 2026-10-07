@@ -1,22 +1,21 @@
 # Changelog
 ## [4.3.0] - 2026-10-07
 ### Added
-- New method for `XsollaStoreSubsystem` class
-    - `GetSubscriptionUserAccountUrl` - Returns URL of the user account interface for subscription management
+- `GetSubscriptionUserAccountUrl` SDK method in `XsollaStoreSubsystem` class. Returns the URL of the user account interface for subscription management
 - New optional parameters for `XsollaStoreSubsystem` subscription methods:
-  - `GetSubscriptionRenewalUrl`: added `custom_parameters`, `steam_user_id`
-  - `GetSubscriptionPurchaseUrl`: added `product_id`, `available_plans`, `custom_parameters`
-  - `GetSubscriptionManagementUrl`: added `custom_parameters`, `product_id`, `available_plans`, `steam_user_id`
-- New response parameters for `XsollaStoreSubsystem` subscription methods:
-  - `GetSubscriptions` and `GetSubscriptionDetails` : added `setup_fee` field in the subscription charge model
-- New `bHas...` boolean flags in subscription methods response body to differentiate empty response and response with default values
+  - `GetSubscriptionPurchaseUrl`: `ProductId`, `AvailablePlans`, `CustomParameters`
+  - `GetSubscriptionManagementUrl`: `ProductId`, `AvailablePlans`, `CustomParameters`, `SteamUserId`
+  - `GetSubscriptionRenewalUrl`: `CustomParameters`, `SteamUserId`
+- `setup_fee` field in `FSubscriptionCharge` returning the subscription's one-time setup fee in `GetSubscriptions` and `GetSubscriptionDetails` responses
+- New `bHas...` flags in subscription response models to distinguish a field missing from the response from a field with a default value
 
 ### Changed
 - Android native dependencies (`com.xsolla.android:payments`, `login`, `login-facebook`, `login-google`, `login-wechat`, `login-qq`) replaced with a single `com.xsolla.android:bridge` library
 - Android manifest preprocessing and generated proxy activities (`PaymentsProxyActivity`, `SocialAuthProxyActivity`, `XsollaWidgetAuthProxyActivity`, `AdditionalInfoAuthProxyActivity`, `WXEntryActivity`) removed. Required activities are now provided by the bridge library
+- `GetSubscriptionRenewalUrl` signature changed: `CustomParameters` and `SteamUserId` are now passed before the callbacks, so existing C++ calls need to be updated. `GetSubscriptionPurchaseUrl` and `GetSubscriptionManagementUrl` keep backward-compatible overloads
 
 ### Fixed
-- Correct handling of nullable fields in subscription models
+- Handling of nullable fields in subscription models
 
 ## [4.2.3] - 2026-07-09
 ### Added
