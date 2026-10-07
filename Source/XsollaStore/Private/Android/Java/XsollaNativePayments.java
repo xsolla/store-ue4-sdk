@@ -11,7 +11,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import androidx.annotation.Keep;
-import com.xsolla.android.payments.util.AnalyticsUtils;
+import com.xsolla.android.bridge.payments.ui.PayStationBridgeActivity;
+import com.xsolla.android.bridge.payments.util.AnalyticsUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,19 +24,13 @@ public class XsollaNativePayments {
     private static List<String> allowedCustomTabsBrowsers = Arrays.asList("com.android.chrome", "com.huawei.browser", "com.sec.android.app.sbrowser");
     @Keep
     public static void openPurchaseUI(Activity activity, String token, boolean sandbox, String redirectScheme, String redirectHost , int payStationVersionNumber, long callback) {
-        Intent intent = new Intent(activity, XsollaNativePaymentsActivity.class);
-        intent.putExtra(XsollaNativePaymentsActivity.ARG_TOKEN, token);
-        intent.putExtra(XsollaNativePaymentsActivity.ARG_SANDBOX, sandbox);
-        intent.putExtra(XsollaNativePaymentsActivity.ARG_REDIRECT_HOST, redirectHost);
-        intent.putExtra(XsollaNativePaymentsActivity.ARG_REDIRECT_SCHEME, redirectScheme);
-        intent.putExtra(XsollaNativePaymentsActivity.ARG_PAY_STATION_VERSION_NUMBER, payStationVersionNumber);
-        intent.putExtra(XsollaNativePaymentsActivity.CALLBACK_ADDRESS, callback);
-        activity.startActivity(intent);
+        PayStationBridgeActivity.perform(activity, token, sandbox, redirectScheme, redirectHost,
+                payStationVersionNumber, new XsollaNativePaymentsCallback(callback), null);
     }
 
     public static void configureAnalytics(String gameEngine, String gameEngineVersion) {
-        AnalyticsUtils.setGameEngine(gameEngine);
-        AnalyticsUtils.setGameEngineVersion(gameEngineVersion);
+        AnalyticsUtils.gameEngine = gameEngine;
+        AnalyticsUtils.gameEngineVersion = gameEngineVersion;
     }
 
     public static boolean isCustomTabsBrowserAvailable(Activity activity) {

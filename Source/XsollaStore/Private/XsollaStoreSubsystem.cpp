@@ -2624,7 +2624,7 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FStoreCart& Cart, const FString& 
 
 #if PLATFORM_ANDROID
 
-JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsCallback_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
 {
 	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
 

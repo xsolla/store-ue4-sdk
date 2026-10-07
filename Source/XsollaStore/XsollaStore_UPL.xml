@@ -1,68 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
     Copyright 2024 Xsolla Inc. All Rights Reserved.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
     <log text="XsollaStore UPL initialization"/>
-    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName"/>
-    <setStringReplace result="PackageNamePath" source="$S(PackageName)" find="." with="/"/>
   </init>
 
   <buildGradleAdditions>
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:payments:1.4.19'
+        implementation 'com.xsolla.android:bridge:0.1.1'
       }
       repositories {
-        maven { url 'https://maven.google.com' }
         mavenCentral()
       }
     </insert>
   </buildGradleAdditions>
-  
+
   <!-- Add native implementation wrapper -->
   <prebuildCopies>
     <copyDir src="$S(PluginDir)/Private/Android/Java" dst="$S(BuildDir)/src/com/xsolla/store" />
   </prebuildCopies>
-
-  <!-- Add custom data to AndroidManifest.xml -->
-  <androidManifestUpdates>
-
-    <!-- Setup XsollaNativePaymentsActivity -->
-    <setElement result="XsollaNativePaymentsActivity" value="activity"/>
-    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:name" value="com.xsolla.store.XsollaNativePaymentsActivity"/>
-    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:configChanges" value="orientation|screenSize"/>
-    <addAttribute tag="$XsollaNativePaymentsActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
-    <addElement tag="application" name="XsollaNativePaymentsActivity"/>
-
-    <!-- Add depp linking settings to GameActivity activity -->
-    <setString result="DeepLinkingScheme" value="app"/>
-    <setString result="DeepLinkingHost" value="xpayment.$S(PackageName)"/>
-    <loopElements tag="activity">
-      <setStringFromAttribute result="activityName" tag="$" name="android:name"/>
-      <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity"/>
-      <if condition="bGameActivity">
-        <true>
-          <setElement result="deepLinkingSchemeData" value="data"/>
-          <addAttribute tag="$deepLinkingSchemeData" name="android:scheme" value="$S(DeepLinkingScheme)"/>
-          <setElement result="deepLinkingHostData" value="data"/>
-          <addAttribute tag="$deepLinkingHostData" name="android:host" value="$S(DeepLinkingHost)"/>
-
-          <setElement result="deepLinkingIntentFilter" value="intent-filter" />
-          <addElement tag="$deepLinkingIntentFilter" name="deepLinkingSchemeData" />
-          <addElement tag="$deepLinkingIntentFilter" name="deepLinkingHostData" />
-
-          <addElements tag="$deepLinkingIntentFilter">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-          </addElements>
-
-          <addElement tag="activity" name="deepLinkingIntentFilter" />
-        </true>
-      </if>
-    </loopElements>
-  </androidManifestUpdates>
 </root>
