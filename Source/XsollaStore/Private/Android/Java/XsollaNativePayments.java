@@ -2,8 +2,6 @@
 
 package com.xsolla.store;
 
-import static androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +19,8 @@ import java.util.List;
 @Keep
 public class XsollaNativePayments {
 
+    // Keep this local to avoid compile-time dependency on androidx.browser in UE Gradle variants.
+    private static final String ACTION_CUSTOM_TABS_CONNECTION = "android.support.customtabs.action.CustomTabsService";
     private static List<String> allowedCustomTabsBrowsers = Arrays.asList("com.android.chrome", "com.huawei.browser", "com.sec.android.app.sbrowser");
     @Keep
     public static void openPurchaseUI(Activity activity, String token, boolean sandbox, String redirectScheme, String redirectHost , int payStationVersionNumber, long callback) {
