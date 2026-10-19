@@ -81,3 +81,9 @@ DerivedDataCache/*
 #iOS generated files
 .DS_Store
 */**/.DS_Store
+
+# Doxygen/doxybook2 output
+Documentation/Autogen/html/
+Documentation/Autogen/xml/
+Documentation/Autogen/markdown/
+Documentation/Autogen/warnings.txt

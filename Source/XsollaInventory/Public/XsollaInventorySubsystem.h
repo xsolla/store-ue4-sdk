@@ -116,7 +116,8 @@ public:
 	void GetCouponRewards(const FString& AuthToken, const FString& CouponCode,
 		const FOnCouponRewardsUpdate& SuccessCallback, const FOnError& ErrorCallback);
 
-	/** Redeems the coupon code and delivers a reward to the user in one of the following ways:
+	/** Redeems the coupon code and delivers a reward to the user.
+	 * The reward is delivered in one of the following ways:
 	 * - to their inventory (virtual items, virtual currency packages, or bundles)
 	 * - via email (game keys)
 	 * - to the entitlement system (game keys)<br>

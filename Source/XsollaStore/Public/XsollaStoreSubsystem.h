@@ -819,7 +819,7 @@ public:
 		GetSubscriptionManagementUrl(AuthToken, Country, SuccessCallback, ErrorCallback, 0, TArray<FString>(), FXsollaParameters(), FString());
 	}
 
-	/** Returns the URL of the renewal interface for the selected subscription
+	/** Returns the URL of the renewal interface for the selected subscription.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
