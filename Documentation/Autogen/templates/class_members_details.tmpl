@@ -1,109 +1,109 @@
-{% if exists("publicTypes") %}## Public Types Documentation {#public-types-documentation}
+{% if exists("publicTypes") %}## Public Types Documentation {{ "{#" }}public-types-documentation}
 
 {% for child in publicTypes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedTypes") %}## Protected Types Documentation {#protected-types-documentation}
+{% if exists("protectedTypes") %}## Protected Types Documentation {{ "{#" }}protected-types-documentation}
 
 {% for child in protectedTypes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicSlots") %}## Public Slots Documentation {#public-slots-documentation}
+{% if exists("publicSlots") %}## Public Slots Documentation {{ "{#" }}public-slots-documentation}
 
 {% for child in publicSlots %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedSlots") %}## Protected Slots Documentation {#protected-slots-documentation}
+{% if exists("protectedSlots") %}## Protected Slots Documentation {{ "{#" }}protected-slots-documentation}
 
 {% for child in protectedSlots %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicSignals") %}## Public Signals Documentation {#public-signals-documentation}
+{% if exists("publicSignals") %}## Public Signals Documentation {{ "{#" }}public-signals-documentation}
 
 {% for child in publicSignals %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedSignals") %}## Protected Signals Documentation {#protected-signals-documentation}
+{% if exists("protectedSignals") %}## Protected Signals Documentation {{ "{#" }}protected-signals-documentation}
 
 {% for child in protectedSignals %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicEvents") %}## Public Events Documentation {#public-events-documentation}
+{% if exists("publicEvents") %}## Public Events Documentation {{ "{#" }}public-events-documentation}
 
 {% for child in publicEvents %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedEvents") %}## Protected Events Documentation {#protected-events-documentation}
+{% if exists("protectedEvents") %}## Protected Events Documentation {{ "{#" }}protected-events-documentation}
 
 {% for child in protectedEvents %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicJavaenumconstants") %}## Enum Constants Documentation {#enum-constants-documentation}
+{% if exists("publicJavaenumconstants") %}## Enum Constants Documentation {{ "{#" }}enum-constants-documentation}
 
 {% for child in publicJavaenumconstants %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicFunctions") %}## Public Functions Documentation {#public-functions-documentation}
+{% if exists("publicFunctions") %}## Public Functions Documentation {{ "{#" }}public-functions-documentation}
 
 {% for child in publicFunctions %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedFunctions") %}## Protected Functions Documentation {#protected-functions-documentation}
+{% if exists("protectedFunctions") %}## Protected Functions Documentation {{ "{#" }}protected-functions-documentation}
 
 {% for child in protectedFunctions %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicProperties") %}## Public Property Documentation {#public-property-documentation}
+{% if exists("publicProperties") %}## Public Property Documentation {{ "{#" }}public-property-documentation}
 
 {% for child in publicProperties %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedProperties") %}## Protected Property Documentation {#protected-property-documentation}
+{% if exists("protectedProperties") %}## Protected Property Documentation {{ "{#" }}protected-property-documentation}
 
 {% for child in protectedProperties %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("publicAttributes") %}## Public Attributes Documentation {#public-attributes-documentation}
+{% if exists("publicAttributes") %}## Public Attributes Documentation {{ "{#" }}public-attributes-documentation}
 
 {% for child in publicAttributes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("protectedAttributes") %}## Protected Attributes Documentation {#protected-attributes-documentation}
+{% if exists("protectedAttributes") %}## Protected Attributes Documentation {{ "{#" }}protected-attributes-documentation}
 
 {% for child in protectedAttributes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 
 {{ render("member_details", child) }}
 {% endfor %}{% endif -%}
 
-{% if exists("friends") %}## Friends Documentation {#friends-documentation}
+{% if exists("friends") %}## Friends Documentation {{ "{#" }}friends-documentation}
 
 {% for child in friends %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
 

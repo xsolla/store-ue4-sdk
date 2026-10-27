@@ -1,4 +1,4 @@
-{%- if exists("publicClasses") %}## Public Classes {#public-classes}
+{%- if exists("publicClasses") %}## Public Classes {{ "{#" }}public-classes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -8,7 +8,7 @@
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedClasses") %}## Protected Classes {#protected-classes}
+{%- if exists("protectedClasses") %}## Protected Classes {{ "{#" }}protected-classes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -18,7 +18,7 @@
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicTypes") %}## Public Types {#public-types}
+{%- if exists("publicTypes") %}## Public Types {{ "{#" }}public-types}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -37,7 +37,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedTypes") %}## Protected Types {#protected-types}
+{%- if exists("protectedTypes") %}## Protected Types {{ "{#" }}protected-types}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -56,7 +56,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicSlots") %}## Public Slots {#public-slots}
+{%- if exists("publicSlots") %}## Public Slots {{ "{#" }}public-slots}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -81,7 +81,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedSlots") %}## Protected Slots {#protected-slots}
+{%- if exists("protectedSlots") %}## Protected Slots {{ "{#" }}protected-slots}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -106,7 +106,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicSignals") %}## Public Signals {#public-signals}
+{%- if exists("publicSignals") %}## Public Signals {{ "{#" }}public-signals}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -131,7 +131,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedSignals") %}## Protected Signals {#protected-signals}
+{%- if exists("protectedSignals") %}## Protected Signals {{ "{#" }}protected-signals}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -156,7 +156,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicEvents") %}## Public Events {#public-events}
+{%- if exists("publicEvents") %}## Public Events {{ "{#" }}public-events}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -181,7 +181,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedEvents") %}## Protected Events {#protected-events}
+{%- if exists("protectedEvents") %}## Protected Events {{ "{#" }}protected-events}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -206,7 +206,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicJavaenumconstants") %}## Enum Constants {#enum-constants}
+{%- if exists("publicJavaenumconstants") %}## Enum Constants {{ "{#" }}enum-constants}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 | Enum constants | Description    |
@@ -216,7 +216,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicFunctions") %}## Public Functions {#public-functions}
+{%- if exists("publicFunctions") %}## Public Functions {{ "{#" }}public-functions}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -241,7 +241,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedFunctions") %}## Protected Functions {#protected-functions}
+{%- if exists("protectedFunctions") %}## Protected Functions {{ "{#" }}protected-functions}
 
 {{ "{{" }}< class "parameterTable" >{{ "}}" }}
 |                | Name           |
@@ -266,7 +266,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicProperties") %}## Public Properties {#public-properties}
+{%- if exists("publicProperties") %}## Public Properties {{ "{#" }}public-properties}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -277,7 +277,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedProperties") %}## Protected Properties {#protected-properties}
+{%- if exists("protectedProperties") %}## Protected Properties {{ "{#" }}protected-properties}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -288,7 +288,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicAttributes") %}## Public Attributes {#public-attributes}
+{%- if exists("publicAttributes") %}## Public Attributes {{ "{#" }}public-attributes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -299,7 +299,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("protectedAttributes") %}## Protected Attributes {#protected-attributes}
+{%- if exists("protectedAttributes") %}## Protected Attributes {{ "{#" }}protected-attributes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -310,7 +310,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{% if exists("friends") %}## Friends {#friends}
+{% if exists("friends") %}## Friends {{ "{#" }}friends}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |

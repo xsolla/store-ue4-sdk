@@ -1,4 +1,4 @@
-{% if exists("groups") %}## Modules {#modules}
+{% if exists("groups") %}## Modules {{ "{#" }}modules}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 | Name           |
@@ -9,7 +9,7 @@
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
 
-{% if exists("dirs") %}## Directories {#directories}
+{% if exists("dirs") %}## Directories {{ "{#" }}directories}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 | Name           |
@@ -20,7 +20,7 @@
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
 
-{% if exists("files") %}## Files {#files}
+{% if exists("files") %}## Files {{ "{#" }}files}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 | Name           |
@@ -31,7 +31,7 @@
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
 
-{%- if exists("namespaces") %}## {% if language == "java" %}Packages {#packages}{% else %}Namespaces {#namespaces}{% endif %}
+{%- if exists("namespaces") %}## {% if language == "java" %}Packages {{ "{#" }}packages}{% else %}Namespaces {{ "{#" }}namespaces}{% endif %}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 | Name           |
@@ -41,7 +41,7 @@
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicClasses") %}## Classes {#classes}
+{%- if exists("publicClasses") %}## Classes {{ "{#" }}classes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -51,7 +51,7 @@
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicTypes") %}## Types {#types}
+{%- if exists("publicTypes") %}## Types {{ "{#" }}types}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -70,7 +70,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicSlots") %}## Slots {#slots}
+{%- if exists("publicSlots") %}## Slots {{ "{#" }}slots}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -95,7 +95,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicSignals") %}## Signals {#signals}
+{%- if exists("publicSignals") %}## Signals {{ "{#" }}signals}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -120,7 +120,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicFunctions") %}## Functions {#functions}
+{%- if exists("publicFunctions") %}## Functions {{ "{#" }}functions}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -145,7 +145,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("publicAttributes") %}## Attributes {#attributes}
+{%- if exists("publicAttributes") %}## Attributes {{ "{#" }}attributes}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
@@ -156,7 +156,7 @@ template <{% for param in child.templateParams -%}
 {% endfor %}
 {{ "{{" }}< /class >{{ "}}" }}
 {% endif -%}
-{%- if exists("defines") %}## Defines {#defines}
+{%- if exists("defines") %}## Defines {{ "{#" }}defines}
 
 {{ "{{" }}< class "different-table" >{{ "}}" }}
 |                | Name           |
