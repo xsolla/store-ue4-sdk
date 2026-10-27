@@ -1,0 +1,17 @@
+{
+  "baseUrl": "/sdk/unreal-engine/code-reference/",
+  "indexInFolders": true,
+  "linkSuffix": "/",
+  "copyImages": true,
+  "sort": false,
+  "mainPageInRoot": true,
+  "mainPageName": "_index",
+  "folderClassesName": "classes",
+  "folderNamespacesName": "namespaces",
+  "indexClassesName": "_index",
+  "indexNamespacesName": "_index",
+  "indexRelatedPagesName": "_index",
+  "foldersToGenerate": [
+    "classes"
+  ]
+}

@@ -1,0 +1,31 @@
+{% include "header" -%}
+
+{% if exists("brief") %}{{brief}}
+
+{% endif %}{% if hasDetails %}[More...](#detailed-description)
+
+{% endif -%}
+
+{%- if exists("baseClasses") %}Inherits from {% for child in baseClasses %}{{child.name}}{% if not loop.is_last %}, {% endif %}{% endfor %}
+
+{% endif -%}
+{%- if exists("derivedClasses") %}Inherited by {% for child in derivedClasses %}{{child.name}}{% if not loop.is_last %}, {% endif %}{% endfor %}
+
+{% endif -%}
+
+{%- include "class_members_tables" -%}
+
+{% if hasDetails %}## Detailed Description {#detailed-description}
+
+```{{language}}{% if exists("templateParams") %}
+template <{% for param in templateParams %}{{param.typePlain}} {{param.name}}{% if existsIn(param, "defvalPlain") %} ={{param.defvalPlain}}{% endif %}{% if not loop.is_last %},
+{% endif %}{% endfor %}>{% endif %}
+{% if language == "java" %}{{visibility}} {% endif -%}
+{% if kind == "interface" and language != "java" %}class{% else %}{{kind}}{% endif %} {{name}};
+```
+
+{% include "details" %}{% endif -%}
+
+{% include "class_members_details" -%}
+
+{% include "footer" %}

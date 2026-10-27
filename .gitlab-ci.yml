@@ -26,18 +26,145 @@ variables:
 # =================================================================================================================
 # DOCS
 
+# Tags publish the HTML reference to the legacy site; the default branch only
+# feeds the Markdown to xsolla-docs, where an MR gates it.
 build doc:
   stage: build
-  only:
-    - /^v.*/
-  image: node:14-alpine3.15
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v.*/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - Source/**/*
+        - Documentation/Autogen/**/*
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  image: registry.srv.local/dh-proxy/library/node:14-alpine3.15@sha256:e05affcbacf8fadfe605dd64a0cdd94f27c9357a9af16237feeac7cce58753bd
   script:
   - apk update && apk add doxygen graphviz ttf-freefont zip git
   - doxygen Documentation/Autogen/Doxyfile >/dev/null
   - cd Documentation/Autogen/html && zip -r $CI_PROJECT_DIR/build.zip * >/dev/null
   artifacts:
+    expire_in: 3 days
     paths:
     - build.zip
+    # For build markdown
+    - Documentation/Autogen/xml
+  tags:
+    - devops
+
+build markdown:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - Source/**/*
+        - Documentation/Autogen/**/*
+    - if: '$CI_COMMIT_BRANCH'
+      when: manual
+      allow_failure: true
+  # Debian, not Alpine: doxybook2's release binary is glibc-linked.
+  image: registry.srv.local/dh-proxy/library/debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+  needs:
+    - job: build doc
+      artifacts: true
+  variables:
+    DOXYBOOK2_VERSION: v1.5.0
+    DOXYBOOK2_SHA256: 3fb90354b7ab3e8139a5606221865ff6aa0c53f2805e56088dcbd8185ebb5b41
+  script:
+  - apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq zip unzip curl
+  - curl -fsSL --max-time 120 --retry 3 "https://github.com/matusnovak/doxybook2/releases/download/${DOXYBOOK2_VERSION}/doxybook2-linux-amd64-${DOXYBOOK2_VERSION}.zip" -o /tmp/doxybook2.zip
+  - echo "$DOXYBOOK2_SHA256  /tmp/doxybook2.zip" | sha256sum -c -
+  - unzip -q /tmp/doxybook2.zip -d /tmp/doxybook2
+  - chmod +x /tmp/doxybook2/bin/doxybook2
+  - mkdir -p Documentation/Autogen/markdown
+  - /tmp/doxybook2/bin/doxybook2 --input Documentation/Autogen/xml --output Documentation/Autogen/markdown --config Documentation/Autogen/doxybook2-config.json --templates Documentation/Autogen/templates
+  - cd Documentation/Autogen/markdown && zip -r $CI_PROJECT_DIR/build-markdown.zip * >/dev/null
+  artifacts:
+    expire_in: 3 days
+    paths:
+    - build-markdown.zip
+  tags:
+    - devops
+
+publish reference:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - Source/**/*
+        - Documentation/Autogen/**/*
+  # Debian, not Alpine: xsolla-docs' ingest scripts need Python 3.10+.
+  image: registry.srv.local/dh-proxy/library/debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+  needs:
+    - job: build markdown
+      artifacts: true
+  variables:
+    SDK: unreal-engine
+    DOCS_REPO: git@gitlab.loc:documentation/xsolla-docs.git
+    DOCS_BRANCH: master
+    MIN_PAGES: "80"
+  before_script:
+    - apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git openssh-client python3 unzip curl
+    - eval $(ssh-agent -s)
+    - echo "$XSOLLA_DOCS_PUSH_SSH_KEY" | base64 -di | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.loc >> ~/.ssh/known_hosts
+    - git config --global user.email "ci@xsolla.com"
+    - git config --global user.name "SDK reference bot"
+  script:
+    - unzip -q build-markdown.zip -d /tmp/md
+    # ingest.py deletes every corpus page the generator did not emit, so a
+    # doxygen run that half-failed would raise an MR gutting the reference.
+    - PAGES=$(find /tmp/md -name '*.md' | wc -l)
+    - test "$PAGES" -ge "$MIN_PAGES" || { echo "only $PAGES pages generated, expected at least $MIN_PAGES"; exit 1; }
+    # Shallow: nothing below reads history, and xsolla-docs is large.
+    - git clone --depth 1 --single-branch --branch "$DOCS_BRANCH" "$DOCS_REPO" /tmp/docs
+    - cd /tmp/docs
+    - python3 scripts/sdk-reference/ingest.py "$SDK" --from /tmp/md
+    - SUMMARY=$(python3 scripts/sdk-reference/build_nav_tree.py | grep "^$SDK:")
+    - python3 scripts/sdk-reference/ingest.py --verify
+    - python3 scripts/sdk-reference/build_nav_tree.py --check
+    - git add "content/sdk/$SDK/code-reference" "data/sdk-ref-$SDK.json"
+    - |
+      if git diff --cached --quiet; then
+        echo "reference unchanged - nothing to publish"
+        exit 0
+      fi
+
+      BODY=$(printf 'Regenerated from %s@%s (%s).\n\n%s\n\nPipeline: %s' \
+        "$CI_PROJECT_NAME" "$CI_COMMIT_SHORT_SHA" "$CI_COMMIT_REF_NAME" \
+        "$SUMMARY" "$CI_JOB_URL")
+
+      DESC="Regenerated from $CI_PROJECT_NAME@$CI_COMMIT_SHORT_SHA ($CI_COMMIT_REF_NAME). $SUMMARY. Pipeline: $CI_JOB_URL"
+
+      git checkout -B "auto/sdk-reference-$SDK"
+      git commit -q -m "Auto: update $SDK code reference" -m "$BODY"
+
+      if PUSH_OUTPUT=$(git push origin "auto/sdk-reference-$SDK" --force \
+          -o merge_request.create \
+          -o "merge_request.target=$DOCS_BRANCH" \
+          -o "merge_request.title=Auto: update $SDK code reference" \
+          -o "merge_request.description=$DESC" \
+          -o merge_request.remove_source_branch 2>&1); then
+        echo "$PUSH_OUTPUT"
+      else
+        echo "$PUSH_OUTPUT"
+        echo "push to xsolla-docs failed"
+        exit 1
+      fi
+
+      MR_URL=$(echo "$PUSH_OUTPUT" | grep -o 'https://[^ ]*merge_requests/[0-9]*' | head -1 || true)
+      if [ -z "$MR_URL" ]; then
+        echo "pushed, but no MR URL in the output - an MR for this branch is probably already open"
+      elif [ -n "$SLACK_SDK_DOCS_WORKFLOW_URL" ]; then
+        PAYLOAD="{
+          \"sdk\": \"$SDK\",
+          \"mr_url\": \"$MR_URL\",
+          \"job_url\": \"$CI_JOB_URL\"
+        }"
+        curl -s --max-time 10 -X POST -H "Content-type: application/json" --data "$PAYLOAD" "$SLACK_SDK_DOCS_WORKFLOW_URL" || true
+      fi
   tags:
     - devops
 
