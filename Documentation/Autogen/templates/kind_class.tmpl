@@ -15,7 +15,7 @@
 
 {%- include "class_members_tables" -%}
 
-{% if hasDetails %}## Detailed Description {#detailed-description}
+{% if hasDetails %}## Detailed Description {{ "{#" }}detailed-description}
 
 ```{{language}}{% if exists("templateParams") %}
 template <{% for param in templateParams %}{{param.typePlain}} {{param.name}}{% if existsIn(param, "defvalPlain") %} ={{param.defvalPlain}}{% endif %}{% if not loop.is_last %},

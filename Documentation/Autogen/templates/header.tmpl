@@ -8,13 +8,11 @@ title: {{title}}
 {% if exists("refid") -%}
 slug: {{refid}}
 {% endif -%}
-direct_title: true
 {% else if exists("name") -%}
 title: {{name}}
 {% if exists("refid") -%}
 slug: {{refid}}
 {% endif -%}
-direct_title: true
 {% endif -%}
 {% include "meta" %}
 ---
