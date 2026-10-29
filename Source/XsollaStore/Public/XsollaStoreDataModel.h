@@ -952,12 +952,24 @@ struct XSOLLASTORE_API FSubscriptionPaystationLink
 };
 
 USTRUCT(BlueprintType)
+struct XSOLLASTORE_API FSubscriptionUserAccountLink
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription User Account Link")
+	FString redirect_url;
+};
+
+USTRUCT(BlueprintType)
 struct XSOLLASTORE_API FSubscriptionPeriod
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
 	int32 value = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period", meta = (DisplayName = "bHasValue"))
+	bool has_value = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Period")
 	FString unit;
@@ -973,6 +985,12 @@ struct XSOLLASTORE_API FSubscriptionCharge
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	float amount_with_promotion = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge", meta = (DisplayName = "bHasAmountWithPromotion"))
+	bool has_amount_with_promotion = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
+	float setup_fee = 0.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Charge")
 	FString currency;
@@ -1001,8 +1019,14 @@ struct XSOLLASTORE_API FSubscriptionPlanPromotion
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
 	float promotion_charge_amount = 0.f;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion", meta = (DisplayName = "bHasPromotionChargeAmount"))
+	bool has_promotion_charge_amount = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion")
 	float promotion_remaining_charges = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan Promotion", meta = (DisplayName = "bHasPromotionRemainingCharges"))
+	bool has_promotion_remaining_charges = false;
 };
 
 USTRUCT(BlueprintType)
@@ -1031,11 +1055,20 @@ struct XSOLLASTORE_API FSubscriptionPlan
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	FDateTime plan_start_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan", meta = (DisplayName = "bHasPlanStartDate"))
+	bool has_plan_start_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	FDateTime plan_end_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan", meta = (DisplayName = "bHasPlanEndDate"))
+	bool has_plan_end_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	int32 trial_period = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan", meta = (DisplayName = "bHasTrialPeriod"))
+	bool has_trial_period = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Plan")
 	FSubscriptionPeriod period;
@@ -1082,11 +1115,20 @@ struct XSOLLASTORE_API FSubscription
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime plan_start_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasPlanStartDate"))
+	bool has_plan_start_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime plan_end_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasPlanEndDate"))
+	bool has_plan_end_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	int32 product_id = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasProductId"))
+	bool has_product_id = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FString product_external_id;
@@ -1106,14 +1148,23 @@ struct XSOLLASTORE_API FSubscription
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	int32 trial_period = 0;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasTrialPeriod"))
+	bool has_trial_period = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime date_create;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime date_next_charge;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasDateNextCharge"))
+	bool has_date_next_charge = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FDateTime date_last_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription", meta = (DisplayName = "bHasDateLastCharge"))
+	bool has_date_last_charge = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription")
 	FSubscriptionCharge charge;
@@ -1157,11 +1208,20 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime plan_start_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasPlanStartDate"))
+	bool has_plan_start_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime plan_end_date;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasPlanEndDate"))
+	bool has_plan_end_date = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	int32 product_id = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasProductId"))
+	bool has_product_id = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FString product_external_id;
@@ -1181,14 +1241,23 @@ struct XSOLLASTORE_API FSubscriptionDetails
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	int32 trial_period = 0;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasTrialPeriod"))
+	bool has_trial_period = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime date_create;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime date_next_charge;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasDateNextCharge"))
+	bool has_date_next_charge = false;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime date_last_charge;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasDateLastCharge"))
+	bool has_date_last_charge = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FSubscriptionCharge charge;
@@ -1198,6 +1267,9 @@ struct XSOLLASTORE_API FSubscriptionDetails
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	FDateTime date_end;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details", meta = (DisplayName = "bHasDateEnd"))
+	bool has_date_end = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Subscription Details")
 	bool is_renew_possible = false;

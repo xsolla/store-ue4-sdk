@@ -1,0 +1,19 @@
+---
+{% if name == "index" -%}
+title: SDK reference
+slug: sdk-reference
+weight: 2
+{% else if exists("title") -%}
+title: {{title}}
+{% if exists("refid") -%}
+slug: {{refid}}
+{% endif -%}
+{% else if exists("name") -%}
+title: {{name}}
+{% if exists("refid") -%}
+slug: {{refid}}
+{% endif -%}
+{% endif -%}
+{% include "meta" %}
+---
+

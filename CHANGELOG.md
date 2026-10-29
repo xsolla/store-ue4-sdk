@@ -1,4 +1,22 @@
 # Changelog
+## [4.3.0] - 2026-10-07
+### Added
+- `GetSubscriptionUserAccountUrl` SDK method in `XsollaStoreSubsystem` class. Returns the URL of the user account interface for subscription management
+- New optional parameters for `XsollaStoreSubsystem` subscription methods:
+  - `GetSubscriptionPurchaseUrl`: `ProductId`, `AvailablePlans`, `CustomParameters`
+  - `GetSubscriptionManagementUrl`: `ProductId`, `AvailablePlans`, `CustomParameters`, `SteamUserId`
+  - `GetSubscriptionRenewalUrl`: `CustomParameters`, `SteamUserId`
+- `setup_fee` field in `FSubscriptionCharge` returning the subscription's one-time setup fee in `GetSubscriptions` and `GetSubscriptionDetails` responses
+- New `bHas...` flags in subscription response models to distinguish a field missing from the response from a field with a default value
+
+### Changed
+- Android native dependencies (`com.xsolla.android:payments`, `login`, `login-facebook`, `login-google`, `login-wechat`, `login-qq`) replaced with a single `com.xsolla.android:bridge` library
+- Android manifest preprocessing and generated proxy activities (`PaymentsProxyActivity`, `SocialAuthProxyActivity`, `XsollaWidgetAuthProxyActivity`, `AdditionalInfoAuthProxyActivity`, `WXEntryActivity`) removed. Required activities are now provided by the bridge library
+- `GetSubscriptionRenewalUrl` signature changed: `CustomParameters` and `SteamUserId` are now passed before the callbacks, so existing C++ calls need to be updated. `GetSubscriptionPurchaseUrl` and `GetSubscriptionManagementUrl` keep backward-compatible overloads
+
+### Fixed
+- Handling of nullable fields in subscription models
+
 ## [4.2.3] - 2026-07-09
 ### Added
 - Support for rendering the payment UI (Pay Station) inside the Steam overlay, controlled via the optional `bUseSteamOverlayForDesktop` field in `FXsollaPaymentTokenRequestPayload`.

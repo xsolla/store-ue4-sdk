@@ -48,6 +48,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionPlansListUpdate, FSubscriptionP
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSubscriptionsListUpdate, FSubscriptionsList, SubscriptionsList);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionDetailsSuccess, const FSubscriptionDetails&, SubscriptionDetails);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionPayStationLinkSuccess, const FString&, LinkToPaystation);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetSubscriptionUserAccountUrlSuccess, const FString&, UserAccountUrl);
 DECLARE_DYNAMIC_DELEGATE(FOnCancelSubscriptionSuccess);
 
 UCLASS()
@@ -778,10 +779,21 @@ public:
 	 * @param Country User's country. Affects the choice of locale and currency. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). By default, it is determined by the user's IP address.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param ProductId (optional) ID of the product associated with the subscription plan.
+	 * @param AvailablePlans (optional) Subscription plan external IDs to show in payment UI.
+	 * @param CustomParameters (optional) Map of custom parameters.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "AvailablePlans, CustomParameters, SuccessCallback, ErrorCallback"))
 	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+		const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters);
+
+	/** Backward-compatible C++ overload without optional payload fields. */
+	void GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	{
+		GetSubscriptionPurchaseUrl(AuthToken, PlanExternalId, Country, SuccessCallback, ErrorCallback, 0, TArray<FString>(), FXsollaParameters());
+	}
 
 	/** Returns the URL of the management interface for the selected subscription.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -790,22 +802,49 @@ public:
 	 * @param Country User's country. Two-letter uppercase country code per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Affects the choice of locale and currency. By default, it is determined by the user's IP address.  Check the documentation for detailed information about [countries supported by Xsolla](https://developers.xsolla.com/doc/in-game-store/references/supported-countries/).
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
+	 * @param ProductId (optional) ID of the product associated with the subscription plan.
+	 * @param AvailablePlans (optional) Subscription plan external IDs to show in payment UI.
+	 * @param CustomParameters (optional) Map of custom parameters.
+	 * @param SteamUserId (optional) Steam user ID.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "AvailablePlans, CustomParameters, SteamUserId, SuccessCallback, ErrorCallback"))
 	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+		const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& SteamUserId);
 
-	/** Returns the URL of the renewal interface for the selected subscription
+	/** Backward-compatible C++ overload without optional payload fields. */
+	void GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	{
+		GetSubscriptionManagementUrl(AuthToken, Country, SuccessCallback, ErrorCallback, 0, TArray<FString>(), FXsollaParameters(), FString());
+	}
+
+	/** Returns the URL of the renewal interface for the selected subscription.
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
 	 *
 	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
 	 * @param SubscriptionId Subscription ID.
+	 * @param CustomParameters (optional) Map of custom parameters.
+	 * @param SteamUserId (optional) Steam user ID.
+	 * @param SuccessCallback Called after the URL has been successfully recieved.
+	 * @param ErrorCallback Called after the request resulted with an error.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "CustomParameters, SteamUserId, SuccessCallback, ErrorCallback"))
+	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId, const FXsollaParameters& CustomParameters, const FString& SteamUserId,
+		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+
+	/** Returns URL of the user account interface for subscription management.
+	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
+	 *
+	 * @param AuthToken User authorization token obtained during authorization using Xsolla Login ([more about authorization options](https://developers.xsolla.com/sdk/unreal-engine/authentication/)).
+	 * @param Locale Language of the UI. By default, it is determined by the user's IP address.<br>
+	 * Can be enforced by using [two-letter lowercase language code](https://developers.xsolla.com/doc/pay-station/features/localization/).
 	 * @param SuccessCallback Called after the URL has been successfully recieved.
 	 * @param ErrorCallback Called after the request resulted with an error.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Store|Subscriptions", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
-	void GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
-		const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback);
+	void GetSubscriptionUserAccountUrl(const FString& AuthToken, const FString& Locale,
+		const FOnGetSubscriptionUserAccountUrlSuccess& SuccessCallback, const FOnError& ErrorCallback);
 
 	/** Changes a regular subscription status to `non_renewing` (subscription is automatically canceled after expiration).
 	 * [More about the use cases](https://developers.xsolla.com/sdk/unreal-engine/subscriptions/subscription-management/).
@@ -919,6 +958,9 @@ protected:
 
 	void GetSubscriptionPaystationLink_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnGetSubscriptionPayStationLinkSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
+
+	void GetSubscriptionUserAccountUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+		const bool bSucceeded, FOnGetSubscriptionUserAccountUrlSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);
 
 	void CancelSubscription_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
 		const bool bSucceeded, FOnCancelSubscriptionSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper);

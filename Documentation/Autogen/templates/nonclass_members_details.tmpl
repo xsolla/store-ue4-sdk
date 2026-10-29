@@ -1,0 +1,24 @@
+{% if exists("publicTypes") %}## Types Documentation {{ "{#" }}types-documentation}
+
+{% for child in publicTypes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
+
+{{ render("member_details", child) }}
+{% endfor %}{% endif %}
+{% if exists("publicFunctions") %}## Functions Documentation {{ "{#" }}functions-documentation}
+
+{% for child in publicFunctions %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
+
+{{ render("member_details", child) }}
+{% endfor %}{% endif %}
+{% if exists("publicAttributes") %}## Attributes Documentation {{ "{#" }}attributes-documentation}
+
+{% for child in publicAttributes %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
+
+{{ render("member_details", child) }}
+{% endfor %}{% endif %}
+{% if exists("defines") %}## Macros Documentation {{ "{#" }}macros-documentation}
+
+{% for child in defines %}### {{child.kind}} {{child.name}} {{ "{#" }}{{ replace(child.anchor, "#", "") }}{{ "}" }}
+
+{{ render("member_details", child) }}
+{% endfor %}{% endif %}

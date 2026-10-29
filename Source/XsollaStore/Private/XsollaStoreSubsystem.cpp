@@ -6,6 +6,7 @@
 #include "XsollaStoreDataModel.h"
 #include "XsollaStoreDefines.h"
 #include "XsollaStoreSave.h"
+#include "XsollaSubscriptionsContractHelper.h"
 #include "XsollaUtilsLibrary.h"
 #include "XsollaUtilsTokenParser.h"
 #include "XsollaUtilsUrlBuilder.h"
@@ -1145,18 +1146,13 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans(const FString& AuthToken, const
 void UXsollaStoreSubsystem::GetSubscriptions(const FString& AuthToken, const FString& Locale,
 	const FOnSubscriptionsListUpdate& SuccessCallback, const FOnError& ErrorCallback, const int Limit, const int Offset)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("locale"), Locale)
-								.AddNumberQueryParam(TEXT("limit"), Limit)
-								.AddNumberQueryParam(TEXT("offset"), Offset)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildGetSubscriptionsRequest(ProjectID, Locale, Limit, Offset);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptions_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1167,17 +1163,13 @@ void UXsollaStoreSubsystem::GetSubscriptions(const FString& AuthToken, const FSt
 void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, const int32 SubscriptionId, const FString& Locale,
 	const FOnGetSubscriptionDetailsSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.AddStringQueryParam(TEXT("locale"), Locale)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildGetSubscriptionDetailsRequest(ProjectID, SubscriptionId, Locale);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_GET, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionDetails_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1186,27 +1178,25 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails(const FString& AuthToken, con
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken, const FString& PlanExternalId, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/buy"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("country"), Country)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-
-	RequestDataJson->SetStringField(TEXT("plan_external_id"), PlanExternalId);
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionPurchaseRequest(
+		ProjectID,
+		PlanExternalId,
+		Country,
+		ProductId,
+		AvailablePlans,
+		CustomParameters,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1215,25 +1205,25 @@ void UXsollaStoreSubsystem::GetSubscriptionPurchaseUrl(const FString& AuthToken,
 }
 
 void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToken, const FString& Country,
-	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
+	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback,
+	const int32 ProductId, const TArray<FString>& AvailablePlans, const FXsollaParameters& CustomParameters, const FString& SteamUserId)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/manage"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.AddStringQueryParam(TEXT("country"), Country)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionManagementRequest(
+		ProjectID,
+		Country,
+		ProductId,
+		AvailablePlans,
+		CustomParameters,
+		SteamUserId,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1241,46 +1231,57 @@ void UXsollaStoreSubsystem::GetSubscriptionManagementUrl(const FString& AuthToke
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
 }
 
-void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId,
+void UXsollaStoreSubsystem::GetSubscriptionRenewalUrl(const FString& AuthToken, const int32 SubscriptionId, const FXsollaParameters& CustomParameters, const FString& SteamUserId,
 	const FOnGetSubscriptionPayStationLinkSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/renew"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.Build();
-
-	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
-
-	// PaymentSettings settings
-	TSharedPtr<FJsonObject> PaymentSettingsJson = PreparePaystationSettings(false);
-	PaymentSettingsJson->SetBoolField(TEXT("sandbox"), IsSandboxEnabled());
-	RequestDataJson->SetObjectField(TEXT("settings"), PaymentSettingsJson);
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionRenewalRequest(
+		ProjectID,
+		SubscriptionId,
+		CustomParameters,
+		SteamUserId,
+		PreparePaystationSettings(false),
+		IsSandboxEnabled());
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, RequestDataJson, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_POST, Token, SerializeJson(RequestDataJson));
+		const FString RequestContent = RequestData.HasBody() ? SerializeJson(RequestData.Body) : FString();
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token, RequestContent);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
 
 	SuccessTokenUpdate.ExecuteIfBound(AuthToken, true);
+}
+
+void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl(const FString& AuthToken, const FString& Locale,
+	const FOnGetSubscriptionUserAccountUrlSuccess& SuccessCallback, const FOnError& ErrorCallback)
+{
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildSubscriptionUserAccountRequest(ProjectID, Locale);
+
+	const TSharedRef<FOnTokenUpdate, ESPMode::ThreadSafe> SuccessTokenUpdate = MakeShared<FOnTokenUpdate, ESPMode::ThreadSafe>();
+	SuccessTokenUpdate->BindLambda([this, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	{
+		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, *SuccessTokenUpdate, ErrorCallback);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
+		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
+		HttpRequest->ProcessRequest();
+	});
+
+	SuccessTokenUpdate->ExecuteIfBound(AuthToken, true);
 }
 
 void UXsollaStoreSubsystem::CancelSubscription(const FString& AuthToken, const int32 SubscriptionId,
 	const FOnCancelSubscriptionSuccess& SuccessCallback, const FOnError& ErrorCallback)
 {
-	const FString Url = XsollaUtilsUrlBuilder(TEXT("https://subscriptions.xsolla.com/api/user/v1/projects/{ProjectID}/subscriptions/{SubscriptionId}/cancel"))
-								.SetPathParam(TEXT("ProjectID"), ProjectID)
-								.SetPathParam(TEXT("SubscriptionId"), SubscriptionId)
-								.Build();
+	const FSubscriptionContractRequestData RequestData = FXsollaSubscriptionsContractHelper::BuildCancelSubscriptionRequest(ProjectID, SubscriptionId);
 
 	FOnTokenUpdate SuccessTokenUpdate;
-	SuccessTokenUpdate.BindLambda([&, Url, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
+	SuccessTokenUpdate.BindLambda([&, RequestData, SuccessCallback, ErrorCallback, SuccessTokenUpdate](const FString& Token, bool bRepeatOnError)
 	{
 		const auto ErrorHandlersWrapper = FErrorHandlersWrapper(bRepeatOnError, SuccessTokenUpdate, ErrorCallback);
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(Url, EXsollaHttpRequestVerb::VERB_PUT, Token);
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateHttpRequest(RequestData.Url, RequestData.Verb, Token);
 		HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaStoreSubsystem::CancelSubscription_HttpRequestComplete, SuccessCallback, ErrorHandlersWrapper);
 		HttpRequest->ProcessRequest();
 	});
@@ -1930,6 +1931,12 @@ void UXsollaStoreSubsystem::GetSubscriptionPublicPlans_HttpRequestComplete(FHttp
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPlansList::StaticStruct(), &SubscriptionPlansList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionPlansList(JsonObject, SubscriptionPlansList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
 	}
 	else
@@ -1946,6 +1953,12 @@ void UXsollaStoreSubsystem::GetSubscriptionPlans_HttpRequestComplete(FHttpReques
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPlansList::StaticStruct(), &SubscriptionPlansList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionPlansList(JsonObject, SubscriptionPlansList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionPlansList);
 	}
 	else
@@ -1962,6 +1975,12 @@ void UXsollaStoreSubsystem::GetSubscriptions_HttpRequestComplete(FHttpRequestPtr
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionsList::StaticStruct(), &SubscriptionsList, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionsList(JsonObject, SubscriptionsList);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionsList);
 	}
 	else
@@ -1978,6 +1997,12 @@ void UXsollaStoreSubsystem::GetSubscriptionDetails_HttpRequestComplete(FHttpRequ
 
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionDetails::StaticStruct(), &SubscriptionDetails, OutError))
 	{
+		TSharedPtr<FJsonObject> JsonObject;
+		if (XsollaUtilsHttpRequestHelper::ParseResponseAsJson(HttpRequest, HttpResponse, bSucceeded, JsonObject, OutError))
+		{
+			FXsollaSubscriptionsContractHelper::ApplyNullableFieldsToSubscriptionDetails(JsonObject, SubscriptionDetails);
+		}
+
 		SuccessCallback.ExecuteIfBound(SubscriptionDetails);
 	}
 	else
@@ -1995,6 +2020,22 @@ void UXsollaStoreSubsystem::GetSubscriptionPaystationLink_HttpRequestComplete(FH
 	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionPaystationLink::StaticStruct(), &SubscriptionPaystationLink, OutError))
 	{
 		SuccessCallback.ExecuteIfBound(SubscriptionPaystationLink.link_to_ps);
+	}
+	else
+	{
+		LoginSubsystem->HandleRequestError(OutError, ErrorHandlersWrapper);
+	}
+}
+
+void UXsollaStoreSubsystem::GetSubscriptionUserAccountUrl_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse,
+	const bool bSucceeded, FOnGetSubscriptionUserAccountUrlSuccess SuccessCallback, FErrorHandlersWrapper ErrorHandlersWrapper)
+{
+	XsollaHttpRequestError OutError;
+	FSubscriptionUserAccountLink SubscriptionUserAccountLink;
+
+	if (XsollaUtilsHttpRequestHelper::ParseResponseAsStruct(HttpRequest, HttpResponse, bSucceeded, FSubscriptionUserAccountLink::StaticStruct(), &SubscriptionUserAccountLink, OutError))
+	{
+		SuccessCallback.ExecuteIfBound(SubscriptionUserAccountLink.redirect_url);
 	}
 	else
 	{
@@ -2583,7 +2624,7 @@ bool UXsollaStoreSubsystem::IsItemInCart(const FStoreCart& Cart, const FString& 
 
 #if PLATFORM_ANDROID
 
-JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsActivity_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
+JNI_METHOD void Java_com_xsolla_store_XsollaNativePaymentsCallback_onPaymentsBrowserClosedCallback(JNIEnv* env, jclass clazz, jlong objAddr, jboolean isManually)
 {
 	UXsollaNativePaymentsCallback* callback = reinterpret_cast<UXsollaNativePaymentsCallback*>(objAddr);
 

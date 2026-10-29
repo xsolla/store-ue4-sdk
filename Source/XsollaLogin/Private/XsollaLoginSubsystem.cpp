@@ -3076,7 +3076,10 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAdditionalInfoAuthActivity_onA
 	}
 }
 
-JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
+// Shared by both native social auth (xAuthSocial) and Xsolla Widget auth (authViaXsollaWidget) -
+// both now go through the single com.xsolla.login.XsollaNativeAuthCallback shim, mirroring bridge's
+// own AuthFlowCoordinator which uses one AuthCallback type for both flows.
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthCallback_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
 	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth success callback received"), *VA_FUNC_LINE);
@@ -3102,7 +3105,7 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthSuccessCall
 	}
 }
 
-JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthCallback_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth cancel callback received"), *VA_FUNC_LINE);
 
@@ -3119,7 +3122,7 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthCancelCallb
 	}
 }
 
-JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
+JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthCallback_onAuthErrorCallback(JNIEnv* env, jclass clazz, jlong objAddr, jstring errorMsg)
 {
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android native auth error callback received"), *VA_FUNC_LINE);
 
@@ -3130,49 +3133,6 @@ JNI_METHOD void Java_com_xsolla_login_XsollaNativeAuthActivity_onAuthErrorCallba
 		FString errorMessage = XsollaJavaConvertor::FromJavaString(errorMsg);
 		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Android native auth error: %s"), *VA_FUNC_LINE, *errorMessage);
 		callback->ExecuteError(errorMessage);
-	}
-	else
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
-	}
-}
-
-JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthSuccessCallback(JNIEnv* env, jclass clazz, jlong objAddr,
-	jstring accessToken, jstring refreshToken, jlong expiresAt, jboolean rememberMe)
-{
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth success callback received"), *VA_FUNC_LINE);
-
-	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
-
-	if (IsValid(callback))
-	{
-		FXsollaLoginData receivedData;
-		receivedData.AuthToken.JWT = XsollaJavaConvertor::FromJavaString(accessToken);
-		receivedData.AuthToken.RefreshToken = XsollaJavaConvertor::FromJavaString(refreshToken);
-		receivedData.AuthToken.ExpiresAt = (int64)expiresAt;
-		receivedData.bRememberMe = rememberMe;
-
-		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth successful, token expires in %lld seconds"),
-			*VA_FUNC_LINE, expiresAt - FDateTime::UtcNow().ToUnixTimestamp());
-
-		callback->ExecuteSuccess(receivedData);
-	}
-	else
-	{
-		UE_LOG(LogXsollaLogin, Error, TEXT("%s: Invalid callback"), *VA_FUNC_LINE);
-	}
-}
-
-JNI_METHOD void Java_com_xsolla_login_XsollaNativeXsollaWidgetAuthActivity_onAuthCancelCallback(JNIEnv* env, jclass clazz, jlong objAddr)
-{
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth cancel callback received"), *VA_FUNC_LINE);
-
-	UXsollaNativeAuthCallback* callback = reinterpret_cast<UXsollaNativeAuthCallback*>(objAddr);
-
-	if (IsValid(callback))
-	{
-		UE_LOG(LogXsollaLogin, Log, TEXT("%s: Android Xsolla widget auth canceled by user"), *VA_FUNC_LINE);
-		callback->ExecuteCancel();
 	}
 	else
 	{

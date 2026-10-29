@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
     Copyright 2024 Xsolla Inc. All Rights Reserved.
 -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
     <log text="XsollaLogin UPL initialization"/>
-    <setStringFromProperty result="PackageName" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="PackageName"/>
-    <setStringReplace result="PackageNamePath" source="$S(PackageName)" find="." with="/"/>
   </init>
 
   <!-- Enable AndroidX support -->
@@ -16,54 +14,15 @@
       android.enableJetifier=true
     </insert>
   </gradleProperties>
-  
-  <!-- Replace package name in WeChat proxy activity script -->
-  <baseBuildGradleAdditions>
-    <insert>
-      allprojects {
-        beforeEvaluate { project ->
-          project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) { f ->
-            if (f.getText('UTF-8').contains('com.xsolla.login.wxapi')) {
-    </insert>
-    <insertValue value="ant.replace(file: f, token: 'com.xsolla.login.wxapi', value: '$S(PackageName).wxapi')"/>
-    <insertNewline/>
-    <insert>
-            }
-          }
-        }
-      }
-    </insert>
-  </baseBuildGradleAdditions>
 
   <buildGradleAdditions>
     <!-- Add dependencies -->
     <insert>
       dependencies {
-        implementation 'com.xsolla.android:login:6.0.16'
-        implementation 'com.xsolla.android:login-facebook:6.0.16'
-        implementation 'com.xsolla.android:login-google:6.0.16'
-        implementation 'com.xsolla.android:login-wechat:6.0.16'
-        implementation 'com.xsolla.android:login-qq:6.0.16'
-
-        implementation 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.24'
-        implementation 'org.bouncycastle:bctls-jdk15to18:1.76'
-        implementation 'org.bouncycastle:bcprov-jdk15to18:1.76'
-        implementation 'org.conscrypt:conscrypt-android:2.5.2'
-        implementation 'org.openjsse:openjsse:1.1.14'
-        implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+        implementation 'com.xsolla.android:bridge:0.1.1'
       }
       repositories {
-        maven { url 'https://maven.google.com' }
         mavenCentral()
-      }
-    </insert>
-    <!-- Enable Java 11 support -->
-    <insert>
-      android {
-        compileOptions {
-          targetCompatibility JavaVersion.VERSION_11
-          sourceCompatibility JavaVersion.VERSION_11
-        }
       }
     </insert>
   </buildGradleAdditions>
@@ -71,7 +30,6 @@
   <!-- Add native implementation wrapper -->
   <prebuildCopies>
     <copyDir src="$S(PluginDir)/Private/Android/Java/Common" dst="$S(BuildDir)/src/com/xsolla/login" />
-    <copyDir src="$S(PluginDir)/Private/Android/Java/WeChat" dst="$S(BuildDir)/src/$S(PackageNamePath)/wxapi" />
   </prebuildCopies>
 
   <!-- Addition rules for proguard -->
@@ -90,43 +48,12 @@
       # ========================
       -keep class com.xsolla.** { *; }
       -keep interface com.xsolla.** { *; }
-      -keep class com.xsolla.android.store.StoreApi { *; }
-      -keep class com.xsolla.android.login.LoginApi { *; }
-
-      # ========================
-      # Retrofit2
-      # ========================
-      -keep class retrofit2.** { *; }
-      -keep interface retrofit2.** { *; }
-      -keepclasseswithmembers class * {
-          @retrofit2.http.* <methods>;
-      }
-      -keep class * implements retrofit2.CallAdapter$Factory { *; }
-      -keep class * implements retrofit2.Converter$Factory { *; }
       ]]>
     </insert>
   </proguardAdditions>
 
   <!-- Add custom data to AndroidManifest.xml -->
   <androidManifestUpdates>
-
-    <setElement result="WeChatNativeAuthActivity" value="activity"/>
-    <addAttribute tag="$WeChatNativeAuthActivity" name="android:name" value="$S(PackageName).wxapi.WXEntryActivity"/>
-    <addAttribute tag="$WeChatNativeAuthActivity" name="android:exported" value="true"/>
-    <addAttribute tag="$WeChatNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
-    <addElement tag="application" name="WeChatNativeAuthActivity"/>
-
-    <setElement result="XsollaNativeAuthActivity" value="activity"/>
-    <addAttribute tag="$XsollaNativeAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeAuthActivity"/>
-    <addAttribute tag="$XsollaNativeAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
-    <addAttribute tag="$XsollaNativeAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
-    <addElement tag="application" name="XsollaNativeAuthActivity"/>
-
-    <setElement result="XsollaNativeXsollaWidgetAuthActivity" value="activity"/>
-    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeXsollaWidgetAuthActivity"/>
-    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:configChanges" value="orientation|screenSize"/>
-    <addAttribute tag="$XsollaNativeXsollaWidgetAuthActivity" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
-    <addElement tag="application" name="XsollaNativeXsollaWidgetAuthActivity"/>
 
     <setElement result="XsollaNativeAdditionalInfoAuthActivity" value="activity"/>
     <addAttribute tag="$XsollaNativeAdditionalInfoAuthActivity" name="android:name" value="com.xsolla.login.XsollaNativeAdditionalInfoAuthActivity"/>
